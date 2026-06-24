@@ -165,6 +165,26 @@ final class PrototypeAppState: ObservableObject {
     }
 
     func acceptPlacement() {
+        // Persist any user edits to the profile reflection before accepting
+        withMutableSlice { next in
+            var updatedProfile = next.profile
+            updatedProfile = SynthesizedProfile(
+                profileId: updatedProfile.profileId,
+                displayName: updatedProfile.displayName,
+                values: updatedProfile.values,
+                communicationStyle: updatedProfile.communicationStyle,
+                emotionalRhythm: updatedProfile.emotionalRhythm,
+                relationshipIntent: updatedProfile.relationshipIntent,
+                interests: updatedProfile.interests,
+                privacy: updatedProfile.privacy,
+                reflection: ProfileReflection(
+                    summary: editedReflection,
+                    strengths: updatedProfile.reflection.strengths,
+                    nextQuestion: updatedProfile.reflection.nextQuestion
+                )
+            )
+            next.profile = updatedProfile
+        }
         updatePlacementState(.accepted)
     }
 
@@ -235,6 +255,7 @@ final class PrototypeAppState: ObservableObject {
                 )
             )
             newSlice.placement = result.placement
+            newSlice.signals = result.signals
             slice = newSlice
             sourceLabel = result.placement.isNewCircle ? "New circle for you" : "AI Interview Profile"
             loadError = nil

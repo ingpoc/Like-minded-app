@@ -123,6 +123,7 @@ struct ReflectPlaceConnectSlice: Codable {
     var profile: SynthesizedProfile
     var placement: CirclePlacement
     let connectionPath: ConnectionPath
+    var signals: ProfileSignals?
 }
 
 struct MVPJourneyStep: Codable, Identifiable {

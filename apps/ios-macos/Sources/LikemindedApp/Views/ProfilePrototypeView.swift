@@ -2,10 +2,10 @@ import SwiftUI
 
 struct ReflectionPrototypeView: View {
     @State private var hasEntered = false
-    @State private var selectedSignal = "Warmth"
+    @State private var selectedSignal = "Communication"
     @EnvironmentObject private var appState: PrototypeAppState
 
-    private let signalTabs = ["Warmth", "Pace", "Trust"]
+    private let signalTabs = ["Communication", "Energy", "Trust"]
 
     var body: some View {
         NavigationStack {
@@ -151,6 +151,9 @@ struct ReflectionPrototypeView: View {
                     systemImage: signalIcon
                 )
 
+                bigFiveScores
+                    .likemindedEntrance(order: 2, isActive: hasEntered, y: 8, scale: 0.98)
+
                 VStack(alignment: .leading, spacing: 10) {
                     Text("Reviewable read")
                         .font(PrototypeTypography.metadata)
@@ -168,11 +171,46 @@ struct ReflectionPrototypeView: View {
                             RoundedRectangle(cornerRadius: 14, style: .continuous)
                                 .stroke(PrototypePalette.rule, lineWidth: 1)
                         )
+
+                    Button {
+                        // Reflection edits are already in appState.editedReflection
+                        // Just mark as saved (no-op for now, persists in-app)
+                    } label: {
+                        SecondaryActionButton(title: "Save edits", systemImage: "checkmark")
+                    }
+                    .buttonStyle(.plain)
                 }
 
                 PrivacyStrip()
             }
         }
+    }
+
+    private var bigFiveScores: some View {
+        let signals = appState.slice?.signals
+        let bigFive = signals?.bigFive ?? ProfileSignals.BigFive()
+
+        return VStack(alignment: .leading, spacing: 10) {
+            Text("Personality traits")
+                .font(PrototypeTypography.metadata)
+                .foregroundStyle(PrototypePalette.subink)
+
+            HStack(spacing: 6) {
+                BigFiveGauge(label: "O", value: bigFive.openness)
+                BigFiveGauge(label: "C", value: bigFive.conscientiousness)
+                BigFiveGauge(label: "E", value: bigFive.extraversion)
+                BigFiveGauge(label: "A", value: bigFive.agreeableness)
+                BigFiveGauge(label: "N", value: bigFive.neuroticism)
+            }
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(PrototypePalette.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(PrototypePalette.rule, lineWidth: 1)
+        )
     }
 
     private var placementPreview: some View {
@@ -293,35 +331,34 @@ struct ReflectionPrototypeView: View {
     }
 
     private var signalValue: String {
+        let profile = appState.activeSlice.profile
         switch selectedSignal {
-        case "Pace":
-            return appState.activeSlice.profile.emotionalRhythm.capitalized
-        case "Trust":
-            return "Slow trust"
-        default:
-            return appState.activeSlice.profile.communicationStyle.capitalized
+        case "Energy": return profile.emotionalRhythm.capitalized
+        case "Trust": return profile.relationshipIntent.capitalized
+        default: return profile.communicationStyle.capitalized
         }
     }
 
     private var signalDetail: String {
+        let signals = appState.slice?.signals
         switch selectedSignal {
-        case "Pace":
-            return "The room should move deliberately, with space to think before intensity."
+        case "Energy":
+            if let energy = signals?.socialEnergy { return "Social energy: \(energy). The room pacing should match this rhythm." }
+            return "How much social energy you bring — from low-key presence to high-energy engagement."
         case "Trust":
-            return "Placement should ask for confirmation before exposing sensitive fit."
+            if let trust = signals?.trustPattern { return "Trust pattern: \(trust). Placement should respect this pace." }
+            return "How quickly you open up — from cautious and earned to fast and generous trust."
         default:
-            return "The conversation points toward warm, direct, emotionally honest rooms."
+            if let style = signals?.communicationStyle?.primary { return "Primary style: \(style). Conversations flow most naturally this way." }
+            return "How you communicate — from warm and direct to analytical and reflective."
         }
     }
 
     private var signalIcon: String {
         switch selectedSignal {
-        case "Pace":
-            return "metronome"
-        case "Trust":
-            return "lock.fill"
-        default:
-            return "heart.text.square.fill"
+        case "Energy": return "bolt.heart.fill"
+        case "Trust": return "lock.shield.fill"
+        default: return "text.bubble.fill"
         }
     }
 }
@@ -481,5 +518,32 @@ private struct EmptyVoiceSignalRow: View {
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .stroke(PrototypePalette.rule, lineWidth: 1)
         )
+    }
+}
+
+private struct BigFiveGauge: View {
+    let label: String
+    let value: Double
+
+    var body: some View {
+        VStack(spacing: 4) {
+            ZStack {
+                Circle()
+                    .stroke(PrototypePalette.rule, lineWidth: 3)
+                    .frame(width: 36, height: 36)
+                Circle()
+                    .trim(from: 0, to: value)
+                    .stroke(PrototypePalette.accent, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+                    .frame(width: 36, height: 36)
+                    .rotationEffect(.degrees(-90))
+                Text(label)
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(PrototypePalette.ink)
+            }
+            Text("\(Int(value * 100))")
+                .font(.system(size: 10, weight: .medium))
+                .foregroundStyle(PrototypePalette.subink)
+        }
+        .frame(maxWidth: .infinity)
     }
 }
