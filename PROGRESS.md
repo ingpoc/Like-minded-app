@@ -21,7 +21,7 @@
 
 - [x] ✅ Add SQLite persistence (profiles, circles, placements, transcripts)
 - [x] ✅ Add device auth (anonymous UUID, then Sign in with Apple)
-- [ ] ❌ Wire voice transcript auto-submission: when voice session ends, POST transcript to `/v1/discover`, store result
+- [x] ✅ Wire voice transcript auto-submission: when voice session ends, POST transcript to `/v1/discover`, store result
 - [ ] ❌ Build profile review/edit screen so user can see and correct AI signals
 - [ ] ❌ Store OpenAI API key in .env, load via dotenv (currently hardcoded in RealtimeVoiceClient)
 

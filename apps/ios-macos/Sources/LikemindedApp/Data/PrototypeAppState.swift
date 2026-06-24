@@ -322,6 +322,13 @@ final class PrototypeAppState: ObservableObject {
                 capturedVoiceSignals = signals
             }
         }
+
+        // Auto-submit transcript when voice session ends with content
+        if update.phase == .stopped && !realtimeTranscript.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            Task {
+                await createProfileFromInterview()
+            }
+        }
     }
 
     private static func signals(from transcript: String) -> [String] {
