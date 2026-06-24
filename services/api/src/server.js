@@ -12,6 +12,7 @@ const {
   shouldCreateNewCircle,
   createCircleFromProfile
 } = require("./lib/architecture");
+const { savePlacement, getAllPlacements, getPlacementsByProfile, saveTranscript } = require("./lib/db");
 
 function loadLocalEnv() {
   const envPath = path.resolve(process.cwd(), ".env.local");
@@ -88,7 +89,10 @@ async function handleRequest(req, res) {
   const url = new URL(req.url, `http://${req.headers.host || `${HOST}:${PORT}`}`);
 
   if (req.method === "GET" && url.pathname === "/health") {
-    json(res, 200, { status: "ok", service: "likeminded-api", version: "0.1.0" });
+    const { DB_PATH } = require("./lib/db");
+    const fs = require("node:fs");
+    const dbExists = fs.existsSync(DB_PATH);
+    json(res, 200, { status: "ok", service: "likeminded-api", version: "0.1.0", db: dbExists ? "sqlite" : "none", dbPath: DB_PATH });
     return;
   }
 
@@ -199,6 +203,10 @@ async function handleRequest(req, res) {
       const createNew = shouldCreateNewCircle(profile.signals, fits);
       const placement = buildPlacement(profile);
 
+      // Persist placement and transcript
+      savePlacement({ ...placement, profileId: profile.profileId });
+      if (interviewTranscript) saveTranscript(interviewTranscript, profile.profileId);
+
       json(res, 200, {
         profileId: profile.profileId,
         signals: profile.signals,
@@ -289,8 +297,22 @@ async function handleRequest(req, res) {
     return;
   }
 
+  // GET /v1/placements — list all saved placements
+  if (req.method === "GET" && url.pathname === "/v1/placements") {
+    const placementList = getAllPlacements();
+    json(res, 200, { placements: placementList });
+    return;
+  }
+
+  // GET /v1/placements/:profileId — placements for a specific profile
+  if (req.method === "GET" && url.pathname.startsWith("/v1/placements/")) {
+    const profileId = decodeURIComponent(url.pathname.split("/").pop());
+    const placementList = getPlacementsByProfile(profileId);
+    json(res, 200, { placements: placementList });
+    return;
+  }
+
   // ---------------------------------------------------------------------------
-  // Legacy MVP reflect-place-connect (kept for backward compat)
   // ---------------------------------------------------------------------------
 
   if (req.method === "POST" && url.pathname === "/v1/profiles/synthesize") {

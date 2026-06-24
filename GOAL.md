@@ -35,19 +35,18 @@ Gurusharan is the first user. The app should work for a single user doing voice 
 - **Repo:** https://github.com/ingpoc/Like-minded-app
 
 ## Current State
-
 As of 2026-06-24:
 - Voice profiling works end-to-end (WebRTC connects, transcript captured)
 - Server has profile matching and circle placement logic
 - iOS app has 3-tab prototype with voice hero, placement cards, connections view
-- All data is in-memory — nothing persists across server restarts
-- No auth, no database, no chat, no communities, no meetings
+- SQLite persistence active — profiles, circles, placements, transcripts survive restarts
+- No auth, no chat, no communities, no meetings
 
 ## What Needs to Happen
 
 See **PROGRESS.md** for the full roadmap with checkboxes. Summary:
 
-1. **Phase 1 — Foundation:** SQLite persistence, auth, wire profile pipeline, profile review UI
+1. **Phase 1 — Foundation:** ~~SQLite persistence~~ ✅ done, device auth, wire profile pipeline, profile review UI
 2. **Phase 2 — Core Loop:** Fix nav, end-to-end profile → circle flow, living profile updates
 3. **Phase 3 — Social Layer:** Chat, communities, meetings, host evaluation
 4. **Phase 4 — Production:** Safety/moderation, subscriptions, notifications, deployment, AI-powered reasoning

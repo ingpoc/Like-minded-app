@@ -11,15 +11,15 @@
 - iOS app has 3-tab prototype (Place / Talk / Connect)
 - 5 archetype circles seeded, keyword-based personality extraction works
 - GitHub repo live at https://github.com/ingpoc/Like-minded-app
-- **Profile not persisted** — server uses in-memory storage, lost on restart
+- **SQLite persistence active** — profiles, circles, placements, transcripts survive restarts
 - **No auth** — no user identity
-- **No database** — all data ephemeral
+- **No database** — ~~all data ephemeral~~ → SQLite now persistent
 
 ---
 
 ## Phase 1 — Foundation
 
-- [ ] ❌ Add SQLite persistence (profiles, circles, placements, transcripts)
+- [x] ✅ Add SQLite persistence (profiles, circles, placements, transcripts)
 - [ ] ❌ Add device auth (anonymous UUID, then Sign in with Apple)
 - [ ] ❌ Wire voice transcript auto-submission: when voice session ends, POST transcript to `/v1/discover`, store result
 - [ ] ❌ Build profile review/edit screen so user can see and correct AI signals
@@ -65,6 +65,7 @@
 - [x] Accept / swap / defer placement actions
 - [x] Circle swap and deferred circle suggestions
 - [x] Design system tokens (colors, typography, spacing)
+- [x] SQLite persistence (profiles, circles, placements, transcripts) via better-sqlite3
 
 ### iOS App (SwiftUI)
 - [x] App entry point and root navigation

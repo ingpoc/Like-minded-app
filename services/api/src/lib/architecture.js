@@ -1,3 +1,5 @@
+const { DBMap, getDb } = require("./db");
+
 const architecture = {
   principle: "AI interprets, backend controls, database persists.",
   mainComponents: [
@@ -219,20 +221,24 @@ const CIRCLE_ARCHETYPES = [
 // ---------------------------------------------------------------------------
 // In-memory stores
 // ---------------------------------------------------------------------------
+// Persistent stores (SQLite-backed, survive server restarts)
+const profiles = new DBMap("profiles", getDb());
+const circles = new DBMap("circles", getDb());
 
-const profiles = new Map(); // id -> profile
-const circles = new Map();   // id -> circle id -> { members: [profileId], createdAt }
-
-// Seed initial circles from archetypes
+// Seed initial circles from archetypes (only if DB is empty)
 function seedCircles() {
-  for (const archetype of CIRCLE_ARCHETYPES) {
-    circles.set(archetype.id, {
-      ...archetype,
-      members: [],
-      createdAt: new Date().toISOString(),
-      isArchetype: true
-    });
-  }
+  if (circles.size > 0) return; // already seeded
+  const txn = getDb().transaction(() => {
+    for (const archetype of CIRCLE_ARCHETYPES) {
+      circles.set(archetype.id, {
+        ...archetype,
+        members: [],
+        createdAt: new Date().toISOString(),
+        isArchetype: true,
+      });
+    }
+  });
+  txn();
 }
 seedCircles();
 
@@ -490,10 +496,11 @@ function buildPlacement(profile) {
   // Find secondary circles
   const secondaryCircles = fits.slice(1, 4).filter(f => f.score > 0.4).map(f => f.circle);
 
-  // Add profile to circle members
+  // Add profile to circle members and persist
   const circleData = circles.get(primaryCircle.id);
   if (circleData) {
     circleData.members.push(profile.profileId);
+    circles.set(primaryCircle.id, circleData); // persist mutation
   }
 
   return {
