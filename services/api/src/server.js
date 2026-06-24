@@ -12,7 +12,7 @@ const {
   shouldCreateNewCircle,
   createCircleFromProfile
 } = require("./lib/architecture");
-const { savePlacement, getAllPlacements, getPlacementsByProfile, saveTranscript } = require("./lib/db");
+const { savePlacement, getAllPlacements, getPlacementsByProfile, saveTranscript, registerDevice, getDevice, getProfilesByDevice } = require("./lib/db");
 
 function loadLocalEnv() {
   const envPath = path.resolve(process.cwd(), ".env.local");
@@ -93,6 +93,57 @@ async function handleRequest(req, res) {
     const fs = require("node:fs");
     const dbExists = fs.existsSync(DB_PATH);
     json(res, 200, { status: "ok", service: "likeminded-api", version: "0.1.0", db: dbExists ? "sqlite" : "none", dbPath: DB_PATH });
+    return;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Device auth (anonymous UUID)
+  // ---------------------------------------------------------------------------
+
+  // POST /v1/auth/device — register or refresh a device, returns device record
+  if (req.method === "POST" && url.pathname === "/v1/auth/device") {
+    try {
+      const body = await readJsonBody(req);
+      const deviceId = body?.deviceId;
+      if (!deviceId || typeof deviceId !== "string" || deviceId.length < 8) {
+        json(res, 400, { error: "invalid_device_id", message: "deviceId must be a string of at least 8 characters." });
+        return;
+      }
+      const device = registerDevice(deviceId);
+      json(res, 200, { device });
+    } catch (error) {
+      json(res, 500, { error: "device_registration_failed", message: error.message });
+    }
+    return;
+  }
+
+  // GET /v1/auth/device — get device info from X-Device-Id header
+  if (req.method === "GET" && url.pathname === "/v1/auth/device") {
+    const deviceId = req.headers["x-device-id"];
+    if (!deviceId) {
+      json(res, 400, { error: "missing_device_id", message: "Send X-Device-Id header." });
+      return;
+    }
+    const device = getDevice(deviceId);
+    if (!device) {
+      json(res, 404, { error: "device_not_found", message: "Unknown device. POST /v1/auth/device to register." });
+      return;
+    }
+    json(res, 200, { device });
+    return;
+  }
+
+  // GET /v1/devices/:id/profiles — all profiles belonging to a device
+  if (req.method === "GET" && url.pathname.startsWith("/v1/devices/") && url.pathname.endsWith("/profiles")) {
+    const parts = url.pathname.split("/");
+    const deviceId = decodeURIComponent(parts[3]);
+    const device = getDevice(deviceId);
+    if (!device) {
+      json(res, 404, { error: "device_not_found", message: `No device found for id: ${deviceId}` });
+      return;
+    }
+    const deviceProfiles = getProfilesByDevice(deviceId);
+    json(res, 200, { deviceId, profiles: deviceProfiles });
     return;
   }
 
@@ -197,7 +248,9 @@ async function handleRequest(req, res) {
     try {
       const body = await readJsonBody(req);
       const { interviewTranscript, reflectionAnswers } = body || {};
+      const deviceId = req.headers["x-device-id"] || "";
       const profile = buildProfileFromInterview(interviewTranscript || "", reflectionAnswers || []);
+      profile.deviceId = deviceId;
       profiles.set(profile.profileId, profile);
       const fits = matchCircles(profile.signals);
       const createNew = shouldCreateNewCircle(profile.signals, fits);

@@ -40,13 +40,14 @@ As of 2026-06-24:
 - Server has profile matching and circle placement logic
 - iOS app has 3-tab prototype with voice hero, placement cards, connections view
 - SQLite persistence active — profiles, circles, placements, transcripts survive restarts
+- Device auth active — anonymous UUID in Keychain, X-Device-Id on all API calls
 - No auth, no chat, no communities, no meetings
 
 ## What Needs to Happen
 
 See **PROGRESS.md** for the full roadmap with checkboxes. Summary:
 
-1. **Phase 1 — Foundation:** ~~SQLite persistence~~ ✅ done, device auth, wire profile pipeline, profile review UI
+1. **Phase 1 — Foundation:** ~~SQLite persistence~~ ✅ done, ~~device auth~~ ✅ done, wire profile pipeline, profile review UI
 2. **Phase 2 — Core Loop:** Fix nav, end-to-end profile → circle flow, living profile updates
 3. **Phase 3 — Social Layer:** Chat, communities, meetings, host evaluation
 4. **Phase 4 — Production:** Safety/moderation, subscriptions, notifications, deployment, AI-powered reasoning

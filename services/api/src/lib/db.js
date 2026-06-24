@@ -28,10 +28,17 @@ function migrate(conn) {
   conn.exec(`
     CREATE TABLE IF NOT EXISTS profiles (
       id TEXT PRIMARY KEY,
+      device_id TEXT DEFAULT '',
       signals TEXT NOT NULL,
       source_interview TEXT DEFAULT '',
       source_reflections TEXT DEFAULT '[]',
       synthesized_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS devices (
+      id TEXT PRIMARY KEY,
+      created_at TEXT NOT NULL,
+      last_seen_at TEXT NOT NULL
     );
 
     CREATE TABLE IF NOT EXISTS circles (
@@ -80,12 +87,13 @@ class DBMap {
       return {
         get: this.conn.prepare("SELECT * FROM profiles WHERE id = ?"),
         set: this.conn.prepare(
-          "INSERT OR REPLACE INTO profiles (id, signals, source_interview, source_reflections, synthesized_at) VALUES (?, ?, ?, ?, ?)"
+          "INSERT OR REPLACE INTO profiles (id, device_id, signals, source_interview, source_reflections, synthesized_at) VALUES (?, ?, ?, ?, ?, ?)"
         ),
         has: this.conn.prepare("SELECT 1 FROM profiles WHERE id = ?"),
         delete: this.conn.prepare("DELETE FROM profiles WHERE id = ?"),
         all: this.conn.prepare("SELECT * FROM profiles"),
         count: this.conn.prepare("SELECT COUNT(*) as n FROM profiles"),
+        byDevice: this.conn.prepare("SELECT * FROM profiles WHERE device_id = ? ORDER BY synthesized_at DESC"),
       };
     }
     if (this.table === "circles") {
@@ -115,6 +123,7 @@ class DBMap {
     if (this.table === "profiles") {
       return {
         profileId: row.id,
+        deviceId: row.device_id || "",
         signals: JSON.parse(row.signals),
         sourceInput: {
           interviewExcerpt: row.source_interview,
@@ -134,6 +143,7 @@ class DBMap {
     if (this.table === "profiles") {
       return [
         id,
+        obj.deviceId || "",
         JSON.stringify(obj.signals),
         obj.sourceInput?.interviewExcerpt || "",
         JSON.stringify(obj.sourceInput?.reflectionAnswers || []),
@@ -276,6 +286,42 @@ function getTranscriptsByProfile(profileId) {
 }
 
 // ---------------------------------------------------------------------------
+// Device auth (anonymous UUID)
+// ---------------------------------------------------------------------------
+
+function registerDevice(deviceId) {
+  const d = getDb();
+  const now = new Date().toISOString();
+  d.prepare(
+    "INSERT OR IGNORE INTO devices (id, created_at, last_seen_at) VALUES (?, ?, ?)"
+  ).run(deviceId, now, now);
+  d.prepare("UPDATE devices SET last_seen_at = ? WHERE id = ?").run(now, deviceId);
+  return { id: deviceId, createdAt: now, lastSeenAt: now };
+}
+
+function getDevice(deviceId) {
+  const d = getDb();
+  const row = d.prepare("SELECT * FROM devices WHERE id = ?").get(deviceId);
+  if (!row) return null;
+  return { id: row.id, createdAt: row.created_at, lastSeenAt: row.last_seen_at };
+}
+
+function getProfilesByDevice(deviceId) {
+  const d = getDb();
+  const rows = d.prepare("SELECT * FROM profiles WHERE device_id = ? ORDER BY synthesized_at DESC").all(deviceId);
+  return rows.map((row) => ({
+    profileId: row.id,
+    deviceId: row.device_id,
+    signals: JSON.parse(row.signals),
+    sourceInput: {
+      interviewExcerpt: row.source_interview,
+      reflectionAnswers: JSON.parse(row.source_reflections),
+    },
+    synthesizedAt: row.synthesized_at,
+  }));
+}
+
+// ---------------------------------------------------------------------------
 // Export
 // ---------------------------------------------------------------------------
 
@@ -287,5 +333,8 @@ module.exports = {
   getAllPlacements,
   saveTranscript,
   getTranscriptsByProfile,
+  registerDevice,
+  getDevice,
+  getProfilesByDevice,
   DB_PATH,
 };

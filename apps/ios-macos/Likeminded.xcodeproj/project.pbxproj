@@ -21,6 +21,7 @@
 		D0960611CC66E6642F609ACD /* ProfilePrototypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75C0F95C041A6C7D0D328202 /* ProfilePrototypeView.swift */; };
 		E5F05FF2F77CDC1BC4866782 /* PrototypeComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83237B0C66BA3537CAB89B87 /* PrototypeComponents.swift */; };
 		F278DF831E8C66D2F941194F /* TodayPrototypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DCC1BCF1EB18B6214EB4BAA /* TodayPrototypeView.swift */; };
+		A1B2C3D4E5F6789012345678 /* DeviceIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F678901234567890 /* DeviceIdentity.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +35,7 @@
 		83237B0C66BA3537CAB89B87 /* PrototypeComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrototypeComponents.swift; sourceTree = "<group>"; };
 		8C8C121E18E6BF523CE92D82 /* PrototypeModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrototypeModels.swift; sourceTree = "<group>"; };
 		C615B2CB5D4009DE9EDF7F48 /* PrototypeAppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrototypeAppState.swift; sourceTree = "<group>"; };
+		B2C3D4E5F678901234567890 /* DeviceIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceIdentity.swift; sourceTree = "<group>"; };
 		C716780C8187703C6E293080 /* PrototypeData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrototypeData.swift; sourceTree = "<group>"; };
 		CF864D6E37CD7289F92855DF /* CommunitiesPrototypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunitiesPrototypeView.swift; sourceTree = "<group>"; };
 		D45755761E85787C57C41A25 /* ConnectionsPrototypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionsPrototypeView.swift; sourceTree = "<group>"; };
@@ -82,6 +84,7 @@
 		5F31523F0AEAFBCBC911930E /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				B2C3D4E5F678901234567890 /* DeviceIdentity.swift */,
 				63DCB9E92C74E864B793C207 /* LikemindedAPIClient.swift */,
 				C615B2CB5D4009DE9EDF7F48 /* PrototypeAppState.swift */,
 				C716780C8187703C6E293080 /* PrototypeData.swift */,
@@ -193,6 +196,7 @@
 			files = (
 				8D27A1FA539B87B3019798C6 /* CommunitiesPrototypeView.swift in Sources */,
 				8C69E8A6029B43AC474DCD58 /* ConnectionsPrototypeView.swift in Sources */,
+				A1B2C3D4E5F6789012345678 /* DeviceIdentity.swift in Sources */,
 				9991EE71916006E89457B6E5 /* LikemindedAPIClient.swift in Sources */,
 				638037123B69B011D78BF5A7 /* LikemindedApp.swift in Sources */,
 				D0960611CC66E6642F609ACD /* ProfilePrototypeView.swift in Sources */,

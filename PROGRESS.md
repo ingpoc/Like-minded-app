@@ -20,7 +20,7 @@
 ## Phase 1 — Foundation
 
 - [x] ✅ Add SQLite persistence (profiles, circles, placements, transcripts)
-- [ ] ❌ Add device auth (anonymous UUID, then Sign in with Apple)
+- [x] ✅ Add device auth (anonymous UUID, then Sign in with Apple)
 - [ ] ❌ Wire voice transcript auto-submission: when voice session ends, POST transcript to `/v1/discover`, store result
 - [ ] ❌ Build profile review/edit screen so user can see and correct AI signals
 - [ ] ❌ Store OpenAI API key in .env, load via dotenv (currently hardcoded in RealtimeVoiceClient)
@@ -66,6 +66,7 @@
 - [x] Circle swap and deferred circle suggestions
 - [x] Design system tokens (colors, typography, spacing)
 - [x] SQLite persistence (profiles, circles, placements, transcripts) via better-sqlite3
+- [x] Device auth (anonymous UUID via Keychain, X-Device-Id header on all API calls)
 
 ### iOS App (SwiftUI)
 - [x] App entry point and root navigation
@@ -79,6 +80,7 @@
 - [x] Circle selector with secondary options
 - [x] Basic animations and entrance transitions
 - [x] Design system components (FeatureCard, PrimaryActionButton, etc.)
+- [x] DeviceIdentity — anonymous UUID in Keychain, sent on all API calls
 
 ### Design & Docs
 - [x] Product direction document

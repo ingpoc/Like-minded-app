@@ -23,11 +23,14 @@ struct CircleFitScore: Decodable, Identifiable {
 struct LikemindedAPIClient {
     var baseURL = URL(string: "http://127.0.0.1:8787")!
 
+    private let deviceId = DeviceIdentity.current
+
     func createRealtimeSession(safetyIdentifier: String) async throws -> RealtimeSessionEnvelope {
         let url = baseURL.appendingPathComponent("/v1/realtime/session")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "content-type")
+        request.setValue(deviceId, forHTTPHeaderField: "X-Device-Id")
         request.httpBody = try JSONEncoder().encode(
             RealtimeSessionRequest(safetyIdentifier: safetyIdentifier)
         )
@@ -42,6 +45,7 @@ struct LikemindedAPIClient {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/sdp", forHTTPHeaderField: "content-type")
+        request.setValue(deviceId, forHTTPHeaderField: "X-Device-Id")
         request.httpBody = sdpOffer.data(using: .utf8)
 
         let (data, response) = try await URLSession.shared.data(for: request)
@@ -58,6 +62,7 @@ struct LikemindedAPIClient {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "content-type")
+        request.setValue(deviceId, forHTTPHeaderField: "X-Device-Id")
         request.httpBody = try JSONEncoder().encode(
             ReflectPlaceConnectRequest(reflectionAnswers: reflectionAnswers)
         )
@@ -75,6 +80,7 @@ struct LikemindedAPIClient {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "content-type")
+        request.setValue(deviceId, forHTTPHeaderField: "X-Device-Id")
         request.httpBody = try JSONEncoder().encode(
             ProfileCircleMatchRequest(
                 interviewTranscript: interviewTranscript,
