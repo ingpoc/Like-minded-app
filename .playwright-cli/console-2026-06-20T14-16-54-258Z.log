@@ -1,0 +1,4 @@
+[     212ms] [WARNING] GSAP target .edge not found. https://gsap.com @ https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js:9
+[     212ms] [WARNING] GSAP target  not found. https://gsap.com @ https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js:9
+[     225ms] [WARNING] GSAP target  not found. https://gsap.com @ https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js:9
+[     240ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://127.0.0.1:8765/favicon.ico:0

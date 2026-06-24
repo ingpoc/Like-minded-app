@@ -1,0 +1,14 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: Project context graph
+      - heading "Durable decisions, visible." [level=1] [ref=e6]
+      - paragraph [ref=e7]: Every active durable decision is a node. Relationships appear only when the graph has explicit evidence; category and source remain inspectable metadata.
+    - generic [ref=e8]:
+      - generic [ref=e9]: "Generated: 2026-06-20T14:18:08+00:00"
+      - generic [ref=e10]: "DB: /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/.context-graph/graph.db"
+      - generic [ref=e11]: "Checkpoints: candidates 4, promoted 4"
+  - option "Active decision graph" [selected]
+  - option "Task query preview"
+  - option "Diagnostics"
+  - main [ref=e13]

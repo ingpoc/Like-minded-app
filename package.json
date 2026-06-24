@@ -1,0 +1,15 @@
+{
+  "name": "likeminded",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Project spine for the Likeminded iOS/macOS app, backend, AI orchestration, and shared schemas.",
+  "scripts": {
+    "dev:api": "node services/api/src/server.js",
+    "dev:api:realtime-test": "OPENAI_REALTIME_MODEL=gpt-realtime-1.5 node services/api/src/server.js",
+    "dev:ai": "node services/ai-orchestrator/src/index.js",
+    "check": "node --check services/api/src/server.js && node --check services/ai-orchestrator/src/index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

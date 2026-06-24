@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://likeminded.local/schemas/profile-signal.schema.json",
+  "title": "ProfileSignal",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "profileId",
+    "values",
+    "communicationStyle",
+    "emotionalRhythm",
+    "relationshipIntent",
+    "interests",
+    "privacy"
+  ],
+  "properties": {
+    "profileId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "values": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "communicationStyle": {
+      "type": "string",
+      "minLength": 1
+    },
+    "emotionalRhythm": {
+      "type": "string",
+      "minLength": 1
+    },
+    "relationshipIntent": {
+      "type": "string",
+      "minLength": 1
+    },
+    "interests": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "privacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "aiReflectionVisibleToUser",
+        "matchExplanationVisibleToMatches"
+      ],
+      "properties": {
+        "aiReflectionVisibleToUser": {
+          "type": "boolean"
+        },
+        "matchExplanationVisibleToMatches": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

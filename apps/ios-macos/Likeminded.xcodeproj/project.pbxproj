@@ -1,0 +1,433 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1434DA300C4A5A2400A859A3 /* PrototypeModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8C121E18E6BF523CE92D82 /* PrototypeModels.swift */; };
+		399834A377ADFBCE54D30DF9 /* PrototypeAppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C615B2CB5D4009DE9EDF7F48 /* PrototypeAppState.swift */; };
+		3FC6508C115AA08A823B19CB /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71F1782CC0FAAD3C06C76E5C /* RootView.swift */; };
+		5F0E79024B1B152EBBD80D88 /* LiveKitWebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 02402CF435BA0C350E109525 /* LiveKitWebRTC */; };
+		638037123B69B011D78BF5A7 /* LikemindedApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 704749A39D4B879E03561B1B /* LikemindedApp.swift */; };
+		84146F27670847A18F01957F /* PrototypeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C716780C8187703C6E293080 /* PrototypeData.swift */; };
+		8C69E8A6029B43AC474DCD58 /* ConnectionsPrototypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45755761E85787C57C41A25 /* ConnectionsPrototypeView.swift */; };
+		8D27A1FA539B87B3019798C6 /* CommunitiesPrototypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF864D6E37CD7289F92855DF /* CommunitiesPrototypeView.swift */; };
+		94B8BB90A08111BEB7490EEE /* RealtimeVoiceClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70685EA3FAE20FBC4827812B /* RealtimeVoiceClient.swift */; };
+		9991EE71916006E89457B6E5 /* LikemindedAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DCB9E92C74E864B793C207 /* LikemindedAPIClient.swift */; };
+		BE4F826A0A1C866F945B5AAB /* SettingsPrototypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11E3DAEAEA4F6D6B35D2D32 /* SettingsPrototypeView.swift */; };
+		D0960611CC66E6642F609ACD /* ProfilePrototypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75C0F95C041A6C7D0D328202 /* ProfilePrototypeView.swift */; };
+		E5F05FF2F77CDC1BC4866782 /* PrototypeComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83237B0C66BA3537CAB89B87 /* PrototypeComponents.swift */; };
+		F278DF831E8C66D2F941194F /* TodayPrototypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DCC1BCF1EB18B6214EB4BAA /* TodayPrototypeView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		3DCC1BCF1EB18B6214EB4BAA /* TodayPrototypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayPrototypeView.swift; sourceTree = "<group>"; };
+		583CD7AF0A74916366CBF8AF /* Likeminded.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Likeminded.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		63DCB9E92C74E864B793C207 /* LikemindedAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikemindedAPIClient.swift; sourceTree = "<group>"; };
+		704749A39D4B879E03561B1B /* LikemindedApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikemindedApp.swift; sourceTree = "<group>"; };
+		70685EA3FAE20FBC4827812B /* RealtimeVoiceClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeVoiceClient.swift; sourceTree = "<group>"; };
+		71F1782CC0FAAD3C06C76E5C /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		75C0F95C041A6C7D0D328202 /* ProfilePrototypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePrototypeView.swift; sourceTree = "<group>"; };
+		83237B0C66BA3537CAB89B87 /* PrototypeComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrototypeComponents.swift; sourceTree = "<group>"; };
+		8C8C121E18E6BF523CE92D82 /* PrototypeModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrototypeModels.swift; sourceTree = "<group>"; };
+		C615B2CB5D4009DE9EDF7F48 /* PrototypeAppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrototypeAppState.swift; sourceTree = "<group>"; };
+		C716780C8187703C6E293080 /* PrototypeData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrototypeData.swift; sourceTree = "<group>"; };
+		CF864D6E37CD7289F92855DF /* CommunitiesPrototypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunitiesPrototypeView.swift; sourceTree = "<group>"; };
+		D45755761E85787C57C41A25 /* ConnectionsPrototypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionsPrototypeView.swift; sourceTree = "<group>"; };
+		E11E3DAEAEA4F6D6B35D2D32 /* SettingsPrototypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPrototypeView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		449AA7D95920A86B8CAF77C4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5F0E79024B1B152EBBD80D88 /* LiveKitWebRTC in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1863FE912792BAD85E72E5C6 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				8C8C121E18E6BF523CE92D82 /* PrototypeModels.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		2AF6FB985DD25FA903FB6549 /* LikemindedApp */ = {
+			isa = PBXGroup;
+			children = (
+				704749A39D4B879E03561B1B /* LikemindedApp.swift */,
+				5F31523F0AEAFBCBC911930E /* Data */,
+				1863FE912792BAD85E72E5C6 /* Models */,
+				F36F7D893B50517CB495A8F7 /* Views */,
+			);
+			path = LikemindedApp;
+			sourceTree = "<group>";
+		};
+		4AC2D9EA82E8721EDE36BEF0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				583CD7AF0A74916366CBF8AF /* Likeminded.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5F31523F0AEAFBCBC911930E /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				63DCB9E92C74E864B793C207 /* LikemindedAPIClient.swift */,
+				C615B2CB5D4009DE9EDF7F48 /* PrototypeAppState.swift */,
+				C716780C8187703C6E293080 /* PrototypeData.swift */,
+				70685EA3FAE20FBC4827812B /* RealtimeVoiceClient.swift */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		6226DDE8442F9FB130F5B0EB /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				83237B0C66BA3537CAB89B87 /* PrototypeComponents.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		8627695CDDC29EEF1FF08223 = {
+			isa = PBXGroup;
+			children = (
+				9DF60F32DDF0F8B7C3C61E6E /* Sources */,
+				4AC2D9EA82E8721EDE36BEF0 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		9DF60F32DDF0F8B7C3C61E6E /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				2AF6FB985DD25FA903FB6549 /* LikemindedApp */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		F36F7D893B50517CB495A8F7 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				CF864D6E37CD7289F92855DF /* CommunitiesPrototypeView.swift */,
+				D45755761E85787C57C41A25 /* ConnectionsPrototypeView.swift */,
+				75C0F95C041A6C7D0D328202 /* ProfilePrototypeView.swift */,
+				71F1782CC0FAAD3C06C76E5C /* RootView.swift */,
+				E11E3DAEAEA4F6D6B35D2D32 /* SettingsPrototypeView.swift */,
+				3DCC1BCF1EB18B6214EB4BAA /* TodayPrototypeView.swift */,
+				6226DDE8442F9FB130F5B0EB /* Shared */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		7EDE60F74566683E3AA458E5 /* Likeminded */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7B9C2F030D068FADE55668D8 /* Build configuration list for PBXNativeTarget "Likeminded" */;
+			buildPhases = (
+				64916A6A468D989A15A23A1E /* Sources */,
+				449AA7D95920A86B8CAF77C4 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Likeminded;
+			packageProductDependencies = (
+				02402CF435BA0C350E109525 /* LiveKitWebRTC */,
+			);
+			productName = Likeminded;
+			productReference = 583CD7AF0A74916366CBF8AF /* Likeminded.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		726B5931987AB0A77FD160B7 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					7EDE60F74566683E3AA458E5 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 38B34F465C3B07C608BFA4CE /* Build configuration list for PBXProject "Likeminded" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 8627695CDDC29EEF1FF08223;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				6BB75A61C4F513F69EAB14AF /* XCRemoteSwiftPackageReference "webrtc-xcframework" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 4AC2D9EA82E8721EDE36BEF0 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7EDE60F74566683E3AA458E5 /* Likeminded */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		64916A6A468D989A15A23A1E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D27A1FA539B87B3019798C6 /* CommunitiesPrototypeView.swift in Sources */,
+				8C69E8A6029B43AC474DCD58 /* ConnectionsPrototypeView.swift in Sources */,
+				9991EE71916006E89457B6E5 /* LikemindedAPIClient.swift in Sources */,
+				638037123B69B011D78BF5A7 /* LikemindedApp.swift in Sources */,
+				D0960611CC66E6642F609ACD /* ProfilePrototypeView.swift in Sources */,
+				399834A377ADFBCE54D30DF9 /* PrototypeAppState.swift in Sources */,
+				E5F05FF2F77CDC1BC4866782 /* PrototypeComponents.swift in Sources */,
+				84146F27670847A18F01957F /* PrototypeData.swift in Sources */,
+				1434DA300C4A5A2400A859A3 /* PrototypeModels.swift in Sources */,
+				94B8BB90A08111BEB7490EEE /* RealtimeVoiceClient.swift in Sources */,
+				3FC6508C115AA08A823B19CB /* RootView.swift in Sources */,
+				BE4F826A0A1C866F945B5AAB /* SettingsPrototypeView.swift in Sources */,
+				F278DF831E8C66D2F941194F /* TodayPrototypeView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		02BF4763A35658FC3335D8AE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		B1B23D79A8E1C6299343E9DF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "\"\"";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Likeminded;
+				INFOPLIST_KEY_LSRequiresIPhoneOS = YES;
+				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsLocalNetworking = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Likeminded uses your voice to build private profile signals and suggest a starter circle.";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.likeminded.prototype;
+				PRODUCT_NAME = Likeminded;
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		CA7F5173AD605CCB129205C2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		E6BD9CBCF3DABBFEDC024CC3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "\"\"";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Likeminded;
+				INFOPLIST_KEY_LSRequiresIPhoneOS = YES;
+				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsLocalNetworking = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Likeminded uses your voice to build private profile signals and suggest a starter circle.";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.likeminded.prototype;
+				PRODUCT_NAME = Likeminded;
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		38B34F465C3B07C608BFA4CE /* Build configuration list for PBXProject "Likeminded" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CA7F5173AD605CCB129205C2 /* Debug */,
+				02BF4763A35658FC3335D8AE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		7B9C2F030D068FADE55668D8 /* Build configuration list for PBXNativeTarget "Likeminded" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B1B23D79A8E1C6299343E9DF /* Debug */,
+				E6BD9CBCF3DABBFEDC024CC3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		6BB75A61C4F513F69EAB14AF /* XCRemoteSwiftPackageReference "webrtc-xcframework" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/livekit/webrtc-xcframework.git";
+			requirement = {
+				kind = exactVersion;
+				version = 144.7559.10;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		02402CF435BA0C350E109525 /* LiveKitWebRTC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6BB75A61C4F513F69EAB14AF /* XCRemoteSwiftPackageReference "webrtc-xcframework" */;
+			productName = LiveKitWebRTC;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 726B5931987AB0A77FD160B7 /* Project object */;
+}

@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://likeminded.local/schemas/reflect-place-connect.schema.json",
+  "title": "ReflectPlaceConnectSlice",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["journey", "profile", "starterCircles", "connectionPath", "confirmation"],
+  "properties": {
+    "journey": {
+      "type": "array",
+      "minItems": 3,
+      "items": { "$ref": "#/$defs/journeyStep" }
+    },
+    "profile": { "$ref": "#/$defs/profile" },
+    "starterCircles": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/starterCircle" }
+    },
+    "connectionPath": { "$ref": "#/$defs/connectionPath" },
+    "confirmation": { "$ref": "#/$defs/confirmation" }
+  },
+  "$defs": {
+    "journeyStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "detail", "systemImage"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "title": { "type": "string", "minLength": 1 },
+        "detail": { "type": "string", "minLength": 1 },
+        "systemImage": { "type": "string", "minLength": 1 }
+      }
+    },
+    "profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profileId",
+        "displayName",
+        "values",
+        "communicationStyle",
+        "emotionalRhythm",
+        "relationshipIntent",
+        "interests",
+        "privacy",
+        "reflection"
+      ],
+      "properties": {
+        "profileId": { "type": "string", "minLength": 1 },
+        "displayName": { "type": "string", "minLength": 1 },
+        "values": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "communicationStyle": { "type": "string", "minLength": 1 },
+        "emotionalRhythm": { "type": "string", "minLength": 1 },
+        "relationshipIntent": { "type": "string", "minLength": 1 },
+        "interests": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "privacy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["aiReflectionVisibleToUser", "matchExplanationVisibleToMatches"],
+          "properties": {
+            "aiReflectionVisibleToUser": { "type": "boolean" },
+            "matchExplanationVisibleToMatches": { "type": "boolean" }
+          }
+        },
+        "reflection": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["summary", "strengths", "nextQuestion"],
+          "properties": {
+            "summary": { "type": "string", "minLength": 1 },
+            "strengths": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "nextQuestion": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    },
+    "starterCircle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "communityId",
+        "name",
+        "fit",
+        "fitLabel",
+        "summary",
+        "rationale",
+        "placementReason",
+        "confirmationMode",
+        "membersOnline",
+        "themes"
+      ],
+      "properties": {
+        "communityId": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "fit": { "type": "string", "minLength": 1 },
+        "fitLabel": { "type": "string", "minLength": 1 },
+        "summary": { "type": "string", "minLength": 1 },
+        "rationale": { "type": "string", "minLength": 1 },
+        "placementReason": { "type": "string", "minLength": 1 },
+        "confirmationMode": {
+          "type": "string",
+          "enum": ["auto-place-user-confirm"]
+        },
+        "membersOnline": { "type": "integer", "minimum": 0 },
+        "themes": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "connectionPath": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["matchId", "displayName", "compatibility", "explanation", "nextStep", "consentState"],
+      "properties": {
+        "matchId": { "type": "string", "minLength": 1 },
+        "displayName": { "type": "string", "minLength": 1 },
+        "compatibility": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "explanation": { "type": "string", "minLength": 1 },
+        "nextStep": { "type": "string", "minLength": 1 },
+        "consentState": { "type": "string", "minLength": 1 }
+      }
+    },
+    "confirmation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rule", "primaryAction", "secondaryAction"],
+      "properties": {
+        "rule": {
+          "type": "string",
+          "enum": ["auto-place-user-confirm"]
+        },
+        "primaryAction": { "type": "string", "minLength": 1 },
+        "secondaryAction": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}
