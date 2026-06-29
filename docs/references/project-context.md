@@ -5,8 +5,8 @@ Reference for stable Like-minded-app repo facts. This doc owns current repo evid
 ## Current Evidence
 
 - Workspace path: `/Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app`
-- The checkout began empty and now has a first project spine: `apps/ios-macos`, `services/api`, `services/ai-orchestrator`, `packages/shared-schemas`, `infra`, and `docs`
-- Root `package.json` exists for dependency-light Node checks and the local API health endpoint
+- The checkout now has a TestFlight MVP placement-loop spine: `apps/ios-macos`, `services/api`, `services/ai-orchestrator`, `packages/shared-schemas`, `infra`, deployment config, graders, and docs.
+- Root `package.json` owns deterministic checks, MVP smoke validation, release-config validation, and goal-contract validation.
 - The Node API now has an authenticated MVP placement path: `POST /v1/auth/apple`, protected `POST /v1/discover`, `GET/PATCH /v1/me/profile`, `GET /v1/me/placement`, `POST /v1/me/placement/actions`, and `POST /v1/feedback`.
 - Production persistence target is Neon/Postgres through `DATABASE_URL`; local development and smoke grading use JSON files under `data/` or `LIKEMINDED_DB_DIR`.
 - Mock/profile/recommendation routes still exist for development, but TestFlight placement should use the authenticated `/v1/*` MVP path.
@@ -21,8 +21,8 @@ Reference for stable Like-minded-app repo facts. This doc owns current repo evid
 
 - Do not assume a frontend framework beyond SwiftUI or a backend framework beyond the current Node HTTP service
 - Do not confuse mock routes with production integrations; the authenticated MVP path is the TestFlight path
-- Do not treat the Node health endpoint as the final backend framework decision
-- Do not treat the current iOS simulator target as the final native project strategy
+- Do not replace the current Node HTTP API, Render target, or Neon/Postgres production persistence without explicit acceptance.
+- Do not replace XcodeGen or the current iOS simulator workflow without explicit acceptance.
 - Do not enable `APPLE_AUTH_BYPASS=1` outside local API-only tests
 - Treat simulator voice verification as transport/state verification; real spoken profile-signal quality still needs device or simulator audio-input testing with an audible utterance
 - Do not add project-local agents until the user accepts a recommendation and `workflow summary subagent-playbook` has been checked

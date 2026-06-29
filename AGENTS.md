@@ -9,13 +9,14 @@
 ## Scope
 
 - Like-minded-app workspace.
-- Current checkout evidence is a first project spine: SwiftUI placeholder, Node API health endpoint, AI orchestrator placeholder, shared schema, infra notes, and docs.
-- Do not infer final backend framework, native project generator, database, deployment, auth, or test runner until repo files or user requirements establish them.
+- Current checkout evidence is a TestFlight MVP placement-loop workspace: SwiftUI auth-gated app, Node HTTP API, OpenAI Realtime backend broker, local JSON development store, Render/Neon deployment config, shared schemas, infra notes, and docs.
+- `GOAL.md` owns the ultimate product goal; `PROGRESS.md` owns roadmap state; `goal.json` owns the current per-session goal, graders, rubric, and project-agent model/effort routing.
 - Guidance lives under `docs/` and should load through `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs summary <doc>`.
 
 ## Trigger Map
 
 - BEFORE non-trivial repo work: if a route contract or task hint already names a first command, verify that command first; otherwise run `./script/project_context.sh query --task "<current task>"` and load only the returned durable decisions plus the workflow doc needed for the current lane.
+- BEFORE starting or resuming implementation: read `PROGRESS.md` and `goal.json` after the project-context query.
 - BEFORE build/run/test: verify API server is running (`curl -s http://127.0.0.1:8787/health`) and check env is loaded.
 - BEFORE adding app structure, dependencies, or framework assumptions: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs summary bootstrap-and-discovery`
 - BEFORE changing app/API/AI/schema/infra boundaries: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs summary project-spine`
@@ -39,8 +40,9 @@
 - Treat `./script/project_context.sh query --task "<current task>"` as the primary entrypoint for non-trivial repo work; do not pair it with broad `workflow summary` loading by default.
 - Preserve awareness of what is already loaded in context for the current task; do not repeat retrieval or rerun an equivalent task because another surface mentions the same rule.
 - Global beta tracking can audit maturity, but it does not replace the system's own workflow.
-- Treat `services/api/src/server.js` as a minimal runnable health/mock endpoint, not a final backend-framework decision.
-- Treat `apps/ios-macos/Sources/LikemindedApp/LikemindedApp.swift` as SwiftUI source placeholder until a native project workflow is chosen.
+- Treat `services/api/src/server.js` as the current MVP Node HTTP API surface; do not replace the backend framework or deployment target without explicit acceptance.
+- Treat `apps/ios-macos/project.yml` as the current native project source of truth; regenerate the Xcode project through XcodeGen after project spec changes.
+- Keep `goal.template.json` and `goal.json` current when graders, validation, release files, or project-agent routing change.
 - Add project-specific agents only after user acceptance and repo evidence justify repeated workflows, risk isolation, or cheaper bounded execution.
 - When stack choices, runnable surfaces, or validation commands change, update `docs/references/project-context.md` and `docs/workflows/validation.md` in the same change.
 - When project decision-history, context-graph stack, or validation commands change, update `docs/workflows/context-graph.md`, `docs/references/project-context.md`, and `docs/workflows/validation.md` in the same change.

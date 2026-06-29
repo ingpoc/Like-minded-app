@@ -1,41 +1,34 @@
-# iOS/macOS App
+# iOS App
 
-SwiftUI prototype source for the native Likeminded app shell.
+SwiftUI source for the Likeminded TestFlight MVP placement loop.
 
 ## Current Status
 
-The native surface now contains a multi-file prototype under `Sources/LikemindedApp` with mock screens for:
+- Auth gate uses Sign in with Apple.
+- MVP tabs are `Talk`, `Circles`, and `Profile`.
+- `Talk` uses `RealtimeVoiceClient` and sends Realtime SDP through the authenticated backend broker.
+- `Circles` shows the current placement and supports accept, swap, and defer actions.
+- `Profile` supports profile review/edit and tester feedback.
+- `AuthSessionStore` persists the app session token in Keychain.
+- `DeviceIdentity` remains local continuity metadata, not the primary identity.
 
-- Today home and reflection
-- Communities
-- Matches
-- Consent-aware chat
-- Privacy settings
+## Project Source Of Truth
 
-An `XcodeGen` project spec now lives at `project.yml`, and `../../script/build_and_run.sh` is the canonical simulator build-and-run entrypoint.
-
-## Prototype Direction
-
-- Mobile-first tab experience with intentional mock content.
-- Voice onboarding, compatibility explanations, and privacy controls are visible as product concepts even though no backend SDK is wired.
-- The UI reflects the current architecture contract: AI interprets, backend controls, database persists.
-
-## Run In Simulator
-
-Generate the project and run the prototype with:
+`project.yml` is the source of truth for the native project. Run XcodeGen through the repo script:
 
 ```sh
-./script/build_and_run.sh
+./script/build_and_run.sh --verify
 ```
 
-Override the default simulator if needed:
+The generated app bundle id is `com.likeminded.app`, with Sign in with Apple entitlement at `Entitlements/Likeminded.entitlements`.
+
+## Validation
+
+Use:
 
 ```sh
-SIMULATOR_NAME="iPhone 17" SIMULATOR_OS="26.2" ./script/build_and_run.sh
+npm run verify:release-config
+./script/build_and_run.sh --verify
 ```
 
-## Next Native Decisions
-
-- Decide whether the shared `ios-macos` surface should stay unified or split into iOS-first and macOS-specific scene variants.
-- Wire the prototype to the mock API routes now that a simulator loop exists.
-- Add assets, launch polish, and test targets once the first runnable surface is stable.
+For visual validation, the first unauthenticated screen should be the Sign in with Apple gate. After sign-in, only `Talk`, `Circles`, and `Profile` tabs should be visible.

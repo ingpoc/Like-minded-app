@@ -18,6 +18,6 @@ Likeminded is split into explicit implementation surfaces so product, AI, safety
 
 Realtime AI talks with the user and supports in-app meetings. Reasoning models synthesize profiles, circle fit, community fit, host fit, and group chemistry. The backend validates permissions and writes durable state. The database remembers.
 
-## Open Decision
+## Current MVP Decision
 
-The MVP backend framework remains open. The current API uses Node's built-in HTTP server only to make the health endpoint runnable without committing to a framework.
+The TestFlight MVP uses the current Node HTTP API, XcodeGen-managed SwiftUI app, Render web service target, and Neon/Postgres production persistence target. Replacing any of those is a product/ops decision, not a cleanup task.

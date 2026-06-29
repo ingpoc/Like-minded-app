@@ -1,16 +1,32 @@
 # Infrastructure
 
-Infrastructure is intentionally not provisioned in the project spine.
+Infrastructure notes for the TestFlight MVP.
 
-## Expected Future Pieces
+## Current Target
 
-- PostgreSQL with pgvector for profiles and semantic matching.
-- Backend runtime for deterministic APIs and tool gateway.
-- Secret storage for OpenAI and auth provider credentials.
-- Environment-specific configuration for local, staging, and production.
+- API runtime: Render web service, described by `render.yaml`.
+- Production database: Neon/Postgres through `DATABASE_URL`.
+- Secrets: Render environment variables for `SESSION_SECRET`, `OPENAI_API_KEY`, Apple identifiers, and Realtime settings.
+- Local storage: JSON files under `data/` or `LIKEMINDED_DB_DIR`.
 
-## Current Local Contract
+## Required Production Environment
 
-- API defaults to `127.0.0.1:8787`.
-- No secrets are required.
-- No external network calls are made by the skeleton.
+```sh
+DATABASE_URL=
+SESSION_SECRET=
+OPENAI_API_KEY=
+OPENAI_REALTIME_MODEL=gpt-realtime-2
+OPENAI_REALTIME_VOICE=marin
+APPLE_BUNDLE_ID=com.likeminded.app
+APPLE_CLIENT_ID=com.likeminded.app
+APPLE_AUTH_BYPASS=0
+```
+
+## Validation
+
+```sh
+npm run verify:release-config
+npm run smoke:mvp
+```
+
+`npm run smoke:mvp` uses a local isolated store. Deployed Render/Neon readiness still requires a real health check and signed-in device/TestFlight validation.
