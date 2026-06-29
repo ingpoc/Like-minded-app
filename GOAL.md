@@ -24,46 +24,47 @@ Likeminded is an AI-native iOS app that helps people who should meet actually me
 
 ## Target Users
 
-Gurusharan is the first user. The app should work for a single user doing voice interviews and seeing their placement before multi-user features are needed.
+Gurusharan is the first operator and tester. The current MVP target is up to 50 invited TestFlight users proving the placement loop before chat, meetings, subscriptions, or a full community engine.
 
 ## Tech Stack
 
 - **Frontend:** SwiftUI (iOS/macOS)
-- **Backend:** Node.js (Express)
+- **Backend:** Node.js HTTP service
 - **AI:** OpenAI Realtime API (gpt-realtime-2) via WebRTC
+- **Production target:** Render web service + Neon/Postgres
 - **Design:** Warm cream canvas, deep green accents, SF native typography
 - **Repo:** https://github.com/ingpoc/Like-minded-app
 
 ## Current State
-As of 2026-06-24:
-- Voice profiling works end-to-end (WebRTC connects, transcript captured)
-- Server has profile matching and circle placement logic
-- iOS app has 3-tab prototype with voice hero, placement cards, connections view
-- SQLite persistence active — profiles, circles, placements, transcripts survive restarts
-- Device auth active — anonymous UUID in Keychain, X-Device-Id on all API calls
-- No auth, no chat, no communities, no meetings
+As of 2026-06-29:
+- Local MVP backend contract passes through `npm run smoke:mvp`
+- Server has authenticated Apple-session MVP routes for discovery, profile resume/update, placement resume/actions, feedback, and Realtime broker calls
+- iOS app is auth-gated and uses MVP tabs: Talk, Circles, Profile
+- Local development persistence uses JSON files; production persistence target is Neon/Postgres through `DATABASE_URL`
+- Device UUID remains local continuity metadata; Sign in with Apple is the primary TestFlight identity path
+- No chat, meetings, subscriptions, push notifications, full community engine, or advanced moderation yet
 
 ## What Needs to Happen
 
 See **PROGRESS.md** for the full roadmap with checkboxes. Summary:
 
-1. **Phase 1 — Foundation:** ~~SQLite persistence~~ ✅ done, ~~device auth~~ ✅ done, ~~wire profile pipeline~~ ✅ done, ~~profile review UI~~ ✅ done
-2. **Phase 2 — Core Loop:** Fix nav, end-to-end profile → circle flow, living profile updates
-3. **Phase 3 — Social Layer:** Chat, communities, meetings, host evaluation
-4. **Phase 4 — Production:** Safety/moderation, subscriptions, notifications, deployment, AI-powered reasoning
+1. **Phase 0 — Session control:** `goal.template.json`, `goal.json`, deterministic graders, validation routing
+2. **Phase 1 — Local MVP loop:** auth-gated Talk → Profile → Circles loop, profile edit, placement actions, feedback
+3. **Phase 2 — Deterministic validation:** backend smoke, release config, goal contract, docs lint, simulator build/launch
+4. **Phase 3 — External TestFlight readiness:** Render, Neon, Apple Developer, App Store Connect, TestFlight metadata
+5. **Phase 4 — Device proof:** real sign-in, voice, placement, profile edit, placement action, feedback, relaunch restore
 
 ## How to Pick Up This Project
 
 1. Read this file for vision and context
 2. Read PROGRESS.md for current state and what's next
-3. Check the server is running: `curl -s http://127.0.0.1:8787/health`
-4. Check git log for recent work: `git log --oneline -10`
-5. Start with the first unchecked item in PROGRESS.md Phase 1
+3. Read `goal.json` for the current per-session goal, graders, rubric, and subagent model/effort routing
+4. Run `./script/project_context.sh query --task "<current task>"`
+5. Start with the first unchecked item in PROGRESS.md
 
 ## Open Questions
 
-- Database: SQLite (local dev) → Postgres (production)?
-- Auth: Sign in with Apple, or also email/phone?
+- Keep Render + Neon for first TestFlight, or replace only after explicit operator decision?
 - Voice interview design: what should the AI ask, how many turns?
-- Multi-user: when to move off localhost?
-- Model: keep gpt-realtime-2 or switch?
+- When should heuristic profile extraction be replaced by a reasoning model?
+- What minimal account deletion path is required before wider beta?

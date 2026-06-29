@@ -18,6 +18,9 @@ struct RealtimeVoiceUpdate {
 }
 
 final class RealtimeVoiceClient: NSObject {
+    var baseURL = LikemindedAPIClient.defaultBaseURL()
+    var authToken: String?
+
     private var onUpdate: ((RealtimeVoiceUpdate) -> Void)?
     private var isStreaming = false
     private var isClosing = false
@@ -264,10 +267,13 @@ final class RealtimeVoiceClient: NSObject {
     // MARK: - SDP Exchange
 
     private func exchangeSDPViaServer(_ sdp: String) async throws -> String {
-        let url = URL(string: "http://127.0.0.1:8787/v1/realtime/calls")!
+        let url = baseURL.appendingPathComponent("/v1/realtime/calls")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/sdp", forHTTPHeaderField: "content-type")
+        if let authToken {
+            request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
+        }
         request.httpBody = sdp.data(using: .utf8)
 
         let (data, response) = try await URLSession.shared.data(for: request)

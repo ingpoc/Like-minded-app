@@ -8,10 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		1434DA300C4A5A2400A859A3 /* PrototypeModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8C121E18E6BF523CE92D82 /* PrototypeModels.swift */; };
+		1C099E485B7A23A87435717E /* DeviceIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D8F9C153E1CAAA2E1D4B53 /* DeviceIdentity.swift */; };
 		399834A377ADFBCE54D30DF9 /* PrototypeAppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C615B2CB5D4009DE9EDF7F48 /* PrototypeAppState.swift */; };
 		3FC6508C115AA08A823B19CB /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71F1782CC0FAAD3C06C76E5C /* RootView.swift */; };
+		4319E06107624A793DB13545 /* AuthSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDF2490A9727FEEB417EED9F /* AuthSessionStore.swift */; };
+		574EC5E783BCAF6EFAA327F5 /* MVPProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 441C7F09BC786ADFBA9B2A36 /* MVPProfileView.swift */; };
 		5F0E79024B1B152EBBD80D88 /* LiveKitWebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 02402CF435BA0C350E109525 /* LiveKitWebRTC */; };
 		638037123B69B011D78BF5A7 /* LikemindedApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 704749A39D4B879E03561B1B /* LikemindedApp.swift */; };
+		676E4A1C5FC17EE494C1AB2F /* AuthGateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B0C51AF9D64677B65F8D49A /* AuthGateView.swift */; };
 		84146F27670847A18F01957F /* PrototypeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C716780C8187703C6E293080 /* PrototypeData.swift */; };
 		8C69E8A6029B43AC474DCD58 /* ConnectionsPrototypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45755761E85787C57C41A25 /* ConnectionsPrototypeView.swift */; };
 		8D27A1FA539B87B3019798C6 /* CommunitiesPrototypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF864D6E37CD7289F92855DF /* CommunitiesPrototypeView.swift */; };
@@ -21,11 +25,13 @@
 		D0960611CC66E6642F609ACD /* ProfilePrototypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75C0F95C041A6C7D0D328202 /* ProfilePrototypeView.swift */; };
 		E5F05FF2F77CDC1BC4866782 /* PrototypeComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83237B0C66BA3537CAB89B87 /* PrototypeComponents.swift */; };
 		F278DF831E8C66D2F941194F /* TodayPrototypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DCC1BCF1EB18B6214EB4BAA /* TodayPrototypeView.swift */; };
-		A1B2C3D4E5F6789012345678 /* DeviceIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F678901234567890 /* DeviceIdentity.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2B0C51AF9D64677B65F8D49A /* AuthGateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthGateView.swift; sourceTree = "<group>"; };
 		3DCC1BCF1EB18B6214EB4BAA /* TodayPrototypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayPrototypeView.swift; sourceTree = "<group>"; };
+		43D8F9C153E1CAAA2E1D4B53 /* DeviceIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceIdentity.swift; sourceTree = "<group>"; };
+		441C7F09BC786ADFBA9B2A36 /* MVPProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MVPProfileView.swift; sourceTree = "<group>"; };
 		583CD7AF0A74916366CBF8AF /* Likeminded.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Likeminded.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		63DCB9E92C74E864B793C207 /* LikemindedAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikemindedAPIClient.swift; sourceTree = "<group>"; };
 		704749A39D4B879E03561B1B /* LikemindedApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikemindedApp.swift; sourceTree = "<group>"; };
@@ -35,8 +41,8 @@
 		83237B0C66BA3537CAB89B87 /* PrototypeComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrototypeComponents.swift; sourceTree = "<group>"; };
 		8C8C121E18E6BF523CE92D82 /* PrototypeModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrototypeModels.swift; sourceTree = "<group>"; };
 		C615B2CB5D4009DE9EDF7F48 /* PrototypeAppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrototypeAppState.swift; sourceTree = "<group>"; };
-		B2C3D4E5F678901234567890 /* DeviceIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceIdentity.swift; sourceTree = "<group>"; };
 		C716780C8187703C6E293080 /* PrototypeData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrototypeData.swift; sourceTree = "<group>"; };
+		CDF2490A9727FEEB417EED9F /* AuthSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthSessionStore.swift; sourceTree = "<group>"; };
 		CF864D6E37CD7289F92855DF /* CommunitiesPrototypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunitiesPrototypeView.swift; sourceTree = "<group>"; };
 		D45755761E85787C57C41A25 /* ConnectionsPrototypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionsPrototypeView.swift; sourceTree = "<group>"; };
 		E11E3DAEAEA4F6D6B35D2D32 /* SettingsPrototypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPrototypeView.swift; sourceTree = "<group>"; };
@@ -84,7 +90,8 @@
 		5F31523F0AEAFBCBC911930E /* Data */ = {
 			isa = PBXGroup;
 			children = (
-				B2C3D4E5F678901234567890 /* DeviceIdentity.swift */,
+				CDF2490A9727FEEB417EED9F /* AuthSessionStore.swift */,
+				43D8F9C153E1CAAA2E1D4B53 /* DeviceIdentity.swift */,
 				63DCB9E92C74E864B793C207 /* LikemindedAPIClient.swift */,
 				C615B2CB5D4009DE9EDF7F48 /* PrototypeAppState.swift */,
 				C716780C8187703C6E293080 /* PrototypeData.swift */,
@@ -120,8 +127,10 @@
 		F36F7D893B50517CB495A8F7 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				2B0C51AF9D64677B65F8D49A /* AuthGateView.swift */,
 				CF864D6E37CD7289F92855DF /* CommunitiesPrototypeView.swift */,
 				D45755761E85787C57C41A25 /* ConnectionsPrototypeView.swift */,
+				441C7F09BC786ADFBA9B2A36 /* MVPProfileView.swift */,
 				75C0F95C041A6C7D0D328202 /* ProfilePrototypeView.swift */,
 				71F1782CC0FAAD3C06C76E5C /* RootView.swift */,
 				E11E3DAEAEA4F6D6B35D2D32 /* SettingsPrototypeView.swift */,
@@ -194,11 +203,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				676E4A1C5FC17EE494C1AB2F /* AuthGateView.swift in Sources */,
+				4319E06107624A793DB13545 /* AuthSessionStore.swift in Sources */,
 				8D27A1FA539B87B3019798C6 /* CommunitiesPrototypeView.swift in Sources */,
 				8C69E8A6029B43AC474DCD58 /* ConnectionsPrototypeView.swift in Sources */,
-				A1B2C3D4E5F6789012345678 /* DeviceIdentity.swift in Sources */,
+				1C099E485B7A23A87435717E /* DeviceIdentity.swift in Sources */,
 				9991EE71916006E89457B6E5 /* LikemindedAPIClient.swift in Sources */,
 				638037123B69B011D78BF5A7 /* LikemindedApp.swift in Sources */,
+				574EC5E783BCAF6EFAA327F5 /* MVPProfileView.swift in Sources */,
 				D0960611CC66E6642F609ACD /* ProfilePrototypeView.swift in Sources */,
 				399834A377ADFBCE54D30DF9 /* PrototypeAppState.swift in Sources */,
 				E5F05FF2F77CDC1BC4866782 /* PrototypeComponents.swift in Sources */,
@@ -276,11 +288,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Entitlements/Likeminded.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"\"";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Likeminded;
+				INFOPLIST_KEY_LIKEMINDED_API_BASE_URL = "$(LIKEMINDED_API_BASE_URL)";
 				INFOPLIST_KEY_LSRequiresIPhoneOS = YES;
 				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsLocalNetworking = YES;
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Likeminded uses your voice to build private profile signals and suggest a starter circle.";
@@ -291,7 +305,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.likeminded.prototype;
+				LIKEMINDED_API_BASE_URL = "";
+				PRODUCT_BUNDLE_IDENTIFIER = com.likeminded.app;
 				PRODUCT_NAME = Likeminded;
 				SDKROOT = iphoneos;
 				SUPPORTS_MACCATALYST = NO;
@@ -368,11 +383,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Entitlements/Likeminded.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"\"";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Likeminded;
+				INFOPLIST_KEY_LIKEMINDED_API_BASE_URL = "$(LIKEMINDED_API_BASE_URL)";
 				INFOPLIST_KEY_LSRequiresIPhoneOS = YES;
 				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsLocalNetworking = YES;
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Likeminded uses your voice to build private profile signals and suggest a starter circle.";
@@ -383,7 +400,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.likeminded.prototype;
+				LIKEMINDED_API_BASE_URL = "";
+				PRODUCT_BUNDLE_IDENTIFIER = com.likeminded.app;
 				PRODUCT_NAME = Likeminded;
 				SDKROOT = iphoneos;
 				SUPPORTS_MACCATALYST = NO;

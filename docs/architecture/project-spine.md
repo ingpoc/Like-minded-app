@@ -1,5 +1,9 @@
 # Project Spine
 
+## Control Owner
+
+Global `/Users/gurusharan/.codex/AGENTS.md` owns instruction control. This document describes architecture boundaries only.
+
 Likeminded is split into explicit implementation surfaces so product, AI, safety, and infrastructure decisions can evolve without being hidden in one app layer.
 
 ## Surfaces

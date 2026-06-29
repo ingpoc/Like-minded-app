@@ -1,5 +1,9 @@
 # Product Direction
 
+## Control Owner
+
+Global `/Users/gurusharan/.codex/AGENTS.md` owns instruction control. This document describes product direction only.
+
 Likeminded exists to help people who should meet actually meet, talk, and build relationships. It is not a generic social feed, dating app, community directory, or mental-health reflection app. The product's job is to use AI as a social operator: understand people through conversation, place them into the right human context, and help the first real interaction happen.
 
 ## North Star

@@ -7,11 +7,11 @@ IOS_DIR="$ROOT_DIR/apps/ios-macos"
 PROJECT_FILE="$IOS_DIR/Likeminded.xcodeproj"
 SCHEME="Likeminded"
 APP_NAME="Likeminded"
-BUNDLE_ID="com.likeminded.prototype"
+BUNDLE_ID="${BUNDLE_ID:-com.likeminded.app}"
 DERIVED_DATA="$ROOT_DIR/.build/ios-simulator"
 
 resolve_simulator() {
-  local preferred="${SIMULATOR_NAME:-iPhone 16 Pro}"
+  local preferred="${SIMULATOR_NAME:-iPhone 17}"
   local id
   id=$(xcrun simctl list devices available 2>/dev/null | grep -F "$preferred " | head -1 | grep -oE '\([A-F0-9-]+\)' | tr -d '()')
   if [[ -z "$id" ]]; then

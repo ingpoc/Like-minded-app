@@ -1,14 +1,46 @@
 # Validation
 
+## Control Owner
+
+Global `/Users/gurusharan/.codex/AGENTS.md` owns instruction control. This workflow describes validation commands only.
+
 Validation contract for Like-minded-app.
 
 ## Current State
 
-Repo-local validation starts with dependency-free Node syntax checks:
+Repo-local validation starts with Node syntax checks and the MVP smoke grader:
 
 ```sh
 npm run check
+npm run smoke:mvp
+npm run verify:release-config
+npm run verify:goal
 ```
+
+`npm run smoke:mvp` starts the API on a temporary localhost port with `APPLE_AUTH_BYPASS=1`, uses a temporary local JSON data directory, and verifies:
+- unauthenticated MVP write/read routes return `401`,
+- dev Apple auth returns a session token,
+- authenticated discovery creates a profile and placement,
+- resume endpoints return the signed-in user's data,
+- placement accept persists,
+- feedback stores,
+- a second tester cannot read the first tester's placement.
+
+`npm run verify:release-config` verifies TestFlight-critical static configuration:
+- bundle id is `com.likeminded.app`, not the old prototype id,
+- Sign in with Apple entitlement exists,
+- microphone purpose and API base URL config exist,
+- Realtime calls use the authenticated API client path instead of hardcoded localhost,
+- Render env placeholders include database, session, OpenAI, and Apple settings with `APPLE_AUTH_BYPASS=0`,
+- the TestFlight privacy policy draft exists.
+
+`npm run verify:goal` verifies the per-session goal contract:
+- `goal.json` and `goal.template.json` exist and point to `GOAL.md` plus `PROGRESS.md`,
+- deterministic grader commands are current,
+- simulator validation is assigned to `validation-release`,
+- validation-release is pinned to `gpt-5.4-mini` at `medium` effort,
+- completion requires a commit that includes the session's `goal.json` before marking the goal complete,
+- rubric weights are valid.
 
 The API health endpoint can be checked manually after starting `npm run dev:api`:
 
@@ -16,33 +48,34 @@ The API health endpoint can be checked manually after starting `npm run dev:api`
 curl http://127.0.0.1:8787/health
 curl http://127.0.0.1:8787/v1/system/architecture
 curl http://127.0.0.1:8787/v1/recommendations/communities/mock
-curl -X POST http://127.0.0.1:8787/v1/realtime/session -H 'content-type: application/json' -d '{"safetyIdentifier":"dev-preview-user"}'
+curl -X POST http://127.0.0.1:8787/v1/realtime/session -H 'content-type: application/json' -H 'authorization: Bearer <session-token>' -d '{"safetyIdentifier":"dev-preview-user"}'
 curl -X POST http://127.0.0.1:8787/v1/profiles/synthesize -H 'content-type: application/json' -d '{"promptSummary":"User wants deep conversation and emotionally honest friendships."}'
 curl -X POST http://127.0.0.1:8787/v1/mvp/reflect-place-connect -H 'content-type: application/json' -d '{"reflectionAnswers":["I want warmer conversations","I prefer small honest circles"]}'
 ```
 
-The realtime session check returns `openai_api_key_missing` until `OPENAI_API_KEY` is configured on the API server. With a key, it should return an OpenAI Realtime client secret. Production defaults to `gpt-realtime-2`; local cost-sensitive testing should start the API with `npm run dev:api:realtime-test`, which uses `gpt-realtime-1.5`.
+The realtime session check returns `401` without an app session and `openai_api_key_missing` until `OPENAI_API_KEY` is configured on the API server. With a valid session and key, it should return an OpenAI Realtime client secret. Production defaults to `gpt-realtime-2`; local cost-sensitive testing should start the API with `npm run dev:api:realtime-test`, which uses `gpt-realtime-1.5`.
 
-The SwiftUI prototype source can be typechecked against the local macOS SDK:
-
-```sh
-xcrun --sdk macosx swiftc -typecheck $(find apps/ios-macos/Sources/LikemindedApp -name '*.swift' | sort)
-```
-
-The iOS simulator prototype can be built and launched with:
+The standalone Swift typecheck does not resolve the `LiveKitWebRTC` Swift package. Use the XcodeGen build path for native validation:
 
 ```sh
 ./script/build_and_run.sh --verify
 ```
 
-For the Talk voice loop, run the API with `npm run dev:api:realtime-test`, launch the app, open Talk, and tap `Start voice profile`. Expected simulator evidence:
-- the microphone permission prompt uses the project-specific purpose string,
-- the Talk card reaches `Listening` with `Realtime session ready`,
-- tapping `Stop and extract signals` returns the card to `Captured` without crashing.
+Expected first-run simulator evidence:
+- the app launches as bundle id `com.likeminded.app`,
+- the first screen is the Sign in with Apple gate,
+- prototype tabs are hidden before auth,
+- the Sign in with Apple entitlement is present,
+- the microphone purpose string is present.
 
-Simulator validation proves the Realtime credential, WebSocket session, microphone permission, and UI state path. It does not prove real spoken signal quality unless the simulator/device receives audible input and returns transcript/signals.
+After a real Apple sign-in and API configuration, validate the placement loop on simulator or device:
+- Talk starts Realtime voice,
+- stopping voice creates a persisted profile and circle placement,
+- relaunch restores the latest placement,
+- Circles accept/swap/defer updates through the backend,
+- Profile edits and feedback submit without mock fallback data.
 
-No full build, lint, or test suite exists yet for the native app or backend framework.
+Simulator validation proves the app shell, entitlement, launch, and UI state path. Real spoken profile-signal quality still needs device or simulator audio-input testing with an audible utterance.
 
 ## Before Claiming Readiness
 
@@ -50,10 +83,32 @@ No full build, lint, or test suite exists yet for the native app or backend fram
 2. For non-trivial work, confirm `./script/project_context.sh query --task "<current task>"` was run before acting and that applicable returned decisions were used.
 3. If a manifest exists, use the package manager or toolchain declared by the repo.
 4. If tests, lint, typecheck, or build scripts exist, run the narrowest command that proves the change.
-5. Run `npm run check` for current JavaScript syntax validation.
-6. If native SwiftUI files changed, run `xcrun --sdk macosx swiftc -typecheck $(find apps/ios-macos/Sources/LikemindedApp -name '*.swift' | sort)`.
-7. If the iOS project spec or simulator script changed, run `./script/build_and_run.sh --verify`.
-8. If no deeper validation command exists for a touched surface, report that clearly and provide deterministic evidence such as file inventory, syntax checks, or generated artifact inspection.
+5. Run `npm run check` for JavaScript syntax validation.
+6. Run `npm run smoke:mvp` for the zero-token backend MVP contract.
+7. Run `npm run verify:release-config` for static TestFlight config invariants.
+8. Run `npm run verify:goal` after changing goal, progress, validation, grader, or agent-routing files.
+9. If native SwiftUI files, project spec, entitlements, or simulator script changed, run `./script/build_and_run.sh --verify`.
+10. Capture or inspect a simulator screenshot when UI gating/navigation changed.
+11. After validation passes and before marking the goal complete, commit the validated session changes, including that session's `goal.json`.
+12. If no deeper validation command exists for a touched surface, report that clearly and provide deterministic evidence such as file inventory, syntax checks, or generated artifact inspection.
+
+## Delegated Verification
+
+Use the project `validation-release` agent pinned to `gpt-5.4-mini` with `medium` effort when validation is read-heavy, repeatable, screenshot-based, or likely to produce long logs. Keep product and architecture decisions in the main thread.
+
+Allowed delegated work:
+- run `npm run check`, `npm run smoke:mvp`, `npm run verify:release-config`, `npm run verify:goal`, `npm run migrate:api`, `workflow lint`, and `./script/build_and_run.sh --verify`;
+- inspect simulator screenshots for first-run gate, visible tabs, obvious blank screens, and launch state;
+- summarize failures with exact command, failing assertion, likely owner file, and the smallest suggested fix.
+
+Forbidden delegated work:
+- change product scope, API contracts, auth policy, persistence strategy, model choice, bundle id, deployment provider, or TestFlight criteria;
+- weaken or delete deterministic assertions to make a check pass;
+- enable `APPLE_AUTH_BYPASS=1` outside isolated local API smoke tests;
+- touch secrets, external accounts, Render, Neon, Apple Developer, App Store Connect, or production data;
+- edit files unless the main thread explicitly assigns a bounded fix.
+
+Default main-thread rule: first make the path work, then verify and validate, then remove stale confusing artifacts, then simplify, then automate. If the validation agent finds an issue, the main thread owns whether to fix it directly or delegate a bounded file-level patch.
 
 ## Update Triggers
 

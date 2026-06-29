@@ -1,117 +1,93 @@
-# Likeminded — Progress & Plan
+# Likeminded — MVP Progress
 
-> Living document. Each item ticks ✅ when complete, ⏳ when in progress, ❌ when not started.
+## Control Owner
 
----
+Global `/Users/gurusharan/.codex/AGENTS.md` owns instruction control. This file tracks repo progress and roadmap state only.
 
-## Current Status (2026-06-24)
+## Session Start Contract
 
-- Voice profiling works end-to-end via WebRTC (OpenAI Realtime)
-- Server runs on localhost:8787, serves profile matching and circle placement
-- iOS app has 3-tab prototype (Place / Talk / Connect)
-- 5 archetype circles seeded, keyword-based personality extraction works
-- GitHub repo live at https://github.com/ingpoc/Like-minded-app
-- **SQLite persistence active** — profiles, circles, placements, transcripts survive restarts
-- **No auth** — no user identity
-- **No database** — ~~all data ephemeral~~ → SQLite now persistent
+Every session starts from:
 
----
+1. `GOAL.md` — ultimate product goal.
+2. `PROGRESS.md` — current roadmap and state.
+3. `goal.json` — current per-session goal, deterministic graders, simulator validation, rubric, and subagent model/effort routing.
+4. `docs/workflows/validation.md` — validation contract.
+5. `./script/project_context.sh query --task "<current task>"`.
 
-## Phase 1 — Foundation
+If graders, validation commands, new release files, or project agents change, update `goal.template.json`, `goal.json`, `docs/workflows/validation.md`, and `docs/references/project-context.md` in the same change.
 
-- [x] ✅ Add SQLite persistence (profiles, circles, placements, transcripts)
-- [x] ✅ Add device auth (anonymous UUID, then Sign in with Apple)
-- [x] ✅ Wire voice transcript auto-submission: when voice session ends, POST transcript to `/v1/discover`, store result
-- [x] ✅ Build profile review/edit screen so user can see and correct AI signals
-- [x] ✅ Store OpenAI API key in .env, load via dotenv (currently hardcoded in RealtimeVoiceClient)
+## Current Status
 
-## Phase 2 — Core Loop (Talk → Profile → Circles)
+- TestFlight MVP target: Sign in with Apple -> voice onboarding -> persisted profile and circle placement -> profile review/edit -> accept/swap/defer -> tester feedback.
+- Native app is auth-gated and uses MVP tabs: `Talk`, `Circles`, `Profile`.
+- Bundle id is `com.likeminded.app`; Sign in with Apple entitlement exists.
+- API has authenticated MVP routes for Apple auth, discovery, profile resume/update, placement resume/actions, feedback, and Realtime broker calls.
+- Production deployment config targets Render plus Neon/Postgres through `DATABASE_URL`.
+- Local development uses JSON-backed storage; local smoke testing uses isolated temporary JSON data.
+- Deterministic graders exist for backend MVP contract, release config, and goal contract.
+- Remaining hard blockers are external setup and proof: Apple Developer/App Store Connect, Render, Neon, real Sign in with Apple, and real simulator/device voice-loop validation.
 
-- [ ] ❌ Fix nav to match DESIGN.md: Talk / Circles / Communities (remove Place and Connect as separate tabs)
-- [ ] ❌ Connect profile data to circle matching end-to-end (currently resets on server restart)
-- [ ] ❌ Add profile update on follow-up voice conversations (profile should be "living")
-- [ ] ❌ Show circle members and placement status in Circles tab
-- [ ] ❌ Add "My Profile" section accessible from Talk or account controls
+## Phase 0 — Session Control And Graders
 
-## Phase 3 — Social Layer
+- [x] Create `goal.template.json` as the per-session goal template.
+- [x] Create current `goal.json` for the TestFlight MVP placement loop.
+- [x] Add `npm run verify:goal`.
+- [x] Pin delegated validation to `validation-release` using `gpt-5.4-mini` at `medium` effort.
+- [x] Document what delegated verification can and cannot do.
+- [x] Require a validated session commit including `goal.json` before marking a goal complete.
+- [x] Remove stale generated artifacts from status and ignore future `__pycache__`, `*.pyc`, `*.egg-info`, `node_modules`, and stray `codex.js`.
 
-- [ ] ❌ Build chat infrastructure (message model, send/receive, presence)
-- [ ] ❌ Build community engine (interest-based, broader than circles)
-- [ ] ❌ Add in-app meeting concept with basic transcript capture
-- [ ] ❌ Build host evaluation signals from meeting behavior
-- [ ] ❌ Community join/browse UI in Communities tab
+## Phase 1 — Local MVP Loop
 
-## Phase 4 — Production
+- [x] Add Sign in with Apple gate in SwiftUI.
+- [x] Store app session token in Keychain.
+- [x] Protect `/v1/discover`, `/v1/me/profile`, `/v1/me/placement`, `/v1/me/placement/actions`, `/v1/feedback`, and Realtime broker routes with bearer auth.
+- [x] Persist profile, placement, transcript, and feedback through the MVP store.
+- [x] Add placement actions: accept, defer, swap.
+- [x] Add profile review/edit and tester feedback UI.
+- [x] Replace prototype tabs with `Talk`, `Circles`, `Profile`.
+- [x] Remove hardcoded localhost from the Realtime SDP path.
 
-- [ ] ❌ Safety and moderation layer
-- [ ] ❌ Subscription and entitlement system
-- [ ] ❌ Push notifications
-- [ ] ❌ Production deployment (not localhost)
-- [ ] ❌ Real personality inference via reasoning model (replace keyword extraction)
+## Phase 2 — Deterministic Validation
 
----
+- [x] `npm run check` — syntax checks API, orchestrator, and grader scripts.
+- [x] `npm run smoke:mvp` — validates local authenticated placement loop and cross-user isolation.
+- [x] `npm run verify:release-config` — validates bundle id, entitlements, Render env placeholders, API base URL, and privacy policy draft.
+- [x] `npm run verify:goal` — validates goal contract, graders, rubric, and agent routing.
+- [x] `workflow --docs-dir ... lint` — passes with warnings only.
+- [x] `./script/build_and_run.sh --verify` — builds, installs, and launches simulator app as `com.likeminded.app`.
 
-## What's Built & Working
+## Phase 3 — External TestFlight Readiness
 
-### Backend (Node.js, port 8787)
-- [x] Health endpoint (`/health`)
-- [x] Architecture and personality dimensions metadata
-- [x] OpenAI Realtime session broker (`/v1/realtime/session`)
-- [x] WebRTC SDP exchange (`/v1/realtime/calls`)
-- [x] Keyword-based personality extraction (Big Five, attachment, trust, communication, humor, conflict)
-- [x] Circle matching engine against 5 archetype circles
-- [x] Profile creation from interview transcript
-- [x] Placement engine (auto-create circle or match archetype)
-- [x] Accept / swap / defer placement actions
-- [x] Circle swap and deferred circle suggestions
-- [x] Design system tokens (colors, typography, spacing)
-- [x] SQLite persistence (profiles, circles, placements, transcripts) via better-sqlite3
-- [x] Device auth (anonymous UUID via Keychain, X-Device-Id header on all API calls)
+- [ ] Create Neon/Postgres database and set `DATABASE_URL`.
+- [ ] Create Render web service from `render.yaml`.
+- [ ] Set production env vars: `SESSION_SECRET`, `OPENAI_API_KEY`, `OPENAI_REALTIME_MODEL`, `OPENAI_REALTIME_VOICE`, `APPLE_BUNDLE_ID`, `APPLE_CLIENT_ID`, `APPLE_AUTH_BYPASS=0`.
+- [ ] Configure Apple Developer bundle id `com.likeminded.app`.
+- [ ] Enable Sign in with Apple capability for the app id.
+- [ ] Configure App Store Connect/TestFlight metadata and privacy policy.
+- [ ] Build signed TestFlight candidate.
 
-### iOS App (SwiftUI)
-- [x] App entry point and root navigation
-- [x] 3-tab structure (Place / Talk / Connect)
-- [x] Voice profile hero with WebRTC connection
-- [x] Live connection status and transcript display
-- [x] Profile signal cards (communication, emotional rhythm, trust)
-- [x] Placement card with primary circle, fit reasons, acceptance
-- [x] Connections view with circles and people modes
-- [x] Person fit cards with compatibility percentage
-- [x] Circle selector with secondary options
-- [x] Basic animations and entrance transitions
-- [x] Design system components (FeatureCard, PrimaryActionButton, etc.)
-- [x] DeviceIdentity — anonymous UUID in Keychain, sent on all API calls
+## Phase 4 — Simulator/Device Proof
 
-### Design & Docs
-- [x] Product direction document
-- [x] Design direction document (DESIGN.md)
-- [x] Architecture metadata
-- [x] Personality framework (Big Five, attachment, trust, communication, humor, conflict)
-- [x] Circle archetype definitions with personality profiles
-- [x] GitHub repo created and code pushed
+- [ ] Fresh install shows Sign in with Apple gate, not prototype tabs.
+- [ ] Real Apple sign-in succeeds.
+- [ ] Signed-in app restores session after relaunch.
+- [ ] Tabs are exactly `Talk`, `Circles`, `Profile`.
+- [ ] Voice onboarding reaches Realtime through the authenticated backend path.
+- [ ] Stopping voice creates persisted profile and circle placement.
+- [ ] Relaunch restores latest placement.
+- [ ] Circles accept/swap/defer persists through backend.
+- [ ] Profile edit persists.
+- [ ] Feedback submits and stores.
+- [ ] A second tester cannot access the first tester's profile or placement.
 
----
+## Deferred Until After MVP Proof
 
-## Product Direction
-
-North Star: AI voice conversation builds personality profile → AI creates and suggests circles → AI suggests communities → AI encourages interaction → AI learns from feedback.
-
-Target loop: Talk → Profile → Circles → Communities → Hosted Interaction
-
-Key principles:
-- Profile must be built through active voice conversation, not written forms
-- Circles are personality-fit (selective, like "the right room")
-- Communities are interest-based (broader, easier entry)
-- Meetings happen inside the app first (AI learns from transcripts)
-- Hosts are AI-evaluated, not just volunteers
-- User controls commitment, sharing, and attendance
-
----
-
-## Open Questions
-
-1. Database: SQLite for local dev, Postgres for production?
-2. Auth: Sign in with Apple only, or also email/phone?
-3. Voice interview design: how many turns, what should the AI ask?
-4. Multi-user: when do we need real server deployment vs single-user prototype?
-5. OpenAI Realtime model: keep gpt-realtime-2 or switch to gpt-4o-realtime-preview?
+- Chat and direct messaging.
+- Hosted in-app meetings.
+- Push notifications.
+- Subscriptions and entitlements.
+- Full community engine.
+- Advanced moderation/report/block flows.
+- Reasoning-model replacement for heuristic profile extraction.
+- Offline meeting coordination.

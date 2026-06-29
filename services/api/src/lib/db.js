@@ -1,204 +1,85 @@
-/**
- * SQLite-backed persistent storage for profiles and circles.
- * Provides a Map-like interface so architecture.js code works with minimal changes.
- *
- * Database file: data/likeminded.db (relative to project root)
- */
-
-const Database = require("better-sqlite3");
-const path = require("node:path");
 const fs = require("node:fs");
+const path = require("node:path");
 
-const DB_DIR = path.resolve(process.cwd(), "data");
-const DB_PATH = path.join(DB_DIR, "likeminded.db");
+const DB_DIR = path.resolve(process.env.LIKEMINDED_DB_DIR || path.join(process.cwd(), "data"));
+const DB_PATH = path.join(DB_DIR, "likeminded.json");
 
-let db;
+function emptyStore() {
+  return {
+    profiles: {},
+    circles: {},
+    devices: {},
+    placements: [],
+    transcripts: []
+  };
+}
+
+function readStore() {
+  fs.mkdirSync(DB_DIR, { recursive: true });
+  if (!fs.existsSync(DB_PATH)) {
+    const store = emptyStore();
+    writeStore(store);
+    return store;
+  }
+  return { ...emptyStore(), ...JSON.parse(fs.readFileSync(DB_PATH, "utf8")) };
+}
+
+function writeStore(store) {
+  fs.mkdirSync(DB_DIR, { recursive: true });
+  fs.writeFileSync(DB_PATH, JSON.stringify(store, null, 2));
+}
 
 function getDb() {
-  if (db) return db;
-  fs.mkdirSync(DB_DIR, { recursive: true });
-  db = new Database(DB_PATH);
-  db.pragma("journal_mode = WAL");
-  db.pragma("foreign_keys = ON");
-  migrate(db);
-  return db;
+  return {
+    transaction(fn) {
+      return () => fn();
+    }
+  };
 }
-
-function migrate(conn) {
-  conn.exec(`
-    CREATE TABLE IF NOT EXISTS profiles (
-      id TEXT PRIMARY KEY,
-      device_id TEXT DEFAULT '',
-      signals TEXT NOT NULL,
-      source_interview TEXT DEFAULT '',
-      source_reflections TEXT DEFAULT '[]',
-      synthesized_at TEXT NOT NULL
-    );
-
-    CREATE TABLE IF NOT EXISTS devices (
-      id TEXT PRIMARY KEY,
-      created_at TEXT NOT NULL,
-      last_seen_at TEXT NOT NULL
-    );
-
-    CREATE TABLE IF NOT EXISTS circles (
-      id TEXT PRIMARY KEY,
-      data TEXT NOT NULL,
-      created_at TEXT NOT NULL
-    );
-
-    CREATE TABLE IF NOT EXISTS placements (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      profile_id TEXT NOT NULL,
-      circle_id TEXT NOT NULL,
-      confidence_label TEXT,
-      fit_reasons TEXT DEFAULT '[]',
-      user_state TEXT DEFAULT 'proposed',
-      is_new_circle INTEGER DEFAULT 0,
-      created_at TEXT NOT NULL
-    );
-  `);
-}
-
-// ---------------------------------------------------------------------------
-// DBMap — Map-like wrapper around a SQLite table
-// ---------------------------------------------------------------------------
 
 class DBMap {
-  /**
-   * @param {string} tableName
-   * @param {object} conn - better-sqlite3 connection
-   */
-  constructor(tableName, conn) {
+  constructor(tableName) {
+    if (!["profiles", "circles"].includes(tableName)) throw new Error(`Unknown table: ${tableName}`);
     this.table = tableName;
-    this.conn = conn;
-
-    // Prepared statements (lazy)
-    this._getStmt = null;
-    this._setStmt = null;
-    this._hasStmt = null;
-    this._deleteStmt = null;
-    this._allStmt = null;
-    this._countStmt = null;
-  }
-
-  _prep(key) {
-    if (this.table === "profiles") {
-      return {
-        get: this.conn.prepare("SELECT * FROM profiles WHERE id = ?"),
-        set: this.conn.prepare(
-          "INSERT OR REPLACE INTO profiles (id, device_id, signals, source_interview, source_reflections, synthesized_at) VALUES (?, ?, ?, ?, ?, ?)"
-        ),
-        has: this.conn.prepare("SELECT 1 FROM profiles WHERE id = ?"),
-        delete: this.conn.prepare("DELETE FROM profiles WHERE id = ?"),
-        all: this.conn.prepare("SELECT * FROM profiles"),
-        count: this.conn.prepare("SELECT COUNT(*) as n FROM profiles"),
-        byDevice: this.conn.prepare("SELECT * FROM profiles WHERE device_id = ? ORDER BY synthesized_at DESC"),
-      };
-    }
-    if (this.table === "circles") {
-      return {
-        get: this.conn.prepare("SELECT * FROM circles WHERE id = ?"),
-        set: this.conn.prepare(
-          "INSERT OR REPLACE INTO circles (id, data, created_at) VALUES (?, ?, ?)"
-        ),
-        has: this.conn.prepare("SELECT 1 FROM circles WHERE id = ?"),
-        delete: this.conn.prepare("DELETE FROM circles WHERE id = ?"),
-        all: this.conn.prepare("SELECT * FROM circles"),
-        count: this.conn.prepare("SELECT COUNT(*) as n FROM circles"),
-      };
-    }
-    throw new Error(`Unknown table: ${this.table}`);
-  }
-
-  _stmts() {
-    if (!this._cached) {
-      this._cached = this._prep();
-    }
-    return this._cached;
-  }
-
-  _rowToObj(row) {
-    if (!row) return undefined;
-    if (this.table === "profiles") {
-      return {
-        profileId: row.id,
-        deviceId: row.device_id || "",
-        signals: JSON.parse(row.signals),
-        sourceInput: {
-          interviewExcerpt: row.source_interview,
-          reflectionAnswers: JSON.parse(row.source_reflections),
-        },
-        synthesizedAt: row.synthesized_at,
-      };
-    }
-    if (this.table === "circles") {
-      const data = JSON.parse(row.data);
-      return data; // full circle object stored as JSON
-    }
-    return row;
-  }
-
-  _objToRow(id, obj) {
-    if (this.table === "profiles") {
-      return [
-        id,
-        obj.deviceId || "",
-        JSON.stringify(obj.signals),
-        obj.sourceInput?.interviewExcerpt || "",
-        JSON.stringify(obj.sourceInput?.reflectionAnswers || []),
-        obj.synthesizedAt,
-      ];
-    }
-    if (this.table === "circles") {
-      return [id, JSON.stringify(obj), obj.createdAt || new Date().toISOString()];
-    }
-    return [id, JSON.stringify(obj)];
   }
 
   get(id) {
-    const s = this._stmts();
-    const row = s.get.get(id);
-    return this._rowToObj(row);
+    return readStore()[this.table][id];
   }
 
   set(id, obj) {
-    const s = this._stmts();
-    const args = this._objToRow(id, obj);
-    s.set.run(...args);
+    const store = readStore();
+    store[this.table][id] = obj;
+    writeStore(store);
     return this;
   }
 
   has(id) {
-    const s = this._stmts();
-    return !!s.has.get(id);
+    return !!this.get(id);
   }
 
   delete(id) {
-    const s = this._stmts();
-    const info = s.delete.run(id);
-    return info.changes > 0;
+    const store = readStore();
+    if (!store[this.table][id]) return false;
+    delete store[this.table][id];
+    writeStore(store);
+    return true;
   }
 
   get size() {
-    const s = this._stmts();
-    return s.count.get().n;
+    return Object.keys(readStore()[this.table]).length;
   }
 
   values() {
-    const s = this._stmts();
-    return s.all.all().map((row) => this._rowToObj(row));
+    return Object.values(readStore()[this.table]);
   }
 
   entries() {
-    const s = this._stmts();
-    return s.all.all().map((row) => [row.id, this._rowToObj(row)]);
+    return Object.entries(readStore()[this.table]);
   }
 
   forEach(cb) {
-    for (const [id, obj] of this.entries()) {
-      cb(obj, id, this);
-    }
+    for (const [id, obj] of this.entries()) cb(obj, id, this);
   }
 
   [Symbol.iterator]() {
@@ -206,124 +87,65 @@ class DBMap {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Placement CRUD (separate from Maps since placements aren't Map-shaped)
-// ---------------------------------------------------------------------------
-
 function savePlacement(placement) {
-  const d = getDb();
-  const stmt = d.prepare(
-    "INSERT INTO placements (profile_id, circle_id, confidence_label, fit_reasons, user_state, is_new_circle, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)"
-  );
-  const info = stmt.run(
-    placement.profileId,
-    placement.primaryCircle?.id || null,
-    placement.confidenceLabel || null,
-    JSON.stringify(placement.fitReasons || []),
-    placement.userState || "proposed",
-    placement.isNewCircle ? 1 : 0,
-    new Date().toISOString()
-  );
-  return info.lastInsertRowid;
+  const store = readStore();
+  const id = store.placements.reduce((max, row) => Math.max(max, Number(row.id) || 0), 0) + 1;
+  store.placements.push({
+    id,
+    profileId: placement.profileId,
+    circleId: placement.primaryCircle?.id || null,
+    confidenceLabel: placement.confidenceLabel || null,
+    fitReasons: placement.fitReasons || [],
+    userState: placement.userState || "proposed",
+    isNewCircle: !!placement.isNewCircle,
+    createdAt: new Date().toISOString()
+  });
+  writeStore(store);
+  return id;
 }
 
 function getPlacementsByProfile(profileId) {
-  const d = getDb();
-  const rows = d.prepare("SELECT * FROM placements WHERE profile_id = ? ORDER BY created_at DESC").all(profileId);
-  return rows.map((r) => ({
-    id: r.id,
-    profileId: r.profile_id,
-    circleId: r.circle_id,
-    confidenceLabel: r.confidence_label,
-    fitReasons: JSON.parse(r.fit_reasons),
-    userState: r.user_state,
-    isNewCircle: !!r.is_new_circle,
-    createdAt: r.created_at,
-  }));
+  return readStore().placements
+    .filter((row) => row.profileId === profileId)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
 function getAllPlacements() {
-  const d = getDb();
-  const rows = d.prepare("SELECT * FROM placements ORDER BY created_at DESC").all();
-  return rows.map((r) => ({
-    id: r.id,
-    profileId: r.profile_id,
-    circleId: r.circle_id,
-    confidenceLabel: r.confidence_label,
-    fitReasons: JSON.parse(r.fit_reasons),
-    userState: r.user_state,
-    isNewCircle: !!r.is_new_circle,
-    createdAt: r.created_at,
-  }));
+  return readStore().placements.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
-// ---------------------------------------------------------------------------
-// Transcript storage (for Phase 1 item #3 — wire voice transcript)
-// ---------------------------------------------------------------------------
-
 function saveTranscript(transcript, profileId) {
-  const d = getDb();
-  // Create table if not exists
-  d.exec(`
-    CREATE TABLE IF NOT EXISTS transcripts (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      profile_id TEXT,
-      content TEXT NOT NULL,
-      created_at TEXT NOT NULL
-    );
-  `);
-  const stmt = d.prepare("INSERT INTO transcripts (profile_id, content, created_at) VALUES (?, ?, ?)");
-  return stmt.run(profileId || null, transcript, new Date().toISOString()).lastInsertRowid;
+  const store = readStore();
+  const id = store.transcripts.reduce((max, row) => Math.max(max, Number(row.id) || 0), 0) + 1;
+  store.transcripts.push({ id, profileId: profileId || null, content: transcript, createdAt: new Date().toISOString() });
+  writeStore(store);
+  return id;
 }
 
 function getTranscriptsByProfile(profileId) {
-  const d = getDb();
-  try {
-    return d.prepare("SELECT * FROM transcripts WHERE profile_id = ? ORDER BY created_at DESC").all(profileId);
-  } catch {
-    return [];
-  }
+  return readStore().transcripts
+    .filter((row) => row.profileId === profileId)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
-// ---------------------------------------------------------------------------
-// Device auth (anonymous UUID)
-// ---------------------------------------------------------------------------
-
 function registerDevice(deviceId) {
-  const d = getDb();
+  const store = readStore();
   const now = new Date().toISOString();
-  d.prepare(
-    "INSERT OR IGNORE INTO devices (id, created_at, last_seen_at) VALUES (?, ?, ?)"
-  ).run(deviceId, now, now);
-  d.prepare("UPDATE devices SET last_seen_at = ? WHERE id = ?").run(now, deviceId);
-  return { id: deviceId, createdAt: now, lastSeenAt: now };
+  const existing = store.devices[deviceId];
+  store.devices[deviceId] = { id: deviceId, createdAt: existing?.createdAt || now, lastSeenAt: now };
+  writeStore(store);
+  return store.devices[deviceId];
 }
 
 function getDevice(deviceId) {
-  const d = getDb();
-  const row = d.prepare("SELECT * FROM devices WHERE id = ?").get(deviceId);
-  if (!row) return null;
-  return { id: row.id, createdAt: row.created_at, lastSeenAt: row.last_seen_at };
+  return readStore().devices[deviceId] || null;
 }
 
 function getProfilesByDevice(deviceId) {
-  const d = getDb();
-  const rows = d.prepare("SELECT * FROM profiles WHERE device_id = ? ORDER BY synthesized_at DESC").all(deviceId);
-  return rows.map((row) => ({
-    profileId: row.id,
-    deviceId: row.device_id,
-    signals: JSON.parse(row.signals),
-    sourceInput: {
-      interviewExcerpt: row.source_interview,
-      reflectionAnswers: JSON.parse(row.source_reflections),
-    },
-    synthesizedAt: row.synthesized_at,
-  }));
+  return Object.values(readStore().profiles)
+    .filter((profile) => profile.deviceId === deviceId)
+    .sort((a, b) => String(b.synthesizedAt).localeCompare(String(a.synthesizedAt)));
 }
-
-// ---------------------------------------------------------------------------
-// Export
-// ---------------------------------------------------------------------------
 
 module.exports = {
   getDb,
@@ -336,5 +158,5 @@ module.exports = {
   registerDevice,
   getDevice,
   getProfilesByDevice,
-  DB_PATH,
+  DB_PATH
 };

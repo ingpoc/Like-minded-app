@@ -1,20 +1,20 @@
 import Foundation
 
 enum AppTab: String, CaseIterable, Identifiable {
-    case place = "Place"
-    case reflect = "Talk"
-    case connect = "Connect"
+    case talk = "Talk"
+    case circles = "Circles"
+    case profile = "Profile"
 
     var id: String { rawValue }
 
     var systemImage: String {
         switch self {
-        case .place:
-            return "location.circle"
-        case .reflect:
+        case .talk:
             return "waveform.circle"
-        case .connect:
-            return "person.2.wave.2"
+        case .circles:
+            return "person.3.fill"
+        case .profile:
+            return "person.crop.circle"
         }
     }
 }
@@ -64,6 +64,41 @@ struct ReflectPlaceConnectRequest: Encodable {
 
 struct RealtimeSessionRequest: Encodable {
     let safetyIdentifier: String
+}
+
+struct AppleAuthRequest: Encodable {
+    let identityToken: String
+    let authorizationCode: String?
+    let fullName: String?
+}
+
+struct AppleAuthResponse: Decodable {
+    let user: APIUser
+    let sessionToken: String
+    let expiresIn: Int
+}
+
+struct APIUser: Decodable {
+    let id: String
+    let email: String?
+    let fullName: String?
+}
+
+struct ProfileUpdateRequest: Encodable {
+    let reflectionSummary: String?
+    let signals: ProfileSignals?
+}
+
+struct PlacementActionRequest: Encodable {
+    let action: String
+}
+
+struct FeedbackRequest: Encodable {
+    let profileId: String?
+    let placementId: String?
+    let rating: Int
+    let message: String
+    let appVersion: String
 }
 
 struct ProfileSignals: Codable, Equatable {

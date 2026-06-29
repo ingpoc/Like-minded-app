@@ -1,5 +1,9 @@
 # Bootstrap And Discovery
 
+## Control Owner
+
+Global `/Users/gurusharan/.codex/AGENTS.md` owns instruction control. This workflow describes repo bootstrap checks only.
+
 Workflow for adding or discovering the first real project structure.
 
 ## Entry

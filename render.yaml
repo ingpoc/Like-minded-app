@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: likeminded-api
+    runtime: node
+    plan: starter
+    buildCommand: npm ci && npm run migrate:api
+    startCommand: npm run dev:api
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: HOST
+        value: 0.0.0.0
+      - key: DATABASE_URL
+        sync: false
+      - key: SESSION_SECRET
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_REALTIME_MODEL
+        value: gpt-realtime-2
+      - key: OPENAI_REALTIME_VOICE
+        value: marin
+      - key: APPLE_BUNDLE_ID
+        value: com.likeminded.app
+      - key: APPLE_CLIENT_ID
+        value: com.likeminded.app
+      - key: APPLE_AUTH_BYPASS
+        value: "0"

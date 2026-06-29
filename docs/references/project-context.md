@@ -7,17 +7,23 @@ Reference for stable Like-minded-app repo facts. This doc owns current repo evid
 - Workspace path: `/Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app`
 - The checkout began empty and now has a first project spine: `apps/ios-macos`, `services/api`, `services/ai-orchestrator`, `packages/shared-schemas`, `infra`, and `docs`
 - Root `package.json` exists for dependency-light Node checks and the local API health endpoint
-- The Node API exposes mock MVP routes for profile synthesis, recommendations, and `POST /v1/mvp/reflect-place-connect`; `POST /v1/realtime/session` brokers OpenAI Realtime client secrets when `OPENAI_API_KEY` is configured server-side. Production defaults to `gpt-realtime-2`; local testing uses `OPENAI_REALTIME_MODEL=gpt-realtime-1.5`.
-- The SwiftUI prototype is now a multi-file shell with an `XcodeGen` project spec at `apps/ios-macos/project.yml`
-- The Talk surface uses `RealtimeVoiceClient` to connect to OpenAI Realtime over WebSocket, request microphone permission, stream PCM audio chunks, and commit voice input for signal extraction
+- The Node API now has an authenticated MVP placement path: `POST /v1/auth/apple`, protected `POST /v1/discover`, `GET/PATCH /v1/me/profile`, `GET /v1/me/placement`, `POST /v1/me/placement/actions`, and `POST /v1/feedback`.
+- Production persistence target is Neon/Postgres through `DATABASE_URL`; local development and smoke grading use JSON files under `data/` or `LIKEMINDED_DB_DIR`.
+- Mock/profile/recommendation routes still exist for development, but TestFlight placement should use the authenticated `/v1/*` MVP path.
+- `POST /v1/realtime/session` and `POST /v1/realtime/calls` require an app session and broker OpenAI Realtime access when `OPENAI_API_KEY` is configured server-side. Production defaults to `gpt-realtime-2`; local testing uses `OPENAI_REALTIME_MODEL=gpt-realtime-1.5`.
+- The SwiftUI app is now auth-gated with Sign in with Apple, has MVP tabs `Talk`, `Circles`, and `Profile`, and uses bundle id `com.likeminded.app`.
+- The Talk surface uses `RealtimeVoiceClient` to connect to OpenAI Realtime over WebRTC through the backend, request microphone permission, stream PCM audio chunks, and commit voice input for signal extraction
 - The native run surface is `./script/build_and_run.sh`, which generates the Xcode project, builds the `Likeminded` iOS target, and launches it in the simulator
+- `GOAL.md` owns the ultimate product goal; `goal.json` owns the current per-session goal, deterministic graders, simulator validation, rubric, and subagent model/effort routing. Start sessions by reading `PROGRESS.md` and `goal.json`.
+- Deterministic MVP validation is `npm run check`, `npm run smoke:mvp`, `npm run verify:release-config`, `npm run verify:goal`, `npm run migrate:api`, `workflow --docs-dir ... lint`, and `./script/build_and_run.sh --verify` when native files changed.
 
 ## Boundaries
 
-- Do not assume frontend framework, database, hosting target, authentication provider, or test runner
-- Do not confuse mock routes with production integrations; the Realtime session route is a real OpenAI boundary but still lacks app auth, persistence, quota controls, and production observability
+- Do not assume a frontend framework beyond SwiftUI or a backend framework beyond the current Node HTTP service
+- Do not confuse mock routes with production integrations; the authenticated MVP path is the TestFlight path
 - Do not treat the Node health endpoint as the final backend framework decision
 - Do not treat the current iOS simulator target as the final native project strategy
+- Do not enable `APPLE_AUTH_BYPASS=1` outside local API-only tests
 - Treat simulator voice verification as transport/state verification; real spoken profile-signal quality still needs device or simulator audio-input testing with an audible utterance
 - Do not add project-local agents until the user accepts a recommendation and `workflow summary subagent-playbook` has been checked
 - Prefer durable repo docs over long repeated instruction prose in `AGENTS.md`

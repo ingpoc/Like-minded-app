@@ -1,28 +1,38 @@
 import SwiftUI
 
 struct RootView: View {
-    @State private var selection: AppTab = .place
+    @EnvironmentObject private var appState: PrototypeAppState
+    @State private var selection: AppTab = .talk
 
     var body: some View {
-        TabView(selection: $selection) {
-            TodayPrototypeView()
-                .tabItem {
-                    Label(AppTab.place.rawValue, systemImage: AppTab.place.systemImage)
-                }
-                .tag(AppTab.place)
+        Group {
+            if appState.isSignedIn {
+                TabView(selection: $selection) {
+                    ReflectionPrototypeView()
+                        .tabItem {
+                            Label(AppTab.talk.rawValue, systemImage: AppTab.talk.systemImage)
+                        }
+                        .tag(AppTab.talk)
 
-            ReflectionPrototypeView()
-                .tabItem {
-                    Label(AppTab.reflect.rawValue, systemImage: AppTab.reflect.systemImage)
-                }
-                .tag(AppTab.reflect)
+                    CirclesPrototypeView()
+                        .tabItem {
+                            Label(AppTab.circles.rawValue, systemImage: AppTab.circles.systemImage)
+                        }
+                        .tag(AppTab.circles)
 
-            ConnectionsPrototypeView()
-                .tabItem {
-                    Label(AppTab.connect.rawValue, systemImage: AppTab.connect.systemImage)
+                    ProfilePrototypeView()
+                        .tabItem {
+                            Label(AppTab.profile.rawValue, systemImage: AppTab.profile.systemImage)
+                        }
+                        .tag(AppTab.profile)
                 }
-                .tag(AppTab.connect)
+                .tint(PrototypePalette.accent)
+                .task {
+                    await appState.loadCurrentPlacement()
+                }
+            } else {
+                AuthGateView()
+            }
         }
-        .tint(PrototypePalette.accent)
     }
 }

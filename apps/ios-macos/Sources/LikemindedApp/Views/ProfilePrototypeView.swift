@@ -19,8 +19,13 @@ struct ReflectionPrototypeView: View {
                 profileSignals
                     .likemindedEntrance(order: 1, isActive: hasEntered, y: 14, scale: 0.98)
 
-                placementPreview
-                    .likemindedEntrance(order: 2, isActive: hasEntered, y: 14, scale: 0.98)
+                if appState.slice == nil {
+                    emptyPlacementCard
+                        .likemindedEntrance(order: 2, isActive: hasEntered, y: 14, scale: 0.98)
+                } else {
+                    placementPreview
+                        .likemindedEntrance(order: 2, isActive: hasEntered, y: 14, scale: 0.98)
+                }
 
                 voiceSignalCapture
                     .likemindedEntrance(order: 3, isActive: hasEntered, y: 14, scale: 0.98)
@@ -38,6 +43,15 @@ struct ReflectionPrototypeView: View {
         .task {
             guard !hasEntered else { return }
             hasEntered = true
+        }
+    }
+
+    private var emptyPlacementCard: some View {
+        FeatureCard(title: "No placement yet", eyebrow: "Ready") {
+            Text("Start a voice profile. When the interview ends, Likeminded will create your private profile and first circle placement.")
+                .font(PrototypeTypography.body)
+                .foregroundStyle(PrototypePalette.subink)
+                .fixedSize(horizontal: false, vertical: true)
         }
     }
 

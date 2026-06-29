@@ -8,3 +8,8 @@ DerivedData/
 xcuserdata/
 .context-graph/
 /data/
+node_modules/
+__pycache__/
+*.pyc
+*.egg-info/
+codex.js

@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "goal": "Deliver the Likeminded TestFlight MVP placement loop: signed-in tester can complete voice onboarding, receive a persisted backend profile and circle placement, review/edit the profile, accept/swap/defer placement, submit feedback, and pass deterministic graders plus simulator/device validation before calling it done.",
+  "ultimate_goal_source": "GOAL.md",
+  "progress_source": "PROGRESS.md",
+  "session_start": {
+    "first_reads": [
+      "GOAL.md",
+      "PROGRESS.md",
+      "goal.json",
+      "docs/workflows/validation.md"
+    ],
+    "first_commands": [
+      "./script/project_context.sh query --task \"<current task>\"",
+      "git status --short"
+    ],
+    "rule": "Know current state first, then make it work, verify and validate, remove stale items, simplify, optimize, and automate."
+  },
+  "deterministic_graders": [
+    {
+      "name": "node_syntax",
+      "command": "npm run check",
+      "cost": "zero_token",
+      "proves": "JavaScript entrypoints and grader scripts parse."
+    },
+    {
+      "name": "mvp_backend_contract",
+      "command": "npm run smoke:mvp",
+      "cost": "zero_token",
+      "proves": "Auth-gated discovery, persisted profile/placement, placement action, feedback, and cross-user isolation work locally."
+    },
+    {
+      "name": "release_static_config",
+      "command": "npm run verify:release-config",
+      "cost": "zero_token",
+      "proves": "TestFlight-critical bundle id, entitlements, API base URL, Render env, and privacy-policy files are configured."
+    },
+    {
+      "name": "goal_contract",
+      "command": "npm run verify:goal",
+      "cost": "zero_token",
+      "proves": "goal.json and goal.template.json contain the current grader, validation, rubric, and agent routing contract."
+    },
+    {
+      "name": "repo_docs_lint",
+      "command": "workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs lint",
+      "cost": "zero_token",
+      "proves": "Repo docs follow the local workflow documentation contract."
+    },
+    {
+      "name": "native_build_launch",
+      "command": "./script/build_and_run.sh --verify",
+      "cost": "zero_token",
+      "proves": "XcodeGen project builds, installs, and launches the iOS app in simulator as com.likeminded.app."
+    }
+  ],
+  "simulator_validation": {
+    "requires_model_backed_judgment": true,
+    "preferred_agent": {
+      "name": "validation-release",
+      "model": "gpt-5.4-mini",
+      "effort": "medium",
+      "use_when": "Simulator or build verification is read-heavy, screenshot-based, or likely to produce long logs."
+    },
+    "checks": [
+      "Fresh install shows Sign in with Apple gate, not old prototype tabs.",
+      "After sign-in, tabs are Talk, Circles, Profile.",
+      "Talk can start Realtime voice through the authenticated backend path.",
+      "Stopping voice creates placement UI without mock fallback.",
+      "Circles accept/swap/defer visibly round-trips through backend state.",
+      "Profile edit and feedback paths are visible and retryable."
+    ]
+  },
+  "subagents": {
+    "default_policy": "Do not create new agents unless repeated work is not already owned by an existing project agent.",
+    "allowed": [
+      {
+        "name": "validation-release",
+        "model": "gpt-5.4-mini",
+        "effort": "medium",
+        "can_do": [
+          "run deterministic graders",
+          "inspect simulator screenshots",
+          "summarize failing assertions and likely owner files",
+          "propose the smallest fix"
+        ],
+        "cannot_do": [
+          "change product scope",
+          "weaken assertions",
+          "touch secrets or external accounts",
+          "change API/auth/persistence/deployment strategy",
+          "edit files unless the main thread assigns a bounded patch"
+        ]
+      },
+      {
+        "name": "native-app",
+        "model": "gpt-5.5",
+        "effort": "medium",
+        "can_do": [
+          "bounded SwiftUI/native project fixes after deterministic failure evidence"
+        ],
+        "cannot_do": [
+          "change backend contracts",
+          "change TestFlight criteria",
+          "replace the native project strategy without approval"
+        ]
+      },
+      {
+        "name": "backend-authority",
+        "model": "gpt-5.5",
+        "effort": "high",
+        "can_do": [
+          "bounded backend auth, persistence, or API contract fixes after deterministic failure evidence"
+        ],
+        "cannot_do": [
+          "change iOS UI",
+          "change external deployment provider",
+          "loosen privacy or auth boundaries"
+        ]
+      }
+    ]
+  },
+  "rubric": {
+    "criteria": [
+      {
+        "name": "mvp_loop_correctness",
+        "weight": 0.4,
+        "min_score": 0.8
+      },
+      {
+        "name": "deterministic_coverage",
+        "weight": 0.25,
+        "min_score": 0.8
+      },
+      {
+        "name": "simulator_or_device_evidence",
+        "weight": 0.2,
+        "min_score": 0.7
+      },
+      {
+        "name": "stale_surface_removed",
+        "weight": 0.15,
+        "min_score": 0.7
+      }
+    ],
+    "min_score": 0.8
+  },
+  "completion_commit": {
+    "required": true,
+    "when": "After all required deterministic and simulator/device validation passes, and before marking the session goal complete.",
+    "must_include": [
+      "goal.json",
+      "all implementation, validation, doc, and stale-cleanup files changed for the session"
+    ],
+    "commit_message_template": "Validate <short session goal>"
+  },
+  "done_criteria": [
+    "All deterministic graders pass.",
+    "Simulator build and launch pass.",
+    "Real Apple sign-in is configured and verified.",
+    "Deployed HTTPS API uses Render plus Neon/Postgres or an explicitly accepted replacement.",
+    "A signed-in tester completes voice onboarding through persisted placement, profile edit, placement action, and feedback on simulator or device.",
+    "No stale docs or config describe prototype tabs, prototype bundle id, no auth, or SQLite as the production path.",
+    "Validated session changes are committed with the session's goal.json before the goal is marked complete."
+  ],
+  "max_iterations": 10
+}

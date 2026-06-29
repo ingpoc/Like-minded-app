@@ -13,6 +13,18 @@ const {
   createCircleFromProfile
 } = require("./lib/architecture");
 const { savePlacement, getAllPlacements, getPlacementsByProfile, saveTranscript, registerDevice, getDevice, getProfilesByDevice } = require("./lib/db");
+const { bearerToken, createSessionToken, verifyAppleIdentityToken, verifySessionToken } = require("./lib/auth");
+const {
+  migrateMvpStore,
+  upsertAppleUser,
+  getUserById,
+  saveProfilePlacement,
+  getLatestProfile,
+  getLatestPlacement,
+  updateLatestProfile,
+  updateLatestPlacement,
+  saveFeedback
+} = require("./lib/mvp-store");
 
 function loadLocalEnv() {
   const envPath = path.resolve(process.cwd(), ".env.local");
@@ -65,6 +77,33 @@ function readRawBody(req) {
   });
 }
 
+async function currentUser(req) {
+  const token = bearerToken(req);
+  if (!token) return null;
+  const session = verifySessionToken(token);
+  return getUserById(session.sub);
+}
+
+async function requireUser(req, res) {
+  try {
+    const user = await currentUser(req);
+    if (user) return user;
+  } catch {
+    // Fall through to the standard auth response.
+  }
+  json(res, 401, { error: "unauthorized", message: "Sign in with Apple is required." });
+  return null;
+}
+
+function resultEnvelope(profile, placement, allCircleFits = null) {
+  return {
+    profileId: profile.profileId,
+    signals: profile.signals,
+    placement,
+    allCircleFits
+  };
+}
+
 async function createRealtimeClientSecret(input = {}) {
   if (!process.env.OPENAI_API_KEY) {
     return { statusCode: 503, body: { error: "openai_api_key_missing", message: "Set OPENAI_API_KEY on the API server to create a realtime voice session." } };
@@ -92,7 +131,29 @@ async function handleRequest(req, res) {
     const { DB_PATH } = require("./lib/db");
     const fs = require("node:fs");
     const dbExists = fs.existsSync(DB_PATH);
-    json(res, 200, { status: "ok", service: "likeminded-api", version: "0.1.0", db: dbExists ? "sqlite" : "none", dbPath: DB_PATH });
+    json(res, 200, {
+      status: "ok",
+      service: "likeminded-api",
+      version: "0.1.0",
+      db: process.env.DATABASE_URL ? "postgres" : dbExists ? "sqlite" : "none",
+      dbPath: process.env.DATABASE_URL ? undefined : DB_PATH
+    });
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname === "/v1/auth/apple") {
+    try {
+      const body = await readJsonBody(req);
+      const applePayload = await verifyAppleIdentityToken(body.identityToken);
+      const user = await upsertAppleUser({
+        appleSub: applePayload.sub,
+        email: applePayload.email,
+        fullName: typeof body.fullName === "string" ? body.fullName.trim() : null
+      });
+      json(res, 200, { user, sessionToken: createSessionToken(user), expiresIn: 60 * 60 * 24 * 30 });
+    } catch (error) {
+      json(res, 401, { error: "apple_auth_failed", message: error.message });
+    }
     return;
   }
 
@@ -153,6 +214,8 @@ async function handleRequest(req, res) {
   }
 
   if (req.method === "POST" && url.pathname === "/v1/realtime/session") {
+    const user = await requireUser(req, res);
+    if (!user) return;
     try {
       const body = await readJsonBody(req);
       const result = await createRealtimeClientSecret(body);
@@ -166,6 +229,8 @@ async function handleRequest(req, res) {
   // POST /v1/realtime/calls — WebRTC SDP exchange (unified interface)
   // Client sends SDP offer as text/plain, server forwards to OpenAI with session config
   if (req.method === "POST" && url.pathname === "/v1/realtime/calls") {
+    const user = await requireUser(req, res);
+    if (!user) return;
     try {
       const sdp = await readRawBody(req);
       if (!sdp.trim()) {
@@ -245,6 +310,8 @@ async function handleRequest(req, res) {
 
   // POST /v1/discover — AI interview → personality profile → circle placement
   if (req.method === "POST" && url.pathname === "/v1/discover") {
+    const user = await requireUser(req, res);
+    if (!user) return;
     try {
       const body = await readJsonBody(req);
       const { interviewTranscript, reflectionAnswers } = body || {};
@@ -253,21 +320,101 @@ async function handleRequest(req, res) {
       profile.deviceId = deviceId;
       profiles.set(profile.profileId, profile);
       const fits = matchCircles(profile.signals);
-      const createNew = shouldCreateNewCircle(profile.signals, fits);
       const placement = buildPlacement(profile);
 
-      // Persist placement and transcript
-      savePlacement({ ...placement, profileId: profile.profileId });
-      if (interviewTranscript) saveTranscript(interviewTranscript, profile.profileId);
+      await saveProfilePlacement({ userId: user.id, profile, placement, transcript: interviewTranscript });
 
-      json(res, 200, {
-        profileId: profile.profileId,
-        signals: profile.signals,
-        placement,
-        allCircleFits: fits.map(f => ({ circleId: f.circle.id, name: f.circle.name, score: Math.round(f.score * 100) / 100 }))
-      });
+      json(res, 200, resultEnvelope(profile, placement, fits.map(f => ({ circleId: f.circle.id, name: f.circle.name, score: Math.round(f.score * 100) / 100 }))));
     } catch (error) {
       json(res, 400, { error: "invalid_json", message: error.message });
+    }
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/v1/me/profile") {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    const profile = await getLatestProfile(user.id);
+    if (!profile) {
+      json(res, 404, { error: "profile_not_found", message: "No profile has been created yet." });
+      return;
+    }
+    json(res, 200, { profile });
+    return;
+  }
+
+  if (req.method === "PATCH" && url.pathname === "/v1/me/profile") {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    try {
+      const body = await readJsonBody(req);
+      const profile = await updateLatestProfile(user.id, {
+        reflectionSummary: typeof body.reflectionSummary === "string" ? body.reflectionSummary.trim() : null,
+        signals: body.signals && typeof body.signals === "object" ? body.signals : null
+      });
+      if (!profile) {
+        json(res, 404, { error: "profile_not_found", message: "No profile has been created yet." });
+        return;
+      }
+      json(res, 200, { profile });
+    } catch (error) {
+      json(res, 400, { error: "invalid_profile_update", message: error.message });
+    }
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/v1/me/placement") {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    const profile = await getLatestProfile(user.id);
+    const placed = await getLatestPlacement(user.id);
+    if (!profile || !placed) {
+      json(res, 404, { error: "placement_not_found", message: "No placement has been created yet." });
+      return;
+    }
+    json(res, 200, { ...resultEnvelope(profile, placed.placement), placementId: placed.id });
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname === "/v1/me/placement/actions") {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    try {
+      const body = await readJsonBody(req);
+      const action = String(body.action || "");
+      if (!["accept", "defer", "swap"].includes(action)) {
+        json(res, 400, { error: "invalid_placement_action", message: "Use action accept, defer, or swap." });
+        return;
+      }
+      const placed = await updateLatestPlacement(user.id, action);
+      if (!placed) {
+        json(res, 404, { error: "placement_not_found", message: "No placement has been created yet." });
+        return;
+      }
+      const profile = await getLatestProfile(user.id);
+      json(res, 200, { ...resultEnvelope(profile, placed.placement), placementId: placed.id });
+    } catch (error) {
+      json(res, 400, { error: "invalid_placement_action", message: error.message });
+    }
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname === "/v1/feedback") {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    try {
+      const body = await readJsonBody(req);
+      await saveFeedback({
+        userId: user.id,
+        profileId: body.profileId,
+        placementId: body.placementId,
+        rating: Number.isInteger(body.rating) ? body.rating : null,
+        message: typeof body.message === "string" ? body.message.trim() : null,
+        appVersion: typeof body.appVersion === "string" ? body.appVersion.trim() : null
+      });
+      json(res, 201, { status: "saved" });
+    } catch (error) {
+      json(res, 400, { error: "invalid_feedback", message: error.message });
     }
     return;
   }
@@ -403,7 +550,14 @@ const server = http.createServer((req, res) => {
   });
 });
 
-server.listen(PORT, HOST, () => {
-  console.log(`likeminded-api listening on http://${HOST}:${PORT}`);
-  console.log(`Circles seeded: ${circles.size} archetypes`);
-});
+migrateMvpStore()
+  .then(() => {
+    server.listen(PORT, HOST, () => {
+      console.log(`likeminded-api listening on http://${HOST}:${PORT}`);
+      console.log(`Circles seeded: ${circles.size} archetypes`);
+    });
+  })
+  .catch((error) => {
+    console.error(`likeminded-api failed to start: ${error.message}`);
+    process.exit(1);
+  });

@@ -1,8 +1,13 @@
+import AuthenticationServices
 import Foundation
 
 @MainActor
 final class PrototypeAppState: ObservableObject {
+    @Published var authSession = AuthSessionStore.load()
+    @Published var isAuthenticating = false
+    @Published var authError: String?
     @Published var slice: ReflectPlaceConnectSlice?
+    @Published var placementId: String?
     @Published var isLoading = false
     @Published var sourceLabel = "Loading"
     @Published var loadError: String?
@@ -17,8 +22,11 @@ final class PrototypeAppState: ObservableObject {
     @Published var isSynthesizingPlacement = false
     @Published var realtimeTranscript = ""
 
-    private let client = LikemindedAPIClient()
     private let voiceClient = RealtimeVoiceClient()
+
+    private var client: LikemindedAPIClient {
+        LikemindedAPIClient(authToken: authSession?.token)
+    }
 
     static let defaultReflectionAnswers = [
         "Slow, honest conversations.",
@@ -28,6 +36,10 @@ final class PrototypeAppState: ObservableObject {
 
     var activeSlice: ReflectPlaceConnectSlice {
         slice ?? PrototypeData.reflectPlaceConnectSlice
+    }
+
+    var isSignedIn: Bool {
+        authSession != nil
     }
 
     var currentPlacement: CirclePlacement {
@@ -90,10 +102,75 @@ final class PrototypeAppState: ObservableObject {
         realtimeStatus == RealtimeVoicePhase.streaming.rawValue || realtimeStatus == RealtimeVoicePhase.stopping.rawValue
     }
 
+    func signIn(with credential: ASAuthorizationAppleIDCredential) async {
+        guard let identityTokenData = credential.identityToken,
+              let identityToken = String(data: identityTokenData, encoding: .utf8) else {
+            authError = "Apple did not return an identity token."
+            return
+        }
+        let authorizationCode = credential.authorizationCode.flatMap { String(data: $0, encoding: .utf8) }
+        let formatter = PersonNameComponentsFormatter()
+        let fullName = credential.fullName.map { formatter.string(from: $0) }
+        isAuthenticating = true
+        authError = nil
+        do {
+            let response = try await client.authenticateWithApple(
+                identityToken: identityToken,
+                authorizationCode: authorizationCode,
+                fullName: fullName?.isEmpty == false ? fullName : nil
+            )
+            let session = AuthSession(
+                userId: response.user.id,
+                token: response.sessionToken,
+                email: response.user.email,
+                fullName: response.user.fullName
+            )
+            AuthSessionStore.save(session)
+            authSession = session
+            await loadCurrentPlacement()
+        } catch {
+            authError = error.localizedDescription
+        }
+        isAuthenticating = false
+    }
+
+    func signOut() {
+        AuthSessionStore.clear()
+        authSession = nil
+        slice = nil
+        placementId = nil
+        realtimeSession = nil
+        authError = nil
+        loadError = nil
+        voiceClient.disconnect()
+    }
+
+    func loadCurrentPlacement() async {
+        guard isSignedIn else { return }
+        isLoading = true
+        do {
+            let result = try await client.fetchMyPlacement()
+            applyProfileResult(result, source: "Saved placement")
+            loadError = nil
+        } catch {
+            if slice == nil {
+                sourceLabel = "Ready"
+            }
+            loadError = nil
+        }
+        isLoading = false
+    }
+
     func startVoiceSession() async {
+        guard isSignedIn else {
+            authError = "Sign in before starting a voice profile."
+            return
+        }
         isStartingVoice = true
         realtimeStatus = "Opening"
         realtimeError = nil
+        voiceClient.authToken = authSession?.token
+        voiceClient.baseURL = client.baseURL
 
         do {
             // WebRTC flow — no client secret needed, SDP exchange handles auth
@@ -138,17 +215,12 @@ final class PrototypeAppState: ObservableObject {
         hasConfirmedConnection = false
 
         do {
-            let loadedSlice = try await client.fetchReflectPlaceConnect(reflectionAnswers: currentReflectionAnswers)
-            slice = loadedSlice
-            editedReflection = loadedSlice.profile.reflection.summary
-            sourceLabel = "Mock API"
+            let result = try await client.fetchMyPlacement()
+            applyProfileResult(result, source: "Saved placement")
             loadError = nil
         } catch {
-            if slice == nil {
-                slice = PrototypeData.reflectPlaceConnectSlice
-            }
-            sourceLabel = "Local"
-            loadError = "Mock API offline. Showing local prototype data."
+            sourceLabel = "Ready"
+            loadError = "No saved placement yet. Start a voice profile to create one."
         }
 
         isLoading = false
@@ -165,7 +237,6 @@ final class PrototypeAppState: ObservableObject {
     }
 
     func acceptPlacement() {
-        // Persist any user edits to the profile reflection before accepting
         withMutableSlice { next in
             var updatedProfile = next.profile
             updatedProfile = SynthesizedProfile(
@@ -185,24 +256,18 @@ final class PrototypeAppState: ObservableObject {
             )
             next.profile = updatedProfile
         }
-        updatePlacementState(.accepted)
+        Task {
+            try? await client.updateProfile(reflectionSummary: editedReflection, signals: slice?.signals)
+            await updatePlacementAction("accept")
+        }
     }
 
     func deferPlacement() {
-        updatePlacementState(.deferred)
+        Task { await updatePlacementAction("defer") }
     }
 
     func swapPrimaryCircle() {
-        withMutableSlice { next in
-            guard let nextPrimary = next.placement.secondaryCircles.first else { return }
-
-            let oldPrimary = next.placement.primaryCircle
-            next.placement.primaryCircle = nextPrimary
-            next.placement.secondaryCircles = Array(next.placement.secondaryCircles.dropFirst()) + [oldPrimary]
-            next.placement.userState = .swapped
-        }
-
-        hasConfirmedConnection = false
+        Task { await updatePlacementAction("swap") }
     }
 
     func confirmConnection() {
@@ -221,6 +286,10 @@ final class PrototypeAppState: ObservableObject {
 
     func createProfileFromInterview() async {
         guard !voiceClient.interviewTranscript.isEmpty else { return }
+        guard isSignedIn else {
+            authError = "Sign in before creating a profile."
+            return
+        }
         isSynthesizingPlacement = true
         sourceLabel = "AI interview..."
 
@@ -234,41 +303,71 @@ final class PrototypeAppState: ObservableObject {
                 throw URLError(.zeroByteResource)
             }
 
-            let style = result.signals.communicationStyle?.primary ?? "balanced"
-            let energy = result.signals.socialEnergy ?? "steady"
-            let attachment = result.signals.attachment ?? "secure"
-
-            var newSlice = PrototypeData.reflectPlaceConnectSlice
-            newSlice.profile = SynthesizedProfile(
-                profileId: result.profileId,
-                displayName: "You",
-                values: deriveValues(from: result.signals),
-                communicationStyle: style,
-                emotionalRhythm: energy,
-                relationshipIntent: attachment,
-                interests: deriveInterests(from: result.signals),
-                privacy: ProfilePrivacy(aiReflectionVisibleToUser: true, matchExplanationVisibleToMatches: false),
-                reflection: ProfileReflection(
-                    summary: "AI extracted your personality from \(estimateWordCount(from: voiceClient.interviewTranscript)) words of voice conversation.",
-                    strengths: deriveStrengths(from: result.signals),
-                    nextQuestion: nextQuestion(from: result.signals)
-                )
-            )
-            newSlice.placement = result.placement
-            newSlice.signals = result.signals
-            slice = newSlice
-            sourceLabel = result.placement.isNewCircle ? "New circle for you" : "AI Interview Profile"
+            applyProfileResult(result, source: result.placement.isNewCircle ? "New circle for you" : "AI Interview Profile")
             loadError = nil
         } catch {
-            if slice == nil {
-                slice = PrototypeData.reflectPlaceConnectSlice
-            }
-            sourceLabel = "Local"
-            loadError = "Profile creation offline. Showing prototype data."
+            sourceLabel = "Retry"
+            loadError = "Profile creation failed. Check the API connection and try again."
         }
 
         isSynthesizingPlacement = false
         isLoading = false
+    }
+
+    func submitFeedback(rating: Int, message: String) async {
+        guard !message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        do {
+            try await client.submitFeedback(
+                profileId: slice?.profile.profileId,
+                placementId: placementId,
+                rating: rating,
+                message: message,
+                appVersion: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.1.0"
+            )
+        } catch {
+            loadError = "Feedback could not be sent. Please try again."
+        }
+    }
+
+    private func updatePlacementAction(_ action: String) async {
+        do {
+            let result = try await client.updatePlacement(action: action)
+            applyProfileResult(result, source: "Placement updated")
+            if action != "accept" {
+                hasConfirmedConnection = false
+            }
+            loadError = nil
+        } catch {
+            loadError = "Placement update failed. Please retry."
+        }
+    }
+
+    private func applyProfileResult(_ result: ProfileCircleMatchResult, source: String) {
+        let style = result.signals.communicationStyle?.primary ?? "balanced"
+        let energy = result.signals.socialEnergy ?? "steady"
+        let attachment = result.signals.attachment ?? "secure"
+        var newSlice = PrototypeData.reflectPlaceConnectSlice
+        newSlice.profile = SynthesizedProfile(
+            profileId: result.profileId,
+            displayName: "You",
+            values: deriveValues(from: result.signals),
+            communicationStyle: style,
+            emotionalRhythm: energy,
+            relationshipIntent: attachment,
+            interests: deriveInterests(from: result.signals),
+            privacy: ProfilePrivacy(aiReflectionVisibleToUser: true, matchExplanationVisibleToMatches: false),
+            reflection: ProfileReflection(
+                summary: "AI extracted your personality from \(estimateWordCount(from: voiceClient.interviewTranscript)) words of voice conversation.",
+                strengths: deriveStrengths(from: result.signals),
+                nextQuestion: nextQuestion(from: result.signals)
+            )
+        )
+        newSlice.placement = result.placement
+        newSlice.signals = result.signals
+        slice = newSlice
+        placementId = result.placementId
+        editedReflection = newSlice.profile.reflection.summary
+        sourceLabel = source
     }
 
     private func estimateWordCount(from transcript: String) -> Int {

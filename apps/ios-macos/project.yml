@@ -27,10 +27,11 @@ targets:
       - package: LiveKitWebRTC
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.likeminded.prototype
+        PRODUCT_BUNDLE_IDENTIFIER: com.likeminded.app
         PRODUCT_NAME: Likeminded
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: Likeminded
+        INFOPLIST_KEY_LIKEMINDED_API_BASE_URL: "$(LIKEMINDED_API_BASE_URL)"
         INFOPLIST_KEY_LSRequiresIPhoneOS: YES
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
@@ -39,7 +40,9 @@ targets:
         TARGETED_DEVICE_FAMILY: "1,2"
         SUPPORTS_MACCATALYST: NO
         CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_ENTITLEMENTS: Entitlements/Likeminded.entitlements
         DEVELOPMENT_ASSET_PATHS: "\"\""
+        LIKEMINDED_API_BASE_URL: ""
     scheme:
       gatherCoverageData: false
       testTargets: []

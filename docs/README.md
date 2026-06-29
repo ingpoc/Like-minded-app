@@ -1,5 +1,9 @@
 # Like-minded-app Docs
 
+## Control Owner
+
+Global `/Users/gurusharan/.codex/AGENTS.md` owns instruction control. This index describes repo docs only.
+
 This directory holds progressively loaded repo guidance. Load only the doc needed for the task, using:
 
 ```bash

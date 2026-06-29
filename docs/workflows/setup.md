@@ -1,5 +1,9 @@
 # Setup
 
+## Control Owner
+
+Global `/Users/gurusharan/.codex/AGENTS.md` owns instruction control. This workflow describes local setup only.
+
 One-time setup for new agents working on this repo.
 
 ## Prerequisites
@@ -17,6 +21,10 @@ One-time setup for new agents working on this repo.
 OPENAI_API_KEY=***
 OPENAI_REALTIME_MODEL=gpt-realtime-1.5
 OPENAI_REALTIME_VOICE=marin
+SESSION_SECRET=replace-with-at-least-24-characters
+APPLE_BUNDLE_ID=com.likeminded.app
+APPLE_CLIENT_ID=com.likeminded.app
+APPLE_AUTH_BYPASS=0
 ```
 
 2. Source it before running the API server:
@@ -53,6 +61,10 @@ After editing `project.yml`, run `cd apps/ios-macos && xcodegen generate` to reg
 | Script | Purpose |
 |---|---|
 | `./script/run_api.sh [PORT]` | Start API server with env loaded, handles port conflicts |
+| `npm run migrate:api` | Create MVP API tables/store for the configured backend |
+| `npm run smoke:mvp` | Zero-token MVP backend smoke grader |
+| `npm run verify:release-config` | Zero-token TestFlight static config grader |
+| `npm run verify:goal` | Zero-token per-session goal contract grader |
 | `./script/test_profile.sh "transcript"` | Test personality extraction + circle matching without UI |
 | `./script/build_and_run.sh` | Build, install, launch app in simulator |
 | `./script/build_and_run.sh --logs` | Same + stream app logs |
@@ -62,8 +74,20 @@ After editing `project.yml`, run `cd apps/ios-macos && xcodegen generate` to reg
 
 1. Start API: `./script/run_api.sh`
 2. Build + launch: `./script/build_and_run.sh`
-3. In simulator: tap Talk → grant mic permission → speak to AI interviewer → stop
-4. App sends transcript to `/v1/discover` → personality signals + circle placement appear
+3. Sign in with Apple
+4. In simulator/device: tap Talk → grant mic permission → speak to AI interviewer → stop
+5. App sends transcript to authenticated `/v1/discover` → personality signals + circle placement appear
+
+For local API-only smoke checks without Apple services, `npm run smoke:mvp` uses `APPLE_AUTH_BYPASS=1` in an isolated child process. Do not enable `APPLE_AUTH_BYPASS` in TestFlight or production.
+
+## Session Goal Contract
+
+- `GOAL.md` is the ultimate product goal.
+- `PROGRESS.md` is the current roadmap and state.
+- `goal.template.json` is the template future sessions copy from.
+- `goal.json` is the active per-session goal and grader/subagent contract.
+
+When adding or removing graders, release files, validation commands, or project agents, update both goal JSON files and run `npm run verify:goal`.
 
 ## Testing personality extraction (no UI)
 
