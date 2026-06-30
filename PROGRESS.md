@@ -4,18 +4,6 @@
 
 Global `/Users/gurusharan/.codex/AGENTS.md` owns instruction control. This file tracks repo progress and roadmap state only.
 
-## Session Start Contract
-
-Every session starts from:
-
-1. `GOAL.md` — ultimate product goal.
-2. `PROGRESS.md` — current roadmap and state.
-3. `goal.json` — current per-session goal, deterministic graders, simulator validation, rubric, and subagent model/effort routing.
-4. `docs/workflows/validation.md` — validation contract.
-5. `./script/project_context.sh query --task "<current task>"`.
-
-If graders, validation commands, new release files, or project agents change, update `goal.template.json`, `goal.json`, `docs/workflows/validation.md`, and `docs/references/project-context.md` in the same change.
-
 ## Current Status
 
 - TestFlight MVP target: Sign in with Apple -> voice onboarding -> persisted profile and circle placement -> profile review/edit -> accept/swap/defer -> tester feedback.
@@ -25,6 +13,7 @@ If graders, validation commands, new release files, or project agents change, up
 - Production deployment config targets Render plus Neon/Postgres through `DATABASE_URL`.
 - Local development uses JSON-backed storage; local smoke testing uses isolated temporary JSON data.
 - Deterministic graders exist for backend MVP contract, release config, and goal contract.
+- Local DEBUG simulator proof now covers fresh auth-gate launch, backend dev-auth entry into Talk/Circles/Profile tabs, deterministic transcript-to-placement persistence, saved placement restore, placement actions, profile edit persistence, feedback storage, and authenticated Realtime transport reaching `Listening`/`Captured` when `OPENAI_API_KEY` is configured.
 - Remaining hard blockers are external setup and proof: Apple Developer/App Store Connect, Render, Neon, real Sign in with Apple, and real simulator/device voice-loop validation.
 
 ## Phase 0 — Session Control And Graders
@@ -80,6 +69,20 @@ If graders, validation commands, new release files, or project agents change, up
 - [ ] Profile edit persists.
 - [ ] Feedback submits and stores.
 - [ ] A second tester cannot access the first tester's profile or placement.
+
+### Local DEBUG Simulator Evidence
+
+- [x] Fresh local install can show the Sign in with Apple gate.
+- [x] DEBUG local auth bypass can enter the signed-in app without weakening TestFlight auth.
+- [x] Signed-in app restores a saved local session after relaunch.
+- [x] Tabs are exactly `Talk`, `Circles`, `Profile`.
+- [x] Saved backend placement renders in the app after relaunch.
+- [x] Circles accept/swap/defer persist through backend smoke validation.
+- [x] Profile edit persists through `/v1/me/profile`.
+- [x] Feedback submits and stores through `/v1/feedback`.
+- [x] Realtime voice starts through the authenticated backend path and reaches `Listening` plus `Captured` when a local OpenAI key is configured.
+- [x] Deterministic DEBUG transcript-to-placement creates a persisted profile and placement in the simulator.
+- [ ] Spoken simulator/device audio produces a transcript that creates persisted profile and placement.
 
 ## Deferred Until After MVP Proof
 

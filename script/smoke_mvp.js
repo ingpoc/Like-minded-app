@@ -19,6 +19,7 @@ const child = spawn(process.execPath, ["services/api/src/server.js"], {
     LIKEMINDED_DB_DIR: tmp,
     SESSION_SECRET: "local-smoke-secret-minimum-24-chars",
     APPLE_AUTH_BYPASS: "1",
+    OPENAI_API_KEY: "",
     OPENAI_REALTIME_MODEL: "gpt-realtime-1.5",
     OPENAI_REALTIME_VOICE: "marin"
   },
@@ -42,7 +43,7 @@ async function request(pathname, options = {}) {
       ...(options.token ? { authorization: `Bearer ${options.token}` } : {}),
       ...(options.headers || {})
     },
-    body: options.body ? JSON.stringify(options.body) : undefined
+    body: options.rawBody ?? (options.body ? JSON.stringify(options.body) : undefined)
   });
   const text = await response.text();
   let body = null;
@@ -77,6 +78,11 @@ async function expectStatus(status, pathname, options) {
 
     await expectStatus(401, "/v1/discover", { method: "POST", body: {} });
     await expectStatus(401, "/v1/realtime/session", { method: "POST", body: {} });
+    await expectStatus(401, "/v1/realtime/calls", {
+      method: "POST",
+      headers: { "content-type": "application/sdp" },
+      rawBody: "v=0"
+    });
     await expectStatus(401, "/v1/me/profile", { method: "GET" });
     await expectStatus(401, "/v1/me/placement", { method: "GET" });
     await expectStatus(401, "/v1/feedback", { method: "POST", body: { rating: 4, message: "blocked" } });
@@ -87,6 +93,14 @@ async function expectStatus(status, pathname, options) {
     });
     assert.ok(auth.sessionToken, "auth must return a session token");
     assert.ok(auth.user.id, "auth must return a user id");
+
+    const missingRealtimeKey = await expectStatus(503, "/v1/realtime/calls", {
+      method: "POST",
+      token: auth.sessionToken,
+      headers: { "content-type": "application/sdp" },
+      rawBody: "v=0"
+    });
+    assert.equal(missingRealtimeKey.error, "openai_api_key_missing");
 
     const transcript = "I like honest conversations, thoughtful friends, small warm circles, design, books, and steady trust.";
     const discovered = await expectStatus(200, "/v1/discover", {
@@ -100,16 +114,28 @@ async function expectStatus(status, pathname, options) {
     const profile = await expectStatus(200, "/v1/me/profile", { method: "GET", token: auth.sessionToken });
     assert.equal(profile.profile.profileId, discovered.profileId);
 
+    const editedSummary = "Simulator edited private profile summary.";
+    const updatedProfile = await expectStatus(200, "/v1/me/profile", {
+      method: "PATCH",
+      token: auth.sessionToken,
+      body: { reflectionSummary: editedSummary }
+    });
+    assert.equal(updatedProfile.profile.reflection.summary, editedSummary);
+    const resumedProfile = await expectStatus(200, "/v1/me/profile", { method: "GET", token: auth.sessionToken });
+    assert.equal(resumedProfile.profile.reflection.summary, editedSummary);
+
     const placement = await expectStatus(200, "/v1/me/placement", { method: "GET", token: auth.sessionToken });
     assert.equal(placement.profileId, discovered.profileId);
     assert.ok(placement.placementId, "resume placement must include placementId");
 
-    const accepted = await expectStatus(200, "/v1/me/placement/actions", {
-      method: "POST",
-      token: auth.sessionToken,
-      body: { action: "accept" }
-    });
-    assert.equal(accepted.placement.userState, "accepted");
+    for (const [action, expectedState] of [["defer", "deferred"], ["swap", "swapped"], ["accept", "accepted"]]) {
+      const updated = await expectStatus(200, "/v1/me/placement/actions", {
+        method: "POST",
+        token: auth.sessionToken,
+        body: { action }
+      });
+      assert.equal(updated.placement.userState, expectedState);
+    }
 
     await expectStatus(201, "/v1/feedback", {
       method: "POST",

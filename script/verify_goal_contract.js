@@ -18,8 +18,6 @@ function assertGoalShape(file, goal) {
   assert.ok(goal.goal || goal.purpose, `${file}: goal or purpose is required`);
   assert.equal(goal.ultimate_goal_source, "GOAL.md", `${file}: ultimate goal must point to GOAL.md`);
   assert.equal(goal.progress_source, "PROGRESS.md", `${file}: progress source must point to PROGRESS.md`);
-  assert.ok(goal.session_start?.first_reads?.includes("PROGRESS.md"), `${file}: session_start must read PROGRESS.md`);
-  assert.ok(goal.session_start?.first_reads?.includes("goal.json"), `${file}: session_start must read goal.json`);
 
   const commands = commandSet(goal);
   for (const command of [
@@ -28,7 +26,7 @@ function assertGoalShape(file, goal) {
     "npm run verify:release-config",
     "npm run verify:goal",
     "workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs lint",
-    "./script/build_and_run.sh --verify"
+    "npm run verify:simulator-local"
   ]) {
     assert.ok(commands.has(command), `${file}: missing grader command ${command}`);
   }
@@ -60,6 +58,10 @@ function assertGoalShape(file, goal) {
   assert.ok(
     goal.done_criteria.some((criterion) => criterion.includes("committed") && criterion.includes("goal.json")),
     `${file}: done criteria must require committing goal.json`
+  );
+  assert.ok(
+    goal.done_criteria.some((criterion) => criterion.includes("npm run verify:external-preflight")),
+    `${file}: done criteria must require external preflight verification`
   );
   assert.ok(goal.max_iterations > 0, `${file}: max_iterations must be positive`);
 }

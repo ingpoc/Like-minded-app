@@ -13,6 +13,12 @@ enum AuthSessionStore {
     private static let account = "session"
 
     static func load() -> AuthSession? {
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("--likeminded-reset-auth-session") {
+            clear()
+            return nil
+        }
+        #endif
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,

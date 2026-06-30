@@ -15,14 +15,16 @@ npm run check
 npm run smoke:mvp
 npm run verify:release-config
 npm run verify:goal
+npm run verify:simulator-local
 ```
 
 `npm run smoke:mvp` starts the API on a temporary localhost port with `APPLE_AUTH_BYPASS=1`, uses a temporary local JSON data directory, and verifies:
 - unauthenticated MVP write/read routes return `401`,
 - dev Apple auth returns a session token,
+- authenticated Realtime SDP reaches the backend and reports `openai_api_key_missing` when no local OpenAI key is configured,
 - authenticated discovery creates a profile and placement,
 - resume endpoints return the signed-in user's data,
-- placement accept persists,
+- placement defer, swap, and accept persist,
 - feedback stores,
 - a second tester cannot read the first tester's placement.
 
@@ -34,6 +36,8 @@ npm run verify:goal
 - Render env placeholders include database, session, OpenAI, and Apple settings with `APPLE_AUTH_BYPASS=0`,
 - the TestFlight privacy policy draft exists.
 
+`npm run verify:external-preflight` verifies real external proof has been recorded in `release/testflight-evidence.json`. It should fail before Render, Neon, Apple Developer, App Store Connect, signed TestFlight, and real spoken-audio proof are complete.
+
 `npm run verify:goal` verifies the per-session goal contract:
 - `goal.json` and `goal.template.json` exist and point to `GOAL.md` plus `PROGRESS.md`,
 - deterministic grader commands are current,
@@ -42,7 +46,7 @@ npm run verify:goal
 - completion requires a commit that includes the session's `goal.json` before marking the goal complete,
 - rubric weights are valid.
 
-The API health endpoint can be checked manually after starting `npm run dev:api`:
+The API health endpoint can be checked manually after setting a 24+ character `SESSION_SECRET` in `.env.local` and starting `npm run dev:api`. For local signed-in simulator validation without editing `.env.local`, use `npm run dev:api:local-auth`:
 
 ```sh
 curl http://127.0.0.1:8787/health
@@ -87,17 +91,19 @@ Simulator validation proves the app shell, entitlement, launch, and UI state pat
 6. Run `npm run smoke:mvp` for the zero-token backend MVP contract.
 7. Run `npm run verify:release-config` for static TestFlight config invariants.
 8. Run `npm run verify:goal` after changing goal, progress, validation, grader, or agent-routing files.
-9. If native SwiftUI files, project spec, entitlements, or simulator script changed, run `./script/build_and_run.sh --verify`.
+9. If native SwiftUI files, project spec, entitlements, or simulator script changed, run `npm run verify:simulator-local`.
 10. Capture or inspect a simulator screenshot when UI gating/navigation changed.
-11. After validation passes and before marking the goal complete, commit the validated session changes, including that session's `goal.json`.
-12. If no deeper validation command exists for a touched surface, report that clearly and provide deterministic evidence such as file inventory, syntax checks, or generated artifact inspection.
+11. For local signed-in simulator navigation without Apple account UI, run `npm run verify:simulator-local`; this proves local app/auth routing and deterministic transcript-to-placement persistence, not real Apple sign-in or spoken audio quality.
+12. After validation passes and before marking the goal complete, commit the validated session changes, including that session's `goal.json`.
+13. Before marking the full TestFlight goal complete, run `npm run verify:external-preflight`.
+14. If no deeper validation command exists for a touched surface, report that clearly and provide deterministic evidence such as file inventory, syntax checks, or generated artifact inspection.
 
 ## Delegated Verification
 
 Use the project `validation-release` agent pinned to `gpt-5.4-mini` with `medium` effort when validation is read-heavy, repeatable, screenshot-based, or likely to produce long logs. Keep product and architecture decisions in the main thread.
 
 Allowed delegated work:
-- run `npm run check`, `npm run smoke:mvp`, `npm run verify:release-config`, `npm run verify:goal`, `npm run migrate:api`, `workflow lint`, and `./script/build_and_run.sh --verify`;
+- run `npm run check`, `npm run smoke:mvp`, `npm run verify:release-config`, `npm run verify:goal`, `npm run verify:simulator-local`, `npm run migrate:api`, and `workflow lint`;
 - inspect simulator screenshots for first-run gate, visible tabs, obvious blank screens, and launch state;
 - summarize failures with exact command, failing assertion, likely owner file, and the smallest suggested fix.
 

@@ -224,11 +224,9 @@ async function updateLatestProfile(userId, updates) {
   const profile = await getLatestProfile(userId);
   if (!profile) return null;
   if (updates.signals) profile.signals = updates.signals;
-  if (updates.reflectionSummary && profile.profile?.reflection) {
-    profile.profile.reflection.summary = updates.reflectionSummary;
-  }
-  if (updates.reflectionSummary && profile.reflection) {
-    profile.reflection.summary = updates.reflectionSummary;
+  if (updates.reflectionSummary) {
+    if (profile.profile?.reflection) profile.profile.reflection.summary = updates.reflectionSummary;
+    profile.reflection = { ...(profile.reflection || {}), summary: updates.reflectionSummary };
   }
   const data = JSON.stringify(profile);
   if (isPostgres) {

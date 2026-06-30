@@ -34,5 +34,8 @@ struct RootView: View {
                 AuthGateView()
             }
         }
+        .task {
+            await appState.signInForLocalValidationIfNeeded()
+        }
     }
 }

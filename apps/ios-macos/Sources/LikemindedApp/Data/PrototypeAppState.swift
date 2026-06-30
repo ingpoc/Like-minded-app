@@ -102,6 +102,33 @@ final class PrototypeAppState: ObservableObject {
         realtimeStatus == RealtimeVoicePhase.streaming.rawValue || realtimeStatus == RealtimeVoicePhase.stopping.rawValue
     }
 
+    func signInForLocalValidationIfNeeded() async {
+        #if DEBUG
+        let environment = ProcessInfo.processInfo.environment
+        let arguments = ProcessInfo.processInfo.arguments
+        guard environment["LIKEMINDED_DEV_AUTH_BYPASS"] == "1" || arguments.contains("--likeminded-dev-auth-bypass") else { return }
+        let shouldSeedVoicePlacement = arguments.contains("--likeminded-dev-voice-placement")
+        isAuthenticating = true
+        authError = nil
+        do {
+            let response = try await client.authenticateWithApple(
+                identityToken: environment["LIKEMINDED_DEV_AUTH_TOKEN"] ?? "local-simulator-tester",
+                authorizationCode: nil,
+                fullName: "Simulator Tester"
+            )
+            await saveSessionAndLoadPlacement(response)
+            if shouldSeedVoicePlacement {
+                await createProfileFromInterview(
+                    transcript: environment["LIKEMINDED_DEV_TRANSCRIPT"] ?? "I want honest conversations, small warm circles, steady trust, books, design, and people who communicate directly."
+                )
+            }
+        } catch {
+            authError = error.localizedDescription
+        }
+        isAuthenticating = false
+        #endif
+    }
+
     func signIn(with credential: ASAuthorizationAppleIDCredential) async {
         guard let identityTokenData = credential.identityToken,
               let identityToken = String(data: identityTokenData, encoding: .utf8) else {
@@ -119,19 +146,23 @@ final class PrototypeAppState: ObservableObject {
                 authorizationCode: authorizationCode,
                 fullName: fullName?.isEmpty == false ? fullName : nil
             )
-            let session = AuthSession(
-                userId: response.user.id,
-                token: response.sessionToken,
-                email: response.user.email,
-                fullName: response.user.fullName
-            )
-            AuthSessionStore.save(session)
-            authSession = session
-            await loadCurrentPlacement()
+            await saveSessionAndLoadPlacement(response)
         } catch {
             authError = error.localizedDescription
         }
         isAuthenticating = false
+    }
+
+    private func saveSessionAndLoadPlacement(_ response: AppleAuthResponse) async {
+        let session = AuthSession(
+            userId: response.user.id,
+            token: response.sessionToken,
+            email: response.user.email,
+            fullName: response.user.fullName
+        )
+        AuthSessionStore.save(session)
+        authSession = session
+        await loadCurrentPlacement()
     }
 
     func signOut() {
@@ -285,7 +316,12 @@ final class PrototypeAppState: ObservableObject {
     }
 
     func createProfileFromInterview() async {
-        guard !voiceClient.interviewTranscript.isEmpty else { return }
+        await createProfileFromInterview(transcript: voiceClient.interviewTranscript)
+    }
+
+    private func createProfileFromInterview(transcript: String) async {
+        let transcript = transcript.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !transcript.isEmpty else { return }
         guard isSignedIn else {
             authError = "Sign in before creating a profile."
             return
@@ -295,7 +331,7 @@ final class PrototypeAppState: ObservableObject {
 
         do {
             let result = try await client.createProfileFromInterview(
-                interviewTranscript: voiceClient.interviewTranscript,
+                interviewTranscript: transcript,
                 reflectionAnswers: currentReflectionAnswers.isEmpty ? nil : currentReflectionAnswers
             )
 
@@ -446,7 +482,7 @@ final class PrototypeAppState: ObservableObject {
         // Auto-submit transcript when voice session ends with content
         if update.phase == .stopped && !realtimeTranscript.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             Task {
-                await createProfileFromInterview()
+                await createProfileFromInterview(transcript: realtimeTranscript)
             }
         }
     }

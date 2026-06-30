@@ -27,6 +27,7 @@ APPLE_AUTH_BYPASS=0
 ```sh
 npm run verify:release-config
 npm run smoke:mvp
+npm run verify:external-preflight
 ```
 
-`npm run smoke:mvp` uses a local isolated store. Deployed Render/Neon readiness still requires a real health check and signed-in device/TestFlight validation.
+`npm run smoke:mvp` uses a local isolated store. `npm run verify:external-preflight` is expected to fail until `release/testflight-evidence.json` is copied from `release/testflight-evidence.template.json` and filled after real Render/Neon/Apple/TestFlight proof.

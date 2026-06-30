@@ -54,14 +54,6 @@ See **PROGRESS.md** for the full roadmap with checkboxes. Summary:
 4. **Phase 3 — External TestFlight readiness:** Render, Neon, Apple Developer, App Store Connect, TestFlight metadata
 5. **Phase 4 — Device proof:** real sign-in, voice, placement, profile edit, placement action, feedback, relaunch restore
 
-## How to Pick Up This Project
-
-1. Read this file for vision and context
-2. Read PROGRESS.md for current state and what's next
-3. Read `goal.json` for the current per-session goal, graders, rubric, and subagent model/effort routing
-4. Run `./script/project_context.sh query --task "<current task>"`
-5. Start with the first unchecked item in PROGRESS.md
-
 ## Open Questions
 
 - Keep Render + Neon for first TestFlight, or replace only after explicit operator decision?

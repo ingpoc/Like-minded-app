@@ -20,8 +20,6 @@ This repository is moving from prototype to a TestFlight MVP for the placement l
 
 ## Run Locally
 
-Start each session by reading `GOAL.md`, `PROGRESS.md`, and `goal.json`. `goal.json` is the current per-session execution contract: graders, simulator validation, rubric, and model/effort routing for project agents.
-
 Current runnable surfaces:
 
 ```sh
@@ -45,7 +43,7 @@ npm run check
 npm run smoke:mvp
 npm run verify:release-config
 npm run verify:goal
-./script/build_and_run.sh --verify
+npm run verify:simulator-local
 ```
 
 ## Current Assumptions
@@ -60,4 +58,5 @@ npm run verify:goal
 
 - Create Render service and Neon database, then set production env vars.
 - Configure Apple Developer/App Store Connect for bundle id `com.likeminded.app` and Sign in with Apple.
-- Run the full voice loop on a signed-in physical device before wider TestFlight invites.
+- Copy `release/testflight-evidence.template.json` to `release/testflight-evidence.json` and fill it as external proof is completed.
+- Run real spoken voice-loop proof on a signed-in simulator or physical device before wider TestFlight invites.

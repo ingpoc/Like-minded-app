@@ -65,6 +65,7 @@ After editing `project.yml`, run `cd apps/ios-macos && xcodegen generate` to reg
 | `npm run smoke:mvp` | Zero-token MVP backend smoke grader |
 | `npm run verify:release-config` | Zero-token TestFlight static config grader |
 | `npm run verify:goal` | Zero-token per-session goal contract grader |
+| `npm run verify:simulator-local` | Build simulator app, prove fresh auth gate, and prove DEBUG local auth plus deterministic transcript-to-placement |
 | `./script/test_profile.sh "transcript"` | Test personality extraction + circle matching without UI |
 | `./script/build_and_run.sh` | Build, install, launch app in simulator |
 | `./script/build_and_run.sh --logs` | Same + stream app logs |
@@ -79,15 +80,6 @@ After editing `project.yml`, run `cd apps/ios-macos && xcodegen generate` to reg
 5. App sends transcript to authenticated `/v1/discover` → personality signals + circle placement appear
 
 For local API-only smoke checks without Apple services, `npm run smoke:mvp` uses `APPLE_AUTH_BYPASS=1` in an isolated child process. Do not enable `APPLE_AUTH_BYPASS` in TestFlight or production.
-
-## Session Goal Contract
-
-- `GOAL.md` is the ultimate product goal.
-- `PROGRESS.md` is the current roadmap and state.
-- `goal.template.json` is the template future sessions copy from.
-- `goal.json` is the active per-session goal and grader/subagent contract.
-
-When adding or removing graders, release files, validation commands, or project agents, update both goal JSON files and run `npm run verify:goal`.
 
 ## Testing personality extraction (no UI)
 

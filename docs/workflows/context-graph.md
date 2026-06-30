@@ -37,12 +37,12 @@ Do not add required HTML viewers, exports, project-specific miner agents, local 
 | `source_inventory_gap` exists | Import, summarize, or persistently resolve each `unimported_source_sessions` item |
 | Imported sessions are unmined | Run `./script/project_context.sh mine` |
 | A run is mined | Run `./script/project_context.sh validate --run-id <id>` |
-| A run needs review | Run `review-queue`, then `review-run` with explicit approve/reject ids |
-| A run is reviewed | Run `promote --run-id <id>` |
+| A run needs review | Run `./script/project_context.sh review-queue --run-id <id>`, then `./script/project_context.sh review-run --run-id <id>` with explicit approve/reject ids |
+| A run is reviewed | Run `./script/project_context.sh promote --run-id <id>` |
 | Agent needs complete active corpus for audit | Run `./script/project_context.sh active` |
-| Agent needs precedence or override history | Run `history --decision-key <key>` |
-| Agent needs the why behind a decision | Run `trace --decision-key <key>` |
-| Agent needs explicit links around a decision | Run `related --decision-key <key>` |
+| Agent needs precedence or override history | Run `./script/project_context.sh history --decision-key <key>` |
+| Agent needs the why behind a decision | Run `./script/project_context.sh trace --decision-key <key>` |
+| Agent needs explicit links around a decision | Run `./script/project_context.sh related --decision-key <key>` |
 
 SessionStart, if enabled, may run `pending-mining` only. It must not mine, validate, review, promote, render artifacts, or run beta logic.
 
@@ -73,6 +73,9 @@ Use:
 ./script/project_context.sh doctor
 ./script/project_context.sh pending-mining
 ./script/project_context.sh source-inventory
+./script/project_context.sh mine --from-sequence <n> --to-sequence <n>
+./script/project_context.sh validate --run-id <id>
+./script/project_context.sh review-queue --run-id <id>
 ./script/project_context.sh categories
 ./script/project_context.sh query --task "current task"
 ./script/project_context.sh trace --decision-key <key>

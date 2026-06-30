@@ -373,31 +373,29 @@ def run_mining(root: Path, from_sequence: int | None = None, to_sequence: int | 
             (session["id"],),
         )
         for event in events:
-            extracted = parse_decision_text(event["content_text"])
-            if extracted is None:
-                continue
-            conn.execute(
-                """
-                INSERT INTO candidate_decisions(
-                    mining_run_id, session_id, event_id, decision_key, decision_type, category, title,
-                    summary, rationale_text, payload_json, scope_key, confidence, status
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')
-                """,
-                (
-                    run_id,
-                    session["id"],
-                    event["id"],
-                    extracted.decision_key,
-                    extracted.decision_type,
-                    extracted.category,
-                    extracted.title,
-                    extracted.summary,
-                    extracted.rationale_text,
-                    payload_json(extracted.payload),
-                    extracted.scope_key,
-                    extracted.confidence,
-                ),
-            )
+            for extracted in parse_decision_text(event["content_text"]):
+                conn.execute(
+                    """
+                    INSERT INTO candidate_decisions(
+                        mining_run_id, session_id, event_id, decision_key, decision_type, category, title,
+                        summary, rationale_text, payload_json, scope_key, confidence, status
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')
+                    """,
+                    (
+                        run_id,
+                        session["id"],
+                        event["id"],
+                        extracted.decision_key,
+                        extracted.decision_type,
+                        extracted.category,
+                        extracted.title,
+                        extracted.summary,
+                        extracted.rationale_text,
+                        payload_json(extracted.payload),
+                        extracted.scope_key,
+                        extracted.confidence,
+                    ),
+                )
             conn.execute(
                 """
                 INSERT INTO evidence_spans(source_kind, source_ref, session_id, event_start, event_end, quote_text, hash)

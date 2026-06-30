@@ -324,6 +324,36 @@ def test_review_run_enables_promotion_and_history(tmp_path: Path) -> None:
     assert [item["state"] for item in history] == ["superseded", "active"]
 
 
+def test_mining_extracts_multiple_decisions_from_one_event(tmp_path: Path) -> None:
+    ensure_layout(tmp_path)
+    create_session(
+        tmp_path,
+        [
+            {
+                "timestamp": "2026-06-19T09:00:00+00:00",
+                "role": "user",
+                "content_text": (
+                    "[decision key=ui.copy type=preference] Keep interface copy short.\n"
+                    "[decision key=workflow.agent type=rule] Keep orchestration in the main agent."
+                ),
+            }
+        ],
+    )
+
+    run_id = run_mining(tmp_path)["run_id"]
+    validate_run(tmp_path, run_id)
+    conn = connect(tmp_path)
+    keys = [
+        row[0]
+        for row in conn.execute(
+            "SELECT decision_key FROM candidate_decisions WHERE mining_run_id = ? ORDER BY decision_key",
+            (run_id,),
+        ).fetchall()
+    ]
+
+    assert keys == ["ui.copy", "workflow.agent"]
+
+
 def test_task_query_returns_only_relevant_active_categories(tmp_path: Path) -> None:
     ensure_layout(tmp_path)
     create_session(

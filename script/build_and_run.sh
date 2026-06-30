@@ -66,7 +66,7 @@ verify_launch() {
   local launch_output
   xcrun simctl uninstall booted "$BUNDLE_ID" >/dev/null 2>&1 || true
   xcrun simctl install booted "$APP_PATH"
-  launch_output="$(xcrun simctl launch booted "$BUNDLE_ID")"
+  launch_output="$(xcrun simctl launch booted "$BUNDLE_ID" --likeminded-reset-auth-session)"
   echo "$launch_output"
 }
 

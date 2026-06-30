@@ -225,6 +225,93 @@ struct PlacementCircle: Codable, Identifiable {
     let placementReason: String
     let membersOnline: Int
     let themes: [String]
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case description
+        case emotionalPace
+        case interactionIntent
+        case socialFormat
+        case riskLevel
+        case privacyLevel
+        case shortPromise
+        case roomEnergy
+        case easiestFirstAction
+        case fitLabel
+        case placementReason
+        case membersOnline
+        case themes
+    }
+
+    init(
+        id: String,
+        name: String,
+        emotionalPace: String,
+        interactionIntent: String,
+        socialFormat: String,
+        riskLevel: String,
+        privacyLevel: String,
+        shortPromise: String,
+        roomEnergy: String,
+        easiestFirstAction: String,
+        fitLabel: String,
+        placementReason: String,
+        membersOnline: Int,
+        themes: [String]
+    ) {
+        self.id = id
+        self.name = name
+        self.emotionalPace = emotionalPace
+        self.interactionIntent = interactionIntent
+        self.socialFormat = socialFormat
+        self.riskLevel = riskLevel
+        self.privacyLevel = privacyLevel
+        self.shortPromise = shortPromise
+        self.roomEnergy = roomEnergy
+        self.easiestFirstAction = easiestFirstAction
+        self.fitLabel = fitLabel
+        self.placementReason = placementReason
+        self.membersOnline = membersOnline
+        self.themes = themes
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let description = try container.decodeIfPresent(String.self, forKey: .description)
+        id = try container.decode(String.self, forKey: .id)
+        name = try container.decode(String.self, forKey: .name)
+        emotionalPace = try container.decodeIfPresent(String.self, forKey: .emotionalPace) ?? "Steady"
+        interactionIntent = try container.decodeIfPresent(String.self, forKey: .interactionIntent) ?? "Circle placement"
+        socialFormat = try container.decodeIfPresent(String.self, forKey: .socialFormat) ?? "Small circle"
+        riskLevel = try container.decodeIfPresent(String.self, forKey: .riskLevel) ?? "Low"
+        privacyLevel = try container.decodeIfPresent(String.self, forKey: .privacyLevel) ?? "Private"
+        shortPromise = try container.decodeIfPresent(String.self, forKey: .shortPromise) ?? description ?? name
+        roomEnergy = try container.decodeIfPresent(String.self, forKey: .roomEnergy) ?? "Warm and thoughtful."
+        easiestFirstAction = try container.decodeIfPresent(String.self, forKey: .easiestFirstAction) ?? "Review placement."
+        fitLabel = try container.decodeIfPresent(String.self, forKey: .fitLabel) ?? "Fit"
+        placementReason = try container.decodeIfPresent(String.self, forKey: .placementReason) ?? description ?? "Matched from your profile signals."
+        membersOnline = try container.decodeIfPresent(Int.self, forKey: .membersOnline) ?? 0
+        themes = try container.decodeIfPresent([String].self, forKey: .themes) ?? []
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(name, forKey: .name)
+        try container.encode(emotionalPace, forKey: .emotionalPace)
+        try container.encode(interactionIntent, forKey: .interactionIntent)
+        try container.encode(socialFormat, forKey: .socialFormat)
+        try container.encode(riskLevel, forKey: .riskLevel)
+        try container.encode(privacyLevel, forKey: .privacyLevel)
+        try container.encode(shortPromise, forKey: .shortPromise)
+        try container.encode(roomEnergy, forKey: .roomEnergy)
+        try container.encode(easiestFirstAction, forKey: .easiestFirstAction)
+        try container.encode(fitLabel, forKey: .fitLabel)
+        try container.encode(placementReason, forKey: .placementReason)
+        try container.encode(membersOnline, forKey: .membersOnline)
+        try container.encode(themes, forKey: .themes)
+    }
 }
 
 struct ConnectionPath: Codable, Identifiable {

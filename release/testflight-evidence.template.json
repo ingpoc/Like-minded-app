@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "render": {
+    "service_url": "",
+    "health_checked_at": "",
+    "health_status": ""
+  },
+  "neon": {
+    "database_configured": false,
+    "migration_checked_at": ""
+  },
+  "apple": {
+    "bundle_id": "com.likeminded.app",
+    "bundle_id_configured": false,
+    "sign_in_with_apple_enabled": false,
+    "app_store_connect_app_created": false
+  },
+  "testflight": {
+    "signed_build_uploaded": false,
+    "privacy_policy_added": false,
+    "tester_group_configured": false
+  },
+  "manual_proof": {
+    "real_apple_sign_in_verified": false,
+    "spoken_audio_to_profile_verified": false,
+    "tester_loop_verified": false
+  },
+  "notes": ""
+}

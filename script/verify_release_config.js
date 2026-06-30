@@ -72,4 +72,17 @@ const buildScript = read("script/build_and_run.sh");
 assertIncludes("script/build_and_run.sh", buildScript, "com.likeminded.app");
 assertNotIncludes("script/build_and_run.sh", buildScript, "com.likeminded.prototype");
 
+const packageJson = read("package.json");
+assertIncludes("package.json", packageJson, "verify:simulator-local");
+assertIncludes("package.json", packageJson, "verify:external-preflight");
+
+const validation = read("docs/workflows/validation.md");
+assertIncludes("docs/workflows/validation.md", validation, "npm run verify:simulator-local");
+assertIncludes("docs/workflows/validation.md", validation, "npm run verify:external-preflight");
+
+const externalEvidenceTemplate = read("release/testflight-evidence.template.json");
+for (const phrase of ["service_url", "database_configured", "sign_in_with_apple_enabled", "spoken_audio_to_profile_verified"]) {
+  assertIncludes("release/testflight-evidence.template.json", externalEvidenceTemplate, phrase);
+}
+
 console.log("Release config verified");

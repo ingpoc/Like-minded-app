@@ -13,10 +13,19 @@
 - `GOAL.md` owns the ultimate product goal; `PROGRESS.md` owns roadmap state; `goal.json` owns the current per-session goal, graders, rubric, and project-agent model/effort routing.
 - Guidance lives under `docs/` and should load through `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs summary <doc>`.
 
+## Session Start
+
+1. If `resume-session` is explicitly triggered, read `.claude/session-data/CURRENT.md` once and verify `route_contract.first_command` if present.
+2. Read `PROGRESS.md` and `goal.json`.
+3. Treat an existing `goal.json` goal as active unless `PROGRESS.md`, required graders/evidence, and any required completion commit prove it is complete.
+4. If no active goal exists, copy `goal.template.json` → `goal.json` and set `goal` to the first unchecked agent-doable item in `PROGRESS.md`.
+5. Set the Codex thread goal from the active `goal.json`, then run `./script/project_context.sh query --task "<active goal>"`.
+6. Load only the returned decisions/workflow needed for the lane.
+7. Before editing, run `git status --short`; at closeout, update `PROGRESS.md` and `goal.json` if state changed.
+
 ## Trigger Map
 
 - BEFORE non-trivial repo work: if a route contract or task hint already names a first command, verify that command first; otherwise run `./script/project_context.sh query --task "<current task>"` and load only the returned durable decisions plus the workflow doc needed for the current lane.
-- BEFORE starting or resuming implementation: read `PROGRESS.md` and `goal.json` after the project-context query.
 - BEFORE build/run/test: verify API server is running (`curl -s http://127.0.0.1:8787/health`) and check env is loaded.
 - BEFORE adding app structure, dependencies, or framework assumptions: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs summary bootstrap-and-discovery`
 - BEFORE changing app/API/AI/schema/infra boundaries: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs summary project-spine`

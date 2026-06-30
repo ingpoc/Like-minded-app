@@ -4,19 +4,6 @@
   "goal": "<one concrete session goal that moves the GOAL.md product objective forward>",
   "ultimate_goal_source": "GOAL.md",
   "progress_source": "PROGRESS.md",
-  "session_start": {
-    "first_reads": [
-      "GOAL.md",
-      "PROGRESS.md",
-      "goal.json",
-      "docs/workflows/validation.md"
-    ],
-    "first_commands": [
-      "./script/project_context.sh query --task \"<current task>\"",
-      "git status --short"
-    ],
-    "rule": "Know current state first, then make it work, verify and validate, remove stale items, simplify, optimize, and automate."
-  },
   "deterministic_graders": [
     {
       "name": "node_syntax",
@@ -49,10 +36,10 @@
       "proves": "Repo docs follow the local workflow documentation contract."
     },
     {
-      "name": "native_build_launch",
-      "command": "./script/build_and_run.sh --verify",
+      "name": "local_simulator_validation",
+      "command": "npm run verify:simulator-local",
       "cost": "zero_token",
-      "proves": "XcodeGen project builds, installs, and launches the iOS app in simulator as com.likeminded.app."
+      "proves": "XcodeGen project builds, installs, launches fresh auth gate, then enters the DEBUG signed-in Talk/Circles/Profile app through backend dev auth."
     }
   ],
   "simulator_validation": {
@@ -161,6 +148,7 @@
     "Real Apple sign-in is configured and verified.",
     "Deployed HTTPS API uses Render plus Neon/Postgres or an explicitly accepted replacement.",
     "A signed-in tester completes voice onboarding through persisted placement, profile edit, placement action, and feedback on simulator or device.",
+    "`npm run verify:external-preflight` passes with real external evidence recorded.",
     "No stale docs or config describe prototype tabs, prototype bundle id, no auth, or SQLite as the production path.",
     "Validated session changes are committed with the session's goal.json before the goal is marked complete."
   ],
