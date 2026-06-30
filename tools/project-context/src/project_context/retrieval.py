@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 import re
+from pathlib import Path
 
 from project_context.categories import normalize_category, text_categories
 from project_context.db import connect, fetch_all_dicts, row_to_dict
@@ -10,6 +10,14 @@ from project_context.db import connect, fetch_all_dicts, row_to_dict
 
 QUERY_TOKEN_RE = re.compile(r"[a-z0-9_.-]{3,}")
 QUERY_STOP_WORDS = {"and", "the", "for", "with", "this", "that", "from", "into", "when", "what", "should"}
+
+
+def _decode_json_list(value: str) -> list:
+    try:
+        decoded = json.loads(value)
+    except json.JSONDecodeError:
+        return []
+    return decoded if isinstance(decoded, list) else []
 
 
 def get_active_decisions(root: Path) -> list[dict]:
@@ -22,36 +30,18 @@ def get_active_decisions(root: Path) -> list[dict]:
             dv.decision_key,
             dv.decision_type,
             dv.category,
+            dv.scope_key,
+            dv.owner_surface,
             dv.title,
             dv.summary,
             dv.rationale_text,
             dv.state,
             dv.validated_at,
-            ad.activated_at,
-            (
-                SELECT s.source_ref
-                FROM candidate_decisions cd
-                JOIN sessions s ON s.id = cd.session_id
-                WHERE cd.mining_run_id = dv.validation_run_id
-                  AND cd.decision_key = dv.decision_key
-                  AND cd.status = 'validated'
-                ORDER BY cd.id DESC
-                LIMIT 1
-            ) AS source_ref,
-            (
-                SELECT s.sequence_no
-                FROM candidate_decisions cd
-                JOIN sessions s ON s.id = cd.session_id
-                WHERE cd.mining_run_id = dv.validation_run_id
-                  AND cd.decision_key = dv.decision_key
-                  AND cd.status = 'validated'
-                ORDER BY cd.id DESC
-                LIMIT 1
-            ) AS source_session_sequence
+            ad.activated_at
         FROM active_decisions ad
         JOIN decision_versions dv ON dv.id = ad.decision_version_id
         ORDER BY dv.decision_key ASC
-        """
+        """,
     )
 
 
@@ -125,7 +115,7 @@ def get_decision_history(root: Path, decision_key: str) -> list[dict]:
     return fetch_all_dicts(
         conn,
         """
-        SELECT id, decision_key, version_no, state, title, summary, rationale_text, effective_at, validated_at
+        SELECT id, decision_key, version_no, state, category, scope_key, owner_surface, title, summary, rationale_text, effective_at, validated_at
         FROM decision_versions
         WHERE decision_key = ?
         ORDER BY version_no ASC
@@ -138,9 +128,7 @@ def explain_decision(root: Path, decision_key: str) -> dict | None:
     conn = connect(root)
     row = conn.execute(
         """
-        SELECT
-            dv.*,
-            ad.activated_at
+        SELECT dv.*, ad.activated_at
         FROM active_decisions ad
         JOIN decision_versions dv ON dv.id = ad.decision_version_id
         WHERE dv.decision_key = ?
@@ -150,47 +138,18 @@ def explain_decision(root: Path, decision_key: str) -> dict | None:
     if row is None:
         return None
     payload = row_to_dict(row)
-    evidence = fetch_all_dicts(
-        conn,
-        """
-        SELECT es.quote_text, es.source_ref, es.hash
-        FROM evidence_spans es
-        JOIN candidate_decisions cd ON cd.event_id = es.event_start
-        WHERE cd.decision_key = ?
-        ORDER BY es.id DESC
-        LIMIT 3
-        """,
-        (decision_key,),
-    )
-    payload["evidence"] = evidence
-    payload["trace"] = get_decision_trace(root, decision_key)
-    return payload
-
-
-def _decode_json_list(value: str | None) -> list:
-    if not value:
-        return []
     try:
-        payload = json.loads(value)
+        payload["payload"] = json.loads(payload.pop("payload_json"))
     except json.JSONDecodeError:
-        return []
-    return payload if isinstance(payload, list) else []
+        payload["payload"] = {}
+    return payload
 
 
 def get_decision_trace(root: Path, decision_key: str) -> dict | None:
     conn = connect(root)
     row = conn.execute(
         """
-        SELECT
-            dt.*,
-            dv.version_no,
-            dv.state,
-            dv.category,
-            dv.decision_type,
-            dv.summary,
-            dv.rationale_text,
-            dv.validation_run_id,
-            ad.activated_at
+        SELECT dt.*
         FROM active_decisions ad
         JOIN decision_versions dv ON dv.id = ad.decision_version_id
         JOIN decision_traces dt ON dt.decision_version_id = dv.id
@@ -240,27 +199,8 @@ def get_related_decision_context(root: Path, decision_key: str) -> dict | None:
         """,
         (decision_key, decision_key),
     )
-    entities = fetch_all_dicts(
-        conn,
-        """
-        SELECT e.entity_type, e.entity_key, e.label, e.metadata_json
-        FROM decision_trace_links link
-        JOIN context_entities e
-          ON e.entity_type = link.target_kind
-         AND e.entity_key = link.target_key
-        WHERE link.decision_trace_id = ?
-        ORDER BY e.entity_type ASC, e.label ASC
-        """,
-        (trace["id"],),
-    )
-    for entity in entities:
-        try:
-            entity["metadata"] = json.loads(entity.pop("metadata_json"))
-        except json.JSONDecodeError:
-            entity["metadata"] = {}
     return {
         "decision_key": decision_key,
         "trace_links": trace["links"],
         "supersedes_edges": supersedes,
-        "entities": entities,
     }

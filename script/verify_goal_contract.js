@@ -18,6 +18,7 @@ function assertGoalShape(file, goal) {
   assert.ok(goal.goal || goal.purpose, `${file}: goal or purpose is required`);
   assert.equal(goal.ultimate_goal_source, "GOAL.md", `${file}: ultimate goal must point to GOAL.md`);
   assert.equal(goal.progress_source, "PROGRESS.md", `${file}: progress source must point to PROGRESS.md`);
+  assert.ok(goal.workflow_refs?.includes("docs/workflows/validation.md"), `${file}: validation workflow ref is required`);
 
   const commands = commandSet(goal);
   for (const command of [
@@ -35,6 +36,46 @@ function assertGoalShape(file, goal) {
     assert.equal(grader.cost, "zero_token", `${file}: ${grader.name} must be zero_token`);
     assert.ok(grader.proves, `${file}: ${grader.name} must state what it proves`);
   }
+
+  assert.equal(
+    goal.validation_inventory?.local_simulator?.command,
+    "npm run verify:simulator-local",
+    `${file}: local simulator validation inventory must reuse npm run verify:simulator-local`
+  );
+  assert.equal(
+    goal.validation_inventory?.local_simulator?.script,
+    "script/verify_simulator_local.sh",
+    `${file}: local simulator validation inventory must point to the existing script`
+  );
+  assert.equal(
+    goal.validation_inventory?.external_preflight?.command,
+    "npm run verify:external-preflight",
+    `${file}: external preflight inventory must reuse npm run verify:external-preflight`
+  );
+  assert.equal(
+    goal.validation_inventory?.external_preflight?.evidence_file,
+    "release/testflight-evidence.json",
+    `${file}: external preflight inventory must point to the evidence file`
+  );
+  assert.equal(
+    goal.validation_state?.local_simulator?.command,
+    "npm run verify:simulator-local",
+    `${file}: local simulator validation state must name the existing command`
+  );
+  assert.equal(
+    goal.validation_state?.local_simulator?.do_not_repeat_unless_inventory_inputs_changed,
+    true,
+    `${file}: local simulator state must guard against repeat proof without input changes`
+  );
+  assert.equal(
+    goal.validation_state?.external_preflight?.command,
+    "npm run verify:external-preflight",
+    `${file}: external preflight validation state must name the existing command`
+  );
+  assert.ok(
+    goal.agent_guardrails?.some((guardrail) => guardrail.includes("Reuse validation_inventory scripts")),
+    `${file}: agent guardrails must require reusing validation inventory scripts`
+  );
 
   assert.equal(goal.simulator_validation?.preferred_agent?.name, "validation-release", `${file}: simulator preferred agent must be validation-release`);
   assert.equal(goal.simulator_validation?.preferred_agent?.model, "gpt-5.4-mini", `${file}: validation-release must be pinned to gpt-5.4-mini`);
@@ -60,8 +101,12 @@ function assertGoalShape(file, goal) {
     `${file}: done criteria must require committing goal.json`
   );
   assert.ok(
-    goal.done_criteria.some((criterion) => criterion.includes("npm run verify:external-preflight")),
-    `${file}: done criteria must require external preflight verification`
+    goal.release_gate?.external_preflight?.includes("npm run verify:external-preflight"),
+    `${file}: release gate must keep external preflight verification outside active done criteria`
+  );
+  assert.ok(
+    !goal.done_criteria.some((criterion) => criterion.includes("npm run verify:external-preflight")),
+    `${file}: done criteria must not require external preflight verification`
   );
   assert.ok(goal.max_iterations > 0, `${file}: max_iterations must be positive`);
 }

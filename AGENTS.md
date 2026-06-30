@@ -20,7 +20,7 @@
 3. Treat an existing `goal.json` goal as active unless `PROGRESS.md`, required graders/evidence, and any required completion commit prove it is complete.
 4. If no active goal exists, copy `goal.template.json` → `goal.json` and set `goal` to the first unchecked agent-doable item in `PROGRESS.md`.
 5. Set the Codex thread goal from the active `goal.json`, then run `./script/project_context.sh query --task "<active goal>"`.
-6. Load only the returned decisions/workflow needed for the lane.
+6. Load only returned active decisions; if the query returns zero decisions, continue from `goal.json` and the narrow workflow for the lane instead of expanding retrieval.
 7. Before editing, run `git status --short`; at closeout, update `PROGRESS.md` and `goal.json` if state changed.
 
 ## Trigger Map
@@ -29,11 +29,12 @@
 - BEFORE build/run/test: verify API server is running (`curl -s http://127.0.0.1:8787/health`) and check env is loaded.
 - BEFORE adding app structure, dependencies, or framework assumptions: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs summary bootstrap-and-discovery`
 - BEFORE changing app/API/AI/schema/infra boundaries: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs summary project-spine`
-- BEFORE mining sessions, prompt history, or operator intent: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs summary context-graph`
+- BEFORE recording save-time decisions or changing decision-graph behavior: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs summary context-graph`
 - BEFORE relying on durable project decision history or context graph state: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs summary context-graph`
 - BEFORE context-graph trust claims: follow `docs/workflows/context-graph.md`; use the global beta registry only as maturity tracking, not as a local workflow owner.
 - BEFORE acting on every non-trivial task after the first query: do not repeat broad workflow loading already performed for the same task unless the task changes, the first retrieval was insufficient, or live evidence contradicts it; re-query when the task or decision point changes.
 - BEFORE claiming validation or readiness: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs summary validation`
+- BEFORE using fresh/resume agent simulation to test any workflow: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs summary agent-simulation`
 - BEFORE creating or optimizing project agents: `workflow summary subagent-playbook`
 
 ## Project Agents

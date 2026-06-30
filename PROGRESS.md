@@ -14,7 +14,7 @@ Global `/Users/gurusharan/.codex/AGENTS.md` owns instruction control. This file 
 - Local development uses JSON-backed storage; local smoke testing uses isolated temporary JSON data.
 - Deterministic graders exist for backend MVP contract, release config, and goal contract.
 - Local DEBUG simulator proof now covers fresh auth-gate launch, backend dev-auth entry into Talk/Circles/Profile tabs, deterministic transcript-to-placement persistence, saved placement restore, placement actions, profile edit persistence, feedback storage, and authenticated Realtime transport reaching `Listening`/`Captured` when `OPENAI_API_KEY` is configured.
-- Remaining hard blockers are external setup and proof: Apple Developer/App Store Connect, Render, Neon, real Sign in with Apple, and real simulator/device voice-loop validation.
+- External setup and proof remain later release gates: Apple Developer/App Store Connect, Render, Neon, real Sign in with Apple, and real simulator/device voice-loop validation.
 
 ## Phase 0 — Session Control And Graders
 
@@ -71,6 +71,8 @@ Global `/Users/gurusharan/.codex/AGENTS.md` owns instruction control. This file 
 - [ ] A second tester cannot access the first tester's profile or placement.
 
 ### Local DEBUG Simulator Evidence
+
+Evidence state lives in `goal.json`; generated screenshots/logs live under `output/validation/`.
 
 - [x] Fresh local install can show the Sign in with Apple gate.
 - [x] DEBUG local auth bypass can enter the signed-in app without weakening TestFlight auth.

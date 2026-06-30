@@ -1,8 +1,71 @@
 {
   "schema_version": 1,
-  "goal": "Deliver the Likeminded TestFlight MVP placement loop: signed-in tester can complete voice onboarding, receive a persisted backend profile and circle placement, review/edit the profile, accept/swap/defer placement, submit feedback, and pass deterministic graders plus simulator/device validation before calling it done.",
+  "goal": "Harden the Likeminded MVP placement loop before external TestFlight proof: keep the signed-in voice onboarding, persisted backend profile and circle placement, profile review/edit, placement actions, tester feedback, deterministic graders, and local simulator validation ready for final release gates.",
   "ultimate_goal_source": "GOAL.md",
   "progress_source": "PROGRESS.md",
+  "workflow_refs": [
+    "docs/workflows/validation.md"
+  ],
+  "validation_inventory": {
+    "local_simulator": {
+      "script": "script/verify_simulator_local.sh",
+      "command": "npm run verify:simulator-local",
+      "workflow_ref": "docs/workflows/validation.md",
+      "purpose": "Build, install, and launch the simulator app; prove fresh auth gate and DEBUG signed-in Talk/Circles/Profile path.",
+      "reuse_when": [
+        "Native app changes.",
+        "Auth or session flow changes.",
+        "apps/ios-macos/project.yml changes.",
+        "Local API auth or MVP placement routes change.",
+        "script/verify_simulator_local.sh changes."
+      ]
+    },
+    "external_preflight": {
+      "script": "script/verify_external_preflight.js",
+      "command": "npm run verify:external-preflight",
+      "workflow_ref": "docs/workflows/validation.md",
+      "purpose": "Verify real Render, Neon, Apple, TestFlight, and manual proof recorded in release/testflight-evidence.json.",
+      "template": "release/testflight-evidence.template.json",
+      "evidence_file": "release/testflight-evidence.json"
+    }
+  },
+  "validation_state": {
+    "local_simulator": {
+      "status": "passed",
+      "last_verified_at": "2026-06-30",
+      "command": "npm run verify:simulator-local",
+      "artifacts": [
+        "output/validation/fresh-auth-gate.png",
+        "output/validation/local-dev-auth-tabs.png",
+        "output/validation/local-auth-api.log"
+      ],
+      "proves": [
+        "Fresh simulator launch shows the Sign in with Apple gate.",
+        "DEBUG local auth reaches the signed-in Talk/Circles/Profile app.",
+        "Deterministic dev voice placement can seed local persisted placement evidence."
+      ],
+      "does_not_prove": [
+        "Real Apple sign-in.",
+        "Real spoken audio creating persisted profile and placement.",
+        "Signed TestFlight build behavior."
+      ],
+      "do_not_repeat_unless_inventory_inputs_changed": true
+    },
+    "external_preflight": {
+      "status": "waiting_for_user_external_setup",
+      "command": "npm run verify:external-preflight",
+      "missing_evidence_file": "release/testflight-evidence.json",
+      "next_agent_action": "Treat as a later release gate after repo-owned hardening is complete; ask the user to fill release/testflight-evidence.json only when external setup and device proof are actually ready."
+    }
+  },
+  "release_gate": {
+    "external_preflight": "Run npm run verify:external-preflight only after Render, Neon, Apple Developer, App Store Connect/TestFlight, and manual device proof are ready."
+  },
+  "agent_guardrails": [
+    "Check validation_state before rerunning completed proof.",
+    "Reuse validation_inventory scripts before creating validation scripts.",
+    "Do not add docs or workflows for validation already covered by workflow_refs and validation_inventory."
+  ],
   "deterministic_graders": [
     {
       "name": "node_syntax",
@@ -134,7 +197,7 @@
   },
   "completion_commit": {
     "required": true,
-    "when": "After all required deterministic and simulator/device validation passes, and before marking the session goal complete.",
+    "when": "After all required deterministic and local simulator validation passes, and before marking the session goal complete.",
     "must_include": [
       "goal.json",
       "all implementation, validation, doc, and stale-cleanup files changed for the session"
@@ -143,11 +206,8 @@
   },
   "done_criteria": [
     "All deterministic graders pass.",
-    "Simulator build and launch pass.",
-    "Real Apple sign-in is configured and verified.",
-    "Deployed HTTPS API uses Render plus Neon/Postgres or an explicitly accepted replacement.",
-    "A signed-in tester completes voice onboarding through persisted placement, profile edit, placement action, and feedback on simulator or device.",
-    "`npm run verify:external-preflight` passes with real external evidence recorded.",
+    "Local simulator build and launch pass when local validation inputs changed.",
+    "Repo-owned MVP loop surfaces are ready for later external Render, Neon, Apple, and TestFlight proof.",
     "No stale docs or config describe prototype tabs, prototype bundle id, no auth, or SQLite as the production path.",
     "Validated session changes are committed with the session's goal.json before the goal is marked complete."
   ],

@@ -38,14 +38,14 @@ Update this reference when:
 - validation entrypoints change
 - the stable context-graph entrypoints or artifact locations change
 
-If a change affects context-graph operations, beta verification, mining, source inventory, or review flow, update `docs/workflows/context-graph.md` instead of expanding this reference.
+If a change affects context-graph operations, beta verification, accepted-decision capture, or supersession flow, update `docs/workflows/context-graph.md` instead of expanding this reference.
 
 ## Context Graph
 
 - The repo-local context graph lives under `.context-graph/`
 - `tools/project-context/` owns the local CLI package; `./script/project_context.sh` is the stable entrypoint
 - `.context-graph/graph.db` is the only canonical graph database
-- `docs/workflows/context-graph.md` owns mining, source inventory, review, and trust checks
-- SessionStart, if enabled, should run only `pending-mining` triage and must not mine, validate, review, promote, or run beta logic
-- Deterministic mining stages candidates only; promotion into active repo-local context requires explicit agent review
-- Promotion versioning is keyed by `decision_key`; reuse the key for the same policy lineage so promotion supersedes the older version
+- `docs/workflows/context-graph.md` owns accepted-decision admission, retrieval, trace/history, supersession, and trust checks
+- SessionStart, if enabled, may query active decisions only and must not mine, validate, review, promote, or run beta logic
+- The graph stores accepted durable decision traces only; raw sessions and rejected candidates are not durable graph state
+- Decision versioning is keyed by `decision_key`; reuse the key for the same policy lineage so a new accepted decision supersedes the older version

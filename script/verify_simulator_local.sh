@@ -9,6 +9,7 @@ API_LOG="$OUT_DIR/local-auth-api.log"
 mkdir -p "$OUT_DIR"
 
 "$ROOT_DIR/script/build_and_run.sh" --verify
+sleep 4
 xcrun simctl io booted screenshot "$OUT_DIR/fresh-auth-gate.png"
 
 (
