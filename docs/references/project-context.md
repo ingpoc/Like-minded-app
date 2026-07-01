@@ -7,6 +7,7 @@ Reference for stable Like-minded-app repo facts. This doc owns current repo evid
 - Workspace path: `/Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app`
 - The checkout now has a TestFlight MVP placement-loop spine: `apps/ios-macos`, `services/api`, `services/ai-orchestrator`, `packages/shared-schemas`, `infra`, deployment config, graders, and docs.
 - Root `package.json` owns deterministic checks, MVP smoke validation, release-config validation, and goal-contract validation.
+- `npm run phase:preflight -- <phase-number>` owns phase-scoped pre-edit checklist extraction from `PROGRESS.md`, stale-name gates, doc-lint risk surfacing, validation order, and the canonical XcodeGen reminder.
 - The Node API now has an authenticated MVP placement path: `POST /v1/auth/apple`, protected `POST /v1/discover`, `GET/PATCH /v1/me/profile`, `GET /v1/me/placement`, `POST /v1/me/placement/actions`, and `POST /v1/feedback`.
 - Production persistence target is Neon/Postgres through `DATABASE_URL`; local development and smoke grading use JSON files under `data/` or `LIKEMINDED_DB_DIR`.
 - Mock/profile/recommendation routes still exist for development, but TestFlight placement should use the authenticated `/v1/*` MVP path.
@@ -16,7 +17,7 @@ Reference for stable Like-minded-app repo facts. This doc owns current repo evid
 - The Talk surface uses `RealtimeVoiceClient` to connect to OpenAI Realtime over WebRTC through the backend, request microphone permission, stream PCM audio chunks, and commit voice input for signal extraction
 - The native run surface is `./script/build_and_run.sh`, which generates the Xcode project, builds the `Likeminded` iOS target, and launches it in the simulator
 - `GOAL.md` owns the ultimate product goal; `goal.json` owns the current per-session goal, deterministic graders, simulator validation, rubric, and subagent model/effort routing.
-- Deterministic MVP validation is `npm run check`, `npm run smoke:mvp`, `npm run verify:release-config`, `npm run verify:goal`, `npm run verify:simulator-local`, `npm run migrate:api`, and `workflow --docs-dir ... lint`.
+- Deterministic MVP validation is `npm run phase:preflight -- <phase-number>` before phase edits, then `npm run check`, `npm run smoke:mvp`, `npm run verify:release-config`, `npm run verify:goal`, `npm run verify:simulator-local`, `npm run migrate:api`, and `workflow --docs-dir ... lint`.
 - External TestFlight completion proof is `npm run verify:external-preflight` after filling ignored `release/testflight-evidence.json` from the template.
 
 ## Boundaries
@@ -25,6 +26,7 @@ Reference for stable Like-minded-app repo facts. This doc owns current repo evid
 - Do not confuse mock routes with production integrations; the authenticated MVP path is the TestFlight path
 - Do not replace the current Node HTTP API, Render target, or Neon/Postgres production persistence without explicit acceptance.
 - Do not replace XcodeGen or the current iOS simulator workflow without explicit acceptance.
+- Regenerate Xcode projects only with `(cd apps/ios-macos && xcodegen generate)`.
 - Do not enable `APPLE_AUTH_BYPASS=1` outside local API-only tests
 - Do not use `--likeminded-dev-auth-bypass` as TestFlight evidence; it is a DEBUG-only local simulator validation shortcut
 - Treat simulator voice verification as transport/state verification; real spoken profile-signal quality still needs device or simulator audio-input testing with an audible utterance

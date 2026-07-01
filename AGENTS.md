@@ -22,13 +22,15 @@
 5. If no active goal exists, copy `goal.template.json` → `goal.json` and set `goal` to the next coherent unchecked surface in `PROGRESS.md`.
 6. Set the Codex thread goal from the active `goal.json`, then run `./script/project_context.sh query --task "<active goal>"`.
 7. Load only returned active decisions; if the query returns zero decisions, continue from `goal.json` and the narrow workflow for the lane instead of expanding retrieval.
-8. Before editing, run `git status --short`; at closeout, update `PROGRESS.md` and `goal.json` if state changed.
+8. Before editing phase-scoped work, run `npm run phase:preflight -- <phase-number>` and use its unchecked items, stale-name gate, doc-lint risks, and validation order as the acceptance checklist.
+9. Before editing, run `git status --short`; at closeout, update `PROGRESS.md` and `goal.json` if state changed.
 
 Next-goal selection: choose the smallest surface that can use a full session: one phase, screen, endpoint family, validation lane, or doc set with its required tests. Do not pick a trivial one-checkbox goal unless it is the only blocker; group adjacent tiny checkboxes under the same owner surface.
 
 ## Trigger Map
 
 - BEFORE non-trivial repo work: if a route contract or task hint already names a first command, verify that command first; otherwise run `./script/project_context.sh query --task "<current task>"` and load only the returned durable decisions plus the workflow doc needed for the current lane.
+- BEFORE phase-scoped build work: run `npm run phase:preflight -- <phase-number>` after the project-context query and before edits. Do not claim the phase complete until the scoped unchecked list is empty and the stale-name gate is clean.
 - BEFORE build/run/test: verify API server is running (`curl -s http://127.0.0.1:8787/health`) and check env is loaded.
 - BEFORE adding app structure, dependencies, or framework assumptions: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs summary bootstrap-and-discovery`
 - BEFORE changing app/API/AI/schema/infra boundaries: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs summary project-spine`
@@ -51,6 +53,7 @@ Next-goal selection: choose the smallest surface that can use a full session: on
 - Keep this file compact; put detailed workflow or architecture guidance in `docs/`.
 - Do not duplicate global doctrine here.
 - Treat `./script/project_context.sh query --task "<current task>"` as the primary entrypoint for non-trivial repo work; do not pair it with broad `workflow summary` loading by default.
+- Treat `npm run phase:preflight -- <phase-number>` as the primary checklist extractor for phase work; it is a pre-edit routing aid, not a replacement for validation.
 - Preserve awareness of what is already loaded in context for the current task; do not repeat retrieval or rerun an equivalent task because another surface mentions the same rule.
 - Global beta tracking can audit maturity, but it does not replace the system's own workflow.
 - Treat `services/api/src/server.js` as the current MVP Node HTTP API surface; do not replace the backend framework or deployment target without explicit acceptance.
