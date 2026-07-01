@@ -21,6 +21,8 @@ final class PrototypeAppState: ObservableObject {
     @Published var capturedVoiceSignals: [String] = []
     @Published var isSynthesizingPlacement = false
     @Published var realtimeTranscript = ""
+    @Published var basicInfo: BasicInfo?
+    @Published var concernFlag = false
 
     private let voiceClient = RealtimeVoiceClient()
 
@@ -202,6 +204,7 @@ final class PrototypeAppState: ObservableObject {
         realtimeError = nil
         voiceClient.authToken = authSession?.token
         voiceClient.baseURL = client.baseURL
+        voiceClient.basicInfo = basicInfo
 
         do {
             // WebRTC flow — no client secret needed, SDP exchange handles auth
@@ -273,6 +276,7 @@ final class PrototypeAppState: ObservableObject {
             updatedProfile = SynthesizedProfile(
                 profileId: updatedProfile.profileId,
                 displayName: updatedProfile.displayName,
+                basicInfo: updatedProfile.basicInfo,
                 values: updatedProfile.values,
                 communicationStyle: updatedProfile.communicationStyle,
                 emotionalRhythm: updatedProfile.emotionalRhythm,
@@ -317,6 +321,16 @@ final class PrototypeAppState: ObservableObject {
 
     func createProfileFromInterview() async {
         await createProfileFromInterview(transcript: voiceClient.interviewTranscript)
+    }
+
+    func startReinterview() async {
+        concernFlag = false
+        await startVoiceSession()
+    }
+
+    func completeOnboarding(_ info: BasicInfo) {
+        basicInfo = info
+        loadError = nil
     }
 
     private func createProfileFromInterview(transcript: String) async {
@@ -385,12 +399,13 @@ final class PrototypeAppState: ObservableObject {
         var newSlice = PrototypeData.reflectPlaceConnectSlice
         newSlice.profile = SynthesizedProfile(
             profileId: result.profileId,
-            displayName: "You",
+            displayName: result.basicInfo?.name ?? basicInfo?.name ?? "You",
+            basicInfo: result.basicInfo ?? basicInfo,
             values: deriveValues(from: result.signals),
             communicationStyle: style,
             emotionalRhythm: energy,
             relationshipIntent: attachment,
-            interests: deriveInterests(from: result.signals),
+            interests: result.interests?.isEmpty == false ? result.interests! : deriveInterests(from: result.signals),
             privacy: ProfilePrivacy(aiReflectionVisibleToUser: true, matchExplanationVisibleToMatches: false),
             reflection: ProfileReflection(
                 summary: result.profileSummary?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
@@ -402,6 +417,7 @@ final class PrototypeAppState: ObservableObject {
         )
         newSlice.placement = result.placement
         newSlice.signals = result.signals
+        newSlice.hiddenSignals = result.hiddenSignals
         slice = newSlice
         placementId = result.placementId
         editedReflection = newSlice.profile.reflection.summary
@@ -439,14 +455,19 @@ final class PrototypeAppState: ObservableObject {
         return Array(strengths.prefix(4))
     }
 
-    private func deriveInterests(from signals: ProfileSignals) -> [String] {
-        var interests: [String] = []
-        if signals.bigFive.openness > 0.6 { interests.append("ideas") }
-        if signals.socialEnergy == "high" { interests.append("community") }
-        if signals.socialEnergy == "low" { interests.append("1:1 conversation") }
-        if signals.bigFive.conscientiousness > 0.6 { interests.append("meaningful work") }
-        if signals.bigFive.agreeableness > 0.6 { interests.append("people") }
-        if interests.isEmpty { interests = ["genuine connection", "meaningful conversation"] }
+    private func deriveInterests(from signals: ProfileSignals) -> [Interest] {
+        var interests: [Interest] = []
+        if signals.bigFive.openness > 0.6 { interests.append(Interest(area: "mind", label: "ideas", depth: .active)) }
+        if signals.socialEnergy == "high" { interests.append(Interest(area: "community", label: "community", depth: .active)) }
+        if signals.socialEnergy == "low" { interests.append(Interest(area: "connection", label: "1:1 conversation", depth: .deep)) }
+        if signals.bigFive.conscientiousness > 0.6 { interests.append(Interest(area: "work", label: "meaningful work", depth: .active)) }
+        if signals.bigFive.agreeableness > 0.6 { interests.append(Interest(area: "people", label: "people", depth: .active)) }
+        if interests.isEmpty {
+            interests = [
+                Interest(area: "connection", label: "genuine connection", depth: .active),
+                Interest(area: "connection", label: "meaningful conversation", depth: .active)
+            ]
+        }
         return interests
     }
 
@@ -483,6 +504,7 @@ final class PrototypeAppState: ObservableObject {
 
         // Auto-submit transcript when voice session ends with content
         if update.didPersistProfile {
+            concernFlag = false
             Task {
                 await loadCurrentPlacement()
             }

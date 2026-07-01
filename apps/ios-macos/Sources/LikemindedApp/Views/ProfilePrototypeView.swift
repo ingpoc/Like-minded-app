@@ -1,28 +1,30 @@
 import SwiftUI
 
-struct ReflectionPrototypeView: View {
+struct VoiceProfileView: View {
     @State private var hasEntered = false
-    @State private var selectedSignal = "Communication"
     @EnvironmentObject private var appState: PrototypeAppState
-
-    private let signalTabs = ["Communication", "Energy", "Trust"]
 
     var body: some View {
         NavigationStack {
             ScreenContainer(
-                title: "Talk",
-                subtitle: "Talk. Then place."
+                title: "Profile",
+                subtitle: "Voice. Then place."
             ) {
+                if appState.concernFlag {
+                    reinterviewPrompt
+                        .likemindedEntrance(order: 0, isActive: hasEntered, y: 12, scale: 0.98)
+                }
+
                 voiceHero
-                    .likemindedEntrance(order: 0, isActive: hasEntered, y: 16, scale: 0.97)
+                    .likemindedEntrance(order: 1, isActive: hasEntered, y: 16, scale: 0.97)
 
                 profileSignals
-                    .likemindedEntrance(order: 1, isActive: hasEntered, y: 14, scale: 0.98)
+                    .likemindedEntrance(order: 2, isActive: hasEntered, y: 14, scale: 0.98)
 
                 voiceSignalCapture
-                    .likemindedEntrance(order: 2, isActive: hasEntered, y: 14, scale: 0.98)
+                    .likemindedEntrance(order: 3, isActive: hasEntered, y: 14, scale: 0.98)
             }
-            .navigationTitle("Talk")
+            .navigationTitle("Profile")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {} label: {
@@ -41,15 +43,7 @@ struct ReflectionPrototypeView: View {
     private var voiceHero: some View {
         VStack(alignment: .leading, spacing: 18) {
             HStack(alignment: .top, spacing: 14) {
-                ZStack {
-                    Circle()
-                        .fill(Color.white.opacity(0.16))
-                        .frame(width: 54, height: 54)
-
-                    Image(systemName: appState.voiceIsReady ? "waveform" : "mic.fill")
-                        .font(.system(size: 24, weight: .semibold))
-                        .foregroundStyle(.white)
-                }
+                VoiceOrbView(status: appState.realtimeStatus)
 
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Voice profile")
@@ -72,8 +66,8 @@ struct ReflectionPrototypeView: View {
                 .fixedSize(horizontal: false, vertical: true)
 
             HStack(spacing: 10) {
-                VoiceStatusPill(title: appState.realtimeStatus, systemImage: statusIcon)
-                VoiceStatusPill(title: appState.sourceLabel, systemImage: "point.3.connected.trianglepath.dotted")
+                ProfileStatusBadge(title: appState.realtimeStatus, systemImage: statusIcon)
+                ProfileStatusBadge(title: appState.sourceLabel, systemImage: "point.3.connected.trianglepath.dotted")
             }
 
             Button {
@@ -108,14 +102,35 @@ struct ReflectionPrototypeView: View {
         .shadow(color: PrototypePalette.accent.opacity(0.18), radius: 22, y: 14)
     }
 
+    private var reinterviewPrompt: some View {
+        FeatureCard(title: "Let's re-evaluate your placement", eyebrow: "Circle concern") {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Keep your current read, then add a fresh voice pass so placement can adjust.")
+                    .font(PrototypeTypography.body)
+                    .foregroundStyle(PrototypePalette.subink)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Button {
+                    Task {
+                        await appState.startReinterview()
+                    }
+                } label: {
+                    PrimaryActionButton(title: "Start re-interview", systemImage: "waveform")
+                }
+                .buttonStyle(.plain)
+                .disabled(appState.isStartingVoice)
+            }
+        }
+    }
+
     private var voiceSignalCapture: some View {
         FeatureCard(title: "Captured voice", eyebrow: "Onboarding") {
             VStack(alignment: .leading, spacing: 14) {
                 if appState.capturedVoiceSignals.isEmpty {
-                    EmptyVoiceSignalRow()
+                    EmptyCapturedSignalsRow()
                 } else {
                     ForEach(Array(appState.capturedVoiceSignals.enumerated()), id: \.offset) { index, signal in
-                        VoiceSignalRow(index: index + 1, signal: signal)
+                        CapturedSignalRow(index: index + 1, signal: signal)
                     }
                 }
 
@@ -139,21 +154,48 @@ struct ReflectionPrototypeView: View {
     private var profileSignals: some View {
         FeatureCard(title: "Living profile", eyebrow: "Signals") {
             VStack(alignment: .leading, spacing: 14) {
-                SegmentedSignalRow(items: signalTabs, selection: $selectedSignal)
-
-                SignalSummaryRow(
-                    title: selectedSignal,
-                    value: signalValue,
-                    detail: signalDetail,
-                    systemImage: signalIcon
-                )
+                signalRead
 
                 bigFiveScores
                     .likemindedEntrance(order: 2, isActive: hasEntered, y: 8, scale: 0.98)
 
-                PrivacyStrip()
+                interestTags
+
+                Text("Private to you. Hidden placement signals are used for room fit, not shown as profile copy.")
+                    .font(PrototypeTypography.caption)
+                    .foregroundStyle(PrototypePalette.subink)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
+    }
+
+    private var signalRead: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: signalIcon)
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(.white)
+                .frame(width: 42, height: 42)
+                .background(PrototypePalette.accent)
+                .clipShape(Circle())
+
+            VStack(alignment: .leading, spacing: 5) {
+                Text(signalValue)
+                    .font(PrototypeTypography.sectionTitle)
+                    .foregroundStyle(PrototypePalette.ink)
+                Text(signalDetail)
+                    .font(PrototypeTypography.caption)
+                    .foregroundStyle(PrototypePalette.subink)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(PrototypePalette.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(PrototypePalette.rule, lineWidth: 1)
+        )
     }
 
     private var bigFiveScores: some View {
@@ -165,12 +207,12 @@ struct ReflectionPrototypeView: View {
                 .font(PrototypeTypography.metadata)
                 .foregroundStyle(PrototypePalette.subink)
 
-            HStack(spacing: 6) {
-                BigFiveGauge(label: "O", value: bigFive.openness)
-                BigFiveGauge(label: "C", value: bigFive.conscientiousness)
-                BigFiveGauge(label: "E", value: bigFive.extraversion)
-                BigFiveGauge(label: "A", value: bigFive.agreeableness)
-                BigFiveGauge(label: "N", value: bigFive.neuroticism)
+            VStack(spacing: 10) {
+                TraitBar(leftLabel: "Concrete", rightLabel: "Curious", value: bigFive.openness)
+                TraitBar(leftLabel: "Flexible", rightLabel: "Intentional", value: bigFive.conscientiousness)
+                TraitBar(leftLabel: "Reserved", rightLabel: "Outgoing", value: bigFive.extraversion)
+                TraitBar(leftLabel: "Direct", rightLabel: "Warm", value: bigFive.agreeableness)
+                TraitBar(leftLabel: "Steady", rightLabel: "Sensitive", value: bigFive.neuroticism)
             }
         }
         .padding(14)
@@ -181,6 +223,36 @@ struct ReflectionPrototypeView: View {
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .stroke(PrototypePalette.rule, lineWidth: 1)
         )
+    }
+
+    private var interestTags: some View {
+        let interests = appState.activeSlice.profile.interests
+
+        return VStack(alignment: .leading, spacing: 10) {
+            Text("Interests")
+                .font(PrototypeTypography.metadata)
+                .foregroundStyle(PrototypePalette.subink)
+
+            if interests.isEmpty {
+                Text("Voice will add interests as you talk.")
+                    .font(PrototypeTypography.caption)
+                    .foregroundStyle(PrototypePalette.subink)
+            } else {
+                ViewThatFits(in: .vertical) {
+                    HStack(spacing: 8) {
+                        ForEach(interests) { interest in
+                            InterestTagChip(interest: interest)
+                        }
+                    }
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        ForEach(interests) { interest in
+                            InterestTagChip(interest: interest)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private var placementPreview: some View {
@@ -302,38 +374,25 @@ struct ReflectionPrototypeView: View {
 
     private var signalValue: String {
         let profile = appState.activeSlice.profile
-        switch selectedSignal {
-        case "Energy": return profile.emotionalRhythm.capitalized
-        case "Trust": return profile.relationshipIntent.capitalized
-        default: return profile.communicationStyle.capitalized
-        }
+        return profile.communicationStyle.capitalized
     }
 
     private var signalDetail: String {
         let signals = appState.slice?.signals
-        switch selectedSignal {
-        case "Energy":
-            if let energy = signals?.socialEnergy { return energy }
-            return "Not read yet"
-        case "Trust":
-            if let trust = signals?.trustPattern { return trust }
-            return "Not read yet"
-        default:
-            if let style = signals?.communicationStyle?.primary { return style }
-            return "Not read yet"
-        }
+        let parts = [
+            signals?.communicationStyle?.primary,
+            signals?.socialEnergy,
+            signals?.trustPattern
+        ].compactMap { $0 }
+        return parts.isEmpty ? "Not read yet" : parts.joined(separator: " · ")
     }
 
     private var signalIcon: String {
-        switch selectedSignal {
-        case "Energy": return "bolt.heart.fill"
-        case "Trust": return "lock.shield.fill"
-        default: return "text.bubble.fill"
-        }
+        return "text.bubble.fill"
     }
 }
 
-private struct VoiceStatusPill: View {
+private struct ProfileStatusBadge: View {
     let title: String
     let systemImage: String
 
@@ -348,95 +407,7 @@ private struct VoiceStatusPill: View {
     }
 }
 
-private struct SegmentedSignalRow: View {
-    let items: [String]
-    @Binding var selection: String
-
-    var body: some View {
-        HStack(spacing: 8) {
-            ForEach(items, id: \.self) { item in
-                Button {
-                    selection = item
-                } label: {
-                    Text(item)
-                        .font(PrototypeTypography.metadata)
-                        .foregroundStyle(selection == item ? .white : PrototypePalette.ink)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 9)
-                        .frame(maxWidth: .infinity)
-                        .background(selection == item ? PrototypePalette.accent : PrototypePalette.surface)
-                        .clipShape(Capsule(style: .continuous))
-                        .overlay(
-                            Capsule(style: .continuous)
-                                .stroke(PrototypePalette.rule, lineWidth: selection == item ? 0 : 1)
-                        )
-                }
-                .buttonStyle(.plain)
-            }
-        }
-    }
-}
-
-private struct SignalSummaryRow: View {
-    let title: String
-    let value: String
-    let detail: String
-    let systemImage: String
-
-    var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            Image(systemName: systemImage)
-                .font(.system(size: 17, weight: .semibold))
-                .foregroundStyle(PrototypePalette.accent)
-                .frame(width: 42, height: 42)
-                .background(PrototypePalette.accentSoft)
-                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-
-            VStack(alignment: .leading, spacing: 5) {
-                Text(title)
-                    .font(PrototypeTypography.metadata)
-                    .foregroundStyle(PrototypePalette.subink)
-
-                Text(value)
-                    .font(PrototypeTypography.bodyStrong)
-                    .foregroundStyle(PrototypePalette.ink)
-
-                Text(detail)
-                    .font(PrototypeTypography.caption)
-                    .foregroundStyle(PrototypePalette.subink)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-        }
-        .padding(14)
-        .background(PrototypePalette.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .stroke(PrototypePalette.rule, lineWidth: 1)
-        )
-    }
-}
-
-private struct PrivacyStrip: View {
-    var body: some View {
-        HStack(spacing: 10) {
-            Image(systemName: "lock.fill")
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(PrototypePalette.accent)
-
-            Text("Profile read is private. Circle placement needs confirmation.")
-                .font(PrototypeTypography.caption)
-                .foregroundStyle(PrototypePalette.subink)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .padding(12)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(PrototypePalette.accentSoft.opacity(0.62))
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-    }
-}
-
-private struct VoiceSignalRow: View {
+private struct CapturedSignalRow: View {
     let index: Int
     let signal: String
 
@@ -465,7 +436,7 @@ private struct VoiceSignalRow: View {
     }
 }
 
-private struct EmptyVoiceSignalRow: View {
+private struct EmptyCapturedSignalsRow: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: "waveform.badge.magnifyingglass")
@@ -491,29 +462,76 @@ private struct EmptyVoiceSignalRow: View {
     }
 }
 
-private struct BigFiveGauge: View {
-    let label: String
+private struct TraitBar: View {
+    let leftLabel: String
+    let rightLabel: String
     let value: Double
 
     var body: some View {
-        VStack(spacing: 4) {
-            ZStack {
-                Circle()
-                    .stroke(PrototypePalette.rule, lineWidth: 3)
-                    .frame(width: 36, height: 36)
-                Circle()
-                    .trim(from: 0, to: value)
-                    .stroke(PrototypePalette.accent, style: StrokeStyle(lineWidth: 3, lineCap: .round))
-                    .frame(width: 36, height: 36)
-                    .rotationEffect(.degrees(-90))
-                Text(label)
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(PrototypePalette.ink)
+        VStack(spacing: 5) {
+            GeometryReader { proxy in
+                ZStack(alignment: .leading) {
+                    Capsule()
+                        .fill(.quaternary)
+                    Capsule()
+                        .fill(LinearGradient(colors: [PrototypePalette.accent, PrototypePalette.accent.opacity(0.4)], startPoint: .leading, endPoint: .trailing))
+                        .frame(width: max(8, proxy.size.width * min(max(value, 0), 1)))
+                }
             }
-            Text("\(Int(value * 100))")
-                .font(.system(size: 10, weight: .medium))
-                .foregroundStyle(PrototypePalette.subink)
+            .frame(height: 9)
+
+            HStack {
+                Text(leftLabel)
+                Spacer()
+                Text(rightLabel)
+            }
+            .font(.caption2)
+            .foregroundStyle(PrototypePalette.subink)
         }
-        .frame(maxWidth: .infinity)
+    }
+}
+
+private struct InterestTagChip: View {
+    let interest: Interest
+
+    var body: some View {
+        Text(interest.label)
+            .font(PrototypeTypography.metadata)
+            .foregroundStyle(foreground)
+            .padding(.horizontal, 11)
+            .padding(.vertical, 8)
+            .background(Capsule(style: .continuous).fill(background))
+            .overlay(Capsule(style: .continuous).stroke(border, lineWidth: 1))
+    }
+
+    private var foreground: Color {
+        switch interest.depth {
+        case .deep:
+            return .white
+        case .active:
+            return PrototypePalette.accent
+        case .casual:
+            return PrototypePalette.subink
+        }
+    }
+
+    private var background: Color {
+        switch interest.depth {
+        case .deep:
+            return PrototypePalette.accent
+        case .active:
+            return .clear
+        case .casual:
+            return PrototypePalette.surface
+        }
+    }
+
+    private var border: Color {
+        switch interest.depth {
+        case .deep, .casual:
+            return .clear
+        case .active:
+            return PrototypePalette.accent
+        }
     }
 }

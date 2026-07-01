@@ -98,14 +98,23 @@ async function requireUser(req, res) {
 }
 
 function resultEnvelope(profile, placement, allCircleFits = null, synthesisMode = null) {
+  const safeProfile = publicProfile(profile);
   return {
-    profileId: profile.profileId,
-    profileSummary: profile.profileSummary || null,
-    signals: profile.signals,
+    profileId: safeProfile.profileId,
+    profileSummary: safeProfile.profileSummary || null,
+    signals: safeProfile.signals,
+    basicInfo: safeProfile.basicInfo || null,
+    interests: safeProfile.interests || [],
     placement,
     allCircleFits,
     synthesisMode
   };
+}
+
+function publicProfile(profile) {
+  if (!profile || typeof profile !== "object") return profile;
+  const { hiddenSignals, ...safeProfile } = profile;
+  return safeProfile;
 }
 
 async function createRealtimeClientSecret(input = {}) {
@@ -258,7 +267,7 @@ async function handleRequest(req, res) {
             parameters: {
               type: "object",
               additionalProperties: false,
-              required: ["signals", "primaryCircleId", "fitReasons", "sourceReflectionSignals", "profileSummary"],
+              required: ["signals", "primaryCircleId", "fitReasons", "sourceReflectionSignals", "profileSummary", "interests", "hiddenSignals"],
               properties: {
                 signals: { type: "object" },
                 primaryCircleId: { type: "string" },
@@ -266,7 +275,21 @@ async function handleRequest(req, res) {
                 fitReasons: { type: "array", items: { type: "string" } },
                 sourceReflectionSignals: { type: "array", items: { type: "string" } },
                 confidenceLabel: { type: "string" },
-                profileSummary: { type: "string" }
+                profileSummary: { type: "string" },
+                interests: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    additionalProperties: false,
+                    required: ["area", "label", "depth"],
+                    properties: {
+                      area: { type: "string" },
+                      label: { type: "string" },
+                      depth: { type: "string", enum: ["casual", "active", "deep"] }
+                    }
+                  }
+                },
+                hiddenSignals: { type: "object" }
               }
             }
           }
@@ -283,7 +306,7 @@ async function handleRequest(req, res) {
             voice: REALTIME_VOICE
           }
         },
-        instructions: "You are a warm, insightful interviewer conducting a personality discovery conversation for the Likeminded app. Start briefly and warmly. Ask open-ended questions one at a time. Listen carefully. After every meaningful user answer, call submit_profile_placement to save the current private profile draft and best starter circle from the conversation so far. If evidence is still early, set confidenceLabel to Draft profile and say what is provisional in fitReasons; once you have enough evidence, set confidenceLabel to Full profile. Choose from these circle ids only: reflective-builders, gentle-romantics, longform-thinkers, bold-explorers, grounded-nurturers. Do not choose by keyword; decide from pacing, trust, room energy, intent, and the whole conversation. IMPORTANT: Wait patiently for the user to finish speaking. Do not interrupt."
+        instructions: "You are a warm, insightful interviewer conducting a personality discovery conversation for the Likeminded app. Start briefly and warmly. Ask open-ended questions one at a time. Listen carefully. Naturally discover interests across movies, music, books, food/cooking, outdoors, tech/building, and art/design; infer depth as casual, active, or deep from specificity and emotional engagement. Observe private placement signals from how the user speaks: shyness, language comfort, warmth, vulnerability openness, dominance tendency, and energy trajectory. After every meaningful user answer, call submit_profile_placement to save the current private profile draft, structured interests, hidden placement signals, and best starter circle from the conversation so far. If evidence is still early, set confidenceLabel to Draft profile and say what is provisional in fitReasons; once you have enough evidence, set confidenceLabel to Full profile. Choose from these circle ids only: reflective-builders, gentle-romantics, longform-thinkers, bold-explorers, grounded-nurturers. Do not choose by keyword; decide from pacing, trust, room energy, intent, and the whole conversation. IMPORTANT: Wait patiently for the user to finish speaking. Do not interrupt."
       });
 
       const formData = new FormData();
@@ -382,7 +405,7 @@ async function handleRequest(req, res) {
       json(res, 404, { error: "profile_not_found", message: "No profile has been created yet." });
       return;
     }
-    json(res, 200, { profile });
+    json(res, 200, { profile: publicProfile(profile) });
     return;
   }
 
@@ -399,7 +422,7 @@ async function handleRequest(req, res) {
         json(res, 404, { error: "profile_not_found", message: "No profile has been created yet." });
         return;
       }
-      json(res, 200, { profile });
+      json(res, 200, { profile: publicProfile(profile) });
     } catch (error) {
       json(res, 400, { error: "invalid_profile_update", message: error.message });
     }

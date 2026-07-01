@@ -2,18 +2,12 @@ import SwiftUI
 
 struct RootView: View {
     @EnvironmentObject private var appState: PrototypeAppState
-    @State private var selection: AppTab = .talk
+    @State private var selection: AppTab = .profile
 
     var body: some View {
         Group {
             if appState.isSignedIn {
                 TabView(selection: $selection) {
-                    ReflectionPrototypeView()
-                        .tabItem {
-                            Label(AppTab.talk.rawValue, systemImage: AppTab.talk.systemImage)
-                        }
-                        .tag(AppTab.talk)
-
                     CirclesPrototypeView()
                         .tabItem {
                             Label(AppTab.circles.rawValue, systemImage: AppTab.circles.systemImage)
@@ -26,7 +20,13 @@ struct RootView: View {
                         }
                         .tag(AppTab.communities)
 
-                    ProfilePrototypeView()
+                    Group {
+                        if appState.slice == nil, appState.basicInfo != nil {
+                            VoiceProfileView()
+                        } else {
+                            ProfilePrototypeView()
+                        }
+                    }
                         .tabItem {
                             Label(AppTab.profile.rawValue, systemImage: AppTab.profile.systemImage)
                         }

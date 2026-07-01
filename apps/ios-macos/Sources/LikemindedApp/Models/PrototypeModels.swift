@@ -1,7 +1,6 @@
 import Foundation
 
 enum AppTab: String, CaseIterable, Identifiable {
-    case talk = "Talk"
     case circles = "Circles"
     case communities = "Communities"
     case profile = "Profile"
@@ -10,8 +9,6 @@ enum AppTab: String, CaseIterable, Identifiable {
 
     var systemImage: String {
         switch self {
-        case .talk:
-            return "waveform.circle"
         case .circles:
             return "person.3.fill"
         case .communities:
@@ -92,6 +89,58 @@ struct ProfileUpdateRequest: Encodable {
     let signals: ProfileSignals?
 }
 
+struct BasicInfo: Codable, Equatable {
+    let name: String
+    let gender: Gender
+    let dateOfBirth: String
+    let city: String
+    let pincode: String
+}
+
+enum Gender: String, Codable, CaseIterable, Identifiable {
+    case male
+    case female
+    case nonBinary
+    case preferNotToSay
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .male:
+            return "Male"
+        case .female:
+            return "Female"
+        case .nonBinary:
+            return "Non-binary"
+        case .preferNotToSay:
+            return "Prefer not to say"
+        }
+    }
+}
+
+struct Interest: Codable, Equatable, Identifiable {
+    var id: String { "\(area)-\(label)" }
+    let area: String
+    let label: String
+    let depth: InterestDepth
+}
+
+enum InterestDepth: String, Codable, Equatable {
+    case casual
+    case active
+    case deep
+}
+
+struct HiddenSignals: Codable, Equatable {
+    let shyness: Double?
+    let languageComfort: String?
+    let warmth: Double?
+    let vulnerabilityOpenness: Double?
+    let dominanceTendency: Double?
+    let energyTrajectory: String?
+}
+
 struct PlacementActionRequest: Encodable {
     let action: String
 }
@@ -162,6 +211,7 @@ struct ReflectPlaceConnectSlice: Codable {
     var placement: CirclePlacement
     let connectionPath: ConnectionPath
     var signals: ProfileSignals?
+    var hiddenSignals: HiddenSignals?
 }
 
 struct MVPJourneyStep: Codable, Identifiable {
@@ -174,11 +224,12 @@ struct MVPJourneyStep: Codable, Identifiable {
 struct SynthesizedProfile: Codable {
     let profileId: String
     let displayName: String
+    let basicInfo: BasicInfo?
     let values: [String]
     let communicationStyle: String
     let emotionalRhythm: String
     let relationshipIntent: String
-    let interests: [String]
+    let interests: [Interest]
     let privacy: ProfilePrivacy
     let reflection: ProfileReflection
 }

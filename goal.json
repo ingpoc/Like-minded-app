@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "status": "completed",
-  "completed_at": "2026-07-01",
-  "completion_commit_sha": "d14a63a",
-  "goal": "Harden the Likeminded MVP placement loop before external TestFlight proof: keep the signed-in voice onboarding, persisted backend profile and circle placement, profile review/edit, placement actions, tester feedback, deterministic graders, and local simulator validation ready for final release gates.",
+  "purpose": "Per-session execution goal. Copy this file to goal.json at session start, set the current goal, and keep graders/validation/agent routing current when files or commands change.",
+  "goal": "Implement Phase 3 profile and onboarding redesign: move the voice interview into the Profile tab after basic onboarding, extend profile contracts for basic info, structured interests, and hidden placement signals, and remove stale Talk/Reflection profile cleanup without changing the MVP backend architecture.",
   "ultimate_goal_source": "GOAL.md",
   "progress_source": "PROGRESS.md",
   "workflow_refs": [
-    "docs/workflows/validation.md"
+    "docs/workflows/validation.md",
+    "docs/product-redesign.md"
   ],
   "validation_inventory": {
     "local_simulator": {
@@ -44,8 +44,8 @@
       ],
       "proves": [
         "Fresh simulator launch shows the Sign in with Apple gate.",
-        "DEBUG local auth reaches the signed-in Talk/Circles/Communities/Profile app.",
-        "Deterministic dev voice placement can seed local persisted placement evidence."
+        "DEBUG local auth reaches the signed-in app after Phase 3 Profile/onboarding changes.",
+        "Deterministic dev voice placement still seeds local persisted placement evidence."
       ],
       "does_not_prove": [
         "Real Apple sign-in.",
@@ -82,7 +82,7 @@
       "name": "mvp_backend_contract",
       "command": "npm run smoke:mvp",
       "cost": "zero_token",
-      "proves": "Auth-gated discovery, Realtime profile-placement persistence, placement action, feedback, and cross-user isolation work locally."
+      "proves": "Auth-gated discovery, persisted profile/placement, placement action, feedback, and cross-user isolation work locally."
     },
     {
       "name": "release_static_config",
@@ -210,11 +210,13 @@
     "commit_message_template": "Validate <short session goal>"
   },
   "done_criteria": [
-    "All deterministic graders pass.",
-    "Local simulator build and launch pass when local validation inputs changed.",
-    "Repo-owned MVP loop surfaces are ready for later external Render, Neon, Apple, and TestFlight proof.",
-    "No stale docs or config describe prototype tabs, prototype bundle id, no auth, or SQLite as the production path.",
-    "Validated session changes are committed with the session's goal.json before the goal is marked completed."
+    "Profile tab shows onboarding inline when no backend profile exists, then automatically presents the voice interview hero after basic info is saved.",
+    "Swift models and backend model-placement payloads preserve basicInfo, structured interests, and hidden placement signals without exposing hidden signals as user-facing profile fields.",
+    "Stale Talk/Reflection profile UI is removed or renamed so the active voice profile surface is Profile-owned.",
+    "Deterministic checks pass, including npm run check and npm run verify:goal.",
+    "Local simulator validation is rerun if native UI or project inputs changed.",
+    "Validated session changes are committed with the completed goal.json before the goal is marked completed."
   ],
-  "max_iterations": 10
+  "max_iterations": 10,
+  "completed_at": "2026-07-01"
 }

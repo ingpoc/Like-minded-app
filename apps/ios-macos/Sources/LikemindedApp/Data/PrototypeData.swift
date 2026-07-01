@@ -130,11 +130,16 @@ enum PrototypeData {
         profile: SynthesizedProfile(
             profileId: "mock-profile-001",
             displayName: "Likeminded Preview",
+            basicInfo: nil,
             values: ["depth", "kindness", "curiosity"],
             communicationStyle: "reflective",
             emotionalRhythm: "steady",
             relationshipIntent: "deep-connection",
-            interests: ["long walks", "books", "founder stories"],
+            interests: [
+                Interest(area: "connection", label: "long walks", depth: .active),
+                Interest(area: "mind", label: "books", depth: .deep),
+                Interest(area: "work", label: "founder stories", depth: .casual)
+            ],
             privacy: ProfilePrivacy(
                 aiReflectionVisibleToUser: true,
                 matchExplanationVisibleToMatches: false
@@ -227,6 +232,8 @@ enum PrototypeData {
             explanation: "Shared appetite for reflective conversation and steady emotional rhythm.",
             nextStep: "Offer a guided first conversation.",
             consentState: "mutual-interest-required"
-        )
+        ),
+        signals: nil,
+        hiddenSignals: nil
     )
 }

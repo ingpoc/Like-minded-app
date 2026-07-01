@@ -13,6 +13,33 @@ struct ProfilePrototypeView: View {
                 subtitle: "Your private read."
             ) {
                 if let slice = appState.slice {
+                    Button {
+                        Task {
+                            await appState.startVoiceSession()
+                        }
+                    } label: {
+                        HStack(spacing: 10) {
+                            Image(systemName: appState.isStartingVoice ? "hourglass" : "waveform")
+                            Text(appState.isStartingVoice ? "Opening voice" : "Update profile")
+                            Spacer()
+                            Text(appState.realtimeStatus)
+                                .font(PrototypeTypography.caption)
+                                .foregroundStyle(PrototypePalette.subink)
+                        }
+                        .font(PrototypeTypography.metadata)
+                        .foregroundStyle(PrototypePalette.ink)
+                        .padding(.horizontal, 14)
+                        .frame(height: 52)
+                        .background(PrototypePalette.surface)
+                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                .stroke(PrototypePalette.rule, lineWidth: 1)
+                        )
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(appState.isStartingVoice)
+
                     FeatureCard(title: "Your read", eyebrow: appState.sourceLabel) {
                         VStack(alignment: .leading, spacing: 12) {
                             TextEditor(text: $appState.editedReflection)
@@ -25,6 +52,8 @@ struct ProfilePrototypeView: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
 
                             FlexibleTagLayout(items: slice.profile.reflection.strengths)
+
+                            FlexibleTagLayout(items: slice.profile.interests.map(\.label))
 
                             Button {
                                 Task {
@@ -62,11 +91,7 @@ struct ProfilePrototypeView: View {
                         }
                     }
                 } else {
-                    FeatureCard(title: "No profile yet", eyebrow: "Start in Talk") {
-                        Text("Start a voice profile.")
-                            .font(PrototypeTypography.body)
-                            .foregroundStyle(PrototypePalette.subink)
-                    }
+                    OnboardingView()
                 }
 
                 if let loadError = appState.loadError {

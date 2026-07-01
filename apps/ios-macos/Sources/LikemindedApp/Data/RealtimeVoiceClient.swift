@@ -21,6 +21,7 @@ struct RealtimeVoiceUpdate {
 final class RealtimeVoiceClient: NSObject {
     var baseURL = LikemindedAPIClient.defaultBaseURL()
     var authToken: String?
+    var basicInfo: BasicInfo?
 
     private var onUpdate: ((RealtimeVoiceUpdate) -> Void)?
     private var isStreaming = false
@@ -413,6 +414,11 @@ final class RealtimeVoiceClient: NSObject {
             return
         }
         payload["interviewTranscript"] = conversationTranscript
+        if let basicInfo,
+           let data = try? JSONEncoder().encode(basicInfo),
+           let object = try? JSONSerialization.jsonObject(with: data) {
+            payload["basicInfo"] = object
+        }
 
         guard let body = try? JSONSerialization.data(withJSONObject: payload) else { return }
         let url = baseURL.appendingPathComponent("/v1/realtime/profile-placement")

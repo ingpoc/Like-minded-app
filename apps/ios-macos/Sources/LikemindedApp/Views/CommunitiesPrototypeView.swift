@@ -70,8 +70,8 @@ struct CirclesPrototypeView: View {
                         }
                     }
                 } else {
-                    FeatureCard(title: "No circle yet", eyebrow: "Talk first") {
-                        Text("Start in Talk.")
+                    FeatureCard(title: "No circle yet", eyebrow: "Profile first") {
+                        Text("Start in Profile.")
                             .font(PrototypeTypography.body)
                             .foregroundStyle(PrototypePalette.subink)
                             .fixedSize(horizontal: false, vertical: true)

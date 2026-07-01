@@ -52,6 +52,34 @@ function stringArray(value) {
   return Array.isArray(value) ? value.filter((item) => typeof item === "string") : [];
 }
 
+function normalizeInterests(value) {
+  if (!Array.isArray(value)) return [];
+  return value
+    .slice(0, 10)
+    .map((item) => {
+      if (typeof item === "string") return { area: "general", label: item, depth: "active" };
+      if (!item || typeof item !== "object" || typeof item.label !== "string") return null;
+      return {
+        area: typeof item.area === "string" && item.area.trim() ? item.area.trim() : "general",
+        label: item.label.trim(),
+        depth: ["casual", "active", "deep"].includes(item.depth) ? item.depth : "active"
+      };
+    })
+    .filter((item) => item && item.label);
+}
+
+function normalizeHiddenSignals(value) {
+  if (!value || typeof value !== "object") return null;
+  return {
+    shyness: value.shyness == null ? null : clamp01(value.shyness),
+    languageComfort: typeof value.languageComfort === "string" ? value.languageComfort : null,
+    warmth: value.warmth == null ? null : clamp01(value.warmth),
+    vulnerabilityOpenness: value.vulnerabilityOpenness == null ? null : clamp01(value.vulnerabilityOpenness),
+    dominanceTendency: value.dominanceTendency == null ? null : clamp01(value.dominanceTendency),
+    energyTrajectory: typeof value.energyTrajectory === "string" ? value.energyTrajectory : null
+  };
+}
+
 function parseModelJson(body) {
   if (body.output_parsed) return body.output_parsed;
   const text = body.output_text || body.output?.flatMap((item) => item.content || [])
@@ -91,6 +119,9 @@ function profilePlacementFromModelResult({ modelResult, interviewTranscript = ""
   const profile = {
     profileId: generateId(),
     signals: normalizeSignals(modelResult.signals),
+    basicInfo: modelResult.basicInfo && typeof modelResult.basicInfo === "object" ? modelResult.basicInfo : null,
+    interests: normalizeInterests(modelResult.interests),
+    hiddenSignals: normalizeHiddenSignals(modelResult.hiddenSignals),
     sourceInput: {
       reflectionAnswers,
       interviewExcerpt: interviewTranscript.slice(0, 500)
@@ -130,7 +161,9 @@ async function modelBackedProfilePlacement({ interviewTranscript = "", reflectio
               secondaryCircleIds: "0-3 available circle ids",
               fitReasons: "short user-facing reasons grounded in the interview",
               sourceReflectionSignals: "short evidence bullets from the interview",
-              profileSummary: "one concise private profile summary"
+              profileSummary: "one concise private profile summary",
+              interests: "array of { area, label, depth: casual|active|deep }",
+              hiddenSignals: "private placement-only fields: shyness, languageComfort, warmth, vulnerabilityOpenness, dominanceTendency, energyTrajectory"
             }
           })
         }
