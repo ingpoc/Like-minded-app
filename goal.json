@@ -1,5 +1,8 @@
 {
   "schema_version": 1,
+  "status": "completed",
+  "completed_at": "2026-07-01",
+  "completion_commit_sha": "d14a63a",
   "goal": "Harden the Likeminded MVP placement loop before external TestFlight proof: keep the signed-in voice onboarding, persisted backend profile and circle placement, profile review/edit, placement actions, tester feedback, deterministic graders, and local simulator validation ready for final release gates.",
   "ultimate_goal_source": "GOAL.md",
   "progress_source": "PROGRESS.md",
