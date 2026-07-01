@@ -12,8 +12,8 @@ One tab, one job. Default UI is scannable state and action. Explanation appears 
 
 - Meet: RSVP state, upcoming/past meets, pre-meet teaser, static live-call prototype, and post-meet selection entry.
 - Circles: current circle, fit reasons, concern CTA, browse cards, and circle detail.
-- Communities: broader interest and taste entry points. No private profile read and no circle fit reasons.
-- Profile: private voice profile, live listening/saving state, and compact captured signals.
+- Communities: broader interest and taste entry points, with community detail for schedule, fit, and leave action. No private profile read.
+- Profile: private voice profile, before-voice empty state, living profile signals, interests, and Settings entry.
 - Soulmate: opt-in, post-meet match list, and connection status. No general inbox outside Soulmate.
 
 ## Visual Language
@@ -32,3 +32,4 @@ One tab, one job. Default UI is scannable state and action. Explanation appears 
 - Circle fit reasons live in Circles only.
 - Interest tags live in Communities and Soulmate match detail only.
 - Meetup info lives in Meet only except the circle-detail next-meet row.
+- Settings copy stays operational: Soulmate toggle, account, about, and support only.

@@ -12,7 +12,7 @@ Global `/Users/gurusharan/.codex/AGENTS.md` owns instruction control. This file 
 - Existing auth, backend, Realtime voice, and mvp-store infrastructure stays.
 - Design system stays: warm cream canvas, deep green accent, SF typography.
 - Design doc: `docs/product-redesign.md`. UI/UX research: `docs/references/ui-ux-patterns-research.md`.
-- Mockup prototype pass shipped for the five-tab shell: Meet, Circles, Communities, Profile, and Soulmate now share the updated cream/green/serif visual language, with static live-call and post-meet selection prototypes. Phase 4/5 backend and real room wiring remain unchecked.
+- Mockup prototype pass shipped for the five-tab shell: Meet, Circles, Communities, Profile, and Soulmate now share the updated cream/green/serif visual language, with static live-call, post-meet selection, Profile empty/existing states, Community detail, and Settings/Soulmate-toggle prototypes. Phase 4 is complete; Phase 5/6 backend and real room wiring remain unchecked.
 
 ## Phase 0 — Session Control And Graders
 
@@ -90,35 +90,35 @@ Placement surfaces: circles show your placement + available catalog. Communities
 
 ### Circles — Swift UI
 
-- [ ] Rework `CirclesPrototypeView.swift`: top section = "Your circle" card (if placement accepted) showing name, room energy, member count, themes as `FlexibleTagLayout`, next Sunday meetup date if scheduled. Bottom section = "Available circles" horizontal `ScrollView` of 5 archetype `CircleCard`s with fit score badge.
-- [ ] Create `CircleCard.swift` — `VStack` with `LinearGradient` background (unique per archetype — use archetype id to pick from a palette of green/cream/teal gradients). White text for name + room energy. Theme tags as translucent `Capsule` pills. Member count as secondary line. Card width ~85% of screen for peek. Add `.scrollTransition(.interactive, axis: .horizontal) { content, phase in content.scaleEffect(phase.isIdentity ? 1 : 0.92).opacity(phase.isIdentity ? 1 : 0.7) }`.
-- [ ] Create `CircleDetailView.swift` — push via `.navigationDestination(for: PlacementCircle.self)`. Shows: full description, room energy, meeting format, themes, fit breakdown (list of fit reasons from placement), upcoming Sunday meetup (if any), "Leave circle" `SecondaryActionButton`.
-- [ ] Add concern button below "Your circle" card: `SecondaryActionButton(title: "This doesn't feel like my circle", systemImage: "hand.raised.slash")`. On tap: set `appState.concernFlag = true` and switch to Profile tab (show re-interview prompt).
-- [ ] Remove the "Room accepted" dead-end. After `acceptPlacement()`, the card transitions (spring) to show member count + meetup info instead of just "Room accepted".
+- [x] Rework `CirclesPrototypeView.swift`: top section = "Your circle" card (if placement accepted) showing name, room energy, member count, themes as `FlexibleTagLayout`, next Sunday meetup date if scheduled. Bottom section = "Available circles" horizontal `ScrollView` of 5 archetype `CircleCard`s with fit score badge.
+- [x] Create `CircleCard.swift` — `VStack` with `LinearGradient` background (unique per archetype — use archetype id to pick from a palette of green/cream/teal gradients). White text for name + room energy. Theme tags as translucent `Capsule` pills. Member count as secondary line. Card width ~85% of screen for peek. Add `.scrollTransition(.interactive, axis: .horizontal) { content, phase in content.scaleEffect(phase.isIdentity ? 1 : 0.92).opacity(phase.isIdentity ? 1 : 0.7) }`.
+- [x] Create `CircleDetailView.swift` — push via `.navigationDestination(for: PlacementCircle.self)`. Shows: full description, room energy, meeting format, themes, fit breakdown (list of fit reasons from placement), upcoming Sunday meetup (if any), "Leave circle" `SecondaryActionButton`.
+- [x] Add concern button below "Your circle" card: `SecondaryActionButton(title: "This doesn't feel like my circle", systemImage: "hand.raised.slash")`. On tap: set `appState.concernFlag = true` and switch to Profile tab (show re-interview prompt).
+- [x] Remove the "Room accepted" dead-end. After `acceptPlacement()`, the card transitions (spring) to show member count + meetup info instead of just "Room accepted".
 
 ### Circles — Backend
 
-- [ ] `GET /v1/me/circles` — return array of circles the user belongs to. Pull from `circles` DBMap, filter where `members` array includes the user's profile ID. Response: `[{ id, name, roomEnergy, themes, membersCount, meetingFormat }]`.
-- [ ] `GET /v1/circles/:id` — return single circle detail: `{ id, name, description, roomEnergy, interactionIntent, socialFormat, themes, meetingFormat, membersCount, fitBreakdown: [{ dimension, score }] }`. `fitBreakdown` computed by calling `computeCircleFit` with the requesting user's profile signals.
-- [ ] `POST /v1/me/circles/concern` — set `concernFlag: true` on the user's latest profile in mvp-store. Response: `{ status: "concern_registered", message: "Re-interview prompted." }`. No body needed.
+- [x] `GET /v1/me/circles` — return array of circles the user belongs to. Pull from `circles` DBMap, filter where `members` array includes the user's profile ID. Response: `[{ id, name, roomEnergy, themes, membersCount, meetingFormat }]`.
+- [x] `GET /v1/circles/:id` — return single circle detail: `{ id, name, description, roomEnergy, interactionIntent, socialFormat, themes, meetingFormat, membersCount, fitBreakdown: [{ dimension, score }] }`. `fitBreakdown` computed by calling `computeCircleFit` with the requesting user's profile signals.
+- [x] `POST /v1/me/circles/concern` — set `concernFlag: true` on the user's latest profile in mvp-store. Response: `{ status: "concern_registered", message: "Re-interview prompted." }`. No body needed.
 
 ### Communities — Backend
 
-- [ ] Add `COMMUNITY_ARCHETYPES` array to `architecture.js` (8 objects, same shape as `CIRCLE_ARCHETYPES` minus personality profile fields). Communities: `ai-builders`, `longform-reading`, `design-craft`, `startups`, `mindful-living`, `creative-writing`, `jazz-music`, `trekking-outdoors`. Each has: `id`, `name`, `summary`, `themes: [String]`, `meetingFormat: String`.
-- [ ] Add `communities` DBMap to `architecture.js` (mirrors `circles`). Add `seedCommunities()` (mirrors `seedCircles()`). Call it on module load.
-- [ ] Add community membership to `mvp-store.js` — `joinCommunity(userId, communityId)`, `leaveCommunity(userId, communityId)`, `getJoinedCommunities(userId)`. Store as `communityMemberships` array per user.
-- [ ] `GET /v1/communities` — list all communities with member counts. No auth required (catalog is public).
-- [ ] `GET /v1/communities/:id` — single community detail with member count.
-- [ ] `POST /v1/communities/:id/join` — auth required. Add user to community members. Response: `{ status: "joined" }`.
-- [ ] `POST /v1/communities/:id/leave` — auth required. Remove user from community members.
-- [ ] `GET /v1/me/communities` — auth required. List communities the user has joined.
+- [x] Add `COMMUNITY_ARCHETYPES` array to `architecture.js` (8 objects, same shape as `CIRCLE_ARCHETYPES` minus personality profile fields). Communities: `ai-builders`, `longform-reading`, `design-craft`, `startups`, `mindful-living`, `creative-writing`, `jazz-music`, `trekking-outdoors`. Each has: `id`, `name`, `summary`, `themes: [String]`, `meetingFormat: String`.
+- [x] Add `communities` DBMap to `architecture.js` (mirrors `circles`). Add `seedCommunities()` (mirrors `seedCircles()`). Call it on module load.
+- [x] Add community membership to `mvp-store.js` — `joinCommunity(userId, communityId)`, `leaveCommunity(userId, communityId)`, `getJoinedCommunities(userId)`. Store as `communityMemberships` array per user.
+- [x] `GET /v1/communities` — list all communities with member counts. No auth required (catalog is public).
+- [x] `GET /v1/communities/:id` — single community detail with member count.
+- [x] `POST /v1/communities/:id/join` — auth required. Add user to community members. Response: `{ status: "joined" }`.
+- [x] `POST /v1/communities/:id/leave` — auth required. Remove user from community members.
+- [x] `GET /v1/me/communities` — auth required. List communities the user has joined.
 
 ### Communities — Swift UI
 
-- [ ] Delete `PrototypeData.communities` (3 hardcoded `CommunityRecommendation` constants).
-- [ ] Rework `CommunitiesPrototypeView.swift`: fetch from `GET /v1/communities` on `.task`. Show as `LazyVStack` of `CommunityCard`s (reuse `CircleCard` shape with community gradient). "Your communities" section at top (from `GET /v1/me/communities`) with compact cards. "Browse" section below with all communities. Join button on each card: `PrimaryActionButton(title: "Join", systemImage: "person.badge.plus")`.
-- [ ] Create `CommunityDetailView.swift` — push via `.navigationDestination(for: CommunityRecommendation.self)`. Shows: summary, themes, members count, upcoming Saturday meetup (if any), leave button.
-- [ ] Add `fetchCommunities()` and `joinCommunity(id:)` and `leaveCommunity(id:)` methods to `LikemindedAPIClient.swift`. Add `Community` Swift struct (replaces `CommunityRecommendation` — add `meetingFormat: String` field).
+- [x] Delete `PrototypeData.communities` (3 hardcoded `CommunityRecommendation` constants).
+- [x] Rework `CommunitiesPrototypeView.swift`: fetch from `GET /v1/communities` on `.task`. Show as `LazyVStack` of `CommunityCard`s (reuse `CircleCard` shape with community gradient). "Your communities" section at top (from `GET /v1/me/communities`) with compact cards. "Browse" section below with all communities. Join button on each card: `PrimaryActionButton(title: "Join", systemImage: "person.badge.plus")`.
+- [x] Create `CommunityDetailView.swift` — push with backend `Community`. Shows: summary, themes, members count, upcoming Saturday meetup (if any), leave button.
+- [x] Add `fetchCommunities()` and `joinCommunity(id:)` and `leaveCommunity(id:)` methods to `LikemindedAPIClient.swift`. Add `Community` Swift struct (replaces `CommunityRecommendation` — add `meetingFormat: String` field).
 
 ## Phase 5 — Meet + LiveKit Video
 

@@ -22,6 +22,7 @@ final class RealtimeVoiceClient: NSObject {
     var baseURL = LikemindedAPIClient.defaultBaseURL()
     var authToken: String?
     var basicInfo: BasicInfo?
+    var reinterviewContext: String?
 
     private var onUpdate: ((RealtimeVoiceUpdate) -> Void)?
     private var isStreaming = false
@@ -285,6 +286,14 @@ final class RealtimeVoiceClient: NSObject {
         request.setValue("application/sdp", forHTTPHeaderField: "content-type")
         if let authToken {
             request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
+        }
+        if let reinterviewContext = reinterviewContext?.prefix(1200), !reinterviewContext.isEmpty {
+            request.setValue(
+                String(reinterviewContext)
+                    .replacingOccurrences(of: "\r", with: " ")
+                    .replacingOccurrences(of: "\n", with: " | "),
+                forHTTPHeaderField: "X-Likeminded-Reinterview-Context"
+            )
         }
         request.httpBody = sdp.data(using: .utf8)
 

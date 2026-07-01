@@ -2,6 +2,9 @@ import SwiftUI
 
 struct CirclesPrototypeView: View {
     @EnvironmentObject private var appState: PrototypeAppState
+    @State private var isCapturingConcern = false
+    @State private var concernText = ""
+    @State private var isSendingConcern = false
 
     private var placement: CirclePlacement { appState.currentPlacement }
 
@@ -21,23 +24,53 @@ struct CirclesPrototypeView: View {
                     .buttonStyle(.plain)
                 }
 
-                Button {
-                    appState.concernFlag = true
-                } label: {
-                    HStack(spacing: 12) {
-                        Image(systemName: "hand.raised.slash")
-                        Text("This doesn't feel like my circle")
-                        Spacer()
-                        Image(systemName: "chevron.right")
+                if isCapturingConcern {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("What feels off?")
+                            .font(PrototypeTypography.bodyStrong)
+                            .foregroundStyle(PrototypePalette.ink)
+
+                        TextField("Too fast, too quiet, wrong energy...", text: $concernText, axis: .vertical)
+                            .font(PrototypeTypography.caption)
+                            .textFieldStyle(.roundedBorder)
+                            .lineLimit(2...4)
+
+                        Button {
+                            Task {
+                                isSendingConcern = true
+                                await appState.reportPlacementConcern(concernText)
+                                concernText = ""
+                                isSendingConcern = false
+                            }
+                        } label: {
+                            PrimaryActionButton(title: isSendingConcern ? "Saving" : "Continue in Profile", systemImage: "waveform")
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(isSendingConcern || concernText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                     }
-                    .font(PrototypeTypography.metadata)
-                    .foregroundStyle(PrototypePalette.ink)
                     .padding(16)
                     .background(PrototypePalette.surface)
                     .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                     .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+                } else {
+                    Button {
+                        isCapturingConcern = true
+                    } label: {
+                        HStack(spacing: 12) {
+                            Image(systemName: "hand.raised.slash")
+                            Text("This doesn't feel like my circle")
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                        }
+                        .font(PrototypeTypography.metadata)
+                        .foregroundStyle(PrototypePalette.ink)
+                        .padding(16)
+                        .background(PrototypePalette.surface)
+                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
 
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
@@ -45,18 +78,18 @@ struct CirclesPrototypeView: View {
                             .font(PrototypeTypography.eyebrow)
                             .foregroundStyle(PrototypePalette.accent)
                         Spacer()
-                        Text("View all")
+                        Text("\(availableCircles.count)")
                             .font(PrototypeTypography.metadata)
                             .foregroundStyle(PrototypePalette.subink)
                     }
 
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 10) {
-                            ForEach(Array(browseCircles.enumerated()), id: \.element.id) { index, circle in
+                            ForEach(Array(availableCircles.enumerated()), id: \.element.id) { index, circle in
                                 NavigationLink {
                                     CircleDetailView(circle: circle, reasons: placement.fitReasons)
                                 } label: {
-                                    BrowseCircleCard(circle: circle, tone: index)
+                                    CircleCard(circle: circle, tone: index)
                                 }
                                 .buttonStyle(.plain)
                                 .scrollTransition(.interactive, axis: .horizontal) { content, phase in
@@ -69,6 +102,9 @@ struct CirclesPrototypeView: View {
                     }
                     .contentMargins(.horizontal, 2, for: .scrollContent)
                 }
+            }
+            .task {
+                await appState.fetchCircles()
             }
             .overlay(alignment: .topTrailing) {
                 Image(systemName: "plus")
@@ -85,57 +121,8 @@ struct CirclesPrototypeView: View {
         }
     }
 
-    private var browseCircles: [PlacementCircle] {
-        [
-            PlacementCircle(
-                id: "thinkers",
-                name: "The Thinkers' Room",
-                emotionalPace: "Calm",
-                interactionIntent: "Analytical companionship",
-                socialFormat: "Small weekly room",
-                riskLevel: "Low",
-                privacyLevel: "Starter circle",
-                shortPromise: "Analytical · Calm · Curious",
-                roomEnergy: "Quiet builders who prefer substance over speed.",
-                easiestFirstAction: "Join the Sunday check-in.",
-                fitLabel: "Strong fit",
-                placementReason: "Your reflective pace fits the room.",
-                membersOnline: 18,
-                themes: ["Analytical", "Calm", "Curious"]
-            ),
-            PlacementCircle(
-                id: "open-hearts",
-                name: "Open Hearts",
-                emotionalPace: "Warm",
-                interactionIntent: "Supportive connection",
-                socialFormat: "Guided sharing",
-                riskLevel: "Medium",
-                privacyLevel: "Opt-in",
-                shortPromise: "Warm · Expressive · Supportive",
-                roomEnergy: "People who say the real thing kindly.",
-                easiestFirstAction: "React to the welcome prompt.",
-                fitLabel: "Good fit",
-                placementReason: "Your warmth is present but paced.",
-                membersOnline: 22,
-                themes: ["Warm", "Expressive", "Supportive"]
-            ),
-            PlacementCircle(
-                id: "craft-room",
-                name: "The Craft Room",
-                emotionalPace: "Focused",
-                interactionIntent: "Maker friendship",
-                socialFormat: "Project circle",
-                riskLevel: "Low",
-                privacyLevel: "Starter circle",
-                shortPromise: "Focused · Gentle · Useful",
-                roomEnergy: "Builders who trade notes and momentum.",
-                easiestFirstAction: "Share what you are making.",
-                fitLabel: "High fit",
-                placementReason: "Your builder identity is strong.",
-                membersOnline: 16,
-                themes: ["Makers", "Depth", "Ritual"]
-            )
-        ]
+    private var availableCircles: [PlacementCircle] {
+        appState.circles.isEmpty ? placement.secondaryCircles : appState.circles
     }
 }
 
@@ -161,14 +148,12 @@ private struct CircleHeroCard: View {
                 .foregroundStyle(.white)
                 .fixedSize(horizontal: false, vertical: true)
 
-            Text("Thoughtful · Deep · Intentional")
-                .font(PrototypeTypography.body)
-                .foregroundStyle(.white.opacity(0.92))
-
-            Text("We value honesty, depth and steady conversations.")
+            Text(circle.roomEnergy)
                 .font(PrototypeTypography.caption)
                 .foregroundStyle(.white.opacity(0.84))
                 .fixedSize(horizontal: false, vertical: true)
+
+            FlexibleTagLayout(items: circle.themes)
 
             HStack {
                 Label("Sunday 7pm", systemImage: "calendar")
@@ -192,33 +177,6 @@ private struct CircleHeroCard: View {
     }
 }
 
-private struct BrowseCircleCard: View {
-    let circle: PlacementCircle
-    let tone: Int
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Spacer()
-            Text(circle.name)
-                .font(PrototypeTypography.sectionTitle)
-                .foregroundStyle(.white)
-                .fixedSize(horizontal: false, vertical: true)
-            Text(circle.shortPromise)
-                .font(.system(size: 11, weight: .medium))
-                .foregroundStyle(.white.opacity(0.86))
-                .lineLimit(2)
-            Text("\(circle.membersOnline) members")
-                .font(PrototypeTypography.metadata)
-                .foregroundStyle(.white.opacity(0.90))
-                .padding(.top, 8)
-        }
-        .padding(14)
-        .frame(width: 144, height: 190, alignment: .leading)
-        .background(PrototypePalette.roomGradient(tone))
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-    }
-}
-
 struct CircleDetailView: View {
     let circle: PlacementCircle
     let reasons: [String]
@@ -226,11 +184,11 @@ struct CircleDetailView: View {
     var body: some View {
         ScreenContainer(title: "Circle", subtitle: circle.name) {
             VStack(alignment: .leading, spacing: 16) {
-                Text("Thoughtful · Deep · Intentional")
+                Text(circle.roomEnergy)
                     .font(PrototypeTypography.body)
                     .foregroundStyle(.white.opacity(0.92))
 
-                Text("We build trust slowly, listen deeply, and show up for each other.")
+                Text(circle.placementReason)
                     .font(PrototypeTypography.caption)
                     .foregroundStyle(.white.opacity(0.84))
 
@@ -267,7 +225,7 @@ struct CircleDetailView: View {
             FeatureCard(title: "Room rhythm", eyebrow: "Format") {
                 VStack(spacing: 0) {
                     DetailRow(icon: "person.2", title: "\(circle.membersOnline) members")
-                    DetailRow(icon: "bubble.left.and.bubble.right", title: "Weekly structured check-ins")
+                    DetailRow(icon: "bubble.left.and.bubble.right", title: circle.socialFormat)
                 }
             }
 
@@ -279,6 +237,8 @@ struct CircleDetailView: View {
 }
 
 struct CommunitiesPrototypeView: View {
+    @EnvironmentObject private var appState: PrototypeAppState
+
     var body: some View {
         NavigationStack {
             ScreenContainer(title: "Communities", subtitle: "What you're into.") {
@@ -300,17 +260,48 @@ struct CommunitiesPrototypeView: View {
                         .clipShape(Circle())
                 }
 
+                if appState.isLoadingCommunities {
+                    ProgressView()
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                }
+
+                if let error = appState.communityError {
+                    Text(error)
+                        .font(PrototypeTypography.caption)
+                        .foregroundStyle(PrototypePalette.subink)
+                        .padding(14)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(PrototypePalette.surface)
+                        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                }
+
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
                         Text("Your communities".uppercased())
                             .font(PrototypeTypography.eyebrow)
                             .foregroundStyle(PrototypePalette.accent)
                         Spacer()
-                        Text("View all")
+                        Text("\(appState.joinedCommunities.count)")
                             .font(PrototypeTypography.metadata)
                             .foregroundStyle(PrototypePalette.accent)
                     }
-                    CommunityCard(name: "Jazz & Music", summary: "18 members", tags: [], action: "Joined", tone: 3, compact: true)
+
+                    if appState.joinedCommunities.isEmpty {
+                        Text("Join a community below.")
+                            .font(PrototypeTypography.caption)
+                            .foregroundStyle(PrototypePalette.subink)
+                            .padding(.vertical, 6)
+                    } else {
+                        ForEach(Array(appState.joinedCommunities.enumerated()), id: \.element.id) { index, community in
+                            NavigationLink {
+                                CommunityDetailView(community: community, isJoined: true)
+                            } label: {
+                                CommunityCard(community: community, action: "Joined", tone: index + 3, compact: true)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
                 }
 
                 VStack(alignment: .leading, spacing: 12) {
@@ -318,20 +309,190 @@ struct CommunitiesPrototypeView: View {
                         .font(PrototypeTypography.eyebrow)
                         .foregroundStyle(PrototypePalette.accent)
 
-                    CommunityCard(name: "AI Builders", summary: "People building useful AI products and tools.", tags: ["AI", "Products", "UX"], action: "Join", tone: 1)
-                    CommunityCard(name: "Writers' Corner", summary: "For storytellers and creative writers.", tags: ["Writing", "Stories", "Books"], action: "Join", tone: 2)
-                    CommunityCard(name: "Slow Living", summary: "Mindful living. Less rush, more meaning.", tags: ["Wellness", "Mindfulness", "Lifestyle"], action: "Join", tone: 0)
+                    ForEach(Array(appState.communities.enumerated()), id: \.element.id) { index, community in
+                        let isJoined = appState.joinedCommunities.contains { $0.id == community.id }
+                        NavigationLink {
+                            CommunityDetailView(community: community, isJoined: isJoined)
+                        } label: {
+                            CommunityCard(community: community, action: isJoined ? "Joined" : "Join", tone: index + 1)
+                        }
+                        .buttonStyle(.plain)
+                        .simultaneousGesture(TapGesture().onEnded {
+                            if !isJoined {
+                                Task { await appState.joinCommunity(id: community.id) }
+                            }
+                        })
+                    }
                 }
+            }
+            .task {
+                await appState.fetchCommunities()
             }
             .toolbar(.hidden, for: .navigationBar)
         }
     }
 }
 
+struct CommunityDetailView: View {
+    @EnvironmentObject private var appState: PrototypeAppState
+    let community: Community
+    let isJoined: Bool
+
+    var body: some View {
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 18) {
+                    HStack {
+                        Image(systemName: "chevron.left")
+                        Spacer()
+                        Image(systemName: "ellipsis")
+                    }
+                    .font(PrototypeTypography.bodyStrong)
+                    .foregroundStyle(.white)
+
+                    Text("\(community.name)\nCommunity")
+                        .font(PrototypeTypography.hero)
+                        .foregroundStyle(.white)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    Text(community.summary)
+                        .font(PrototypeTypography.body)
+                        .foregroundStyle(.white.opacity(0.88))
+
+                    HStack(spacing: 8) {
+                        ForEach(community.themes.prefix(4), id: \.self) { tag in
+                            Text(tag)
+                                .font(PrototypeTypography.metadata)
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 7)
+                                .background(Color.white.opacity(0.10))
+                                .clipShape(Capsule(style: .continuous))
+                                .overlay(Capsule(style: .continuous).stroke(Color.white.opacity(0.35), lineWidth: 1))
+                        }
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 18)
+                .padding(.bottom, 62)
+                .background(PrototypePalette.roomGradient(0))
+                .clipShape(RoundedRectangle(cornerRadius: 0, style: .continuous))
+                .overlay(WaveLines().stroke(Color.white.opacity(0.16), lineWidth: 1).padding(8))
+
+                HStack(spacing: 18) {
+                    Label("\(community.membersCount) members", systemImage: "person.2")
+                    Divider()
+                    Label(community.meetingFormat, systemImage: "calendar")
+                }
+                .font(PrototypeTypography.metadata)
+                .foregroundStyle(PrototypePalette.ink)
+                .padding(18)
+                .background(PrototypePalette.surface)
+                .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+                .padding(.horizontal, 20)
+                .offset(y: -58)
+                .padding(.bottom, -58)
+
+                detailSection("About", community.summary)
+
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Upcoming meetup".uppercased())
+                        .font(PrototypeTypography.eyebrow)
+                        .foregroundStyle(PrototypePalette.accent)
+
+                    VStack(alignment: .leading, spacing: 14) {
+                        HStack(alignment: .top, spacing: 14) {
+                            Image(systemName: "calendar")
+                                .font(.system(size: 21, weight: .semibold))
+                                .foregroundStyle(PrototypePalette.accent)
+                                .frame(width: 42, height: 42)
+                                .background(PrototypePalette.accentSoft)
+                                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(community.meetingFormat)
+                                    .font(PrototypeTypography.sectionTitle)
+                                    .foregroundStyle(PrototypePalette.ink)
+                                Text("Community meetup")
+                                    .font(PrototypeTypography.caption)
+                                    .foregroundStyle(PrototypePalette.ink)
+                            }
+
+                            Spacer()
+                            Text("2d 4h away")
+                                .font(.system(size: 11, weight: .medium).monospacedDigit())
+                                .foregroundStyle(PrototypePalette.accent)
+                                .padding(.horizontal, 9)
+                                .padding(.vertical, 6)
+                                .background(PrototypePalette.accentSoft)
+                                .clipShape(Capsule(style: .continuous))
+                        }
+
+                        Label("\(community.membersCount) members", systemImage: "person.2")
+                        Label(community.themes.joined(separator: " · "), systemImage: "tag")
+                    }
+                    .font(PrototypeTypography.metadata)
+                    .foregroundStyle(PrototypePalette.ink)
+                    .padding(16)
+                    .background(PrototypePalette.surface)
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+                }
+                .padding(.horizontal, 20)
+
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("You'll fit in".uppercased())
+                        .font(PrototypeTypography.eyebrow)
+                        .foregroundStyle(PrototypePalette.accent)
+
+                    ForEach(community.themes, id: \.self) { theme in
+                        Label(theme, systemImage: "checkmark.square.fill")
+                            .font(PrototypeTypography.caption)
+                            .foregroundStyle(PrototypePalette.ink)
+                    }
+                }
+                .padding(.horizontal, 20)
+
+                Button {
+                    Task {
+                        if isJoined {
+                            await appState.leaveCommunity(id: community.id)
+                        } else {
+                            await appState.joinCommunity(id: community.id)
+                        }
+                    }
+                } label: {
+                    PrimaryActionButton(
+                        title: isJoined ? "Leave community" : "Join community",
+                        systemImage: isJoined ? "rectangle.portrait.and.arrow.right" : "person.badge.plus"
+                    )
+                }
+                .buttonStyle(.plain)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 110)
+            }
+        }
+        .background(PrototypePalette.background.ignoresSafeArea())
+        .toolbar(.hidden, for: .navigationBar)
+    }
+
+    private func detailSection(_ title: String, _ body: String) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title.uppercased())
+                .font(PrototypeTypography.eyebrow)
+                .foregroundStyle(PrototypePalette.accent)
+            Text(body)
+                .font(PrototypeTypography.caption)
+                .foregroundStyle(PrototypePalette.ink)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.horizontal, 20)
+    }
+}
+
 private struct CommunityCard: View {
-    let name: String
-    let summary: String
-    let tags: [String]
+    let community: Community
     let action: String
     let tone: Int
     var compact = false
@@ -340,10 +501,10 @@ private struct CommunityCard: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(name)
+                    Text(community.name)
                         .font(PrototypeTypography.sectionTitle)
                         .foregroundStyle(.white)
-                    Text(summary)
+                    Text(compact ? "\(community.membersCount) members" : community.summary)
                         .font(PrototypeTypography.caption)
                         .foregroundStyle(.white.opacity(0.86))
                         .fixedSize(horizontal: false, vertical: true)
@@ -358,9 +519,9 @@ private struct CommunityCard: View {
                     .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             }
 
-            if !tags.isEmpty {
+            if !community.themes.isEmpty {
                 HStack(spacing: 6) {
-                    ForEach(tags, id: \.self) { tag in
+                    ForEach(community.themes.prefix(3), id: \.self) { tag in
                         Text(tag)
                             .font(.system(size: 11, weight: .medium))
                             .foregroundStyle(.white)

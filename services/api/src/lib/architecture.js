@@ -218,12 +218,24 @@ const CIRCLE_ARCHETYPES = [
   }
 ];
 
+const COMMUNITY_ARCHETYPES = [
+  { id: "ai-builders", name: "AI Builders", summary: "People building useful AI products, agents, and workflows.", themes: ["AI", "Agents", "Product"], meetingFormat: "Saturday build share with demos" },
+  { id: "longform-reading", name: "Longform Reading", summary: "Readers who prefer essays, books, and patient discussion.", themes: ["Books", "Essays", "Ideas"], meetingFormat: "Saturday reading salon" },
+  { id: "design-craft", name: "Design Craft", summary: "Designers and makers refining product taste and interaction quality.", themes: ["Design", "Craft", "UX"], meetingFormat: "Saturday critique circle" },
+  { id: "startups", name: "Startups", summary: "Founders and operators comparing notes on early company building.", themes: ["Startups", "Growth", "Ops"], meetingFormat: "Saturday founder table" },
+  { id: "mindful-living", name: "Mindful Living", summary: "A slower room for habits, presence, and grounded routines.", themes: ["Mindfulness", "Health", "Rituals"], meetingFormat: "Saturday reset session" },
+  { id: "creative-writing", name: "Creative Writing", summary: "Writers sharing drafts, prompts, and honest creative momentum.", themes: ["Writing", "Stories", "Practice"], meetingFormat: "Saturday writing room" },
+  { id: "jazz-music", name: "Jazz Music", summary: "Listeners and players exploring jazz records, history, and taste.", themes: ["Jazz", "Listening", "Music"], meetingFormat: "Saturday listening session" },
+  { id: "trekking-outdoors", name: "Trekking Outdoors", summary: "Outdoor people planning trails, treks, and low-pressure adventures.", themes: ["Trekking", "Nature", "Adventure"], meetingFormat: "Saturday route planning" }
+];
+
 // ---------------------------------------------------------------------------
 // In-memory stores
 // ---------------------------------------------------------------------------
 // Persistent stores (local JSON-backed, survive server restarts)
 const profiles = new DBMap("profiles", getDb());
 const circles = new DBMap("circles", getDb());
+const communities = new DBMap("communities", getDb());
 
 // Seed initial circles from archetypes (only if DB is empty)
 function seedCircles() {
@@ -241,6 +253,22 @@ function seedCircles() {
   txn();
 }
 seedCircles();
+
+function seedCommunities() {
+  if (communities.size > 0) return;
+  const txn = getDb().transaction(() => {
+    for (const archetype of COMMUNITY_ARCHETYPES) {
+      communities.set(archetype.id, {
+        ...archetype,
+        members: [],
+        createdAt: new Date().toISOString(),
+        isArchetype: true,
+      });
+    }
+  });
+  txn();
+}
+seedCommunities();
 
 // ---------------------------------------------------------------------------
 // Profile synthesis
@@ -541,13 +569,17 @@ module.exports = {
   architecture,
   PERSONALITY_DIMENSIONS,
   CIRCLE_ARCHETYPES,
+  COMMUNITY_ARCHETYPES,
   profiles,
   circles,
+  communities,
   buildProfileFromInterview,
+  computeCircleFit,
   matchCircles,
   shouldCreateNewCircle,
   createCircleFromProfile,
   buildPlacement,
   seedCircles,
+  seedCommunities,
   generateId
 };

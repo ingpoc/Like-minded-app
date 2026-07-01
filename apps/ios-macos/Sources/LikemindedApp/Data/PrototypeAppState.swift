@@ -23,6 +23,15 @@ final class PrototypeAppState: ObservableObject {
     @Published var realtimeTranscript = ""
     @Published var basicInfo: BasicInfo?
     @Published var concernFlag = false
+    @Published var placementConcern = ""
+    @Published var communities: [Community] = []
+    @Published var joinedCommunities: [Community] = []
+    @Published var isLoadingCommunities = false
+    @Published var communityError: String?
+    @Published var circles: [PlacementCircle] = []
+    @Published var joinedCircles: [PlacementCircle] = []
+    @Published var isLoadingCircles = false
+    @Published var circleError: String?
 
     private let voiceClient = RealtimeVoiceClient()
 
@@ -75,7 +84,7 @@ final class PrototypeAppState: ObservableObject {
     var connectionsGateMessage: String {
         switch currentPlacement.userState {
         case .accepted:
-            return "Room accepted. Fuller paths are open."
+            return "Your circle is live with member and meetup details."
         case .swapped:
             return "Room swapped. Let the new fit settle."
         case .proposed:
@@ -205,9 +214,9 @@ final class PrototypeAppState: ObservableObject {
         voiceClient.authToken = authSession?.token
         voiceClient.baseURL = client.baseURL
         voiceClient.basicInfo = basicInfo
+        voiceClient.reinterviewContext = concernFlag ? placementConcernContext : nil
 
         do {
-            // WebRTC flow — no client secret needed, SDP exchange handles auth
             try await voiceClient.start(
                 sdpOffer: "",
                 model: realtimeSession?.model ?? "gpt-realtime-1.5",
@@ -324,7 +333,6 @@ final class PrototypeAppState: ObservableObject {
     }
 
     func startReinterview() async {
-        concernFlag = false
         await startVoiceSession()
     }
 
@@ -377,6 +385,70 @@ final class PrototypeAppState: ObservableObject {
         } catch {
             loadError = "Feedback could not be sent. Please try again."
         }
+    }
+
+    func reportPlacementConcern(_ message: String) async {
+        let note = message.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !note.isEmpty else { return }
+        placementConcern = note
+        concernFlag = true
+        try? await client.registerCircleConcern()
+        await submitFeedback(rating: 2, message: "Circle fit concern: \(note)")
+    }
+
+    func fetchCircles() async {
+        isLoadingCircles = true
+        defer { isLoadingCircles = false }
+        do {
+            async let catalog = client.fetchCircles()
+            async let joined = isSignedIn ? client.fetchMyCircles() : []
+            circles = try await catalog
+            joinedCircles = try await joined
+            circleError = nil
+        } catch {
+            circleError = "Circles could not be loaded."
+        }
+    }
+
+    func fetchCommunities() async {
+        isLoadingCommunities = true
+        defer { isLoadingCommunities = false }
+        do {
+            async let catalog = client.fetchCommunities()
+            async let joined = isSignedIn ? client.fetchMyCommunities() : []
+            communities = try await catalog
+            joinedCommunities = try await joined
+            communityError = nil
+        } catch {
+            communityError = "Communities could not be loaded."
+        }
+    }
+
+    func joinCommunity(id: String) async {
+        do {
+            try await client.joinCommunity(id: id)
+            await fetchCommunities()
+        } catch {
+            communityError = "Community could not be joined."
+        }
+    }
+
+    func leaveCommunity(id: String) async {
+        do {
+            try await client.leaveCommunity(id: id)
+            await fetchCommunities()
+        } catch {
+            communityError = "Community could not be left."
+        }
+    }
+
+    private var placementConcernContext: String {
+        [
+            "User concern: \(placementConcern)",
+            "Current circle: \(currentPlacement.primaryCircle.name)",
+            "Current profile summary: \(activeSlice.profile.reflection.summary)",
+            "Existing voice/profile state should be reused; ask only what is needed to correct placement."
+        ].joined(separator: "\n")
     }
 
     private func updatePlacementAction(_ action: String) async {
@@ -505,6 +577,7 @@ final class PrototypeAppState: ObservableObject {
         // Auto-submit transcript when voice session ends with content
         if update.didPersistProfile {
             concernFlag = false
+            placementConcern = ""
             Task {
                 await loadCurrentPlacement()
             }

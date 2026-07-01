@@ -8,39 +8,22 @@ struct RootView: View {
         Group {
             if appState.isSignedIn {
                 TabView(selection: $selection) {
-                    MeetPrototypeView()
-                        .tabItem {
-                            Label(AppTab.meet.rawValue, systemImage: AppTab.meet.systemImage)
-                        }
-                        .tag(AppTab.meet)
-
-                    CirclesPrototypeView()
-                        .tabItem {
-                            Label(AppTab.circles.rawValue, systemImage: AppTab.circles.systemImage)
-                        }
-                        .tag(AppTab.circles)
-
-                    CommunitiesPrototypeView()
-                        .tabItem {
-                            Label(AppTab.communities.rawValue, systemImage: AppTab.communities.systemImage)
-                        }
-                        .tag(AppTab.communities)
-
-                    VoiceProfileView()
-                        .tabItem {
-                            Label(AppTab.profile.rawValue, systemImage: AppTab.profile.systemImage)
-                        }
-                        .tag(AppTab.profile)
-
-                    SoulmatePrototypeView()
-                        .tabItem {
-                            Label(AppTab.soulmate.rawValue, systemImage: AppTab.soulmate.systemImage)
-                        }
-                        .tag(AppTab.soulmate)
+                    ForEach(AppTab.allCases) { tab in
+                        tabContent(for: tab)
+                            .tabItem {
+                                Label(tab.rawValue, systemImage: tab.systemImage)
+                            }
+                            .tag(tab)
+                    }
                 }
                 .tint(PrototypePalette.accent)
                 .task {
                     await appState.loadCurrentPlacement()
+                }
+                .onChange(of: appState.concernFlag) { _, needsReinterview in
+                    if needsReinterview {
+                        selection = .profile
+                    }
                 }
             } else {
                 AuthGateView()
@@ -48,6 +31,22 @@ struct RootView: View {
         }
         .task {
             await appState.signInForLocalValidationIfNeeded()
+        }
+    }
+
+    @ViewBuilder
+    private func tabContent(for tab: AppTab) -> some View {
+        switch tab {
+        case .meet:
+            MeetPrototypeView()
+        case .circles:
+            CirclesPrototypeView()
+        case .communities:
+            CommunitiesPrototypeView()
+        case .profile:
+            VoiceProfileView()
+        case .soulmate:
+            SoulmatePrototypeView()
         }
     }
 }

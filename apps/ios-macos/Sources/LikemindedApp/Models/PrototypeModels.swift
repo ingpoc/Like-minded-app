@@ -31,13 +31,13 @@ struct ReflectionPrompt: Identifiable {
     let note: String
 }
 
-struct CommunityRecommendation: Identifiable {
+struct Community: Codable, Identifiable, Equatable {
     let id: String
     let name: String
     let summary: String
-    let fitLabel: String
-    let membersOnline: Int
     let themes: [String]
+    let meetingFormat: String
+    let membersCount: Int
 }
 
 struct MatchRecommendation: Identifiable {
@@ -301,6 +301,7 @@ struct PlacementCircle: Codable, Identifiable {
         case fitLabel
         case placementReason
         case membersOnline
+        case membersCount
         case themes
     }
 
@@ -351,7 +352,9 @@ struct PlacementCircle: Codable, Identifiable {
         easiestFirstAction = try container.decodeIfPresent(String.self, forKey: .easiestFirstAction) ?? "Review placement."
         fitLabel = try container.decodeIfPresent(String.self, forKey: .fitLabel) ?? "Fit"
         placementReason = try container.decodeIfPresent(String.self, forKey: .placementReason) ?? description ?? "Matched from your profile signals."
-        membersOnline = try container.decodeIfPresent(Int.self, forKey: .membersOnline) ?? 0
+        membersOnline = try container.decodeIfPresent(Int.self, forKey: .membersOnline)
+            ?? container.decodeIfPresent(Int.self, forKey: .membersCount)
+            ?? 0
         themes = try container.decodeIfPresent([String].self, forKey: .themes) ?? []
     }
 

@@ -22,33 +22,6 @@ enum PrototypeData {
         )
     ]
 
-    static let communities = [
-        CommunityRecommendation(
-            id: "builders",
-            name: "AI Builders",
-            summary: "People building useful AI products and tools.",
-            fitLabel: "High fit",
-            membersOnline: 18,
-            themes: ["AI", "Products", "UX"]
-        ),
-        CommunityRecommendation(
-            id: "longform",
-            name: "Longform Reading",
-            summary: "Essays, psychology, and slow ideas.",
-            fitLabel: "Strong fit",
-            membersOnline: 9,
-            themes: ["Essays", "Psychology", "Slow living"]
-        ),
-        CommunityRecommendation(
-            id: "gentle",
-            name: "Slow Dating",
-            summary: "Consent-first dating with clear pacing.",
-            fitLabel: "Promising",
-            membersOnline: 6,
-            themes: ["Compatibility", "Rituals", "Care"]
-        )
-    ]
-
     static let matches = [
         MatchRecommendation(
             id: "avery",

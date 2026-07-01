@@ -10,6 +10,7 @@
 		1434DA300C4A5A2400A859A3 /* PrototypeModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8C121E18E6BF523CE92D82 /* PrototypeModels.swift */; };
 		1C099E485B7A23A87435717E /* DeviceIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D8F9C153E1CAAA2E1D4B53 /* DeviceIdentity.swift */; };
 		29D0CE0EDA18A3BB956B5C6E /* VoiceOrbView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0C1C21CE1F16D519FC056E /* VoiceOrbView.swift */; };
+		379D8BA56E5821E1680248E7 /* CircleCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4895BAF5408C8A7CEDEB5EC3 /* CircleCard.swift */; };
 		399834A377ADFBCE54D30DF9 /* PrototypeAppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C615B2CB5D4009DE9EDF7F48 /* PrototypeAppState.swift */; };
 		3C82F0006DF2BAE5048D0B43 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3A363F271D17248AADFD13 /* OnboardingView.swift */; };
 		3FC6508C115AA08A823B19CB /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71F1782CC0FAAD3C06C76E5C /* RootView.swift */; };
@@ -36,6 +37,7 @@
 		3DCC1BCF1EB18B6214EB4BAA /* TodayPrototypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayPrototypeView.swift; sourceTree = "<group>"; };
 		43D8F9C153E1CAAA2E1D4B53 /* DeviceIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceIdentity.swift; sourceTree = "<group>"; };
 		441C7F09BC786ADFBA9B2A36 /* MVPProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MVPProfileView.swift; sourceTree = "<group>"; };
+		4895BAF5408C8A7CEDEB5EC3 /* CircleCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleCard.swift; sourceTree = "<group>"; };
 		583CD7AF0A74916366CBF8AF /* Likeminded.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Likeminded.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		63DCB9E92C74E864B793C207 /* LikemindedAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikemindedAPIClient.swift; sourceTree = "<group>"; };
 		704749A39D4B879E03561B1B /* LikemindedApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikemindedApp.swift; sourceTree = "<group>"; };
@@ -134,6 +136,7 @@
 			isa = PBXGroup;
 			children = (
 				2B0C51AF9D64677B65F8D49A /* AuthGateView.swift */,
+				4895BAF5408C8A7CEDEB5EC3 /* CircleCard.swift */,
 				CF864D6E37CD7289F92855DF /* CommunitiesPrototypeView.swift */,
 				D45755761E85787C57C41A25 /* ConnectionsPrototypeView.swift */,
 				E57431BFD89413C682AE75BF /* MeetPrototypeView.swift */,
@@ -214,6 +217,7 @@
 			files = (
 				676E4A1C5FC17EE494C1AB2F /* AuthGateView.swift in Sources */,
 				4319E06107624A793DB13545 /* AuthSessionStore.swift in Sources */,
+				379D8BA56E5821E1680248E7 /* CircleCard.swift in Sources */,
 				8D27A1FA539B87B3019798C6 /* CommunitiesPrototypeView.swift in Sources */,
 				8C69E8A6029B43AC474DCD58 /* ConnectionsPrototypeView.swift in Sources */,
 				1C099E485B7A23A87435717E /* DeviceIdentity.swift in Sources */,

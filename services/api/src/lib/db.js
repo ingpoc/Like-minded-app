@@ -8,6 +8,7 @@ function emptyStore() {
   return {
     profiles: {},
     circles: {},
+    communities: {},
     devices: {},
     placements: [],
     transcripts: []
@@ -39,7 +40,7 @@ function getDb() {
 
 class DBMap {
   constructor(tableName) {
-    if (!["profiles", "circles"].includes(tableName)) throw new Error(`Unknown table: ${tableName}`);
+    if (!["profiles", "circles", "communities"].includes(tableName)) throw new Error(`Unknown table: ${tableName}`);
     this.table = tableName;
   }
 

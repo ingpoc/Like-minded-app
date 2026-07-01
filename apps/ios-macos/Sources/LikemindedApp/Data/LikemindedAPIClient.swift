@@ -25,6 +25,18 @@ struct CircleFitScore: Decodable, Identifiable {
     var id: String { circleId }
 }
 
+struct CommunitiesResponse: Decodable {
+    let communities: [Community]
+}
+
+struct CommunityResponse: Decodable {
+    let community: Community
+}
+
+struct CirclesResponse: Decodable {
+    let circles: [PlacementCircle]
+}
+
 struct LikemindedAPIClient {
     var baseURL = LikemindedAPIClient.defaultBaseURL()
     var authToken: String?
@@ -180,6 +192,79 @@ struct LikemindedAPIClient {
             throw URLError(.badServerResponse)
         }
         return try JSONDecoder().decode(ProfileCircleMatchResult.self, from: data)
+    }
+
+    func registerCircleConcern() async throws {
+        let url = baseURL.appendingPathComponent("/v1/me/circles/concern")
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        applyCommonHeaders(&request)
+        let (_, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+    }
+
+    func fetchCircles() async throws -> [PlacementCircle] {
+        let url = baseURL.appendingPathComponent("/v1/circles")
+        let (data, response) = try await URLSession.shared.data(from: url)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+        return try JSONDecoder().decode(CirclesResponse.self, from: data).circles
+    }
+
+    func fetchMyCircles() async throws -> [PlacementCircle] {
+        let url = baseURL.appendingPathComponent("/v1/me/circles")
+        var request = URLRequest(url: url)
+        applyCommonHeaders(&request, isJSON: false)
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+        return try JSONDecoder().decode(CirclesResponse.self, from: data).circles
+    }
+
+    func fetchCommunities() async throws -> [Community] {
+        let url = baseURL.appendingPathComponent("/v1/communities")
+        let (data, response) = try await URLSession.shared.data(from: url)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+        return try JSONDecoder().decode(CommunitiesResponse.self, from: data).communities
+    }
+
+    func fetchMyCommunities() async throws -> [Community] {
+        let url = baseURL.appendingPathComponent("/v1/me/communities")
+        var request = URLRequest(url: url)
+        applyCommonHeaders(&request, isJSON: false)
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+        return try JSONDecoder().decode(CommunitiesResponse.self, from: data).communities
+    }
+
+    func joinCommunity(id: String) async throws {
+        try await updateCommunityMembership(id: id, action: "join")
+    }
+
+    func leaveCommunity(id: String) async throws {
+        try await updateCommunityMembership(id: id, action: "leave")
+    }
+
+    private func updateCommunityMembership(id: String, action: String) async throws {
+        let url = baseURL
+            .appendingPathComponent("/v1/communities")
+            .appendingPathComponent(id)
+            .appendingPathComponent(action)
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        applyCommonHeaders(&request)
+        let (_, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
     }
 
     func submitFeedback(profileId: String?, placementId: String?, rating: Int, message: String, appVersion: String) async throws {

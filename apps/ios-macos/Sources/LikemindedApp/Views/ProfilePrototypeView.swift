@@ -1,152 +1,275 @@
 import SwiftUI
 
 struct VoiceProfileView: View {
-    @State private var hasEntered = false
     @EnvironmentObject private var appState: PrototypeAppState
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                PrototypePalette.accentDeep.ignoresSafeArea()
+            ScreenContainer(title: "Profile", subtitle: "Who you are.") {
+                profileHeader
 
-                ScrollView(.vertical, showsIndicators: false) {
-                    VStack(alignment: .leading, spacing: 24) {
-                        HStack {
-                            Image(systemName: "chevron.left")
-                            Spacer()
-                            Image(systemName: "ellipsis")
-                        }
-                        .font(PrototypeTypography.bodyStrong)
-                        .foregroundStyle(.white.opacity(0.88))
-
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Profile".uppercased())
-                                .font(PrototypeTypography.eyebrow)
-                                .foregroundStyle(.white.opacity(0.76))
-                            Text("Voice profile")
-                                .font(PrototypeTypography.hero)
-                                .foregroundStyle(.white)
-                            Text("Tell me how you connect.")
-                                .font(PrototypeTypography.heroBody)
-                                .foregroundStyle(.white.opacity(0.86))
-                        }
-
-                        VoiceListeningCard()
-                            .frame(maxWidth: .infinity)
-                            .likemindedEntrance(order: 0, isActive: hasEntered, y: 14, scale: 0.98)
-
-                        Text(voiceLine)
-                            .font(PrototypeTypography.bodyStrong)
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity, alignment: .center)
-
-                        VoiceBars()
-
-                        Button {
-                            Task {
-                                if appState.isVoiceStreaming {
-                                    await appState.stopVoiceSession()
-                                } else {
-                                    await appState.startVoiceSession()
-                                }
-                            }
-                        } label: {
-                            Label(voiceButtonTitle, systemImage: appState.isVoiceStreaming ? "stop.fill" : "waveform")
-                                .font(PrototypeTypography.button)
-                                .foregroundStyle(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 16)
-                                .background(Color.white.opacity(0.12))
-                                .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
-                                .overlay(RoundedRectangle(cornerRadius: 22, style: .continuous).stroke(Color.white.opacity(0.12), lineWidth: 1))
-                        }
-                        .buttonStyle(.plain)
-                        .disabled(appState.isStartingVoice)
-
-                        capturedSignals
-
-                        HStack(spacing: 14) {
-                            Image(systemName: "lock")
-                                .foregroundStyle(.white)
-                                .frame(width: 38, height: 38)
-                                .background(PrototypePalette.accent.opacity(0.82))
-                                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-
-                            Text("Profile read is private.\nCircle placement needs confirmation.")
-                                .font(PrototypeTypography.caption)
-                                .foregroundStyle(.white)
-                        }
-                        .padding(16)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.white.opacity(0.14))
-                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                if appState.slice == nil, appState.basicInfo == nil {
+                    OnboardingView()
+                } else if appState.slice == nil {
+                    ProfileVoiceEmptyCard()
+                    startVoiceButton
+                } else {
+                    if appState.concernFlag {
+                        placementConcernCard
                     }
-                    .padding(.horizontal, 22)
-                    .padding(.top, 18)
-                    .padding(.bottom, 112)
+                    livingProfile
                 }
             }
-            .navigationTitle("Profile")
             .toolbar(.hidden, for: .navigationBar)
         }
-        .task {
-            guard !hasEntered else { return }
-            hasEntered = true
+    }
+
+    private var profileHeader: some View {
+        HStack(alignment: .firstTextBaseline) {
+            Text(profileHeaderText)
+                .font(PrototypeTypography.metadata)
+                .foregroundStyle(PrototypePalette.ink)
+
+            Spacer()
+
+            NavigationLink {
+                SettingsPrototypeView()
+            } label: {
+                Image(systemName: "pencil")
+                    .font(PrototypeTypography.bodyStrong)
+                    .foregroundStyle(PrototypePalette.ink)
+            }
+            .buttonStyle(.plain)
         }
     }
 
-    private var capturedSignals: some View {
+    private var profileHeaderText: String {
+        guard let info = appState.slice?.profile.basicInfo ?? appState.basicInfo else {
+            return "Start with the basics"
+        }
+
+        return [info.name, info.gender.label, info.city]
+            .filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+            .joined(separator: " · ")
+    }
+
+    private var startVoiceButton: some View {
+        Button {
+            Task { await appState.startVoiceSession() }
+        } label: {
+            PrimaryActionButton(
+                title: appState.isStartingVoice ? "Opening voice profile" : "Start voice profile",
+                systemImage: "waveform"
+            )
+        }
+        .buttonStyle(.plain)
+        .disabled(appState.isStartingVoice)
+    }
+
+    private var placementConcernCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Captured signals")
-                .font(PrototypeTypography.bodyStrong)
-                .foregroundStyle(.white)
+            Text("Circle feels off".uppercased())
+                .font(PrototypeTypography.eyebrow)
+                .foregroundStyle(PrototypePalette.accent)
 
-            ForEach(Array(signals.enumerated()), id: \.offset) { index, signal in
-                HStack(spacing: 12) {
-                    Text("\(index + 1)")
-                        .font(PrototypeTypography.metadata)
-                        .foregroundStyle(.white)
-                        .frame(width: 28, height: 28)
-                        .background(PrototypePalette.accent.opacity(0.86))
-                        .clipShape(Circle())
+            Text(appState.placementConcern)
+                .font(PrototypeTypography.caption)
+                .foregroundStyle(PrototypePalette.ink)
 
-                    Text(signal)
-                        .font(PrototypeTypography.caption)
-                        .foregroundStyle(.white)
+            Button {
+                Task { await appState.startReinterview() }
+            } label: {
+                PrimaryActionButton(
+                    title: appState.isStartingVoice ? "Opening voice" : "Re-interview for placement",
+                    systemImage: "waveform"
+                )
+            }
+            .buttonStyle(.plain)
+            .disabled(appState.isStartingVoice)
+        }
+        .padding(16)
+        .background(PrototypePalette.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+    }
 
-                    Spacer()
-
-                    Circle()
-                        .fill(PrototypePalette.success)
-                        .frame(width: 7, height: 7)
+    private var livingProfile: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Signals".uppercased())
+                        .font(PrototypeTypography.eyebrow)
+                        .foregroundStyle(PrototypePalette.accent)
+                    Text("Living profile")
+                        .font(PrototypeTypography.sectionTitle)
+                        .foregroundStyle(PrototypePalette.ink)
                 }
-                .padding(12)
-                .background(Color.white.opacity(0.10))
-                .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
+
+                Spacer()
+
+                Button("Update profile") {
+                    Task { await appState.startVoiceSession() }
+                }
+                .font(PrototypeTypography.metadata)
+                .foregroundStyle(PrototypePalette.ink)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 10)
+                .background(PrototypePalette.surface)
+                .clipShape(Capsule(style: .continuous))
+                .overlay(Capsule(style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+            }
+
+            HStack(spacing: 10) {
+                ProfileSignalPill("Communication", selected: true)
+                ProfileSignalPill("Energy")
+                ProfileSignalPill("Trust")
+            }
+
+            HStack(spacing: 14) {
+                Image(systemName: "ellipsis.message")
+                    .font(.system(size: 24, weight: .regular))
+                    .foregroundStyle(PrototypePalette.accent)
+                    .frame(width: 60, height: 60)
+                    .background(PrototypePalette.accentSoft)
+                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+
+                VStack(alignment: .leading, spacing: 5) {
+                    Text("Honest Communicator")
+                        .font(PrototypeTypography.bodyStrong)
+                        .foregroundStyle(PrototypePalette.ink)
+                    Text("You value clarity and depth in conversations.")
+                        .font(PrototypeTypography.caption)
+                        .foregroundStyle(PrototypePalette.ink)
+                }
+
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .foregroundStyle(PrototypePalette.ink)
+            }
+            .padding(16)
+            .background(PrototypePalette.surface)
+            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+
+            VStack(spacing: 15) {
+                ProfileTraitRow(left: "Reserved", right: "Outgoing", value: 0.55)
+                ProfileTraitRow(left: "Analytical", right: "Intuitive", value: 0.66)
+                ProfileTraitRow(left: "Low Energy", right: "High Energy", value: 0.44)
+                ProfileTraitRow(left: "Steady", right: "Spontaneous", value: 0.58)
+                ProfileTraitRow(left: "Slow Trust", right: "Fast Trust", value: 0.50)
+            }
+
+            Divider().overlay(PrototypePalette.rule)
+
+            VStack(alignment: .leading, spacing: 14) {
+                Text("Interests".uppercased())
+                    .font(PrototypeTypography.eyebrow)
+                    .foregroundStyle(PrototypePalette.accent)
+                Text("What you're into")
+                    .font(PrototypeTypography.sectionTitle)
+                    .foregroundStyle(PrototypePalette.ink)
+
+                FlexibleTagLayout(items: ["Jazz", "Essays", "Psychology", "Design", "Cooking", "Movies", "Trekking"])
             }
         }
+        .padding(18)
+        .background(PrototypePalette.surface.opacity(0.58))
+        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 22, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
     }
+}
 
-    private var signals: [String] {
-        let captured = appState.capturedVoiceSignals
-        if captured.isEmpty {
-            return [
-                "Prefers slow, honest conversation",
-                "Values steady and thoughtful pacing",
-                "Enjoys depth over small talk"
-            ]
+private struct ProfileVoiceEmptyCard: View {
+    var body: some View {
+        VStack(spacing: 26) {
+            VoiceListeningCard()
+                .padding(.top, 8)
+
+            VStack(spacing: 12) {
+                Text("Voice profile".uppercased())
+                    .font(PrototypeTypography.eyebrow)
+                    .foregroundStyle(.white.opacity(0.78))
+
+                Text("Tell me how\nyou connect.")
+                    .font(PrototypeTypography.hero)
+                    .foregroundStyle(.white)
+                    .multilineTextAlignment(.center)
+
+                Text("Speak naturally. The profile updates as you talk.")
+                    .font(PrototypeTypography.body)
+                    .foregroundStyle(.white.opacity(0.88))
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: 260)
+            }
+
+            Label("Start voice profile", systemImage: "waveform")
+                .font(PrototypeTypography.button)
+                .foregroundStyle(PrototypePalette.accent)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 16)
+                .background(Color.white.opacity(0.88))
+                .clipShape(Capsule(style: .continuous))
         }
-        return Array(captured.prefix(3))
+        .padding(24)
+        .frame(maxWidth: .infinity)
+        .background(PrototypePalette.roomGradient(0))
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+    }
+}
+
+private struct ProfileSignalPill: View {
+    let title: String
+    let selected: Bool
+
+    init(_ title: String, selected: Bool = false) {
+        self.title = title
+        self.selected = selected
     }
 
-    private var voiceLine: String {
-        appState.realtimeStatus == "Listening" ? "I am listening for fit." : "Ready when you are."
+    var body: some View {
+        Text(title)
+            .font(PrototypeTypography.metadata)
+            .foregroundStyle(selected ? .white : PrototypePalette.ink)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .background(selected ? PrototypePalette.actionGradient : LinearGradient(colors: [Color.black.opacity(0.05)], startPoint: .top, endPoint: .bottom))
+            .clipShape(Capsule(style: .continuous))
     }
+}
 
-    private var voiceButtonTitle: String {
-        if appState.isStartingVoice { return "Opening voice" }
-        if appState.isVoiceStreaming { return "Stop and extract signals" }
-        return "Start voice profile"
+private struct ProfileTraitRow: View {
+    let left: String
+    let right: String
+    let value: Double
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Text(left)
+                .frame(width: 86, alignment: .leading)
+
+            GeometryReader { proxy in
+                ZStack(alignment: .leading) {
+                    Capsule()
+                        .fill(PrototypePalette.rule)
+                        .frame(height: 2)
+
+                    Capsule()
+                        .fill(PrototypePalette.accent)
+                        .frame(width: proxy.size.width * value, height: 2)
+
+                    Circle()
+                        .fill(PrototypePalette.accent)
+                        .frame(width: 12, height: 12)
+                        .offset(x: max(0, proxy.size.width * value - 6))
+                }
+            }
+            .frame(height: 12)
+
+            Text(right)
+                .frame(width: 92, alignment: .trailing)
+        }
+        .font(PrototypeTypography.metadata)
+        .foregroundStyle(PrototypePalette.ink)
     }
 }
 
@@ -170,30 +293,11 @@ private struct VoiceListeningCard: View {
                 )
                 .frame(width: 216, height: 216)
 
-            Image(systemName: "sparkle")
-                .font(.system(size: 31, weight: .light))
-                .foregroundStyle(.white)
-                .frame(width: 72, height: 72)
-                .background(PrototypePalette.accent.opacity(0.72))
-                .clipShape(Circle())
-                .overlay(Circle().stroke(Color.white.opacity(0.28), lineWidth: 1))
+            Circle()
+                .fill(PrototypePalette.success.opacity(0.85))
+                .frame(width: 26, height: 26)
+                .shadow(color: PrototypePalette.success, radius: 24)
         }
         .frame(height: 260)
-    }
-}
-
-private struct VoiceBars: View {
-    private let values: [CGFloat] = [0.2, 0.35, 0.22, 0.48, 0.32, 0.62, 0.44, 0.76, 0.55, 0.88, 0.58, 0.34, 0.68, 0.42, 0.54, 0.28, 0.46, 0.36, 0.50, 0.31]
-
-    var body: some View {
-        HStack(alignment: .bottom, spacing: 7) {
-            ForEach(Array(values.enumerated()), id: \.offset) { _, value in
-                Capsule()
-                    .fill(PrototypePalette.success.opacity(0.34 + value * 0.55))
-                    .frame(width: 3, height: 32 * value)
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .frame(height: 42)
     }
 }

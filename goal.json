@@ -2,7 +2,7 @@
   "schema_version": 1,
   "status": "completed",
   "purpose": "Per-session execution goal. Copy this file to goal.json at session start, set the current goal, and keep graders/validation/agent routing current when files or commands change.",
-  "goal": "Implement Phase 3 profile and onboarding redesign: move the voice interview into the Profile tab after basic onboarding, extend profile contracts for basic info, structured interests, and hidden placement signals, and remove stale Talk/Reflection profile cleanup without changing the MVP backend architecture.",
+  "goal": "Implement Phase 4 circles and communities: expose user circle detail and concern routes, seed the community catalog, persist community membership, and wire the Circles and Communities Swift UI to the backend.",
   "ultimate_goal_source": "GOAL.md",
   "progress_source": "PROGRESS.md",
   "workflow_refs": [
@@ -210,9 +210,9 @@
     "commit_message_template": "Validate <short session goal>"
   },
   "done_criteria": [
-    "Profile tab shows onboarding inline when no backend profile exists, then automatically presents the voice interview hero after basic info is saved.",
-    "Swift models and backend model-placement payloads preserve basicInfo, structured interests, and hidden placement signals without exposing hidden signals as user-facing profile fields.",
-    "Stale Talk/Reflection profile UI is removed or renamed so the active voice profile surface is Profile-owned.",
+    "Circle backend endpoints return user circle summaries, circle detail with fit breakdown, and concern registration.",
+    "Community backend endpoints return the seeded catalog, community detail, authenticated join/leave, and authenticated joined-community lists.",
+    "PROGRESS.md marks completed Phase 4 backend and Swift UI items, with the scoped phase preflight reporting no unchecked items.",
     "Deterministic checks pass, including npm run check and npm run verify:goal.",
     "Local simulator validation is rerun if native UI or project inputs changed.",
     "Validated session changes are committed with the completed goal.json before the goal is marked completed."

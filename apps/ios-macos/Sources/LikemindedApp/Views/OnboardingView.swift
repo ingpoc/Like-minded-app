@@ -77,12 +77,19 @@ struct OnboardingView: View {
                 Button {
                     advance()
                 } label: {
-                    PrimaryActionButton(title: step == steps - 1 ? "Start voice profile" : "Continue", systemImage: "arrow.right")
+                    PrimaryActionButton(title: actionTitle, systemImage: "arrow.right")
                 }
                 .buttonStyle(.plain)
-                .disabled(!canContinue)
+                .disabled(!canContinue || appState.isStartingVoice)
             }
         }
+    }
+
+    private var actionTitle: String {
+        if step == steps - 1, appState.isStartingVoice {
+            return "Opening voice profile"
+        }
+        return step == steps - 1 ? "Start voice profile" : "Continue"
     }
 
     private var progressDots: some View {
@@ -137,5 +144,6 @@ struct OnboardingView: View {
             city: city.trimmingCharacters(in: .whitespacesAndNewlines),
             pincode: pincode.trimmingCharacters(in: .whitespacesAndNewlines)
         ))
+        Task { await appState.startVoiceSession() }
     }
 }

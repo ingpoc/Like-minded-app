@@ -28,7 +28,8 @@ function emptyLocalStore() {
     profiles: [],
     placements: [],
     transcripts: [],
-    feedback: []
+    feedback: [],
+    communityMemberships: []
   };
 }
 
@@ -102,6 +103,13 @@ async function migrateMvpStore() {
       message TEXT,
       app_version TEXT,
       created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+
+    CREATE TABLE IF NOT EXISTS community_memberships (
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      community_id TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      PRIMARY KEY (user_id, community_id)
     );
   `);
 }
@@ -224,6 +232,7 @@ async function updateLatestProfile(userId, updates) {
   const profile = await getLatestProfile(userId);
   if (!profile) return null;
   if (updates.signals) profile.signals = updates.signals;
+  if (Object.prototype.hasOwnProperty.call(updates, "concernFlag")) profile.concernFlag = !!updates.concernFlag;
   if (updates.reflectionSummary) {
     if (profile.profile?.reflection) profile.profile.reflection.summary = updates.reflectionSummary;
     profile.reflection = { ...(profile.reflection || {}), summary: updates.reflectionSummary };
@@ -276,6 +285,41 @@ async function updateLatestPlacement(userId, action) {
   return { ...current, placement };
 }
 
+async function joinCommunity(userId, communityId) {
+  if (isPostgres) {
+    await getPool().query(
+      "INSERT INTO community_memberships (user_id, community_id, created_at) VALUES ($1, $2, now()) ON CONFLICT DO NOTHING",
+      [userId, communityId]
+    );
+    return;
+  }
+  const store = readLocalStore();
+  if (!store.communityMemberships.some((row) => row.user_id === userId && row.community_id === communityId)) {
+    store.communityMemberships.push({ user_id: userId, community_id: communityId, created_at: new Date().toISOString() });
+    writeLocalStore(store);
+  }
+}
+
+async function leaveCommunity(userId, communityId) {
+  if (isPostgres) {
+    await getPool().query("DELETE FROM community_memberships WHERE user_id = $1 AND community_id = $2", [userId, communityId]);
+    return;
+  }
+  const store = readLocalStore();
+  store.communityMemberships = store.communityMemberships.filter((row) => !(row.user_id === userId && row.community_id === communityId));
+  writeLocalStore(store);
+}
+
+async function getJoinedCommunities(userId) {
+  if (isPostgres) {
+    const result = await getPool().query("SELECT community_id FROM community_memberships WHERE user_id = $1 ORDER BY created_at", [userId]);
+    return result.rows.map((row) => row.community_id);
+  }
+  return readLocalStore().communityMemberships
+    .filter((row) => row.user_id === userId)
+    .map((row) => row.community_id);
+}
+
 async function saveFeedback({ userId, profileId, placementId, rating, message, appVersion }) {
   if (isPostgres) {
     await getPool().query(
@@ -325,6 +369,9 @@ module.exports = {
   getLatestPlacement,
   updateLatestProfile,
   updateLatestPlacement,
+  joinCommunity,
+  leaveCommunity,
+  getJoinedCommunities,
   saveFeedback
 };
 module.exports.LOCAL_PATH = LOCAL_PATH;

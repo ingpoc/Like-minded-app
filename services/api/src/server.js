@@ -7,7 +7,10 @@ const {
   buildPlacement,
   profiles,
   circles,
+  communities,
   seedCircles,
+  seedCommunities,
+  computeCircleFit,
   matchCircles,
   shouldCreateNewCircle,
   createCircleFromProfile
@@ -23,6 +26,9 @@ const {
   getLatestPlacement,
   updateLatestProfile,
   updateLatestPlacement,
+  joinCommunity,
+  leaveCommunity,
+  getJoinedCommunities,
   saveFeedback,
   LOCAL_PATH: MVP_STORE_PATH
 } = require("./lib/mvp-store");
@@ -115,6 +121,28 @@ function publicProfile(profile) {
   if (!profile || typeof profile !== "object") return profile;
   const { hiddenSignals, ...safeProfile } = profile;
   return safeProfile;
+}
+
+function circleSummary(circle) {
+  return {
+    id: circle.id,
+    name: circle.name,
+    roomEnergy: circle.roomEnergy,
+    themes: circle.themes || [],
+    membersCount: (circle.members || []).length,
+    meetingFormat: circle.meetingFormat
+  };
+}
+
+function communitySummary(community) {
+  return {
+    id: community.id,
+    name: community.name,
+    summary: community.summary,
+    themes: community.themes || [],
+    meetingFormat: community.meetingFormat,
+    membersCount: (community.members || []).length
+  };
 }
 
 async function createRealtimeClientSecret(input = {}) {
@@ -255,6 +283,10 @@ async function handleRequest(req, res) {
         return;
       }
 
+      const reinterviewContext = String(req.headers["x-likeminded-reinterview-context"] || "").trim().slice(0, 1200);
+      const reinterviewInstructions = reinterviewContext
+        ? `\n\nThis is a placement correction re-interview. Use the existing state below as context, then ask only what is needed to refresh the profile and starter circle.\n${reinterviewContext}`
+        : "";
       const sessionConfig = JSON.stringify({
         type: "realtime",
         model: REALTIME_MODEL,
@@ -306,7 +338,7 @@ async function handleRequest(req, res) {
             voice: REALTIME_VOICE
           }
         },
-        instructions: "You are a warm, insightful interviewer conducting a personality discovery conversation for the Likeminded app. Start briefly and warmly. Ask open-ended questions one at a time. Listen carefully. Naturally discover interests across movies, music, books, food/cooking, outdoors, tech/building, and art/design; infer depth as casual, active, or deep from specificity and emotional engagement. Observe private placement signals from how the user speaks: shyness, language comfort, warmth, vulnerability openness, dominance tendency, and energy trajectory. After every meaningful user answer, call submit_profile_placement to save the current private profile draft, structured interests, hidden placement signals, and best starter circle from the conversation so far. If evidence is still early, set confidenceLabel to Draft profile and say what is provisional in fitReasons; once you have enough evidence, set confidenceLabel to Full profile. Choose from these circle ids only: reflective-builders, gentle-romantics, longform-thinkers, bold-explorers, grounded-nurturers. Do not choose by keyword; decide from pacing, trust, room energy, intent, and the whole conversation. IMPORTANT: Wait patiently for the user to finish speaking. Do not interrupt."
+        instructions: "You are a warm, insightful interviewer conducting a personality discovery conversation for the Likeminded app. Start briefly and warmly. Ask open-ended questions one at a time. Listen carefully. Naturally discover interests across movies, music, books, food/cooking, outdoors, tech/building, and art/design; infer depth as casual, active, or deep from specificity and emotional engagement. Observe private placement signals from how the user speaks: shyness, language comfort, warmth, vulnerability openness, dominance tendency, and energy trajectory. After every meaningful user answer, call submit_profile_placement to save the current private profile draft, structured interests, hidden placement signals, and best starter circle from the conversation so far. If evidence is still early, set confidenceLabel to Draft profile and say what is provisional in fitReasons; once you have enough evidence, set confidenceLabel to Full profile. Choose from these circle ids only: reflective-builders, gentle-romantics, longform-thinkers, bold-explorers, grounded-nurturers. Do not choose by keyword; decide from pacing, trust, room energy, intent, and the whole conversation. IMPORTANT: Wait patiently for the user to finish speaking. Do not interrupt." + reinterviewInstructions
       });
 
       const formData = new FormData();
@@ -465,6 +497,85 @@ async function handleRequest(req, res) {
     return;
   }
 
+  if (req.method === "GET" && url.pathname === "/v1/me/circles") {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    const profile = await getLatestProfile(user.id);
+    const circleList = profile
+      ? Array.from(circles.values()).filter((circle) => (circle.members || []).includes(profile.profileId)).map(circleSummary)
+      : [];
+    json(res, 200, { circles: circleList });
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname === "/v1/me/circles/concern") {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    const profile = await updateLatestProfile(user.id, { concernFlag: true });
+    if (!profile) {
+      json(res, 404, { error: "profile_not_found", message: "No profile has been created yet." });
+      return;
+    }
+    json(res, 200, { status: "concern_registered", message: "Re-interview prompted." });
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/v1/communities") {
+    json(res, 200, { communities: Array.from(communities.values()).map(communitySummary) });
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/v1/me/communities") {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    const ids = await getJoinedCommunities(user.id);
+    json(res, 200, { communities: ids.map((id) => communities.get(id)).filter(Boolean).map(communitySummary) });
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname.match(/^\/v1\/communities\/[^/]+$/)) {
+    const id = decodeURIComponent(url.pathname.split("/").pop());
+    const community = communities.get(id);
+    if (!community) {
+      json(res, 404, { error: "community_not_found", message: `No community found for id: ${id}` });
+      return;
+    }
+    json(res, 200, { community: communitySummary(community) });
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname.match(/^\/v1\/communities\/[^/]+\/join$/)) {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    const communityId = decodeURIComponent(url.pathname.split("/")[3]);
+    const community = communities.get(communityId);
+    if (!community) {
+      json(res, 404, { error: "community_not_found", message: `No community found for id: ${communityId}` });
+      return;
+    }
+    await joinCommunity(user.id, communityId);
+    community.members = Array.from(new Set([...(community.members || []), user.id]));
+    communities.set(communityId, community);
+    json(res, 200, { status: "joined" });
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname.match(/^\/v1\/communities\/[^/]+\/leave$/)) {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    const communityId = decodeURIComponent(url.pathname.split("/")[3]);
+    const community = communities.get(communityId);
+    if (!community) {
+      json(res, 404, { error: "community_not_found", message: `No community found for id: ${communityId}` });
+      return;
+    }
+    await leaveCommunity(user.id, communityId);
+    community.members = (community.members || []).filter((memberId) => memberId !== user.id);
+    communities.set(communityId, community);
+    json(res, 200, { status: "left" });
+    return;
+  }
+
   if (req.method === "POST" && url.pathname === "/v1/feedback") {
     const user = await requireUser(req, res);
     if (!user) return;
@@ -528,13 +639,24 @@ async function handleRequest(req, res) {
 
   // GET /v1/circles/:id — get circle details
   if (req.method === "GET" && url.pathname.startsWith("/v1/circles/")) {
+    const user = await currentUser(req);
     const id = decodeURIComponent(url.pathname.split("/").pop());
     const circle = circles.get(id);
     if (!circle) {
       json(res, 404, { error: "circle_not_found", message: `No circle found for id: ${id}` });
       return;
     }
-    json(res, 200, { circle });
+    const profile = user ? await getLatestProfile(user.id) : null;
+    const fitScore = profile?.signals ? computeCircleFit(profile.signals, circle) : null;
+    json(res, 200, {
+      circle: {
+        ...circleSummary(circle),
+        description: circle.description,
+        interactionIntent: circle.interactionIntent,
+        socialFormat: circle.socialFormat,
+        fitBreakdown: fitScore === null ? [] : [{ dimension: "overall", score: Math.round(fitScore * 100) / 100 }]
+      }
+    });
     return;
   }
 
