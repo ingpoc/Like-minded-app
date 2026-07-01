@@ -1,5 +1,6 @@
 import AuthenticationServices
 import Foundation
+import SwiftUI
 
 @MainActor
 final class PrototypeAppState: ObservableObject {
@@ -37,6 +38,11 @@ final class PrototypeAppState: ObservableObject {
     @Published var pastMeetings: [Meeting] = []
     @Published var isLoadingMeetings = false
     @Published var meetingError: String?
+    @Published var soulmateEnabled = false
+    @Published var soulmatePendingSelections: [SoulmatePendingSelection] = []
+    @Published var soulmateMatches: [SoulmateMatch] = []
+    @Published var soulmateError: String?
+    @Published var isLoadingSoulmate = false
 
     private let voiceClient = RealtimeVoiceClient()
 
@@ -478,6 +484,54 @@ final class PrototypeAppState: ObservableObject {
 
     func joinMeeting(id: String) async throws -> LiveKitJoinToken {
         try await LiveKitTokenProvider(client: client).token(for: id)
+    }
+
+    func fetchSoulmateStatus() async {
+        guard isSignedIn else { return }
+        isLoadingSoulmate = true
+        defer { isLoadingSoulmate = false }
+        do {
+            let status = try await client.fetchSoulmateStatus()
+            soulmateEnabled = status.enabled
+            soulmatePendingSelections = status.pendingSelections
+            soulmateMatches = try await client.fetchSoulmateMatches()
+            soulmateError = nil
+        } catch {
+            soulmateError = "Soulmate could not be loaded."
+        }
+    }
+
+    func setSoulmateEnabled(_ enabled: Bool) async {
+        do {
+            try await client.setSoulmateEnabled(enabled)
+            withAnimation(.spring(response: 0.38, dampingFraction: 0.82)) {
+                soulmateEnabled = enabled
+            }
+            await fetchSoulmateStatus()
+        } catch {
+            soulmateError = "Soulmate preference could not be saved."
+        }
+    }
+
+    func submitSoulmateSelection(meetingId: String, selectedUserIds: [String]) async {
+        do {
+            try await client.submitSoulmateSelection(meetingId: meetingId, selectedUserIds: selectedUserIds)
+            await fetchSoulmateStatus()
+        } catch {
+            soulmateError = "Soulmate selection could not be saved."
+        }
+    }
+
+    func fetchSoulmateMatchDetail(id: String) async throws -> SoulmateMatchDetail {
+        try await client.fetchSoulmateMatchDetail(id: id)
+    }
+
+    func fetchMessages(matchId: String) async throws -> [ChatMessage] {
+        try await client.fetchMessages(matchId: matchId)
+    }
+
+    func sendMessage(matchId: String, text: String) async throws -> ChatMessage {
+        try await client.sendMessage(matchId: matchId, text: text)
     }
 
     private var placementConcernContext: String {

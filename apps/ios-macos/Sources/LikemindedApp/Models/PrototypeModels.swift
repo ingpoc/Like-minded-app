@@ -9,6 +9,10 @@ enum AppTab: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
+    static func visible(soulmateEnabled: Bool) -> [AppTab] {
+        allCases.filter { $0 != .soulmate || soulmateEnabled }
+    }
+
     var systemImage: String {
         switch self {
         case .meet:
@@ -67,6 +71,82 @@ struct MeetingsResponse: Decodable {
 struct LiveKitJoinToken: Decodable {
     let token: String
     let url: String
+}
+
+struct SoulmateStatus: Decodable {
+    let enabled: Bool
+    let pendingSelections: [SoulmatePendingSelection]
+}
+
+struct SoulmatePendingSelection: Decodable, Identifiable {
+    let meetingId: String
+    let potentialMatches: [String]
+    let potentialMatchDetails: [SoulmatePotentialMatch]?
+
+    var id: String { meetingId }
+}
+
+struct SoulmatePotentialMatch: Decodable, Identifiable, Equatable {
+    let userId: String
+    let name: String
+
+    var id: String { userId }
+}
+
+struct SoulmateMatch: Decodable, Identifiable, Equatable {
+    let matchId: String
+    let userId: String
+    let name: String
+    let meetingId: String
+    let meetingDate: String?
+    let createdAt: String
+
+    var id: String { matchId }
+}
+
+struct SoulmateMatchDetail: Decodable, Equatable {
+    struct BasicInfo: Decodable, Equatable {
+        let name: String?
+        let gender: String?
+    }
+
+    let matchId: String
+    let userId: String
+    let name: String
+    let meetingId: String
+    let meetingDate: String?
+    let createdAt: String
+    let basicInfo: BasicInfo
+    let interests: [Interest]
+}
+
+struct ChatMessage: Decodable, Identifiable, Equatable {
+    let id: String
+    let matchId: String
+    let senderId: String
+    let text: String
+    let createdAt: String
+}
+
+struct SoulmateEnableRequest: Encodable {
+    let enabled: Bool
+}
+
+struct SoulmateSelectionRequest: Encodable {
+    let meetingId: String
+    let selectedUserIds: [String]
+}
+
+struct ChatMessageRequest: Encodable {
+    let text: String
+}
+
+struct ChatMessagesResponse: Decodable {
+    let messages: [ChatMessage]
+}
+
+struct SentChatMessageResponse: Decodable {
+    let message: ChatMessage
 }
 
 struct MatchRecommendation: Identifiable {

@@ -296,6 +296,96 @@ struct LikemindedAPIClient {
         return try JSONDecoder().decode(LiveKitJoinToken.self, from: data)
     }
 
+    func fetchSoulmateStatus() async throws -> SoulmateStatus {
+        let url = baseURL
+            .appendingPathComponent("/v1/me/soulmate/status")
+        var request = URLRequest(url: url)
+        applyCommonHeaders(&request, isJSON: false)
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+        return try JSONDecoder().decode(SoulmateStatus.self, from: data)
+    }
+
+    func setSoulmateEnabled(_ enabled: Bool) async throws {
+        let url = baseURL.appendingPathComponent("/v1/me/soulmate/enable")
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        applyCommonHeaders(&request)
+        request.httpBody = try JSONEncoder().encode(SoulmateEnableRequest(enabled: enabled))
+        let (_, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+    }
+
+    func submitSoulmateSelection(meetingId: String, selectedUserIds: [String]) async throws {
+        let url = baseURL.appendingPathComponent("/v1/me/soulmate/select")
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        applyCommonHeaders(&request)
+        request.httpBody = try JSONEncoder().encode(SoulmateSelectionRequest(meetingId: meetingId, selectedUserIds: selectedUserIds))
+        let (_, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+    }
+
+    func fetchSoulmateMatches() async throws -> [SoulmateMatch] {
+        let url = baseURL.appendingPathComponent("/v1/me/soulmate/matches")
+        var request = URLRequest(url: url)
+        applyCommonHeaders(&request, isJSON: false)
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+        return try JSONDecoder().decode([SoulmateMatch].self, from: data)
+    }
+
+    func fetchSoulmateMatchDetail(id: String) async throws -> SoulmateMatchDetail {
+        let url = baseURL
+            .appendingPathComponent("/v1/me/soulmate/matches")
+            .appendingPathComponent(id)
+        var request = URLRequest(url: url)
+        applyCommonHeaders(&request, isJSON: false)
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+        return try JSONDecoder().decode(SoulmateMatchDetail.self, from: data)
+    }
+
+    func fetchMessages(matchId: String) async throws -> [ChatMessage] {
+        let url = baseURL
+            .appendingPathComponent("/v1/me/soulmate/matches")
+            .appendingPathComponent(matchId)
+            .appendingPathComponent("messages")
+        var request = URLRequest(url: url)
+        applyCommonHeaders(&request, isJSON: false)
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+        return try JSONDecoder().decode(ChatMessagesResponse.self, from: data).messages
+    }
+
+    func sendMessage(matchId: String, text: String) async throws -> ChatMessage {
+        let url = baseURL
+            .appendingPathComponent("/v1/me/soulmate/matches")
+            .appendingPathComponent(matchId)
+            .appendingPathComponent("messages")
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        applyCommonHeaders(&request)
+        request.httpBody = try JSONEncoder().encode(ChatMessageRequest(text: text))
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+        return try JSONDecoder().decode(SentChatMessageResponse.self, from: data).message
+    }
+
     private func updateCommunityMembership(id: String, action: String) async throws {
         let url = baseURL
             .appendingPathComponent("/v1/communities")

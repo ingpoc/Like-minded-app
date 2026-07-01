@@ -8,7 +8,7 @@ struct RootView: View {
         Group {
             if appState.isSignedIn {
                 TabView(selection: $selection) {
-                    ForEach(AppTab.allCases) { tab in
+                    ForEach(AppTab.visible(soulmateEnabled: appState.soulmateEnabled)) { tab in
                         tabContent(for: tab)
                             .tabItem {
                                 Label(tab.rawValue, systemImage: tab.systemImage)
@@ -19,10 +19,16 @@ struct RootView: View {
                 .tint(PrototypePalette.accent)
                 .task {
                     await appState.loadCurrentPlacement()
+                    await appState.fetchSoulmateStatus()
                 }
                 .onChange(of: appState.concernFlag) { _, needsReinterview in
                     if needsReinterview {
                         selection = .profile
+                    }
+                }
+                .onChange(of: appState.soulmateEnabled) { _, enabled in
+                    if !enabled && selection == .soulmate {
+                        selection = .meet
                     }
                 }
             } else {

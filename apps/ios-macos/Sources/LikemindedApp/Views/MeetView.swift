@@ -53,12 +53,8 @@ struct MeetView: View {
                     }
                 }
 
-                FeatureCard(title: "Past meets", eyebrow: "History") {
-                    if appState.pastMeetings.isEmpty {
-                        Text("Past meets will appear here.")
-                            .font(PrototypeTypography.body)
-                            .foregroundStyle(PrototypePalette.subink)
-                    } else {
+                if !appState.pastMeetings.isEmpty {
+                    FeatureCard(title: "Past meets", eyebrow: "History") {
                         VStack(spacing: 10) {
                             ForEach(appState.pastMeetings) { meeting in
                                 NavigationLink {
@@ -155,7 +151,6 @@ private struct RSVPRow: View {
     let title: String
     let subtitle: String
     @Binding var isAvailable: Bool
-    @Namespace private var pillNamespace
 
     var body: some View {
         HStack(spacing: 12) {
@@ -174,37 +169,42 @@ private struct RSVPRow: View {
                     .font(PrototypeTypography.caption)
                     .foregroundStyle(PrototypePalette.subink)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
-            Spacer()
-
-            Button {
-                withAnimation(.spring(response: 0.34, dampingFraction: 0.82)) {
-                    isAvailable.toggle()
-                }
-            } label: {
-                ZStack(alignment: isAvailable ? .trailing : .leading) {
-                    Capsule(style: .continuous)
-                        .fill(PrototypePalette.rule.opacity(0.65))
-                        .frame(width: 116, height: 34)
-
-                    Capsule(style: .continuous)
-                        .fill(isAvailable ? PrototypePalette.accent : PrototypePalette.muted)
-                        .frame(width: 62, height: 30)
-                        .matchedGeometryEffect(id: "rsvp-pill", in: pillNamespace)
-                        .padding(.horizontal, 2)
-
-                    HStack {
-                        Text("Not")
-                        Spacer()
-                        Text("Available")
+            HStack(spacing: 0) {
+                RSVPChoice(title: "Available", isSelected: isAvailable) {
+                    withAnimation(.spring(response: 0.34, dampingFraction: 0.82)) {
+                        isAvailable = true
                     }
-                    .font(PrototypeTypography.caption)
-                    .foregroundStyle(isAvailable ? PrototypePalette.ink : PrototypePalette.subink)
-                    .padding(.horizontal, 10)
+                }
+                RSVPChoice(title: "Not", isSelected: !isAvailable) {
+                    withAnimation(.spring(response: 0.34, dampingFraction: 0.82)) {
+                        isAvailable = false
+                    }
                 }
             }
-            .buttonStyle(.plain)
+            .padding(3)
+            .background(PrototypePalette.rule.opacity(0.55))
+            .clipShape(Capsule(style: .continuous))
         }
+    }
+}
+
+private struct RSVPChoice: View {
+    let title: String
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(PrototypeTypography.caption)
+                .foregroundStyle(isSelected ? .white : PrototypePalette.subink)
+                .frame(width: 76, height: 30)
+                .background(isSelected ? PrototypePalette.accent : .clear)
+                .clipShape(Capsule(style: .continuous))
+        }
+        .buttonStyle(.plain)
     }
 }
 

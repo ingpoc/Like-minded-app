@@ -1,0 +1,410 @@
+import SwiftUI
+
+struct SoulmatePrototypeView: View {
+    @EnvironmentObject private var appState: PrototypeAppState
+    @State private var showingSelection = false
+
+    var body: some View {
+        NavigationStack {
+            ScreenContainer(title: "Soulmate", subtitle: "Who you connected with.") {
+                FeatureCard(title: "Opt in", eyebrow: "Private") {
+                    Toggle("Enable Soulmate", isOn: Binding(
+                        get: { appState.soulmateEnabled },
+                        set: { enabled in Task { await appState.setSoulmateEnabled(enabled) } }
+                    ))
+                    .font(PrototypeTypography.bodyStrong)
+                    .tint(PrototypePalette.accent)
+
+                    Text("Shows only when enabled. Matches need mutual post-meet selection.")
+                        .font(PrototypeTypography.body)
+                        .foregroundStyle(PrototypePalette.subink)
+                }
+
+                if let error = appState.soulmateError {
+                    Text(error)
+                        .font(PrototypeTypography.metadata)
+                        .foregroundStyle(PrototypePalette.amber)
+                }
+
+                if !appState.soulmatePendingSelections.isEmpty {
+                    Button { showingSelection = true } label: {
+                        PrimaryActionButton(title: "Post-meet selection", systemImage: "heart.circle.fill")
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                FeatureCard(title: "Matches", eyebrow: "Mutual") {
+                    if appState.isLoadingSoulmate {
+                        ProgressView("Loading matches")
+                            .font(PrototypeTypography.metadata)
+                    } else if appState.soulmateMatches.isEmpty {
+                        Text("No matches yet. Enable Soulmate and join meetups.")
+                            .font(PrototypeTypography.body)
+                            .foregroundStyle(PrototypePalette.subink)
+                    } else {
+                        LazyVStack(spacing: 12) {
+                            ForEach(appState.soulmateMatches) { match in
+                                NavigationLink {
+                                    SoulmateMatchDetailView(match: match)
+                                } label: {
+                                    SoulmateMatchRow(match: match)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                    }
+                }
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink {
+                        ConversationListView(matches: appState.soulmateMatches)
+                    } label: {
+                        Image(systemName: "bubble.right")
+                    }
+                    .accessibilityLabel("Conversations")
+                }
+            }
+            .task { await appState.fetchSoulmateStatus() }
+            .sheet(isPresented: $showingSelection) {
+                SoulmateSelectionDialog()
+                    .environmentObject(appState)
+                    .presentationDetents([.medium, .large])
+            }
+        }
+    }
+}
+
+private struct SoulmateMatchRow: View {
+    let match: SoulmateMatch
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Circle()
+                .fill(PrototypePalette.accentSoft)
+                .frame(width: 46, height: 46)
+                .overlay(
+                    Text(String(match.name.prefix(1)))
+                        .font(PrototypeTypography.bodyStrong)
+                        .foregroundStyle(PrototypePalette.accent)
+                )
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(match.name)
+                    .font(PrototypeTypography.bodyStrong)
+                    .foregroundStyle(PrototypePalette.ink)
+                Text("Met at \(match.meetingId)")
+                    .font(PrototypeTypography.metadata)
+                    .foregroundStyle(PrototypePalette.subink)
+                    .lineLimit(1)
+            }
+
+            Spacer()
+            Image(systemName: "chevron.right")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(PrototypePalette.subink)
+        }
+        .padding(14)
+        .background(PrototypePalette.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+    }
+}
+
+struct SoulmateMatchDetailView: View {
+    @EnvironmentObject private var appState: PrototypeAppState
+    let match: SoulmateMatch
+    @State private var detail: SoulmateMatchDetail?
+    @State private var error: String?
+
+    var body: some View {
+        ScreenContainer(title: match.name, subtitle: "Match detail.") {
+            if let detail {
+                FeatureCard(title: detail.basicInfo.name ?? detail.name, eyebrow: detail.basicInfo.gender) {
+                    if detail.interests.isEmpty {
+                        Text("No interests shared yet.")
+                            .font(PrototypeTypography.body)
+                            .foregroundStyle(PrototypePalette.subink)
+                    } else {
+                        FlexibleTagLayout(items: detail.interests.map { "\($0.label) · \($0.depth.rawValue)" })
+                    }
+                }
+
+                NavigationLink {
+                    ChatView(match: match)
+                } label: {
+                    PrimaryActionButton(title: "Start chat", systemImage: "message.fill")
+                }
+                .buttonStyle(.plain)
+            } else if let error {
+                Text(error)
+                    .font(PrototypeTypography.body)
+                    .foregroundStyle(PrototypePalette.amber)
+            } else {
+                ProgressView("Loading match")
+                    .font(PrototypeTypography.metadata)
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                NavigationLink {
+                    ChatView(match: match)
+                } label: {
+                    Image(systemName: "bubble.right")
+                }
+                .accessibilityLabel("Open chat")
+            }
+        }
+        .task {
+            do {
+                detail = try await appState.fetchSoulmateMatchDetail(id: match.matchId)
+            } catch {
+                self.error = "Match detail could not be loaded."
+            }
+        }
+    }
+}
+
+struct ConversationListView: View {
+    let matches: [SoulmateMatch]
+
+    var body: some View {
+        ScreenContainer(title: "Chats", subtitle: "Recent conversations.") {
+            if matches.isEmpty {
+                Text("No conversations yet.")
+                    .font(PrototypeTypography.body)
+                    .foregroundStyle(PrototypePalette.subink)
+            } else {
+                LazyVStack(spacing: 12) {
+                    ForEach(matches) { match in
+                        NavigationLink {
+                            ChatView(match: match)
+                        } label: {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(match.name)
+                                        .font(PrototypeTypography.bodyStrong)
+                                        .foregroundStyle(PrototypePalette.ink)
+                                    Text("Start chat")
+                                        .font(PrototypeTypography.metadata)
+                                        .foregroundStyle(PrototypePalette.subink)
+                                }
+                                Spacer()
+                                Text(shortDate(match.createdAt))
+                                    .font(PrototypeTypography.metadata)
+                                    .foregroundStyle(PrototypePalette.subink)
+                            }
+                            .padding(14)
+                            .background(PrototypePalette.surface)
+                            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+        }
+    }
+
+    private func shortDate(_ value: String) -> String {
+        String(value.prefix(10))
+    }
+}
+
+struct ChatView: View {
+    @EnvironmentObject private var appState: PrototypeAppState
+    let match: SoulmateMatch
+    @State private var messages: [ChatMessage] = []
+    @State private var draft = ""
+    @State private var error: String?
+
+    var body: some View {
+        VStack(spacing: 0) {
+            ScrollView {
+                LazyVStack(spacing: 10) {
+                    ForEach(messages) { message in
+                        MessageBubble(message: message, isOutgoing: message.senderId == appState.authSession?.userId)
+                    }
+                }
+                .padding(20)
+            }
+            .background(PrototypePalette.background)
+
+            HStack(alignment: .bottom, spacing: 10) {
+                TextField("Message", text: $draft, axis: .vertical)
+                    .lineLimit(1...4)
+                    .font(PrototypeTypography.body)
+                    .padding(12)
+                    .background(PrototypePalette.surface)
+                    .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+
+                Button {
+                    Task { await send() }
+                } label: {
+                    Image(systemName: "arrow.up.circle.fill")
+                        .font(.system(size: 34))
+                        .foregroundStyle(PrototypePalette.accent)
+                }
+                .disabled(draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            }
+            .padding(16)
+            .background(.regularMaterial)
+        }
+        .navigationTitle(match.name)
+        .task { await loadMessages() }
+        .task {
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(3))
+                await loadMessages()
+            }
+        }
+        .overlay(alignment: .top) {
+            if let error {
+                Text(error)
+                    .font(PrototypeTypography.metadata)
+                    .foregroundStyle(PrototypePalette.amber)
+                    .padding(10)
+                    .background(PrototypePalette.surface)
+                    .clipShape(Capsule())
+                    .padding(.top, 8)
+            }
+        }
+    }
+
+    private func loadMessages() async {
+        do {
+            messages = try await appState.fetchMessages(matchId: match.matchId)
+            error = nil
+        } catch {
+            self.error = "Messages could not be loaded."
+        }
+    }
+
+    private func send() async {
+        let text = draft.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !text.isEmpty else { return }
+        do {
+            let message = try await appState.sendMessage(matchId: match.matchId, text: text)
+            messages.append(message)
+            draft = ""
+            error = nil
+        } catch {
+            self.error = "Message could not be sent."
+        }
+    }
+}
+
+private struct MessageBubble: View {
+    let message: ChatMessage
+    let isOutgoing: Bool
+
+    var body: some View {
+        HStack {
+            if isOutgoing { Spacer(minLength: 48) }
+            Text(message.text)
+                .font(PrototypeTypography.body)
+                .foregroundStyle(isOutgoing ? .white : PrototypePalette.ink)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 10)
+                .background(isOutgoing ? PrototypePalette.accent : PrototypePalette.surface)
+                .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                .frame(maxWidth: 260, alignment: isOutgoing ? .trailing : .leading)
+            if !isOutgoing { Spacer(minLength: 48) }
+        }
+    }
+}
+
+struct TypingIndicatorView: View {
+    @State private var pulse = false
+
+    var body: some View {
+        HStack(spacing: 4) {
+            ForEach(0..<3, id: \.self) { index in
+                Circle()
+                    .frame(width: 6, height: 6)
+                    .opacity(pulse ? 1 : 0.35)
+                    .animation(.easeInOut(duration: 0.3).delay(Double(index) * 0.2).repeatForever(autoreverses: true), value: pulse)
+            }
+        }
+        .foregroundStyle(PrototypePalette.subink)
+        .padding(10)
+        .background(PrototypePalette.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .onAppear { pulse = true }
+    }
+}
+
+struct SoulmateSelectionDialog: View {
+    @EnvironmentObject private var appState: PrototypeAppState
+    @Environment(\.dismiss) private var dismiss
+    @State private var selectedUserIds: Set<String> = []
+
+    private var selection: SoulmatePendingSelection? {
+        appState.soulmatePendingSelections.first
+    }
+
+    var body: some View {
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 16) {
+                Text("Did you connect with someone?")
+                    .font(PrototypeTypography.sectionTitle)
+                    .foregroundStyle(PrototypePalette.ink)
+
+                if let selection {
+                    LazyVStack(spacing: 10) {
+                        ForEach(potentialMatches(for: selection), id: \.userId) { potentialMatch in
+                            Button {
+                                let userId = potentialMatch.userId
+                                if selectedUserIds.contains(userId) {
+                                    selectedUserIds.remove(userId)
+                                } else {
+                                    selectedUserIds.insert(userId)
+                                }
+                            } label: {
+                                HStack {
+                                    Text(potentialMatch.name)
+                                        .font(PrototypeTypography.bodyStrong)
+                                        .foregroundStyle(PrototypePalette.ink)
+                                    Spacer()
+                                    if selectedUserIds.contains(potentialMatch.userId) {
+                                        Image(systemName: "checkmark.circle.fill")
+                                            .foregroundStyle(PrototypePalette.accent)
+                                    }
+                                }
+                                .padding(14)
+                                .background(PrototypePalette.surface)
+                                .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+
+                    Button {
+                        Task {
+                            await appState.submitSoulmateSelection(meetingId: selection.meetingId, selectedUserIds: Array(selectedUserIds))
+                            dismiss()
+                        }
+                    } label: {
+                        PrimaryActionButton(title: "Submit", systemImage: "checkmark")
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(selectedUserIds.isEmpty)
+                } else {
+                    Text("No meetup selection is waiting.")
+                        .font(PrototypeTypography.body)
+                        .foregroundStyle(PrototypePalette.subink)
+                }
+            }
+            .padding(20)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .background(PrototypePalette.background)
+            .navigationTitle("Soulmate")
+        }
+    }
+
+    private func potentialMatches(for selection: SoulmatePendingSelection) -> [SoulmatePotentialMatch] {
+        if let details = selection.potentialMatchDetails, !details.isEmpty {
+            return details
+        }
+        return selection.potentialMatches.map { SoulmatePotentialMatch(userId: $0, name: "Member \(String($0.suffix(6)))") }
+    }
+}

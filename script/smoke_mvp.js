@@ -200,12 +200,14 @@ async function expectStatus(status, pathname, options) {
     assert.equal(initialMeetings.rsvps.circle, true);
 
     let scheduledParticipantToken = null;
+    const scheduledUsers = [];
     for (let index = 2; index <= 7; index += 1) {
       const user = await expectStatus(200, "/v1/auth/apple", {
         method: "POST",
         body: { identityToken: `tester-${index}`, fullName: `Tester ${index}` }
       });
       scheduledParticipantToken = user.sessionToken;
+      scheduledUsers.push(user);
       await expectStatus(201, "/v1/realtime/profile-placement", {
         method: "POST",
         token: user.sessionToken,
@@ -229,6 +231,11 @@ async function expectStatus(status, pathname, options) {
         token: user.sessionToken,
         body: { kind: "circle", available: true }
       });
+      await expectStatus(200, "/v1/me/soulmate/enable", {
+        method: "POST",
+        token: user.sessionToken,
+        body: { enabled: true }
+      });
     }
 
     const scheduled = await expectStatus(200, "/v1/admin/run-scheduling", { method: "POST" });
@@ -238,6 +245,39 @@ async function expectStatus(status, pathname, options) {
     const join = await expectStatus(200, `/v1/meetings/${upcoming.upcoming[0].id}/join`, { method: "POST", token: scheduledParticipantToken });
     assert.ok(join.token, "LiveKit join must return a token");
     assert.equal(join.url, "ws://127.0.0.1:7880");
+
+    const soulmateStatus = await expectStatus(200, "/v1/me/soulmate/status", { method: "GET", token: scheduledUsers[0].sessionToken });
+    assert.equal(soulmateStatus.enabled, true);
+    assert.ok(soulmateStatus.pendingSelections.some((selection) => selection.meetingId === upcoming.upcoming[0].id), "soulmate status must expose pending meetup selection");
+
+    const firstPick = await expectStatus(200, "/v1/me/soulmate/select", {
+      method: "POST",
+      token: scheduledUsers[0].sessionToken,
+      body: { meetingId: upcoming.upcoming[0].id, selectedUserIds: [scheduledUsers[1].user.id] }
+    });
+    assert.deepEqual(firstPick.newMatches, []);
+    const secondPick = await expectStatus(200, "/v1/me/soulmate/select", {
+      method: "POST",
+      token: scheduledUsers[1].sessionToken,
+      body: { meetingId: upcoming.upcoming[0].id, selectedUserIds: [scheduledUsers[0].user.id] }
+    });
+    assert.equal(secondPick.newMatches.length, 1, "mutual soulmate selection must create one match");
+
+    const matches = await expectStatus(200, "/v1/me/soulmate/matches", { method: "GET", token: scheduledUsers[0].sessionToken });
+    assert.equal(matches.length, 1);
+    const detail = await expectStatus(200, `/v1/me/soulmate/matches/${matches[0].matchId}`, { method: "GET", token: scheduledUsers[0].sessionToken });
+    assert.equal(detail.basicInfo.name, "Tester 3");
+    assert.ok(Array.isArray(detail.interests), "soulmate detail must expose interests");
+    assert.equal(detail.hiddenSignals, undefined, "soulmate detail must not expose hidden signals");
+
+    const sent = await expectStatus(201, `/v1/me/soulmate/matches/${matches[0].matchId}/messages`, {
+      method: "POST",
+      token: scheduledUsers[0].sessionToken,
+      body: { text: "Good to meet you." }
+    });
+    assert.equal(sent.message.text, "Good to meet you.");
+    const messages = await expectStatus(200, `/v1/me/soulmate/matches/${matches[0].matchId}/messages`, { method: "GET", token: scheduledUsers[1].sessionToken });
+    assert.equal(messages.messages.length, 1, "match participant must read chat messages");
 
     const secondAuth = await expectStatus(200, "/v1/auth/apple", {
       method: "POST",

@@ -35,6 +35,14 @@ const {
   saveMeeting,
   listMeetingsForUser,
   getMeetingById,
+  setSoulmateEnabled,
+  isSoulmateEnabled,
+  saveSoulmateSelection,
+  getSoulmateMatches,
+  getSoulmateMatch,
+  archiveStaleMatches,
+  saveMessage,
+  getMessages,
   saveFeedback,
   LOCAL_PATH: MVP_STORE_PATH
 } = require("./lib/mvp-store");
@@ -168,11 +176,67 @@ function meetingSummary(meeting) {
   };
 }
 
+function soulmateMatchSummary(match, otherProfile, meeting) {
+  return {
+    matchId: match.id,
+    userId: otherProfile.userId,
+    name: otherProfile.basicInfo?.name || "Someone from your meetup",
+    meetingId: match.meetingId,
+    meetingDate: meeting?.scheduledAt || null,
+    createdAt: match.createdAt
+  };
+}
+
+function soulmateMatchDetail(match, otherProfile, meeting) {
+  return {
+    ...soulmateMatchSummary(match, otherProfile, meeting),
+    basicInfo: {
+      name: otherProfile.basicInfo?.name || null,
+      gender: otherProfile.basicInfo?.gender || null
+    },
+    interests: otherProfile.interests || []
+  };
+}
+
+function oppositeGender(a, b) {
+  const first = String(a || "").toLowerCase();
+  const second = String(b || "").toLowerCase();
+  return first && second && first !== second;
+}
+
 async function participantForUser(userId) {
   const profile = await getLatestProfile(userId);
   const placed = await getLatestPlacement(userId);
   if (!profile || !placed) return null;
   return { userId, profile, placement: placed.placement };
+}
+
+async function pendingSoulmateSelections(userId) {
+  const current = await participantForUser(userId);
+  if (!current) return [];
+  const pending = [];
+  for (const meeting of await listMeetingsForUser(userId)) {
+    const potentialMatches = [];
+    const potentialMatchDetails = [];
+    for (const otherUserId of meeting.participantIds || []) {
+      if (otherUserId === userId || !(await isSoulmateEnabled(otherUserId))) continue;
+      const other = await participantForUser(otherUserId);
+      if (other && oppositeGender(current.profile.basicInfo?.gender, other.profile.basicInfo?.gender)) {
+        potentialMatches.push(otherUserId);
+        potentialMatchDetails.push({ userId: otherUserId, name: other.profile.basicInfo?.name || "Member" });
+      }
+    }
+    if (potentialMatches.length) pending.push({ meetingId: meeting.id, potentialMatches, potentialMatchDetails });
+  }
+  return pending;
+}
+
+async function matchResponse(userId, match) {
+  const otherUserId = match.userAId === userId ? match.userBId : match.userAId;
+  const otherProfile = await getLatestProfile(otherUserId);
+  const meeting = await getMeetingById(match.meetingId);
+  if (!otherProfile) return null;
+  return { otherProfile: { ...otherProfile, userId: otherUserId }, meeting };
 }
 
 async function runWeekendScheduling() {
@@ -714,6 +778,133 @@ async function handleRequest(req, res) {
     } catch (error) {
       json(res, 500, { error: "scheduling_failed", message: error.message });
     }
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname === "/v1/me/soulmate/enable") {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    try {
+      const body = await readJsonBody(req);
+      const enabled = Boolean(body.enabled);
+      await setSoulmateEnabled(user.id, enabled);
+      json(res, 200, { status: "updated", enabled });
+    } catch (error) {
+      json(res, 400, { error: "invalid_soulmate_status", message: error.message });
+    }
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/v1/me/soulmate/status") {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    json(res, 200, {
+      enabled: await isSoulmateEnabled(user.id),
+      pendingSelections: await pendingSoulmateSelections(user.id)
+    });
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname === "/v1/me/soulmate/select") {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    try {
+      const body = await readJsonBody(req);
+      const meetingId = String(body.meetingId || "");
+      const selectedUserIds = Array.isArray(body.selectedUserIds) ? body.selectedUserIds.map(String) : [];
+      const meeting = await getMeetingById(meetingId);
+      if (!meeting || !(meeting.participantIds || []).includes(user.id)) {
+        json(res, 404, { error: "meeting_not_found", message: "No soulmate-eligible meeting found for this user." });
+        return;
+      }
+      const validSelectedUserIds = selectedUserIds.filter((selectedUserId) => (meeting.participantIds || []).includes(selectedUserId) && selectedUserId !== user.id);
+      const result = await saveSoulmateSelection(user.id, meetingId, validSelectedUserIds);
+      json(res, 200, { status: "saved", newMatches: result.newMatches });
+    } catch (error) {
+      json(res, 400, { error: "invalid_soulmate_selection", message: error.message });
+    }
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/v1/me/soulmate/matches") {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    const matches = [];
+    await archiveStaleMatches();
+    for (const match of await getSoulmateMatches(user.id)) {
+      const response = await matchResponse(user.id, match);
+      if (response) matches.push(soulmateMatchSummary(match, response.otherProfile, response.meeting));
+    }
+    json(res, 200, matches);
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/v1/me/soulmate/past") {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    const matches = [];
+    await archiveStaleMatches();
+    for (const match of await getSoulmateMatches(user.id, { archived: true })) {
+      const response = await matchResponse(user.id, match);
+      if (response) matches.push(soulmateMatchSummary(match, response.otherProfile, response.meeting));
+    }
+    json(res, 200, matches);
+    return;
+  }
+
+  const soulmateMessageMatch = url.pathname.match(/^\/v1\/me\/soulmate\/matches\/([^/]+)\/messages$/);
+  if (soulmateMessageMatch && req.method === "GET") {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    const matchId = decodeURIComponent(soulmateMessageMatch[1]);
+    const match = await getSoulmateMatch(user.id, matchId);
+    if (!match) {
+      json(res, 404, { error: "match_not_found", message: "No soulmate match found for this user." });
+      return;
+    }
+    json(res, 200, { messages: await getMessages(matchId, url.searchParams.get("after")) });
+    return;
+  }
+
+  if (soulmateMessageMatch && req.method === "POST") {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    const matchId = decodeURIComponent(soulmateMessageMatch[1]);
+    const match = await getSoulmateMatch(user.id, matchId);
+    if (!match) {
+      json(res, 404, { error: "match_not_found", message: "No soulmate match found for this user." });
+      return;
+    }
+    try {
+      const body = await readJsonBody(req);
+      const text = typeof body.text === "string" ? body.text.trim() : "";
+      if (!text) {
+        json(res, 400, { error: "invalid_message", message: "text is required." });
+        return;
+      }
+      json(res, 201, { message: await saveMessage(matchId, user.id, text) });
+    } catch (error) {
+      json(res, 400, { error: "invalid_message", message: error.message });
+    }
+    return;
+  }
+
+  const soulmateDetailMatch = url.pathname.match(/^\/v1\/me\/soulmate\/matches\/([^/]+)$/);
+  if (soulmateDetailMatch && req.method === "GET") {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    const matchId = decodeURIComponent(soulmateDetailMatch[1]);
+    const match = await getSoulmateMatch(user.id, matchId);
+    if (!match) {
+      json(res, 404, { error: "match_not_found", message: "No soulmate match found for this user." });
+      return;
+    }
+    const response = await matchResponse(user.id, match);
+    if (!response) {
+      json(res, 404, { error: "match_profile_not_found", message: "The match profile is unavailable." });
+      return;
+    }
+    json(res, 200, soulmateMatchDetail(match, response.otherProfile, response.meeting));
     return;
   }
 

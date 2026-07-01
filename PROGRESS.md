@@ -163,30 +163,30 @@ Opt-in matching: post-meet selection, mutual matches, interest profile view, in-
 
 ### Soulmate — Backend
 
-- [ ] Add soulmate to `mvp-store.js`: `setSoulmateEnabled(userId, bool)`, `isSoulmateEnabled(userId)`, `saveSoulmateSelection(userId, meetingId, selectedUserIds: [String])`, `getSoulmateMatches(userId)`, `getSoulmateMatch(userId, matchUserId)`, `archiveStaleMatches()`. Match = two users who selected each other for the same meeting. Store selections as `{ userId, meetingId, selectedUserIds }`. Match record: `{ id, userAId, userBId, meetingId, createdAt, lastActiveAt }`.
-- [ ] `POST /v1/me/soulmate/enable` — auth required. Body: `{ enabled: Bool }`. Sets soulmate flag on user. Response: `{ status: "updated", enabled: Bool }`.
-- [ ] `GET /v1/me/soulmate/status` — auth required. Returns: `{ enabled: Bool, pendingSelections: [{ meetingId, potentialMatches: [String] }] }`. `potentialMatches` = opposite-sex participants in the user's recent meetings who also have soulmate enabled.
-- [ ] `POST /v1/me/soulmate/select` — auth required. Body: `{ meetingId: String, selectedUserIds: [String] }`. Saves selection. Check if any selected user also selected this user → if yes, create match record. Response: `{ status: "saved", newMatches: [String] }`.
-- [ ] `GET /v1/me/soulmate/matches` — auth required. Returns: `[{ matchId, userId, name, meetingId, meetingDate, createdAt }]`.
-- [ ] `GET /v1/me/soulmate/matches/:id` — auth required. Returns: match detail with other person's `basicInfo.name`, `interests` (full, read-only), `basicInfo.gender`. No `hiddenSignals`. No personality signals. Just interests + name + gender.
-- [ ] `GET /v1/me/soulmate/past` — auth required. Returns archived matches (30+ days inactive).
+- [x] Add soulmate to `mvp-store.js`: `setSoulmateEnabled(userId, bool)`, `isSoulmateEnabled(userId)`, `saveSoulmateSelection(userId, meetingId, selectedUserIds: [String])`, `getSoulmateMatches(userId)`, `getSoulmateMatch(userId, matchUserId)`, `archiveStaleMatches()`. Match = two users who selected each other for the same meeting. Store selections as `{ userId, meetingId, selectedUserIds }`. Match record: `{ id, userAId, userBId, meetingId, createdAt, lastActiveAt }`.
+- [x] `POST /v1/me/soulmate/enable` — auth required. Body: `{ enabled: Bool }`. Sets soulmate flag on user. Response: `{ status: "updated", enabled: Bool }`.
+- [x] `GET /v1/me/soulmate/status` — auth required. Returns: `{ enabled: Bool, pendingSelections: [{ meetingId, potentialMatches: [String] }] }`. `potentialMatches` = opposite-sex participants in the user's recent meetings who also have soulmate enabled.
+- [x] `POST /v1/me/soulmate/select` — auth required. Body: `{ meetingId: String, selectedUserIds: [String] }`. Saves selection. Check if any selected user also selected this user → if yes, create match record. Response: `{ status: "saved", newMatches: [String] }`.
+- [x] `GET /v1/me/soulmate/matches` — auth required. Returns: `[{ matchId, userId, name, meetingId, meetingDate, createdAt }]`.
+- [x] `GET /v1/me/soulmate/matches/:id` — auth required. Returns: match detail with other person's `basicInfo.name`, `interests` (full, read-only), `basicInfo.gender`. No `hiddenSignals`. No personality signals. Just interests + name + gender.
+- [x] `GET /v1/me/soulmate/past` — auth required. Returns archived matches (30+ days inactive).
 
 ### Chat — Backend
 
-- [ ] Add chat messages to `mvp-store.js`: `saveMessage(matchId, senderId, text)`, `getMessages(matchId, afterTimestamp?)`. Message: `{ id, matchId, senderId, text, createdAt }`. Store as array per match.
-- [ ] `GET /v1/me/soulmate/matches/:id/messages` — auth required. Returns messages for the match (paginated, last 50). Verify requester is a participant in the match.
-- [ ] `POST /v1/me/soulmate/matches/:id/messages` — auth required. Body: `{ text: String }`. Saves message, updates `lastActiveAt` on match. Returns saved message.
+- [x] Add chat messages to `mvp-store.js`: `saveMessage(matchId, senderId, text)`, `getMessages(matchId, afterTimestamp?)`. Message: `{ id, matchId, senderId, text, createdAt }`. Store as array per match.
+- [x] `GET /v1/me/soulmate/matches/:id/messages` — auth required. Returns messages for the match (paginated, last 50). Verify requester is a participant in the match.
+- [x] `POST /v1/me/soulmate/matches/:id/messages` — auth required. Body: `{ text: String }`. Saves message, updates `lastActiveAt` on match. Returns saved message.
 
 ### Soulmate + Chat — Swift UI
 
-- [ ] Add `soulmateEnabled: Bool` to `PrototypeAppState`. Default `false`. When `false`, Soulmate tab is hidden from tab bar. When toggled, tab appears/disappears with `.spring(response: 0.38, dampingFraction: 0.82)`.
-- [ ] Create `SoulmateView.swift` — matches list (`LazyVStack` of `SoulmateMatchRow`s). Each row: name, which meetup met at. Tap → `SoulmateMatchDetailView`. Empty state: "No matches yet. Enable Soulmate and join meetups."
-- [ ] Create `SoulmateMatchDetailView.swift` — shows other person's interests as `InterestTagChip`s (same depth encoding as Profile). "Start chat" `PrimaryActionButton` with `systemImage: "message.fill"`. Top-right `Image(systemName: "bubble.right")` chat icon → pushes `ChatView`.
-- [ ] Create `ChatView.swift` — `ScrollView` with `LazyVStack(spacing: 10)` of `MessageBubble`s. Outgoing: accent green bg, white text, trailing-aligned. Incoming: surface bg, ink text, leading-aligned. `RoundedRectangle(cornerRadius: 18, style: .continuous)`. Max width 70%. Composer: `TextField(axis: .vertical)` with `.lineLimit(1...4)` + `Button` with `Image(systemName: "arrow.up.circle.fill")`. Composer pinned at bottom with `.background(.regularMaterial)`. Poll messages every 3 seconds when view is active.
-- [ ] Create `ConversationListView.swift` — list of all chat conversations. Row: name, last message preview (truncated), timestamp. Push to `ChatView` on tap. Accessed via top-right `Image(systemName: "bubble.right")` in `SoulmateView` toolbar.
-- [ ] Create `TypingIndicatorView.swift` — `HStack` of 3 `Circle`s (6pt). Sequential opacity animation: `.easeInOut(duration: 0.3).delay(Double(i) * 0.2)`. Inside a bubble-shaped container (same shape as incoming messages).
-- [ ] Create `SoulmateSelectionDialog.swift` — `.sheet` presented after a meetup ends (if soulmate enabled). "Did you connect with someone?" `LazyVStack` of names (opposite-sex group members with soulmate enabled). Multi-select with checkmark overlay. "Submit" button. Calls `POST /v1/me/soulmate/select`.
-- [ ] Add `fetchSoulmateStatus()`, `fetchSoulmateMatches()`, `fetchSoulmateMatchDetail(id:)`, `fetchMessages(matchId:)`, `sendMessage(matchId:text:)`, `submitSoulmateSelection(meetingId:selectedUserIds:)`, `setSoulmateEnabled(_:)` to `LikemindedAPIClient.swift`.
+- [x] Add `soulmateEnabled: Bool` to `PrototypeAppState`. Default `false`. When `false`, Soulmate tab is hidden from tab bar. When toggled, tab appears/disappears with `.spring(response: 0.38, dampingFraction: 0.82)`.
+- [x] Create `SoulmateView.swift` — matches list (`LazyVStack` of `SoulmateMatchRow`s). Each row: name, which meetup met at. Tap → `SoulmateMatchDetailView`. Empty state: "No matches yet. Enable Soulmate and join meetups."
+- [x] Create `SoulmateMatchDetailView.swift` — shows other person's interests as `InterestTagChip`s (same depth encoding as Profile). "Start chat" `PrimaryActionButton` with `systemImage: "message.fill"`. Top-right `Image(systemName: "bubble.right")` chat icon → pushes `ChatView`.
+- [x] Create `ChatView.swift` — `ScrollView` with `LazyVStack(spacing: 10)` of `MessageBubble`s. Outgoing: accent green bg, white text, trailing-aligned. Incoming: surface bg, ink text, leading-aligned. `RoundedRectangle(cornerRadius: 18, style: .continuous)`. Max width 70%. Composer: `TextField(axis: .vertical)` with `.lineLimit(1...4)` + `Button` with `Image(systemName: "arrow.up.circle.fill")`. Composer pinned at bottom with `.background(.regularMaterial)`. Poll messages every 3 seconds when view is active.
+- [x] Create `ConversationListView.swift` — list of all chat conversations. Row: name, last message preview (truncated), timestamp. Push to `ChatView` on tap. Accessed via top-right `Image(systemName: "bubble.right")` in `SoulmateView` toolbar.
+- [x] Create `TypingIndicatorView.swift` — `HStack` of 3 `Circle`s (6pt). Sequential opacity animation: `.easeInOut(duration: 0.3).delay(Double(i) * 0.2)`. Inside a bubble-shaped container (same shape as incoming messages).
+- [x] Create `SoulmateSelectionDialog.swift` — `.sheet` presented after a meetup ends (if soulmate enabled). "Did you connect with someone?" `LazyVStack` of names (opposite-sex group members with soulmate enabled). Multi-select with checkmark overlay. "Submit" button. Calls `POST /v1/me/soulmate/select`.
+- [x] Add `fetchSoulmateStatus()`, `fetchSoulmateMatches()`, `fetchSoulmateMatchDetail(id:)`, `fetchMessages(matchId:)`, `sendMessage(matchId:text:)`, `submitSoulmateSelection(meetingId:selectedUserIds:)`, `setSoulmateEnabled(_:)` to `LikemindedAPIClient.swift`.
 
 ## Phase 7 — Navigation + Motion Polish
 

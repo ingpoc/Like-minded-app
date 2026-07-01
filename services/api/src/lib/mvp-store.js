@@ -31,7 +31,11 @@ function emptyLocalStore() {
     feedback: [],
     communityMemberships: [],
     meetingRsvps: [],
-    meetings: []
+    meetings: [],
+    soulmateUsers: {},
+    soulmateSelections: [],
+    soulmateMatches: [],
+    chatMessages: []
   };
 }
 
@@ -127,6 +131,34 @@ async function migrateMvpStore() {
       data JSONB NOT NULL,
       created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+
+    CREATE TABLE IF NOT EXISTS soulmate_users (
+      user_id TEXT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+      enabled BOOLEAN NOT NULL,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+
+    CREATE TABLE IF NOT EXISTS soulmate_selections (
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      meeting_id TEXT NOT NULL,
+      data JSONB NOT NULL,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      PRIMARY KEY (user_id, meeting_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS soulmate_matches (
+      id TEXT PRIMARY KEY,
+      data JSONB NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+
+    CREATE TABLE IF NOT EXISTS chat_messages (
+      id TEXT PRIMARY KEY,
+      match_id TEXT NOT NULL,
+      data JSONB NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
     );
   `);
 }
@@ -406,6 +438,146 @@ async function getMeetingById(id) {
   return readLocalStore().meetings.find((meeting) => meeting.id === id) || null;
 }
 
+async function setSoulmateEnabled(userId, enabled) {
+  if (isPostgres) {
+    await getPool().query(
+      `INSERT INTO soulmate_users (user_id, enabled, updated_at)
+       VALUES ($1, $2, now())
+       ON CONFLICT (user_id) DO UPDATE SET enabled = EXCLUDED.enabled, updated_at = now()`,
+      [userId, enabled]
+    );
+    return enabled;
+  }
+  const store = readLocalStore();
+  store.soulmateUsers[userId] = { user_id: userId, enabled, updated_at: new Date().toISOString() };
+  writeLocalStore(store);
+  return enabled;
+}
+
+async function isSoulmateEnabled(userId) {
+  if (isPostgres) {
+    const result = await getPool().query("SELECT enabled FROM soulmate_users WHERE user_id = $1", [userId]);
+    return result.rows[0]?.enabled || false;
+  }
+  return readLocalStore().soulmateUsers[userId]?.enabled || false;
+}
+
+function matchIdFor(meetingId, userAId, userBId) {
+  return `match_${crypto.createHash("sha256").update([meetingId, ...[userAId, userBId].sort()].join(":")).digest("hex").slice(0, 24)}`;
+}
+
+async function saveSoulmateSelection(userId, meetingId, selectedUserIds) {
+  const now = new Date().toISOString();
+  const selection = { userId, meetingId, selectedUserIds: Array.from(new Set(selectedUserIds)), updatedAt: now };
+  const newMatches = [];
+
+  if (isPostgres) {
+    const client = await getPool().connect();
+    try {
+      await client.query("BEGIN");
+      await client.query(
+        `INSERT INTO soulmate_selections (user_id, meeting_id, data, updated_at)
+         VALUES ($1, $2, $3::jsonb, now())
+         ON CONFLICT (user_id, meeting_id) DO UPDATE SET data = EXCLUDED.data, updated_at = now()`,
+        [userId, meetingId, JSON.stringify(selection)]
+      );
+      for (const selectedUserId of selection.selectedUserIds) {
+        const reciprocal = await client.query("SELECT data FROM soulmate_selections WHERE user_id = $1 AND meeting_id = $2", [selectedUserId, meetingId]);
+        const reciprocalSelected = reciprocal.rows[0]?.data?.selectedUserIds || [];
+        if (!reciprocalSelected.includes(userId)) continue;
+        const id = matchIdFor(meetingId, userId, selectedUserId);
+        const match = { id, userAId: [userId, selectedUserId].sort()[0], userBId: [userId, selectedUserId].sort()[1], meetingId, createdAt: now, lastActiveAt: now, archivedAt: null };
+        await client.query(
+          `INSERT INTO soulmate_matches (id, data, created_at, updated_at)
+           VALUES ($1, $2::jsonb, now(), now())
+           ON CONFLICT (id) DO NOTHING`,
+          [id, JSON.stringify(match)]
+        );
+        newMatches.push(id);
+      }
+      await client.query("COMMIT");
+      return { newMatches };
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
+  const store = readLocalStore();
+  store.soulmateSelections = store.soulmateSelections.filter((row) => !(row.userId === userId && row.meetingId === meetingId));
+  store.soulmateSelections.push(selection);
+  for (const selectedUserId of selection.selectedUserIds) {
+    const reciprocal = store.soulmateSelections.find((row) => row.userId === selectedUserId && row.meetingId === meetingId);
+    if (!reciprocal?.selectedUserIds?.includes(userId)) continue;
+    const id = matchIdFor(meetingId, userId, selectedUserId);
+    if (store.soulmateMatches.some((row) => row.id === id)) continue;
+    store.soulmateMatches.push({ id, userAId: [userId, selectedUserId].sort()[0], userBId: [userId, selectedUserId].sort()[1], meetingId, createdAt: now, lastActiveAt: now, archivedAt: null });
+    newMatches.push(id);
+  }
+  writeLocalStore(store);
+  return { newMatches };
+}
+
+async function getSoulmateMatches(userId, { archived = false } = {}) {
+  const matches = isPostgres
+    ? (await getPool().query("SELECT data FROM soulmate_matches ORDER BY created_at DESC")).rows.map((row) => row.data)
+    : readLocalStore().soulmateMatches;
+  return matches.filter((match) => [match.userAId, match.userBId].includes(userId) && Boolean(match.archivedAt) === archived);
+}
+
+async function getSoulmateMatch(userId, matchId) {
+  const match = isPostgres
+    ? (await getPool().query("SELECT data FROM soulmate_matches WHERE id = $1", [matchId])).rows[0]?.data
+    : readLocalStore().soulmateMatches.find((row) => row.id === matchId);
+  if (!match || ![match.userAId, match.userBId].includes(userId)) return null;
+  return match;
+}
+
+async function archiveStaleMatches() {
+  const cutoff = Date.now() - (30 * 24 * 60 * 60 * 1000);
+  const now = new Date().toISOString();
+  const mark = (match) => (!match.archivedAt && Date.parse(match.lastActiveAt || match.createdAt) < cutoff ? { ...match, archivedAt: now } : match);
+  if (isPostgres) {
+    const matches = (await getPool().query("SELECT id, data FROM soulmate_matches")).rows;
+    for (const row of matches) {
+      const next = mark(row.data);
+      if (next !== row.data) {
+        await getPool().query("UPDATE soulmate_matches SET data = $2::jsonb, updated_at = now() WHERE id = $1", [row.id, JSON.stringify(next)]);
+      }
+    }
+    return;
+  }
+  const store = readLocalStore();
+  store.soulmateMatches = store.soulmateMatches.map(mark);
+  writeLocalStore(store);
+}
+
+async function saveMessage(matchId, senderId, text) {
+  const now = new Date().toISOString();
+  const message = { id: `msg_${crypto.randomUUID()}`, matchId, senderId, text, createdAt: now };
+  if (isPostgres) {
+    await getPool().query("INSERT INTO chat_messages (id, match_id, data, created_at) VALUES ($1, $2, $3::jsonb, now())", [message.id, matchId, JSON.stringify(message)]);
+    const result = await getPool().query("SELECT data FROM soulmate_matches WHERE id = $1", [matchId]);
+    const match = result.rows[0]?.data;
+    if (match) await getPool().query("UPDATE soulmate_matches SET data = $2::jsonb, updated_at = now() WHERE id = $1", [matchId, JSON.stringify({ ...match, lastActiveAt: now })]);
+    return message;
+  }
+  const store = readLocalStore();
+  store.chatMessages.push(message);
+  store.soulmateMatches = store.soulmateMatches.map((match) => match.id === matchId ? { ...match, lastActiveAt: now } : match);
+  writeLocalStore(store);
+  return message;
+}
+
+async function getMessages(matchId, afterTimestamp = null) {
+  const messages = isPostgres
+    ? (await getPool().query("SELECT data FROM chat_messages WHERE match_id = $1 ORDER BY created_at DESC LIMIT 50", [matchId])).rows.map((row) => row.data).reverse()
+    : readLocalStore().chatMessages.filter((message) => message.matchId === matchId).slice(-50);
+  return afterTimestamp ? messages.filter((message) => Date.parse(message.createdAt) > Date.parse(afterTimestamp)) : messages;
+}
+
 async function saveFeedback({ userId, profileId, placementId, rating, message, appVersion }) {
   if (isPostgres) {
     await getPool().query(
@@ -464,6 +636,14 @@ module.exports = {
   saveMeeting,
   listMeetingsForUser,
   getMeetingById,
+  setSoulmateEnabled,
+  isSoulmateEnabled,
+  saveSoulmateSelection,
+  getSoulmateMatches,
+  getSoulmateMatch,
+  archiveStaleMatches,
+  saveMessage,
+  getMessages,
   saveFeedback
 };
 module.exports.LOCAL_PATH = LOCAL_PATH;

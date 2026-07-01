@@ -2,13 +2,26 @@
   "schema_version": 1,
   "status": "completed",
   "purpose": "Per-session execution goal. Copy this file to goal.json at session start, set the current goal, and keep graders/validation/agent routing current when files or commands change.",
-  "goal": "Implement Phase 5 Meet + LiveKit Video: RSVP, deterministic weekend scheduling, meeting join token, Swift Meet UI, LiveKit join surface, release checks, and smoke coverage.",
+  "goal": "Implement Phase 6 Soulmate + Chat: opt-in soulmate status, post-meet mutual selection, match details, in-app chat, Swift UI, and smoke coverage.",
   "ultimate_goal_source": "GOAL.md",
   "progress_source": "PROGRESS.md",
   "workflow_refs": [
     "docs/workflows/validation.md",
     "docs/product-redesign.md"
   ],
+  "design_references": {
+    "owner": "DESIGN.md",
+    "purpose": "Single source of truth for Like-minded visual language, copy tone, interaction principles, and iOS/macOS design rules.",
+    "mockups": {
+      "ios": "mockups/ios/",
+      "macos": "mockups/macos/"
+    },
+    "usage": [
+      "Before iOS native UI work, consult DESIGN.md and the relevant screen-range images in mockups/ios/.",
+      "Before macOS native UI work, consult DESIGN.md and the relevant screen-range images in mockups/macos/.",
+      "Skip mockups for backend-only, validation-only, or non-visual changes."
+    ]
+  },
   "validation_inventory": {
     "local_simulator": {
       "script": "script/verify_simulator_local.sh",
@@ -35,7 +48,7 @@
   "validation_state": {
     "local_simulator": {
       "status": "passed",
-      "last_verified_at": "2026-07-01",
+      "last_verified_at": "2026-07-02",
       "command": "npm run verify:simulator-local",
       "artifacts": [
         "output/validation/fresh-auth-gate.png",
@@ -43,7 +56,7 @@
       ],
       "proves": [
         "Fresh simulator launch shows the Sign in with Apple gate.",
-        "DEBUG local auth reaches the signed-in Meet/Circles/Communities/Profile path after Phase 5 LiveKit project changes."
+      "DEBUG local auth reaches the signed-in Meet/Circles/Communities/Profile path after Phase 6 Soulmate + Chat native changes."
       ],
       "does_not_prove": [
         "Real Apple sign-in.",
@@ -119,9 +132,10 @@
       "Fresh install shows Sign in with Apple gate, not old prototype tabs.",
       "After sign-in, tabs are Meet, Circles, Communities, Profile.",
       "Meet can load RSVP state and scheduled meetup cards through the authenticated backend path.",
-      "LiveKit join path requests a participant token only for scheduled meeting participants.",
-      "Circles accept/swap/defer visibly round-trips through backend state.",
-      "Profile edit and feedback paths are visible and retryable."
+      "Soulmate toggle shows or hides the Soulmate tab through authenticated backend state.",
+      "Post-meet soulmate selection creates only mutual matches.",
+      "Soulmate match detail shows only name, gender, and interests.",
+      "Chat send and fetch round-trip through the authenticated match participant path."
     ]
   },
   "subagents": {
@@ -176,7 +190,7 @@
   "rubric": {
     "criteria": [
       {
-        "name": "meet_flow_correctness",
+        "name": "soulmate_chat_correctness",
         "weight": 0.4,
         "min_score": 0.8
       },
@@ -205,13 +219,13 @@
       "goal.json",
       "all implementation, validation, doc, and stale-cleanup files changed for the session"
     ],
-    "commit_message_template": "Validate Phase 5 Meet and LiveKit"
+    "commit_message_template": "Validate Phase 6 Soulmate and Chat"
   },
   "done_criteria": [
-    "Meet backend endpoints persist RSVP state, list upcoming/past meetings, run deterministic weekend scheduling, and return LiveKit join tokens only for participants.",
-    "Swift Meet UI shows RSVP toggles, pre-meet teasers, upcoming meets, past meets, and a LiveKit-backed group call entry path.",
-    "Release config checks include LiveKit env vars and camera/microphone usage strings.",
-    "PROGRESS.md marks completed Phase 5 items, with scoped phase preflight reporting no unchecked items.",
+    "Soulmate backend endpoints persist opt-in state, pending post-meet selections, mutual matches, match detail, archived past matches, and participant-scoped chat messages.",
+    "Swift Soulmate and Chat UI supports opt-in tab visibility, match list/detail, conversation list, chat composer, and post-meet selection.",
+    "Soulmate detail exposes only allowed profile fields: name, gender, and interests.",
+    "PROGRESS.md marks completed Phase 6 items, with scoped phase preflight reporting no unchecked items.",
     "Deterministic checks pass, including npm run check, npm run verify:goal, npm run smoke:mvp, and npm run verify:release-config.",
     "Local simulator validation is rerun because native UI and project inputs changed.",
     "Validated session changes are committed with the completed goal.json before the goal is marked completed."

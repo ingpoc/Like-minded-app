@@ -22,10 +22,10 @@
 		5F0E79024B1B152EBBD80D88 /* LiveKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9109FD768D670024E68556DC /* LiveKit */; };
 		638037123B69B011D78BF5A7 /* LikemindedApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 704749A39D4B879E03561B1B /* LikemindedApp.swift */; };
 		676E4A1C5FC17EE494C1AB2F /* AuthGateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B0C51AF9D64677B65F8D49A /* AuthGateView.swift */; };
+		6BC67532CE7285221B1396E7 /* SoulmateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75383C5F7FE5874C6F987690 /* SoulmateView.swift */; };
 		7CB71404A390802C745BF8F1 /* MacScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = F693CC73A97F4BA64FD34B2D /* MacScreens.swift */; };
 		8298F29B28F7DBDF337EDD96 /* MacRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40664BF795D4C75998E0D941 /* MacRootView.swift */; };
 		84146F27670847A18F01957F /* PrototypeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C716780C8187703C6E293080 /* PrototypeData.swift */; };
-		8C69E8A6029B43AC474DCD58 /* ConnectionsPrototypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45755761E85787C57C41A25 /* ConnectionsPrototypeView.swift */; };
 		8D27A1FA539B87B3019798C6 /* CommunitiesPrototypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF864D6E37CD7289F92855DF /* CommunitiesPrototypeView.swift */; };
 		94B8BB90A08111BEB7490EEE /* RealtimeVoiceClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70685EA3FAE20FBC4827812B /* RealtimeVoiceClient.swift */; };
 		9917E4D207930B06A316F53D /* MacDesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E35A6097677BF379E314306E /* MacDesignSystem.swift */; };
@@ -53,6 +53,7 @@
 		704749A39D4B879E03561B1B /* LikemindedApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikemindedApp.swift; sourceTree = "<group>"; };
 		70685EA3FAE20FBC4827812B /* RealtimeVoiceClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeVoiceClient.swift; sourceTree = "<group>"; };
 		71F1782CC0FAAD3C06C76E5C /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		75383C5F7FE5874C6F987690 /* SoulmateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoulmateView.swift; sourceTree = "<group>"; };
 		75C0F95C041A6C7D0D328202 /* ProfilePrototypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePrototypeView.swift; sourceTree = "<group>"; };
 		7700EF7A1FAAF31D9ACEF8F4 /* LikemindedMacApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikemindedMacApp.swift; sourceTree = "<group>"; };
 		83237B0C66BA3537CAB89B87 /* PrototypeComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrototypeComponents.swift; sourceTree = "<group>"; };
@@ -64,7 +65,6 @@
 		C716780C8187703C6E293080 /* PrototypeData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrototypeData.swift; sourceTree = "<group>"; };
 		CDF2490A9727FEEB417EED9F /* AuthSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthSessionStore.swift; sourceTree = "<group>"; };
 		CF864D6E37CD7289F92855DF /* CommunitiesPrototypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunitiesPrototypeView.swift; sourceTree = "<group>"; };
-		D45755761E85787C57C41A25 /* ConnectionsPrototypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionsPrototypeView.swift; sourceTree = "<group>"; };
 		E11E3DAEAEA4F6D6B35D2D32 /* SettingsPrototypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPrototypeView.swift; sourceTree = "<group>"; };
 		E35A6097677BF379E314306E /* MacDesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacDesignSystem.swift; sourceTree = "<group>"; };
 		F693CC73A97F4BA64FD34B2D /* MacScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacScreens.swift; sourceTree = "<group>"; };
@@ -168,13 +168,13 @@
 				2B0C51AF9D64677B65F8D49A /* AuthGateView.swift */,
 				4895BAF5408C8A7CEDEB5EC3 /* CircleCard.swift */,
 				CF864D6E37CD7289F92855DF /* CommunitiesPrototypeView.swift */,
-				D45755761E85787C57C41A25 /* ConnectionsPrototypeView.swift */,
 				9D7107FDFB96FB4B6E50291C /* MeetView.swift */,
 				441C7F09BC786ADFBA9B2A36 /* MVPProfileView.swift */,
 				BC3A363F271D17248AADFD13 /* OnboardingView.swift */,
 				75C0F95C041A6C7D0D328202 /* ProfilePrototypeView.swift */,
 				71F1782CC0FAAD3C06C76E5C /* RootView.swift */,
 				E11E3DAEAEA4F6D6B35D2D32 /* SettingsPrototypeView.swift */,
+				75383C5F7FE5874C6F987690 /* SoulmateView.swift */,
 				3DCC1BCF1EB18B6214EB4BAA /* TodayPrototypeView.swift */,
 				0A0C1C21CE1F16D519FC056E /* VoiceOrbView.swift */,
 				6226DDE8442F9FB130F5B0EB /* Shared */,
@@ -272,7 +272,6 @@
 				4319E06107624A793DB13545 /* AuthSessionStore.swift in Sources */,
 				379D8BA56E5821E1680248E7 /* CircleCard.swift in Sources */,
 				8D27A1FA539B87B3019798C6 /* CommunitiesPrototypeView.swift in Sources */,
-				8C69E8A6029B43AC474DCD58 /* ConnectionsPrototypeView.swift in Sources */,
 				1C099E485B7A23A87435717E /* DeviceIdentity.swift in Sources */,
 				9991EE71916006E89457B6E5 /* LikemindedAPIClient.swift in Sources */,
 				638037123B69B011D78BF5A7 /* LikemindedApp.swift in Sources */,
@@ -288,6 +287,7 @@
 				94B8BB90A08111BEB7490EEE /* RealtimeVoiceClient.swift in Sources */,
 				3FC6508C115AA08A823B19CB /* RootView.swift in Sources */,
 				BE4F826A0A1C866F945B5AAB /* SettingsPrototypeView.swift in Sources */,
+				6BC67532CE7285221B1396E7 /* SoulmateView.swift in Sources */,
 				F278DF831E8C66D2F941194F /* TodayPrototypeView.swift in Sources */,
 				29D0CE0EDA18A3BB956B5C6E /* VoiceOrbView.swift in Sources */,
 			);

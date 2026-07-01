@@ -42,7 +42,7 @@ struct ScreenContainer<Content: View>: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 20)
             .padding(.top, 28)
-            .padding(.bottom, 128)
+            .padding(.bottom, 180)
         }
         .contentMargins(.top, 12, for: .scrollContent)
         .background {
