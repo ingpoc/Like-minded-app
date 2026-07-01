@@ -212,7 +212,7 @@
     "Local simulator build and launch pass when local validation inputs changed.",
     "Repo-owned MVP loop surfaces are ready for later external Render, Neon, Apple, and TestFlight proof.",
     "No stale docs or config describe prototype tabs, prototype bundle id, no auth, or SQLite as the production path.",
-    "Validated session changes are committed with the session's goal.json before the goal is marked complete."
+    "Validated session changes are committed with the session's goal.json before the goal is marked completed."
   ],
   "max_iterations": 10
 }

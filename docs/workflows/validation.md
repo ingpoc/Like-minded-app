@@ -44,7 +44,7 @@ npm run verify:simulator-local
 - deterministic grader commands are current,
 - simulator validation is assigned to `validation-release`,
 - validation-release is pinned to `gpt-5.4-mini` at `medium` effort,
-- completion requires a commit that includes the session's `goal.json` before marking the goal complete,
+- completion requires setting `goal.json.status` to `completed` and committing that `goal.json` with the validated session changes,
 - rubric weights are valid.
 
 The API health endpoint can be checked manually after setting a 24+ character `SESSION_SECRET` in `.env.local` and starting `npm run dev:api`. For local signed-in simulator validation without editing `.env.local`, use `npm run dev:api:local-auth`:
@@ -95,7 +95,7 @@ Simulator validation proves the app shell, entitlement, launch, and UI state pat
 9. If native SwiftUI files, project spec, entitlements, or simulator script changed, run `npm run verify:simulator-local`.
 10. Capture or inspect a simulator screenshot when UI gating/navigation changed.
 11. For local signed-in simulator navigation without Apple account UI, run `npm run verify:simulator-local`; this proves local app/auth routing and deterministic transcript-to-placement persistence, not real Apple sign-in or spoken audio quality.
-12. After validation passes and before marking the goal complete, commit the validated session changes, including that session's `goal.json`.
+12. After validation passes, set `goal.json.status` to `completed`, record the completion commit evidence, and commit the validated session changes including that session's `goal.json`.
 13. Before marking the full TestFlight goal complete, run `npm run verify:external-preflight`.
 14. If no deeper validation command exists for a touched surface, report that clearly and provide deterministic evidence such as file inventory, syntax checks, or generated artifact inspection.
 

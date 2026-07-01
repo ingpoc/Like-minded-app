@@ -15,6 +15,7 @@ function commandSet(goal) {
 
 function assertGoalShape(file, goal) {
   assert.equal(goal.schema_version, 1, `${file}: schema_version must be 1`);
+  assert.ok(["pending", "active", "completed"].includes(goal.status), `${file}: status must be pending, active, or completed`);
   assert.ok(goal.goal || goal.purpose, `${file}: goal or purpose is required`);
   assert.equal(goal.ultimate_goal_source, "GOAL.md", `${file}: ultimate goal must point to GOAL.md`);
   assert.equal(goal.progress_source, "PROGRESS.md", `${file}: progress source must point to PROGRESS.md`);
@@ -97,8 +98,8 @@ function assertGoalShape(file, goal) {
     `${file}: completion commit timing must be before marking the goal complete`
   );
   assert.ok(
-    goal.done_criteria.some((criterion) => criterion.includes("committed") && criterion.includes("goal.json")),
-    `${file}: done criteria must require committing goal.json`
+    goal.done_criteria.some((criterion) => criterion.includes("committed") && criterion.includes("goal.json") && criterion.includes("completed")),
+    `${file}: done criteria must require committing completed goal.json`
   );
   assert.ok(
     goal.release_gate?.external_preflight?.includes("npm run verify:external-preflight"),

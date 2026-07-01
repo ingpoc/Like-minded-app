@@ -1,5 +1,6 @@
 {
   "schema_version": 1,
+  "status": "pending",
   "purpose": "Per-session execution goal. Copy this file to goal.json at session start, set the current goal, and keep graders/validation/agent routing current when files or commands change.",
   "goal": "<one concrete session goal that moves the GOAL.md product objective forward>",
   "ultimate_goal_source": "GOAL.md",
@@ -55,6 +56,7 @@
     "external_preflight": "Run npm run verify:external-preflight only after Render, Neon, Apple Developer, App Store Connect/TestFlight, and manual device proof are ready."
   },
   "agent_guardrails": [
+    "If goal.json status is completed, select the next unchecked agent-doable item from PROGRESS.md before querying context.",
     "Check validation_state before rerunning completed proof.",
     "Reuse validation_inventory scripts before creating validation scripts.",
     "Do not add docs or workflows for validation already covered by workflow_refs and validation_inventory."
@@ -202,7 +204,7 @@
     "Local simulator build and launch pass when local validation inputs changed.",
     "Repo-owned MVP loop surfaces are ready for later external Render, Neon, Apple, and TestFlight proof.",
     "No stale docs or config describe prototype tabs, prototype bundle id, no auth, or SQLite as the production path.",
-    "Validated session changes are committed with the session's goal.json before the goal is marked complete."
+    "Validated session changes are committed with the session's goal.json before the goal is marked completed."
   ],
   "max_iterations": 10
 }
