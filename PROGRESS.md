@@ -12,6 +12,7 @@ Global `/Users/gurusharan/.codex/AGENTS.md` owns instruction control. This file 
 - Existing auth, backend, Realtime voice, and mvp-store infrastructure stays.
 - Design system stays: warm cream canvas, deep green accent, SF typography.
 - Design doc: `docs/product-redesign.md`. UI/UX research: `docs/references/ui-ux-patterns-research.md`.
+- Mockup prototype pass shipped for the five-tab shell: Meet, Circles, Communities, Profile, and Soulmate now share the updated cream/green/serif visual language, with static live-call and post-meet selection prototypes. Phase 4/5 backend and real room wiring remain unchecked.
 
 ## Phase 0 — Session Control And Graders
 

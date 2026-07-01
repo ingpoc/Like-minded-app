@@ -14,10 +14,10 @@ struct ScreenContainer<Content: View>: View {
                         .foregroundStyle(PrototypePalette.accent)
 
                     Text(subtitle)
-                        .font(PrototypeTypography.bodyStrong)
+                        .font(PrototypeTypography.display)
                         .foregroundStyle(PrototypePalette.ink)
                         .frame(maxWidth: 320, alignment: .leading)
-                        .lineLimit(2)
+                        .lineLimit(3)
                         .fixedSize(horizontal: false, vertical: true)
                 }
 
@@ -25,7 +25,7 @@ struct ScreenContainer<Content: View>: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 20)
-            .padding(.top, 34)
+            .padding(.top, 28)
             .padding(.bottom, 128)
         }
         .contentMargins(.top, 12, for: .scrollContent)
@@ -95,7 +95,7 @@ struct PrimaryActionButton: View {
             .frame(maxWidth: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .fill(PrototypePalette.accent)
+                    .fill(PrototypePalette.actionGradient)
             )
             .shadow(color: PrototypePalette.accent.opacity(0.18), radius: 14, y: 8)
     }
@@ -411,7 +411,9 @@ extension View {
 enum PrototypeTypography {
     static let eyebrow = Font.system(size: 11, weight: .semibold)
         .smallCaps()
-    static let hero = Font.system(size: 32, weight: .bold)
+    static let display = Font.system(size: 26, weight: .medium, design: .serif)
+    static let hero = Font.system(size: 42, weight: .medium, design: .serif)
+    static let cardTitle = Font.system(size: 24, weight: .medium, design: .serif)
     static let heroBody = Font.system(size: 16, weight: .regular)
     static let sectionTitle = Font.system(size: 17, weight: .semibold)
     static let quote = Font.system(size: 20, weight: .semibold)
@@ -424,8 +426,8 @@ enum PrototypeTypography {
 }
 
 enum PrototypePalette {
-    static let background = Color(red: 0.980, green: 0.969, blue: 0.945)
-    static let surface = Color(red: 1.000, green: 0.992, blue: 0.984)
+    static let background = Color(red: 0.984, green: 0.970, blue: 0.938)
+    static let surface = Color(red: 1.000, green: 0.991, blue: 0.973)
     static let accent = Color(red: 0.059, green: 0.290, blue: 0.239)
     static let accentDeep = Color(red: 0.031, green: 0.220, blue: 0.184)
     static let accentSoft = Color(red: 0.898, green: 0.941, blue: 0.918)
@@ -437,4 +439,24 @@ enum PrototypePalette {
     static let subink = Color(red: 0.373, green: 0.384, blue: 0.365)
     static let muted = Color(red: 0.541, green: 0.541, blue: 0.510)
     static let rule = Color(red: 0.902, green: 0.875, blue: 0.835)
+    static let gold = Color(red: 0.918, green: 0.732, blue: 0.433)
+    static let dusk = Color(red: 0.118, green: 0.075, blue: 0.157)
+    static let rose = Color(red: 0.890, green: 0.398, blue: 0.584)
+
+    static let actionGradient = LinearGradient(
+        colors: [accent, Color(red: 0.021, green: 0.392, blue: 0.257)],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+
+    static func roomGradient(_ index: Int = 0) -> LinearGradient {
+        let palettes: [[Color]] = [
+            [accentDeep, accent, gold.opacity(0.62)],
+            [Color(red: 0.078, green: 0.270, blue: 0.255), teal, Color(red: 0.682, green: 0.758, blue: 0.545)],
+            [Color(red: 0.250, green: 0.126, blue: 0.153), Color(red: 0.650, green: 0.247, blue: 0.177), Color(red: 0.965, green: 0.604, blue: 0.353)],
+            [dusk, Color(red: 0.247, green: 0.160, blue: 0.335), rose.opacity(0.58)]
+        ]
+        let colors = palettes[index % palettes.count]
+        return LinearGradient(colors: colors, startPoint: .topLeading, endPoint: .bottomTrailing)
+    }
 }

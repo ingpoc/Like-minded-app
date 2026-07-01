@@ -1,20 +1,26 @@
 import Foundation
 
 enum AppTab: String, CaseIterable, Identifiable {
+    case meet = "Meet"
     case circles = "Circles"
     case communities = "Communities"
     case profile = "Profile"
+    case soulmate = "Soulmate"
 
     var id: String { rawValue }
 
     var systemImage: String {
         switch self {
+        case .meet:
+            return "house.fill"
         case .circles:
-            return "person.3.fill"
+            return "door.left.hand.open"
         case .communities:
-            return "rectangle.3.group"
+            return "person.2.badge.gearshape"
         case .profile:
             return "person.crop.circle"
+        case .soulmate:
+            return "heart"
         }
     }
 }

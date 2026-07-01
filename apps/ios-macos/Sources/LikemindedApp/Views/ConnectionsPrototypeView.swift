@@ -1,226 +1,161 @@
 import SwiftUI
 
-struct ConnectionsPrototypeView: View {
-    @State private var hasEntered = false
-    @State private var mode: ConnectionMode = .circles
-    @EnvironmentObject private var appState: PrototypeAppState
+struct SoulmatePrototypeView: View {
+    private let matches = [
+        ("Arjun", "Met at Jazz & Music meetup", "Jul 5", "A"),
+        ("Meera", "Met at Jazz & Music meetup", "Jul 5", "M"),
+        ("Rohan", "Met at The Quiet Builders circle", "Jun 21", "R"),
+        ("Ananya", "Met at Writers' Corner meetup", "Jun 14", "A")
+    ]
 
     var body: some View {
         NavigationStack {
-            ScreenContainer(
-                title: "Connections",
-                subtitle: "Circle-first connection with fit, strength, and consent visible."
-            ) {
-                Picker("Connection mode", selection: $mode) {
-                    ForEach(ConnectionMode.allCases) { mode in
-                        Text(mode.title).tag(mode)
+            ZStack {
+                PrototypePalette.dusk.ignoresSafeArea()
+
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack(alignment: .leading, spacing: 26) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 10) {
+                                Text("Soulmate".uppercased())
+                                    .font(PrototypeTypography.eyebrow)
+                                    .foregroundStyle(.white.opacity(0.76))
+                                Text("Who you connected with.")
+                                    .font(PrototypeTypography.display)
+                                    .foregroundStyle(.white)
+                            }
+
+                            Spacer()
+
+                            Image(systemName: "ellipsis.message")
+                                .foregroundStyle(.white)
+                        }
+                        .padding(.top, 28)
+
+                        HeartBloom()
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 145)
+
+                        Text("Matches")
+                            .font(PrototypeTypography.heroBody)
+                            .foregroundStyle(.white.opacity(0.86))
+
+                        VStack(spacing: 0) {
+                            ForEach(Array(matches.enumerated()), id: \.offset) { index, match in
+                                MatchRow(
+                                    name: match.0,
+                                    subtitle: match.1,
+                                    date: match.2,
+                                    initial: match.3,
+                                    tone: index
+                                )
+
+                                if index != matches.count - 1 {
+                                    Divider().overlay(Color.white.opacity(0.08))
+                                }
+                            }
+                        }
+                        .background(Color.white.opacity(0.08))
+                        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+                        .overlay(RoundedRectangle(cornerRadius: 22, style: .continuous).stroke(Color.white.opacity(0.08), lineWidth: 1))
+
+                        HStack(spacing: 14) {
+                            Image(systemName: "heart")
+                                .font(.system(size: 26, weight: .light))
+                                .foregroundStyle(.white)
+                                .frame(width: 56, height: 56)
+                                .background(PrototypePalette.rose.opacity(0.38))
+                                .clipShape(Circle())
+
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Enable Soulmate")
+                                    .font(PrototypeTypography.bodyStrong)
+                                    .foregroundStyle(.white)
+                                Text("Opt in to find connections after meetups. Only visible when enabled.")
+                                    .font(PrototypeTypography.caption)
+                                    .foregroundStyle(.white.opacity(0.68))
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+
+                            Spacer()
+
+                            Image(systemName: "chevron.right")
+                                .foregroundStyle(.white)
+                        }
+                        .padding(18)
+                        .background(Color.white.opacity(0.08))
+                        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
                     }
-                }
-                .pickerStyle(.segmented)
-                .likemindedEntrance(order: 0, isActive: hasEntered, y: 10, scale: 0.98)
-
-                if mode == .circles {
-                    circleMode
-                        .likemindedEntrance(order: 1, isActive: hasEntered, y: 14, scale: 0.98)
-                } else {
-                    peopleMode
-                        .likemindedEntrance(order: 1, isActive: hasEntered, y: 14, scale: 0.98)
-                }
-
-                inviteAction
-                    .likemindedEntrance(order: 2, isActive: hasEntered, y: 14, scale: 0.98)
-            }
-            .navigationTitle("Connections")
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button {} label: {
-                        Image(systemName: "person.badge.plus")
-                    }
-                    .accessibilityLabel("Invite")
+                    .padding(.horizontal, 22)
+                    .padding(.bottom, 120)
                 }
             }
-        }
-        .task {
-            guard !hasEntered else { return }
-            hasEntered = true
-        }
-    }
-
-    private var circleMode: some View {
-        let placement = appState.currentPlacement
-
-        return FeatureCard(title: placement.primaryCircle.name, eyebrow: "Active circle") {
-            VStack(alignment: .leading, spacing: 14) {
-                CircleSelector(placement: placement)
-
-                Text(placement.primaryCircle.roomEnergy)
-                    .font(PrototypeTypography.body)
-                    .foregroundStyle(PrototypePalette.subink)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                HStack(spacing: 10) {
-                    MiniMetricCard(icon: "person.2.fill", value: "\(placement.primaryCircle.membersOnline)", label: "Members")
-                    MiniMetricCard(icon: "checkmark.seal.fill", value: placement.primaryCircle.fitLabel, label: "Fit")
-                }
-
-                TokenRow(items: Array(placement.primaryCircle.themes.prefix(3)))
-            }
-        }
-    }
-
-    private var peopleMode: some View {
-        FeatureCard(title: "People in fit order", eyebrow: appState.canOpenConnection ? "Open" : "Preview") {
-            VStack(spacing: 12) {
-                ForEach(appState.visibleMatches) { match in
-                    PersonFitCard(match: match, isOpen: appState.canOpenConnection) {
-                        appState.confirmConnection()
-                    }
-                }
-
-                if appState.visibleMatches.isEmpty {
-                    Text(appState.connectionsGateMessage)
-                        .font(PrototypeTypography.body)
-                        .foregroundStyle(PrototypePalette.subink)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-            }
-        }
-    }
-
-    private var inviteAction: some View {
-        Button {
-            appState.acceptPlacement()
-            mode = .people
-        } label: {
-            PrimaryActionButton(
-                title: appState.canOpenConnection ? "Invite with context" : "Confirm room to invite",
-                systemImage: appState.canOpenConnection ? "paperplane.fill" : "checkmark.circle.fill"
-            )
-        }
-        .buttonStyle(.plain)
-    }
-}
-
-private enum ConnectionMode: String, CaseIterable, Identifiable {
-    case circles
-    case people
-
-    var id: String { rawValue }
-
-    var title: String {
-        switch self {
-        case .circles:
-            return "Circles"
-        case .people:
-            return "People"
+            .navigationTitle("Soulmate")
+            .toolbar(.hidden, for: .navigationBar)
         }
     }
 }
 
-private struct CircleSelector: View {
-    let placement: CirclePlacement
+private struct MatchRow: View {
+    let name: String
+    let subtitle: String
+    let date: String
+    let initial: String
+    let tone: Int
 
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 10) {
-                CircleSelectorChip(title: placement.primaryCircle.name, isSelected: true)
+        HStack(spacing: 14) {
+            Text(initial)
+                .font(.system(size: 22, weight: .medium, design: .serif))
+                .foregroundStyle(.white)
+                .frame(width: 58, height: 58)
+                .background(PrototypePalette.roomGradient(tone))
+                .clipShape(Circle())
 
-                ForEach(placement.secondaryCircles) { circle in
-                    CircleSelectorChip(title: circle.name, isSelected: false)
-                }
-            }
-            .padding(.vertical, 2)
-        }
-    }
-}
-
-private struct CircleSelectorChip: View {
-    let title: String
-    let isSelected: Bool
-
-    var body: some View {
-        Text(title)
-            .font(PrototypeTypography.metadata)
-            .foregroundStyle(isSelected ? .white : PrototypePalette.ink)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 9)
-            .background(isSelected ? PrototypePalette.accent : PrototypePalette.surface)
-            .clipShape(Capsule(style: .continuous))
-            .overlay(
-                Capsule(style: .continuous)
-                    .stroke(PrototypePalette.rule, lineWidth: isSelected ? 0 : 1)
-            )
-    }
-}
-
-private struct PersonFitCard: View {
-    let match: MatchRecommendation
-    let isOpen: Bool
-    let action: () -> Void
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 12) {
-                Circle()
-                    .fill(PrototypePalette.accentSoft)
-                    .frame(width: 44, height: 44)
-                    .overlay(
-                        Text(String(match.name.prefix(1)))
-                            .font(.system(size: 18, weight: .bold))
-                            .foregroundStyle(PrototypePalette.accent)
-                    )
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(match.name)
-                        .font(PrototypeTypography.bodyStrong)
-                        .foregroundStyle(PrototypePalette.ink)
-
-                    Text(match.headline)
-                        .font(PrototypeTypography.caption)
-                        .foregroundStyle(PrototypePalette.subink)
-                }
-
-                Spacer(minLength: 8)
-
-                VStack(alignment: .trailing, spacing: 4) {
-                    Text("\(match.compatibility)%")
-                        .font(PrototypeTypography.metric)
-                        .foregroundStyle(PrototypePalette.accent)
-
-                    Text(strengthLabel)
-                        .font(PrototypeTypography.metadata)
-                        .foregroundStyle(PrototypePalette.subink)
-                }
-            }
-
-            ProgressView(value: Double(match.compatibility), total: 100)
-                .tint(PrototypePalette.accent)
-
-            HStack {
-                Label(isOpen ? "Consent ready" : "Placement gated", systemImage: isOpen ? "checkmark.shield" : "lock")
+            VStack(alignment: .leading, spacing: 3) {
+                Text(name)
+                    .font(PrototypeTypography.bodyStrong)
+                    .foregroundStyle(.white)
+                Text(subtitle)
                     .font(PrototypeTypography.metadata)
-                    .foregroundStyle(isOpen ? PrototypePalette.success : PrototypePalette.amber)
-
-                Spacer(minLength: 8)
-
-                Button(action: action) {
-                    Text(isOpen ? "Invite" : "Preview")
-                        .font(PrototypeTypography.metadata)
-                        .foregroundStyle(PrototypePalette.accent)
-                }
-                .buttonStyle(.plain)
+                    .foregroundStyle(.white.opacity(0.62))
+                Text(date)
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.56))
             }
-        }
-        .padding(14)
-        .background(PrototypePalette.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .stroke(PrototypePalette.rule, lineWidth: 1)
-        )
-    }
 
-    private var strengthLabel: String {
-        match.compatibility >= 90 ? "Strong" : "Growing"
+            Spacer()
+
+            Circle()
+                .fill(PrototypePalette.rose)
+                .frame(width: 9, height: 9)
+                .shadow(color: PrototypePalette.rose, radius: 10)
+        }
+        .padding(16)
+    }
+}
+
+private struct HeartBloom: View {
+    var body: some View {
+        ZStack {
+            ForEach(0..<4, id: \.self) { index in
+                Image(systemName: "heart.fill")
+                    .font(.system(size: CGFloat(54 + index * 10), weight: .light))
+                    .foregroundStyle(PrototypePalette.rose.opacity(0.10 + Double(index) * 0.05))
+                    .blur(radius: CGFloat(index * 2))
+                    .offset(x: CGFloat(index * 11 - 16), y: CGFloat(index * -7))
+            }
+
+            Image(systemName: "heart.fill")
+                .font(.system(size: 82, weight: .light))
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [PrototypePalette.rose, PrototypePalette.coral, PrototypePalette.gold],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+                .shadow(color: PrototypePalette.rose.opacity(0.55), radius: 28, y: 16)
+        }
     }
 }

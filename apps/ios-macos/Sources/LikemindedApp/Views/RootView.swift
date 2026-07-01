@@ -2,12 +2,18 @@ import SwiftUI
 
 struct RootView: View {
     @EnvironmentObject private var appState: PrototypeAppState
-    @State private var selection: AppTab = .profile
+    @State private var selection: AppTab = .meet
 
     var body: some View {
         Group {
             if appState.isSignedIn {
                 TabView(selection: $selection) {
+                    MeetPrototypeView()
+                        .tabItem {
+                            Label(AppTab.meet.rawValue, systemImage: AppTab.meet.systemImage)
+                        }
+                        .tag(AppTab.meet)
+
                     CirclesPrototypeView()
                         .tabItem {
                             Label(AppTab.circles.rawValue, systemImage: AppTab.circles.systemImage)
@@ -20,17 +26,17 @@ struct RootView: View {
                         }
                         .tag(AppTab.communities)
 
-                    Group {
-                        if appState.slice == nil, appState.basicInfo != nil {
-                            VoiceProfileView()
-                        } else {
-                            ProfilePrototypeView()
-                        }
-                    }
+                    VoiceProfileView()
                         .tabItem {
                             Label(AppTab.profile.rawValue, systemImage: AppTab.profile.systemImage)
                         }
                         .tag(AppTab.profile)
+
+                    SoulmatePrototypeView()
+                        .tabItem {
+                            Label(AppTab.soulmate.rawValue, systemImage: AppTab.soulmate.systemImage)
+                        }
+                        .tag(AppTab.soulmate)
                 }
                 .tint(PrototypePalette.accent)
                 .task {
