@@ -9,6 +9,11 @@
     "database_configured": false,
     "migration_checked_at": ""
   },
+  "livekit": {
+    "url_configured": false,
+    "api_key_configured": false,
+    "group_video_verified": false
+  },
   "apple": {
     "bundle_id": "com.likeminded.app",
     "bundle_id_configured": false,

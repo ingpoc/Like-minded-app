@@ -12,7 +12,7 @@ Global `/Users/gurusharan/.codex/AGENTS.md` owns instruction control. This file 
 - Existing auth, backend, Realtime voice, and mvp-store infrastructure stays.
 - Design system stays: warm cream canvas, deep green accent, SF typography.
 - Design doc: `docs/product-redesign.md`. UI/UX research: `docs/references/ui-ux-patterns-research.md`.
-- Mockup prototype pass shipped for the five-tab shell: Meet, Circles, Communities, Profile, and Soulmate now share the updated cream/green/serif visual language, with static live-call, post-meet selection, Profile empty/existing states, Community detail, and Settings/Soulmate-toggle prototypes. Phase 4 is complete; Phase 5/6 backend and real room wiring remain unchecked.
+- Phase 5 Meet + LiveKit is complete locally: RSVP state, deterministic weekend scheduling, LiveKit participant token generation, backend-driven Meet UI, and local simulator proof are in place. Phase 6 Soulmate + Chat remains unchecked.
 
 ## Phase 0 — Session Control And Graders
 
@@ -126,38 +126,37 @@ Meetup flow: RSVP, AI scheduling, group formation, host selection, in-app group 
 
 ### Meet UI
 
-- [ ] Create `MeetView.swift` — new tab view replacing Talk. Top: RSVP card. Below: upcoming meets list. Below: past meets list.
-- [ ] Create `RSVPCard.swift` — two rows. Row 1: "Saturday — Community meetup" + `Toggle` (Available/Not). Row 2: "Sunday — Circle meetup" + `Toggle`. Toggles use `matchedGeometryEffect` for sliding pill indicator. Add `.sensoryFeedback(.success, trigger: rsvpState)` on toggle.
-- [ ] Create `PreMeetTeaserCard.swift` — shown Friday only. Circle: "Your Sunday meet: 5 people. You all share slow-trust patterns and analytical communication. Host: [name]." Community: "Your Saturday meet: 5 people from 4 different circles. Two extroverts, three introverts. Host: [name]." Group composition only, no individual profiles.
-- [ ] Create `UpcomingMeetCard.swift` — day/time line, countdown ("2d 4h away" in `.monospacedDigit()`), host name, group size, join button. Join button disabled until meetup time. At meetup time: button pulses (`.animation(.easeInOut(duration: 0.8).repeatForever())`) and activates.
-- [ ] Create `PastMeetRow.swift` — compact list row: date, group/circle name, host name. Tap → past meet detail (just the info, no transcript).
+- [x] Create `MeetView.swift` — new tab view replacing Talk. Top: RSVP card. Below: upcoming meets list. Below: past meets list.
+- [x] Create `RSVPCard.swift` — two rows. Row 1: "Saturday — Community meetup" + `Toggle` (Available/Not). Row 2: "Sunday — Circle meetup" + `Toggle`. Toggles use `matchedGeometryEffect` for sliding pill indicator. Add `.sensoryFeedback(.success, trigger: rsvpState)` on toggle.
+- [x] Create `PreMeetTeaserCard.swift` — shown Friday only. Circle: "Your Sunday meet: 5 people. You all share slow-trust patterns and analytical communication. Host: [name]." Community: "Your Saturday meet: 5 people from 4 different circles. Two extroverts, three introverts. Host: [name]." Group composition only, no individual profiles.
+- [x] Create `UpcomingMeetCard.swift` — day/time line, countdown ("2d 4h away" in `.monospacedDigit()`), host name, group size, join button. Join button disabled until meetup time. At meetup time: button pulses (`.animation(.easeInOut(duration: 0.8).repeatForever())`) and activates.
+- [x] Create `PastMeetRow.swift` — compact list row: date, group/circle name, host name. Tap → past meet detail (just the info, no transcript).
 
 ### LiveKit video
 
-- [ ] Add LiveKit Swift SDK to `project.yml` via SPM dependency: `livekit-client-swift` (url: `https://github.com/livekit/client-sdk-swift`, from: `2.0.0`).
-- [ ] Create `GroupVideoCallView.swift` — `Room` from LiveKit SDK. `Participant` tiles in a `LazyVGrid` (adaptive columns, 2 per row for 10 participants). Camera on — no toggle to disable. Mute mic toggle available. "Leave" button to disconnect. Connect to room using token from `POST /v1/meetings/:id/join`.
-- [ ] Create `LiveKitTokenProvider.swift` — calls `POST /v1/meetings/:id/join`, returns `{ token: String, url: String }`. Swift side: `Room.connect(url: urlString, token: tokenString)`.
-- [ ] Backend: Add `livekit-server-sdk-node` dependency to `services/api/package.json`. Add `services/api/src/lib/livekit.js` — exports `createRoom(meetingId)`, `generateParticipantToken(userId, meetingId)`. Uses `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`, `LIVEKIT_URL` env vars.
-- [ ] Backend: `POST /v1/meetings/:id/join` — verify user is a participant in the meeting, generate LiveKit token, return `{ token, url }`.
+- [x] Add LiveKit Swift SDK to `project.yml` via SPM dependency: `livekit-client-swift` (url: `https://github.com/livekit/client-sdk-swift`, from: `2.0.0`).
+- [x] Create `GroupVideoCallView.swift` — `Room` from LiveKit SDK. `Participant` tiles in a `LazyVGrid` (adaptive columns, 2 per row for 10 participants). Camera on — no toggle to disable. Mute mic toggle available. "Leave" button to disconnect. Connect to room using token from `POST /v1/meetings/:id/join`.
+- [x] Create `LiveKitTokenProvider.swift` — calls `POST /v1/meetings/:id/join`, returns `{ token: String, url: String }`. Swift side: `Room.connect(url: urlString, token: tokenString)`.
+- [x] Backend: Add `livekit-server-sdk` dependency to root `package.json`. Add `services/api/src/lib/livekit.js` — exports `createRoom(meetingId)`, `generateParticipantToken(userId, meetingId)`. Uses `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`, `LIVEKIT_URL` env vars.
+- [x] Backend: `POST /v1/meetings/:id/join` — verify user is a participant in the meeting, generate LiveKit token, return `{ token, url }`.
 
 ### Backend: meetings model + routes
 
-- [ ] Add meetings to `mvp-store.js`: `saveMeeting(meeting)`, `getMeeting(id)`, `getUpcomingMeetings(userId)`, `getPastMeetings(userId)`, `getRSVPs(circleId|communityId, weekend)`, `saveRSVP(userId, day, circleId|communityId)`. Meeting object: `{ id, type: "circle"|"community", groupId, scheduledAt, hostUserId, participantUserIds: [], status: "scheduled"|"completed" }`.
-- [ ] `POST /v1/meetings/rsvp` — auth required. Body: `{ day: "saturday"|"sunday", groupId: String }`. Saves RSVP. Response: `{ status: "rsvp_saved" }`.
-- [ ] `GET /v1/meetings/upcoming` — auth required. Returns user's upcoming meetings where they're a participant.
-- [ ] `GET /v1/meetings/:id` — auth required. Returns meeting detail. Verify user is a participant.
-- [ ] `POST /v1/meetings/:id/join` — auth required. Returns LiveKit token (see LiveKit section above).
-- [ ] `GET /v1/meetings/past` — auth required. Returns past meetings for the user.
+- [x] Add meetings to `mvp-store.js`: `saveMeeting(meeting)`, `getMeeting(id)`, `getUpcomingMeetings(userId)`, `getPastMeetings(userId)`, `getRSVPs(circleId|communityId, weekend)`, `saveRSVP(userId, day, circleId|communityId)`. Meeting object: `{ id, type: "circle"|"community", groupId, scheduledAt, hostUserId, participantUserIds: [], status: "scheduled"|"completed" }`.
+- [x] `POST /v1/meetings/rsvp` — auth required. Body: `{ day: "saturday"|"sunday", groupId: String }`. Saves RSVP. Response: `{ status: "rsvp_saved" }`.
+- [x] `GET /v1/meetings/upcoming` — auth required. Returns user's upcoming meetings where they're a participant.
+- [x] `GET /v1/meetings/:id` — auth required. Returns meeting detail. Verify user is a participant.
+- [x] `POST /v1/meetings/:id/join` — auth required. Returns LiveKit token (see LiveKit section above).
+- [x] `GET /v1/meetings/past` — auth required. Returns past meetings for the user.
 
 ### Backend: AI scheduling job
 
-- [ ] Create `services/api/src/lib/scheduling.js` — exports `runWeekendScheduling()`. Called by a cron-like trigger (MVP: manual endpoint `POST /v1/admin/run-scheduling` with a shared secret, or a `setInterval` check in server startup). Not a real cron daemon for MVP.
-- [ ] `runWeekendScheduling()` logic: (1) For each circle with Sunday RSVPs >= 6, pull all RSVP'd members, `shuffle()`, partition into groups of 10 (last group min 6), gender-balance 5M/5F within each group (pull males and females separately, interleave), score host per group using `scoreCircleHost()`, create meeting record with `scheduledAt = Sunday 7pm`. (2) Same for communities with Saturday RSVPs, using `scoreCommunityHost()`, `scheduledAt = Saturday 7pm`.
-- [ ] Create `scoreCircleHost(participantProfiles)` in `scheduling.js` — score each participant: `socialEnergy` high/medium (+1), `communicationStyle.primary` warm/expressive (+1), `agreeableness` > 0.6 (+1), `extraversion` > 0.6 (+1), `neuroticism` < 0.6 (+1), dominance low = `communicationStyle.primary != "direct"` AND `conflictStyle != "engaging"` (+1), `trustPattern == "fastTrust"` (+1). Highest score = host. Tiebreak: more meetups attended.
-- [ ] Create `scoreCommunityHost(participantProfiles)` in `scheduling.js` — score each participant: `openness` > 0.7 (+1), `agreeableness` > 0.6 (+1), `extraversion` 0.4-0.8 (+1), `communicationStyle.primary == "warm"` (+1), `neuroticism` < 0.5 (+1), `socialEnergy` high/medium (+1), dominance low (+1). Highest score = host. Tiebreak: more meetups attended.
-- [ ] Gender balance: pull `basicInfo.gender` from each participant's profile. Male + Female pools. Interleave into groups: 5 males + 5 females per group of 10. Non-binary / prefer-not-to-say: place freely without gender constraint.
-- [ ] Leftover handling: if RSVP count % 10 != 0 and remainder < 6, skip the remainder group. If remainder >= 6, create a smaller group.
-
+- [x] Create `services/api/src/lib/scheduling.js` — exports `runWeekendScheduling()`. Called by a cron-like trigger (MVP: manual endpoint `POST /v1/admin/run-scheduling` with a shared secret, or a `setInterval` check in server startup). Not a real cron daemon for MVP.
+- [x] `runWeekendScheduling()` logic: (1) For each circle with Sunday RSVPs >= 6, pull all RSVP'd members, `shuffle()`, partition into groups of 10 (last group min 6), gender-balance 5M/5F within each group (pull males and females separately, interleave), score host per group using `scoreCircleHost()`, create meeting record with `scheduledAt = Sunday 7pm`. (2) Same for communities with Saturday RSVPs, using `scoreCommunityHost()`, `scheduledAt = Saturday 7pm`.
+- [x] Create `scoreCircleHost(participantProfiles)` in `scheduling.js` — score each participant: `socialEnergy` high/medium (+1), `communicationStyle.primary` warm/expressive (+1), `agreeableness` > 0.6 (+1), `extraversion` > 0.6 (+1), `neuroticism` < 0.6 (+1), dominance low = `communicationStyle.primary != "direct"` AND `conflictStyle != "engaging"` (+1), `trustPattern == "fastTrust"` (+1). Highest score = host. Tiebreak: more meetups attended.
+- [x] Create `scoreCommunityHost(participantProfiles)` in `scheduling.js` — score each participant: `openness` > 0.7 (+1), `agreeableness` > 0.6 (+1), `extraversion` 0.4-0.8 (+1), `communicationStyle.primary == "warm"` (+1), `neuroticism` < 0.5 (+1), `socialEnergy` high/medium (+1), dominance low (+1). Highest score = host. Tiebreak: more meetups attended.
+- [x] Gender balance: pull `basicInfo.gender` from each participant's profile. Male + Female pools. Interleave into groups: 5 males + 5 females per group of 10. Non-binary / prefer-not-to-say: place freely without gender constraint.
+- [x] Leftover handling: if RSVP count % 10 != 0 and remainder < 6, skip the remainder group. If remainder >= 6, create a smaller group.
 ## Phase 6 — Soulmate + Chat
 
 Opt-in matching: post-meet selection, mutual matches, interest profile view, in-app chat.

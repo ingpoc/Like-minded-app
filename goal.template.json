@@ -6,14 +6,15 @@
   "ultimate_goal_source": "GOAL.md",
   "progress_source": "PROGRESS.md",
   "workflow_refs": [
-    "docs/workflows/validation.md"
+    "docs/workflows/validation.md",
+    "docs/product-redesign.md"
   ],
   "validation_inventory": {
     "local_simulator": {
       "script": "script/verify_simulator_local.sh",
       "command": "npm run verify:simulator-local",
       "workflow_ref": "docs/workflows/validation.md",
-      "purpose": "Build, install, and launch the simulator app; prove fresh auth gate and DEBUG signed-in Talk/Circles/Communities/Profile path.",
+      "purpose": "Build, install, and launch the simulator app; prove fresh auth gate and DEBUG signed-in Meet/Circles/Communities/Profile path.",
       "reuse_when": [
         "Native app changes.",
         "Auth or session flow changes.",
@@ -26,7 +27,7 @@
       "script": "script/verify_external_preflight.js",
       "command": "npm run verify:external-preflight",
       "workflow_ref": "docs/workflows/validation.md",
-      "purpose": "Verify real Render, Neon, Apple, TestFlight, and manual proof recorded in release/testflight-evidence.json.",
+      "purpose": "Verify real Render, Neon, Apple, LiveKit, TestFlight, and manual proof recorded in release/testflight-evidence.json.",
       "template": "release/testflight-evidence.template.json",
       "evidence_file": "release/testflight-evidence.json"
     }
@@ -73,13 +74,13 @@
       "name": "mvp_backend_contract",
       "command": "npm run smoke:mvp",
       "cost": "zero_token",
-      "proves": "Auth-gated discovery, persisted profile/placement, placement action, feedback, and cross-user isolation work locally."
+      "proves": "Auth-gated discovery, persisted profile/placement, placement action, feedback, meetings RSVP/scheduling, LiveKit token generation, and cross-user isolation work locally."
     },
     {
       "name": "release_static_config",
       "command": "npm run verify:release-config",
       "cost": "zero_token",
-      "proves": "TestFlight-critical bundle id, entitlements, API base URL, Render env, and privacy-policy files are configured."
+      "proves": "TestFlight-critical bundle id, entitlements, API base URL, LiveKit env vars, Render env, and privacy-policy files are configured."
     },
     {
       "name": "goal_contract",
@@ -97,7 +98,7 @@
       "name": "local_simulator_validation",
       "command": "npm run verify:simulator-local",
       "cost": "zero_token",
-      "proves": "XcodeGen project builds, installs, launches fresh auth gate, then enters the DEBUG signed-in Talk/Circles/Communities/Profile app through backend dev auth."
+      "proves": "XcodeGen project builds, installs, launches fresh auth gate, then enters the DEBUG signed-in Meet/Circles/Communities/Profile app through backend dev auth."
     }
   ],
   "simulator_validation": {
@@ -110,9 +111,9 @@
     },
     "checks": [
       "Fresh install shows Sign in with Apple gate, not old prototype tabs.",
-      "After sign-in, tabs are Talk, Circles, Communities, Profile.",
-      "Talk can start Realtime voice through the authenticated backend path.",
-      "Stopping voice creates placement UI without mock fallback.",
+      "After sign-in, tabs are Meet, Circles, Communities, Profile.",
+      "Meet can load RSVP state and scheduled meetup cards through the authenticated backend path.",
+      "LiveKit join path requests a participant token only for scheduled meeting participants.",
       "Circles accept/swap/defer visibly round-trips through backend state.",
       "Profile edit and feedback paths are visible and retryable."
     ]

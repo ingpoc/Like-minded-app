@@ -4,8 +4,12 @@ options:
   createIntermediateGroups: true
   deploymentTarget:
     iOS: "18.0"
+    macOS: "15.0"
 
 packages:
+  LiveKit:
+    url: https://github.com/livekit/client-sdk-swift
+    from: 2.0.0
   LiveKitWebRTC:
     url: https://github.com/livekit/webrtc-xcframework.git
     exactVersion: 144.7559.10
@@ -24,6 +28,7 @@ targets:
     sources:
       - path: Sources/LikemindedApp
     dependencies:
+      - package: LiveKit
       - package: LiveKitWebRTC
     settings:
       base:
@@ -35,12 +40,33 @@ targets:
         INFOPLIST_KEY_LSRequiresIPhoneOS: YES
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_NSCameraUsageDescription: "Likeminded uses your camera for scheduled group video meets."
         INFOPLIST_KEY_NSMicrophoneUsageDescription: "Likeminded uses your voice to build private profile signals and suggest a starter circle."
         INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsLocalNetworking: YES
         TARGETED_DEVICE_FAMILY: "1,2"
         SUPPORTS_MACCATALYST: NO
         CODE_SIGN_STYLE: Automatic
         CODE_SIGN_ENTITLEMENTS: Entitlements/Likeminded.entitlements
+        DEVELOPMENT_ASSET_PATHS: "\"\""
+        LIKEMINDED_API_BASE_URL: ""
+    scheme:
+      gatherCoverageData: false
+      testTargets: []
+
+  LikemindedMac:
+    type: application
+    platform: macOS
+    deploymentTarget: "15.0"
+    sources:
+      - path: Sources/LikemindedMac
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.likeminded.mac
+        PRODUCT_NAME: LikemindedMac
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Likeminded
+        INFOPLIST_KEY_LIKEMINDED_API_BASE_URL: "$(LIKEMINDED_API_BASE_URL)"
+        CODE_SIGN_STYLE: Automatic
         DEVELOPMENT_ASSET_PATHS: "\"\""
         LIKEMINDED_API_BASE_URL: ""
     scheme:

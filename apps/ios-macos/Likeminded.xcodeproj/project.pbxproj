@@ -7,34 +7,44 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		00C5C47C4D3A69486DC493D3 /* LikemindedMacApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7700EF7A1FAAF31D9ACEF8F4 /* LikemindedMacApp.swift */; };
+		0F0F08547C69AA374756B919 /* LiveKitTokenProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A931FF701084ED1753234F3A /* LiveKitTokenProvider.swift */; };
 		1434DA300C4A5A2400A859A3 /* PrototypeModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8C121E18E6BF523CE92D82 /* PrototypeModels.swift */; };
 		1C099E485B7A23A87435717E /* DeviceIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D8F9C153E1CAAA2E1D4B53 /* DeviceIdentity.swift */; };
 		29D0CE0EDA18A3BB956B5C6E /* VoiceOrbView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0C1C21CE1F16D519FC056E /* VoiceOrbView.swift */; };
+		31D1987C09EEBD76447D0DF7 /* MacPrototypeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 181BFC9B2D93330133F5C993 /* MacPrototypeData.swift */; };
 		379D8BA56E5821E1680248E7 /* CircleCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4895BAF5408C8A7CEDEB5EC3 /* CircleCard.swift */; };
 		399834A377ADFBCE54D30DF9 /* PrototypeAppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C615B2CB5D4009DE9EDF7F48 /* PrototypeAppState.swift */; };
 		3C82F0006DF2BAE5048D0B43 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3A363F271D17248AADFD13 /* OnboardingView.swift */; };
 		3FC6508C115AA08A823B19CB /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71F1782CC0FAAD3C06C76E5C /* RootView.swift */; };
 		4319E06107624A793DB13545 /* AuthSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDF2490A9727FEEB417EED9F /* AuthSessionStore.swift */; };
 		574EC5E783BCAF6EFAA327F5 /* MVPProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 441C7F09BC786ADFBA9B2A36 /* MVPProfileView.swift */; };
-		5F0E79024B1B152EBBD80D88 /* LiveKitWebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 02402CF435BA0C350E109525 /* LiveKitWebRTC */; };
+		5F0E79024B1B152EBBD80D88 /* LiveKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9109FD768D670024E68556DC /* LiveKit */; };
 		638037123B69B011D78BF5A7 /* LikemindedApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 704749A39D4B879E03561B1B /* LikemindedApp.swift */; };
 		676E4A1C5FC17EE494C1AB2F /* AuthGateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B0C51AF9D64677B65F8D49A /* AuthGateView.swift */; };
+		7CB71404A390802C745BF8F1 /* MacScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = F693CC73A97F4BA64FD34B2D /* MacScreens.swift */; };
+		8298F29B28F7DBDF337EDD96 /* MacRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40664BF795D4C75998E0D941 /* MacRootView.swift */; };
 		84146F27670847A18F01957F /* PrototypeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C716780C8187703C6E293080 /* PrototypeData.swift */; };
 		8C69E8A6029B43AC474DCD58 /* ConnectionsPrototypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45755761E85787C57C41A25 /* ConnectionsPrototypeView.swift */; };
 		8D27A1FA539B87B3019798C6 /* CommunitiesPrototypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF864D6E37CD7289F92855DF /* CommunitiesPrototypeView.swift */; };
 		94B8BB90A08111BEB7490EEE /* RealtimeVoiceClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70685EA3FAE20FBC4827812B /* RealtimeVoiceClient.swift */; };
-		976CF2F7F5E24211A6B80BBD /* MeetPrototypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E57431BFD89413C682AE75BF /* MeetPrototypeView.swift */; };
+		9917E4D207930B06A316F53D /* MacDesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E35A6097677BF379E314306E /* MacDesignSystem.swift */; };
 		9991EE71916006E89457B6E5 /* LikemindedAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DCB9E92C74E864B793C207 /* LikemindedAPIClient.swift */; };
 		BE4F826A0A1C866F945B5AAB /* SettingsPrototypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11E3DAEAEA4F6D6B35D2D32 /* SettingsPrototypeView.swift */; };
+		CE50886875324458689A2D08 /* LiveKitWebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 02402CF435BA0C350E109525 /* LiveKitWebRTC */; };
 		D0960611CC66E6642F609ACD /* ProfilePrototypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75C0F95C041A6C7D0D328202 /* ProfilePrototypeView.swift */; };
+		E4C21F153CB397BCA7E4CF65 /* MeetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7107FDFB96FB4B6E50291C /* MeetView.swift */; };
 		E5F05FF2F77CDC1BC4866782 /* PrototypeComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83237B0C66BA3537CAB89B87 /* PrototypeComponents.swift */; };
 		F278DF831E8C66D2F941194F /* TodayPrototypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DCC1BCF1EB18B6214EB4BAA /* TodayPrototypeView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0A0C1C21CE1F16D519FC056E /* VoiceOrbView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceOrbView.swift; sourceTree = "<group>"; };
+		12C36748D06319EACF593DE7 /* LikemindedMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LikemindedMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		181BFC9B2D93330133F5C993 /* MacPrototypeData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacPrototypeData.swift; sourceTree = "<group>"; };
 		2B0C51AF9D64677B65F8D49A /* AuthGateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthGateView.swift; sourceTree = "<group>"; };
 		3DCC1BCF1EB18B6214EB4BAA /* TodayPrototypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayPrototypeView.swift; sourceTree = "<group>"; };
+		40664BF795D4C75998E0D941 /* MacRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacRootView.swift; sourceTree = "<group>"; };
 		43D8F9C153E1CAAA2E1D4B53 /* DeviceIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceIdentity.swift; sourceTree = "<group>"; };
 		441C7F09BC786ADFBA9B2A36 /* MVPProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MVPProfileView.swift; sourceTree = "<group>"; };
 		4895BAF5408C8A7CEDEB5EC3 /* CircleCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleCard.swift; sourceTree = "<group>"; };
@@ -44,8 +54,11 @@
 		70685EA3FAE20FBC4827812B /* RealtimeVoiceClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeVoiceClient.swift; sourceTree = "<group>"; };
 		71F1782CC0FAAD3C06C76E5C /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		75C0F95C041A6C7D0D328202 /* ProfilePrototypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePrototypeView.swift; sourceTree = "<group>"; };
+		7700EF7A1FAAF31D9ACEF8F4 /* LikemindedMacApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikemindedMacApp.swift; sourceTree = "<group>"; };
 		83237B0C66BA3537CAB89B87 /* PrototypeComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrototypeComponents.swift; sourceTree = "<group>"; };
 		8C8C121E18E6BF523CE92D82 /* PrototypeModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrototypeModels.swift; sourceTree = "<group>"; };
+		9D7107FDFB96FB4B6E50291C /* MeetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetView.swift; sourceTree = "<group>"; };
+		A931FF701084ED1753234F3A /* LiveKitTokenProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveKitTokenProvider.swift; sourceTree = "<group>"; };
 		BC3A363F271D17248AADFD13 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		C615B2CB5D4009DE9EDF7F48 /* PrototypeAppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrototypeAppState.swift; sourceTree = "<group>"; };
 		C716780C8187703C6E293080 /* PrototypeData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrototypeData.swift; sourceTree = "<group>"; };
@@ -53,7 +66,8 @@
 		CF864D6E37CD7289F92855DF /* CommunitiesPrototypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunitiesPrototypeView.swift; sourceTree = "<group>"; };
 		D45755761E85787C57C41A25 /* ConnectionsPrototypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionsPrototypeView.swift; sourceTree = "<group>"; };
 		E11E3DAEAEA4F6D6B35D2D32 /* SettingsPrototypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPrototypeView.swift; sourceTree = "<group>"; };
-		E57431BFD89413C682AE75BF /* MeetPrototypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetPrototypeView.swift; sourceTree = "<group>"; };
+		E35A6097677BF379E314306E /* MacDesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacDesignSystem.swift; sourceTree = "<group>"; };
+		F693CC73A97F4BA64FD34B2D /* MacScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacScreens.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,7 +75,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5F0E79024B1B152EBBD80D88 /* LiveKitWebRTC in Frameworks */,
+				5F0E79024B1B152EBBD80D88 /* LiveKit in Frameworks */,
+				CE50886875324458689A2D08 /* LiveKitWebRTC in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -91,6 +106,7 @@
 			isa = PBXGroup;
 			children = (
 				583CD7AF0A74916366CBF8AF /* Likeminded.app */,
+				12C36748D06319EACF593DE7 /* LikemindedMac.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -101,6 +117,7 @@
 				CDF2490A9727FEEB417EED9F /* AuthSessionStore.swift */,
 				43D8F9C153E1CAAA2E1D4B53 /* DeviceIdentity.swift */,
 				63DCB9E92C74E864B793C207 /* LikemindedAPIClient.swift */,
+				A931FF701084ED1753234F3A /* LiveKitTokenProvider.swift */,
 				C615B2CB5D4009DE9EDF7F48 /* PrototypeAppState.swift */,
 				C716780C8187703C6E293080 /* PrototypeData.swift */,
 				70685EA3FAE20FBC4827812B /* RealtimeVoiceClient.swift */,
@@ -116,6 +133,18 @@
 			path = Shared;
 			sourceTree = "<group>";
 		};
+		6E51BDA68770073E19BBE3B1 /* LikemindedMac */ = {
+			isa = PBXGroup;
+			children = (
+				7700EF7A1FAAF31D9ACEF8F4 /* LikemindedMacApp.swift */,
+				E35A6097677BF379E314306E /* MacDesignSystem.swift */,
+				181BFC9B2D93330133F5C993 /* MacPrototypeData.swift */,
+				40664BF795D4C75998E0D941 /* MacRootView.swift */,
+				F693CC73A97F4BA64FD34B2D /* MacScreens.swift */,
+			);
+			path = LikemindedMac;
+			sourceTree = "<group>";
+		};
 		8627695CDDC29EEF1FF08223 = {
 			isa = PBXGroup;
 			children = (
@@ -128,6 +157,7 @@
 			isa = PBXGroup;
 			children = (
 				2AF6FB985DD25FA903FB6549 /* LikemindedApp */,
+				6E51BDA68770073E19BBE3B1 /* LikemindedMac */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -139,7 +169,7 @@
 				4895BAF5408C8A7CEDEB5EC3 /* CircleCard.swift */,
 				CF864D6E37CD7289F92855DF /* CommunitiesPrototypeView.swift */,
 				D45755761E85787C57C41A25 /* ConnectionsPrototypeView.swift */,
-				E57431BFD89413C682AE75BF /* MeetPrototypeView.swift */,
+				9D7107FDFB96FB4B6E50291C /* MeetView.swift */,
 				441C7F09BC786ADFBA9B2A36 /* MVPProfileView.swift */,
 				BC3A363F271D17248AADFD13 /* OnboardingView.swift */,
 				75C0F95C041A6C7D0D328202 /* ProfilePrototypeView.swift */,
@@ -155,6 +185,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		243BAC188F1EBCA2009DA9DC /* LikemindedMac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E778813250B5D052589CE8E2 /* Build configuration list for PBXNativeTarget "LikemindedMac" */;
+			buildPhases = (
+				BA3E819F4A8707E46BE66328 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LikemindedMac;
+			packageProductDependencies = (
+			);
+			productName = LikemindedMac;
+			productReference = 12C36748D06319EACF593DE7 /* LikemindedMac.app */;
+			productType = "com.apple.product-type.application";
+		};
 		7EDE60F74566683E3AA458E5 /* Likeminded */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7B9C2F030D068FADE55668D8 /* Build configuration list for PBXNativeTarget "Likeminded" */;
@@ -168,6 +215,7 @@
 			);
 			name = Likeminded;
 			packageProductDependencies = (
+				9109FD768D670024E68556DC /* LiveKit */,
 				02402CF435BA0C350E109525 /* LiveKitWebRTC */,
 			);
 			productName = Likeminded;
@@ -183,6 +231,9 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					243BAC188F1EBCA2009DA9DC = {
+						ProvisioningStyle = Automatic;
+					};
 					7EDE60F74566683E3AA458E5 = {
 						ProvisioningStyle = Automatic;
 					};
@@ -198,6 +249,7 @@
 			mainGroup = 8627695CDDC29EEF1FF08223;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				2DCF0895A65FBBB07C6CACD7 /* XCRemoteSwiftPackageReference "client-sdk-swift" */,
 				6BB75A61C4F513F69EAB14AF /* XCRemoteSwiftPackageReference "webrtc-xcframework" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -206,6 +258,7 @@
 			projectRoot = "";
 			targets = (
 				7EDE60F74566683E3AA458E5 /* Likeminded */,
+				243BAC188F1EBCA2009DA9DC /* LikemindedMac */,
 			);
 		};
 /* End PBXProject section */
@@ -223,8 +276,9 @@
 				1C099E485B7A23A87435717E /* DeviceIdentity.swift in Sources */,
 				9991EE71916006E89457B6E5 /* LikemindedAPIClient.swift in Sources */,
 				638037123B69B011D78BF5A7 /* LikemindedApp.swift in Sources */,
+				0F0F08547C69AA374756B919 /* LiveKitTokenProvider.swift in Sources */,
 				574EC5E783BCAF6EFAA327F5 /* MVPProfileView.swift in Sources */,
-				976CF2F7F5E24211A6B80BBD /* MeetPrototypeView.swift in Sources */,
+				E4C21F153CB397BCA7E4CF65 /* MeetView.swift in Sources */,
 				3C82F0006DF2BAE5048D0B43 /* OnboardingView.swift in Sources */,
 				D0960611CC66E6642F609ACD /* ProfilePrototypeView.swift in Sources */,
 				399834A377ADFBCE54D30DF9 /* PrototypeAppState.swift in Sources */,
@@ -236,6 +290,18 @@
 				BE4F826A0A1C866F945B5AAB /* SettingsPrototypeView.swift in Sources */,
 				F278DF831E8C66D2F941194F /* TodayPrototypeView.swift in Sources */,
 				29D0CE0EDA18A3BB956B5C6E /* VoiceOrbView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BA3E819F4A8707E46BE66328 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				00C5C47C4D3A69486DC493D3 /* LikemindedMacApp.swift in Sources */,
+				9917E4D207930B06A316F53D /* MacDesignSystem.swift in Sources */,
+				31D1987C09EEBD76447D0DF7 /* MacPrototypeData.swift in Sources */,
+				8298F29B28F7DBDF337EDD96 /* MacRootView.swift in Sources */,
+				7CB71404A390802C745BF8F1 /* MacScreens.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -289,14 +355,36 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 0.1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		6CDF0FBB57640250D596D476 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_ASSET_PATHS = "\"\"";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Likeminded;
+				INFOPLIST_KEY_LIKEMINDED_API_BASE_URL = "$(LIKEMINDED_API_BASE_URL)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LIKEMINDED_API_BASE_URL = "";
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.likeminded.mac;
+				PRODUCT_NAME = LikemindedMac;
+				SDKROOT = macosx;
 			};
 			name = Release;
 		};
@@ -313,6 +401,7 @@
 				INFOPLIST_KEY_LIKEMINDED_API_BASE_URL = "$(LIKEMINDED_API_BASE_URL)";
 				INFOPLIST_KEY_LSRequiresIPhoneOS = YES;
 				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsLocalNetworking = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Likeminded uses your camera for scheduled group video meets.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Likeminded uses your voice to build private profile signals and suggest a starter circle.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -327,6 +416,28 @@
 				SDKROOT = iphoneos;
 				SUPPORTS_MACCATALYST = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C5BC40B70FB6ABBFD54E1117 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_ASSET_PATHS = "\"\"";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Likeminded;
+				INFOPLIST_KEY_LIKEMINDED_API_BASE_URL = "$(LIKEMINDED_API_BASE_URL)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LIKEMINDED_API_BASE_URL = "";
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.likeminded.mac;
+				PRODUCT_NAME = LikemindedMac;
+				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
@@ -383,12 +494,12 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 0.1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -408,6 +519,7 @@
 				INFOPLIST_KEY_LIKEMINDED_API_BASE_URL = "$(LIKEMINDED_API_BASE_URL)";
 				INFOPLIST_KEY_LSRequiresIPhoneOS = YES;
 				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsLocalNetworking = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Likeminded uses your camera for scheduled group video meets.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Likeminded uses your voice to build private profile signals and suggest a starter circle.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -446,9 +558,26 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
+		E778813250B5D052589CE8E2 /* Build configuration list for PBXNativeTarget "LikemindedMac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C5BC40B70FB6ABBFD54E1117 /* Debug */,
+				6CDF0FBB57640250D596D476 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		2DCF0895A65FBBB07C6CACD7 /* XCRemoteSwiftPackageReference "client-sdk-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/livekit/client-sdk-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
 		6BB75A61C4F513F69EAB14AF /* XCRemoteSwiftPackageReference "webrtc-xcframework" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/livekit/webrtc-xcframework.git";
@@ -464,6 +593,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 6BB75A61C4F513F69EAB14AF /* XCRemoteSwiftPackageReference "webrtc-xcframework" */;
 			productName = LiveKitWebRTC;
+		};
+		9109FD768D670024E68556DC /* LiveKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2DCF0895A65FBBB07C6CACD7 /* XCRemoteSwiftPackageReference "client-sdk-swift" */;
+			productName = LiveKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

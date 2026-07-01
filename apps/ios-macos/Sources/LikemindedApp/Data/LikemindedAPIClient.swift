@@ -37,6 +37,11 @@ struct CirclesResponse: Decodable {
     let circles: [PlacementCircle]
 }
 
+struct MeetingRSVPRequest: Encodable {
+    let kind: String
+    let available: Bool
+}
+
 struct LikemindedAPIClient {
     var baseURL = LikemindedAPIClient.defaultBaseURL()
     var authToken: String?
@@ -251,6 +256,44 @@ struct LikemindedAPIClient {
 
     func leaveCommunity(id: String) async throws {
         try await updateCommunityMembership(id: id, action: "leave")
+    }
+
+    func updateMeetingRSVP(kind: String, available: Bool) async throws {
+        let url = baseURL.appendingPathComponent("/v1/meetings/rsvp")
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        applyCommonHeaders(&request)
+        request.httpBody = try JSONEncoder().encode(MeetingRSVPRequest(kind: kind, available: available))
+        let (_, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+    }
+
+    func fetchMeetings() async throws -> MeetingsResponse {
+        let url = baseURL.appendingPathComponent("/v1/meetings/upcoming")
+        var request = URLRequest(url: url)
+        applyCommonHeaders(&request, isJSON: false)
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+        return try JSONDecoder().decode(MeetingsResponse.self, from: data)
+    }
+
+    func joinMeeting(id: String) async throws -> LiveKitJoinToken {
+        let url = baseURL
+            .appendingPathComponent("/v1/meetings")
+            .appendingPathComponent(id)
+            .appendingPathComponent("join")
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        applyCommonHeaders(&request)
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+        return try JSONDecoder().decode(LiveKitJoinToken.self, from: data)
     }
 
     private func updateCommunityMembership(id: String, action: String) async throws {

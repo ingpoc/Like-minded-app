@@ -38,7 +38,7 @@ struct RootView: View {
     private func tabContent(for tab: AppTab) -> some View {
         switch tab {
         case .meet:
-            MeetPrototypeView()
+            MeetView()
         case .circles:
             CirclesPrototypeView()
         case .communities:

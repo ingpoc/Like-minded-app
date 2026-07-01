@@ -2,7 +2,7 @@
   "schema_version": 1,
   "status": "completed",
   "purpose": "Per-session execution goal. Copy this file to goal.json at session start, set the current goal, and keep graders/validation/agent routing current when files or commands change.",
-  "goal": "Implement Phase 4 circles and communities: expose user circle detail and concern routes, seed the community catalog, persist community membership, and wire the Circles and Communities Swift UI to the backend.",
+  "goal": "Implement Phase 5 Meet + LiveKit Video: RSVP, deterministic weekend scheduling, meeting join token, Swift Meet UI, LiveKit join surface, release checks, and smoke coverage.",
   "ultimate_goal_source": "GOAL.md",
   "progress_source": "PROGRESS.md",
   "workflow_refs": [
@@ -14,7 +14,7 @@
       "script": "script/verify_simulator_local.sh",
       "command": "npm run verify:simulator-local",
       "workflow_ref": "docs/workflows/validation.md",
-      "purpose": "Build, install, and launch the simulator app; prove fresh auth gate and DEBUG signed-in Talk/Circles/Communities/Profile path.",
+      "purpose": "Build, install, and launch the simulator app; prove fresh auth gate and DEBUG signed-in Meet/Circles/Communities/Profile path.",
       "reuse_when": [
         "Native app changes.",
         "Auth or session flow changes.",
@@ -27,7 +27,7 @@
       "script": "script/verify_external_preflight.js",
       "command": "npm run verify:external-preflight",
       "workflow_ref": "docs/workflows/validation.md",
-      "purpose": "Verify real Render, Neon, Apple, TestFlight, and manual proof recorded in release/testflight-evidence.json.",
+      "purpose": "Verify real Render, Neon, Apple, LiveKit, TestFlight, and manual proof recorded in release/testflight-evidence.json.",
       "template": "release/testflight-evidence.template.json",
       "evidence_file": "release/testflight-evidence.json"
     }
@@ -39,17 +39,15 @@
       "command": "npm run verify:simulator-local",
       "artifacts": [
         "output/validation/fresh-auth-gate.png",
-        "output/validation/local-dev-auth-tabs.png",
-        "output/validation/local-auth-api.log"
+        "output/validation/local-dev-auth-tabs.png"
       ],
       "proves": [
         "Fresh simulator launch shows the Sign in with Apple gate.",
-        "DEBUG local auth reaches the signed-in app after Phase 3 Profile/onboarding changes.",
-        "Deterministic dev voice placement still seeds local persisted placement evidence."
+        "DEBUG local auth reaches the signed-in Meet/Circles/Communities/Profile path after Phase 5 LiveKit project changes."
       ],
       "does_not_prove": [
         "Real Apple sign-in.",
-        "Real spoken audio creating persisted profile and placement.",
+        "Real LiveKit Cloud room connectivity.",
         "Signed TestFlight build behavior."
       ],
       "do_not_repeat_unless_inventory_inputs_changed": true
@@ -58,7 +56,7 @@
       "status": "waiting_for_user_external_setup",
       "command": "npm run verify:external-preflight",
       "missing_evidence_file": "release/testflight-evidence.json",
-      "next_agent_action": "Treat as a later release gate after repo-owned hardening is complete; ask the user to fill release/testflight-evidence.json only when external setup and device proof are actually ready."
+      "next_agent_action": "Treat as a later release gate after repo-owned hardening is complete; ask the user to fill release/testflight-evidence.json only when external setup and device proof are ready."
     }
   },
   "release_gate": {
@@ -82,13 +80,13 @@
       "name": "mvp_backend_contract",
       "command": "npm run smoke:mvp",
       "cost": "zero_token",
-      "proves": "Auth-gated discovery, persisted profile/placement, placement action, feedback, and cross-user isolation work locally."
+      "proves": "Auth-gated discovery, persisted profile/placement, placement action, feedback, meetings RSVP/scheduling, LiveKit token generation, and cross-user isolation work locally."
     },
     {
       "name": "release_static_config",
       "command": "npm run verify:release-config",
       "cost": "zero_token",
-      "proves": "TestFlight-critical bundle id, entitlements, API base URL, Render env, and privacy-policy files are configured."
+      "proves": "TestFlight-critical bundle id, entitlements, API base URL, LiveKit env vars, Render env, and privacy-policy files are configured."
     },
     {
       "name": "goal_contract",
@@ -106,7 +104,7 @@
       "name": "local_simulator_validation",
       "command": "npm run verify:simulator-local",
       "cost": "zero_token",
-      "proves": "XcodeGen project builds, installs, launches fresh auth gate, then enters the DEBUG signed-in Talk/Circles/Communities/Profile app through backend dev auth."
+      "proves": "XcodeGen project builds, installs, launches fresh auth gate, then enters the DEBUG signed-in Meet/Circles/Communities/Profile app through backend dev auth."
     }
   ],
   "simulator_validation": {
@@ -119,9 +117,9 @@
     },
     "checks": [
       "Fresh install shows Sign in with Apple gate, not old prototype tabs.",
-      "After sign-in, tabs are Talk, Circles, Communities, Profile.",
-      "Talk can start Realtime voice through the authenticated backend path.",
-      "Stopping voice creates placement UI without mock fallback.",
+      "After sign-in, tabs are Meet, Circles, Communities, Profile.",
+      "Meet can load RSVP state and scheduled meetup cards through the authenticated backend path.",
+      "LiveKit join path requests a participant token only for scheduled meeting participants.",
       "Circles accept/swap/defer visibly round-trips through backend state.",
       "Profile edit and feedback paths are visible and retryable."
     ]
@@ -178,7 +176,7 @@
   "rubric": {
     "criteria": [
       {
-        "name": "mvp_loop_correctness",
+        "name": "meet_flow_correctness",
         "weight": 0.4,
         "min_score": 0.8
       },
@@ -207,16 +205,62 @@
       "goal.json",
       "all implementation, validation, doc, and stale-cleanup files changed for the session"
     ],
-    "commit_message_template": "Validate <short session goal>"
+    "commit_message_template": "Validate Phase 5 Meet and LiveKit"
   },
   "done_criteria": [
-    "Circle backend endpoints return user circle summaries, circle detail with fit breakdown, and concern registration.",
-    "Community backend endpoints return the seeded catalog, community detail, authenticated join/leave, and authenticated joined-community lists.",
-    "PROGRESS.md marks completed Phase 4 backend and Swift UI items, with the scoped phase preflight reporting no unchecked items.",
-    "Deterministic checks pass, including npm run check and npm run verify:goal.",
-    "Local simulator validation is rerun if native UI or project inputs changed.",
+    "Meet backend endpoints persist RSVP state, list upcoming/past meetings, run deterministic weekend scheduling, and return LiveKit join tokens only for participants.",
+    "Swift Meet UI shows RSVP toggles, pre-meet teasers, upcoming meets, past meets, and a LiveKit-backed group call entry path.",
+    "Release config checks include LiveKit env vars and camera/microphone usage strings.",
+    "PROGRESS.md marks completed Phase 5 items, with scoped phase preflight reporting no unchecked items.",
+    "Deterministic checks pass, including npm run check, npm run verify:goal, npm run smoke:mvp, and npm run verify:release-config.",
+    "Local simulator validation is rerun because native UI and project inputs changed.",
     "Validated session changes are committed with the completed goal.json before the goal is marked completed."
   ],
   "max_iterations": 10,
-  "completed_at": "2026-07-01"
+  "delegation": {
+    "default_agent": "validation-release",
+    "model": "gpt-5.4-mini",
+    "effort": "medium",
+    "allowed_agents": [
+      {
+        "name": "validation-release",
+        "model": "gpt-5.4-mini",
+        "effort": "medium",
+        "can_do": [
+          "bounded deterministic validation and release config checks"
+        ],
+        "cannot_do": [
+          "touch secrets or external accounts",
+          "change API/auth/persistence/deployment strategy",
+          "edit files unless the main thread assigns a bounded patch"
+        ]
+      },
+      {
+        "name": "native-app",
+        "model": "gpt-5.5",
+        "effort": "medium",
+        "can_do": [
+          "bounded SwiftUI/native project fixes after deterministic failure evidence"
+        ],
+        "cannot_do": [
+          "change backend contracts",
+          "change TestFlight criteria",
+          "replace the native project strategy without approval"
+        ]
+      },
+      {
+        "name": "backend-authority",
+        "model": "gpt-5.5",
+        "effort": "high",
+        "can_do": [
+          "bounded backend auth, persistence, or API contract fixes after deterministic failure evidence"
+        ],
+        "cannot_do": [
+          "change iOS UI",
+          "change external deployment provider",
+          "loosen privacy or auth boundaries"
+        ]
+      }
+    ]
+  }
 }

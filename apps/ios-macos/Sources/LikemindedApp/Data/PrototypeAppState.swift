@@ -32,6 +32,11 @@ final class PrototypeAppState: ObservableObject {
     @Published var joinedCircles: [PlacementCircle] = []
     @Published var isLoadingCircles = false
     @Published var circleError: String?
+    @Published var meetingRsvps = MeetingRsvps(circle: false, community: false)
+    @Published var upcomingMeetings: [Meeting] = []
+    @Published var pastMeetings: [Meeting] = []
+    @Published var isLoadingMeetings = false
+    @Published var meetingError: String?
 
     private let voiceClient = RealtimeVoiceClient()
 
@@ -440,6 +445,39 @@ final class PrototypeAppState: ObservableObject {
         } catch {
             communityError = "Community could not be left."
         }
+    }
+
+    func fetchMeetings() async {
+        guard isSignedIn else { return }
+        isLoadingMeetings = true
+        defer { isLoadingMeetings = false }
+        do {
+            let response = try await client.fetchMeetings()
+            meetingRsvps = response.rsvps
+            upcomingMeetings = response.upcoming
+            pastMeetings = response.past
+            meetingError = nil
+        } catch {
+            meetingError = "Meetups could not be loaded."
+        }
+    }
+
+    func updateMeetingRSVP(kind: String, available: Bool) async {
+        do {
+            try await client.updateMeetingRSVP(kind: kind, available: available)
+            if kind == "circle" {
+                meetingRsvps = MeetingRsvps(circle: available, community: meetingRsvps.community)
+            } else {
+                meetingRsvps = MeetingRsvps(circle: meetingRsvps.circle, community: available)
+            }
+            meetingError = nil
+        } catch {
+            meetingError = "RSVP could not be saved."
+        }
+    }
+
+    func joinMeeting(id: String) async throws -> LiveKitJoinToken {
+        try await LiveKitTokenProvider(client: client).token(for: id)
     }
 
     private var placementConcernContext: String {

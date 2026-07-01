@@ -29,9 +29,17 @@ const {
   joinCommunity,
   leaveCommunity,
   getJoinedCommunities,
+  saveMeetingRsvp,
+  getMeetingRsvps,
+  getUserMeetingRsvps,
+  saveMeeting,
+  listMeetingsForUser,
+  getMeetingById,
   saveFeedback,
   LOCAL_PATH: MVP_STORE_PATH
 } = require("./lib/mvp-store");
+const { generateParticipantToken } = require("./lib/livekit");
+const { buildMeetings, nextWeekendAt } = require("./lib/scheduling");
 const { modelBackedProfilePlacement, profilePlacementFromModelResult } = require("./lib/model-placement");
 
 function loadLocalEnv() {
@@ -143,6 +151,68 @@ function communitySummary(community) {
     meetingFormat: community.meetingFormat,
     membersCount: (community.members || []).length
   };
+}
+
+function meetingSummary(meeting) {
+  return {
+    id: meeting.id,
+    kind: meeting.kind,
+    targetId: meeting.targetId,
+    title: meeting.title,
+    scheduledAt: meeting.scheduledAt,
+    hostUserId: meeting.hostUserId,
+    hostName: meeting.hostName,
+    groupSize: meeting.groupSize,
+    status: meeting.status,
+    compositionSummary: meeting.compositionSummary
+  };
+}
+
+async function participantForUser(userId) {
+  const profile = await getLatestProfile(userId);
+  const placed = await getLatestPlacement(userId);
+  if (!profile || !placed) return null;
+  return { userId, profile, placement: placed.placement };
+}
+
+async function runWeekendScheduling() {
+  const created = [];
+  const rsvps = (await getMeetingRsvps()).filter((row) => row.available);
+  const participants = [];
+  for (const rsvp of rsvps) {
+    const participant = await participantForUser(rsvp.user_id);
+    if (participant) participants.push({ ...participant, kind: rsvp.kind });
+  }
+
+  const circleGroups = new Map();
+  for (const participant of participants.filter((item) => item.kind === "circle")) {
+    const circle = participant.placement.primaryCircle;
+    if (!circleGroups.has(circle.id)) circleGroups.set(circle.id, { target: circle, participants: [] });
+    circleGroups.get(circle.id).participants.push(participant);
+  }
+  for (const { target, participants: group } of circleGroups.values()) {
+    if (group.length < 6) continue;
+    for (const meeting of buildMeetings({ kind: "circle", targetId: target.id, targetName: target.name, participants: group, scheduledAt: nextWeekendAt(0) })) {
+      created.push(await saveMeeting(meeting));
+    }
+  }
+
+  const communityGroups = new Map();
+  for (const participant of participants.filter((item) => item.kind === "community")) {
+    for (const communityId of await getJoinedCommunities(participant.userId)) {
+      const community = communities.get(communityId);
+      if (!community) continue;
+      if (!communityGroups.has(communityId)) communityGroups.set(communityId, { target: community, participants: [] });
+      communityGroups.get(communityId).participants.push(participant);
+    }
+  }
+  for (const { target, participants: group } of communityGroups.values()) {
+    if (group.length < 6) continue;
+    for (const meeting of buildMeetings({ kind: "community", targetId: target.id, targetName: target.name, participants: group, scheduledAt: nextWeekendAt(6) })) {
+      created.push(await saveMeeting(meeting));
+    }
+  }
+  return created;
 }
 
 async function createRealtimeClientSecret(input = {}) {
@@ -573,6 +643,77 @@ async function handleRequest(req, res) {
     community.members = (community.members || []).filter((memberId) => memberId !== user.id);
     communities.set(communityId, community);
     json(res, 200, { status: "left" });
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname === "/v1/meetings/rsvp") {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    try {
+      const body = await readJsonBody(req);
+      const kind = String(body.kind || "");
+      if (!["circle", "community"].includes(kind)) {
+        json(res, 400, { error: "invalid_meeting_kind", message: "kind must be circle or community." });
+        return;
+      }
+      await saveMeetingRsvp(user.id, kind, Boolean(body.available));
+      json(res, 200, { status: "updated", kind, available: Boolean(body.available) });
+    } catch (error) {
+      json(res, 400, { error: "invalid_rsvp", message: error.message });
+    }
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/v1/meetings/upcoming") {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    const now = Date.now();
+    const rsvps = await getUserMeetingRsvps(user.id);
+    const meetings = (await listMeetingsForUser(user.id)).map(meetingSummary);
+    json(res, 200, {
+      rsvps: {
+        circle: rsvps.find((row) => row.kind === "circle")?.available || false,
+        community: rsvps.find((row) => row.kind === "community")?.available || false
+      },
+      upcoming: meetings.filter((meeting) => Date.parse(meeting.scheduledAt) >= now),
+      past: meetings.filter((meeting) => Date.parse(meeting.scheduledAt) < now)
+    });
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname.match(/^\/v1\/meetings\/[^/]+\/join$/)) {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    const meetingId = decodeURIComponent(url.pathname.split("/")[3]);
+    const meeting = await getMeetingById(meetingId);
+    if (!meeting) {
+      json(res, 404, { error: "meeting_not_found", message: `No meeting found for id: ${meetingId}` });
+      return;
+    }
+    if (!(meeting.participantIds || []).includes(user.id)) {
+      json(res, 403, { error: "meeting_forbidden", message: "Only meeting participants can join this room." });
+      return;
+    }
+    try {
+      json(res, 200, await generateParticipantToken(user.id, meetingId));
+    } catch (error) {
+      json(res, 503, { error: error.code || "livekit_token_failed", message: error.message });
+    }
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname === "/v1/admin/run-scheduling") {
+    const configuredSecret = process.env.SCHEDULING_ADMIN_SECRET;
+    if (configuredSecret && req.headers["x-scheduling-secret"] !== configuredSecret) {
+      json(res, 403, { error: "forbidden", message: "Invalid scheduling secret." });
+      return;
+    }
+    try {
+      const meetings = await runWeekendScheduling();
+      json(res, 200, { status: "scheduled", meetings: meetings.map(meetingSummary) });
+    } catch (error) {
+      json(res, 500, { error: "scheduling_failed", message: error.message });
+    }
     return;
   }
 

@@ -12,7 +12,7 @@ enum AppTab: String, CaseIterable, Identifiable {
     var systemImage: String {
         switch self {
         case .meet:
-            return "house.fill"
+            return "person.2.video"
         case .circles:
             return "door.left.hand.open"
         case .communities:
@@ -20,7 +20,7 @@ enum AppTab: String, CaseIterable, Identifiable {
         case .profile:
             return "person.crop.circle"
         case .soulmate:
-            return "heart"
+            return "heart.circle"
         }
     }
 }
@@ -38,6 +38,35 @@ struct Community: Codable, Identifiable, Equatable {
     let themes: [String]
     let meetingFormat: String
     let membersCount: Int
+}
+
+struct Meeting: Codable, Identifiable, Equatable {
+    let id: String
+    let kind: String
+    let targetId: String
+    let title: String
+    let scheduledAt: String
+    let hostUserId: String
+    let hostName: String
+    let groupSize: Int
+    let status: String
+    let compositionSummary: String
+}
+
+struct MeetingRsvps: Codable, Equatable {
+    let circle: Bool
+    let community: Bool
+}
+
+struct MeetingsResponse: Decodable {
+    let rsvps: MeetingRsvps
+    let upcoming: [Meeting]
+    let past: [Meeting]
+}
+
+struct LiveKitJoinToken: Decodable {
+    let token: String
+    let url: String
 }
 
 struct MatchRecommendation: Identifiable {

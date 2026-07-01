@@ -29,7 +29,9 @@ function emptyLocalStore() {
     placements: [],
     transcripts: [],
     feedback: [],
-    communityMemberships: []
+    communityMemberships: [],
+    meetingRsvps: [],
+    meetings: []
   };
 }
 
@@ -110,6 +112,21 @@ async function migrateMvpStore() {
       community_id TEXT NOT NULL,
       created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
       PRIMARY KEY (user_id, community_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS meeting_rsvps (
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      kind TEXT NOT NULL,
+      available BOOLEAN NOT NULL,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      PRIMARY KEY (user_id, kind)
+    );
+
+    CREATE TABLE IF NOT EXISTS meetings (
+      id TEXT PRIMARY KEY,
+      data JSONB NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
     );
   `);
 }
@@ -320,6 +337,75 @@ async function getJoinedCommunities(userId) {
     .map((row) => row.community_id);
 }
 
+async function saveMeetingRsvp(userId, kind, available) {
+  if (isPostgres) {
+    await getPool().query(
+      `INSERT INTO meeting_rsvps (user_id, kind, available, updated_at)
+       VALUES ($1, $2, $3, now())
+       ON CONFLICT (user_id, kind) DO UPDATE
+       SET available = EXCLUDED.available, updated_at = now()`,
+      [userId, kind, available]
+    );
+    return;
+  }
+  const store = readLocalStore();
+  const existing = store.meetingRsvps.find((row) => row.user_id === userId && row.kind === kind);
+  if (existing) {
+    existing.available = available;
+    existing.updated_at = new Date().toISOString();
+  } else {
+    store.meetingRsvps.push({ user_id: userId, kind, available, updated_at: new Date().toISOString() });
+  }
+  writeLocalStore(store);
+}
+
+async function getMeetingRsvps(kind = null) {
+  if (isPostgres) {
+    const result = kind
+      ? await getPool().query("SELECT user_id, kind, available, updated_at FROM meeting_rsvps WHERE kind = $1", [kind])
+      : await getPool().query("SELECT user_id, kind, available, updated_at FROM meeting_rsvps");
+    return result.rows;
+  }
+  return readLocalStore().meetingRsvps.filter((row) => !kind || row.kind === kind);
+}
+
+async function getUserMeetingRsvps(userId) {
+  return (await getMeetingRsvps()).filter((row) => row.user_id === userId);
+}
+
+async function saveMeeting(meeting) {
+  if (isPostgres) {
+    await getPool().query(
+      `INSERT INTO meetings (id, data, created_at, updated_at)
+       VALUES ($1, $2::jsonb, now(), now())
+       ON CONFLICT (id) DO UPDATE SET data = EXCLUDED.data, updated_at = now()`,
+      [meeting.id, JSON.stringify(meeting)]
+    );
+    return meeting;
+  }
+  const store = readLocalStore();
+  const existing = store.meetings.findIndex((row) => row.id === meeting.id);
+  if (existing >= 0) store.meetings[existing] = meeting;
+  else store.meetings.push(meeting);
+  writeLocalStore(store);
+  return meeting;
+}
+
+async function listMeetingsForUser(userId) {
+  const meetings = isPostgres
+    ? (await getPool().query("SELECT data FROM meetings ORDER BY created_at")).rows.map((row) => row.data)
+    : readLocalStore().meetings;
+  return meetings.filter((meeting) => (meeting.participantIds || []).includes(userId));
+}
+
+async function getMeetingById(id) {
+  if (isPostgres) {
+    const result = await getPool().query("SELECT data FROM meetings WHERE id = $1", [id]);
+    return result.rows[0]?.data || null;
+  }
+  return readLocalStore().meetings.find((meeting) => meeting.id === id) || null;
+}
+
 async function saveFeedback({ userId, profileId, placementId, rating, message, appVersion }) {
   if (isPostgres) {
     await getPool().query(
@@ -372,6 +458,12 @@ module.exports = {
   joinCommunity,
   leaveCommunity,
   getJoinedCommunities,
+  saveMeetingRsvp,
+  getMeetingRsvps,
+  getUserMeetingRsvps,
+  saveMeeting,
+  listMeetingsForUser,
+  getMeetingById,
   saveFeedback
 };
 module.exports.LOCAL_PATH = LOCAL_PATH;

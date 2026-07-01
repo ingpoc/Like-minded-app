@@ -21,7 +21,10 @@ const child = spawn(process.execPath, ["services/api/src/server.js"], {
     APPLE_AUTH_BYPASS: "1",
     OPENAI_API_KEY: "",
     OPENAI_REALTIME_MODEL: "gpt-realtime-1.5",
-    OPENAI_REALTIME_VOICE: "marin"
+    OPENAI_REALTIME_VOICE: "marin",
+    LIVEKIT_API_KEY: "devkey",
+    LIVEKIT_API_SECRET: "devsecretdevsecretdevsecret",
+    LIVEKIT_URL: "ws://127.0.0.1:7880"
   },
   stdio: ["ignore", "pipe", "pipe"]
 });
@@ -188,9 +191,57 @@ async function expectStatus(status, pathname, options) {
       }
     });
 
+    await expectStatus(200, "/v1/meetings/rsvp", {
+      method: "POST",
+      token: auth.sessionToken,
+      body: { kind: "circle", available: true }
+    });
+    const initialMeetings = await expectStatus(200, "/v1/meetings/upcoming", { method: "GET", token: auth.sessionToken });
+    assert.equal(initialMeetings.rsvps.circle, true);
+
+    let scheduledParticipantToken = null;
+    for (let index = 2; index <= 7; index += 1) {
+      const user = await expectStatus(200, "/v1/auth/apple", {
+        method: "POST",
+        body: { identityToken: `tester-${index}`, fullName: `Tester ${index}` }
+      });
+      scheduledParticipantToken = user.sessionToken;
+      await expectStatus(201, "/v1/realtime/profile-placement", {
+        method: "POST",
+        token: user.sessionToken,
+        body: {
+          signals: {
+            bigFive: { openness: 0.8, conscientiousness: 0.7, extraversion: 0.55, agreeableness: 0.8, neuroticism: 0.3 },
+            socialEnergy: index % 2 === 0 ? "medium" : "high",
+            communicationStyle: { primary: "warm", pace: 0.5 },
+            trustPattern: "fastTrust",
+            conflictStyle: "accommodating"
+          },
+          basicInfo: { name: `Tester ${index}`, gender: index % 2 === 0 ? "male" : "female", dateOfBirth: "1990-01-01", city: "Pune", pincode: "411001" },
+          primaryCircleId: "reflective-builders",
+          fitReasons: ["Warm group fit"],
+          sourceReflectionSignals: ["Small thoughtful circles"],
+          profileSummary: "Warm, thoughtful meetup participant."
+        }
+      });
+      await expectStatus(200, "/v1/meetings/rsvp", {
+        method: "POST",
+        token: user.sessionToken,
+        body: { kind: "circle", available: true }
+      });
+    }
+
+    const scheduled = await expectStatus(200, "/v1/admin/run-scheduling", { method: "POST" });
+    assert.ok(scheduled.meetings.length >= 1, "scheduling must create at least one meeting");
+    const upcoming = await expectStatus(200, "/v1/meetings/upcoming", { method: "GET", token: scheduledParticipantToken });
+    assert.ok(upcoming.upcoming.length >= 1, "user must see scheduled meeting");
+    const join = await expectStatus(200, `/v1/meetings/${upcoming.upcoming[0].id}/join`, { method: "POST", token: scheduledParticipantToken });
+    assert.ok(join.token, "LiveKit join must return a token");
+    assert.equal(join.url, "ws://127.0.0.1:7880");
+
     const secondAuth = await expectStatus(200, "/v1/auth/apple", {
       method: "POST",
-      body: { identityToken: "tester-two", fullName: "Tester Two" }
+      body: { identityToken: "tester-no-placement", fullName: "Tester No Placement" }
     });
     await expectStatus(404, "/v1/me/placement", { method: "GET", token: secondAuth.sessionToken });
 

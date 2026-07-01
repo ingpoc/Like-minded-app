@@ -1,5 +1,21 @@
 import SwiftUI
 
+struct WaveLines: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let mid = rect.midY
+        for offset in stride(from: -80.0, through: 80.0, by: 10.0) {
+            path.move(to: CGPoint(x: rect.maxX * 0.58, y: mid + offset))
+            path.addCurve(
+                to: CGPoint(x: rect.maxX + 30, y: mid + offset * 0.55),
+                control1: CGPoint(x: rect.maxX * 0.72, y: mid + offset - 34),
+                control2: CGPoint(x: rect.maxX * 0.88, y: mid + offset + 34)
+            )
+        }
+        return path
+    }
+}
+
 struct ScreenContainer<Content: View>: View {
     let title: String
     let subtitle: String

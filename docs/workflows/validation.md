@@ -23,6 +23,7 @@ npm run verify:simulator-local
 - unauthenticated MVP write/read routes return `401`,
 - dev Apple auth returns a session token,
 - authenticated Realtime SDP reaches the backend and reports `openai_api_key_missing` when no local OpenAI key is configured,
+- macOS prototype screens build through the `LikemindedMac` scheme when `apps/ios-macos/project.yml` or `Sources/LikemindedMac` changes,
 - authenticated discovery creates a profile and placement,
 - authenticated Realtime `submit_profile_placement` payloads create and resume a persisted profile and placement,
 - resume endpoints return the signed-in user's data,
@@ -92,19 +93,20 @@ Simulator validation proves the app shell, entitlement, launch, and UI state pat
 3. For phase-scoped work, run `npm run phase:preflight -- <phase-number>` before edits and use its unchecked items as the acceptance checklist.
 4. Run the stale-name gate from preflight before final validation.
 5. Regenerate the Xcode project only with `(cd apps/ios-macos && xcodegen generate)`.
-6. If a manifest exists, use the package manager or toolchain declared by the repo.
-7. If tests, lint, typecheck, or build scripts exist, run the narrowest command that proves the change.
-8. Run `npm run check` for JavaScript syntax validation.
-9. Run `npm run smoke:mvp` for the zero-token backend MVP contract.
-10. Run `npm run verify:release-config` for static TestFlight config invariants.
-11. Run `npm run verify:goal` after changing goal, progress, validation, grader, or agent-routing files.
-12. Run `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs lint` after docs or workflow changes.
-13. If native SwiftUI files, project spec, entitlements, or simulator script changed, run `npm run verify:simulator-local` last.
-14. Capture or inspect a simulator screenshot when UI gating/navigation changed.
-15. For local signed-in simulator navigation without Apple account UI, run `npm run verify:simulator-local`; this proves local app/auth routing and deterministic transcript-to-placement persistence, not real Apple sign-in or spoken audio quality.
-16. After validation passes, set `goal.json.status` to `completed`, record the completion commit evidence, and commit the validated session changes including that session's `goal.json`.
-17. Before marking the full TestFlight goal complete, run `npm run verify:external-preflight`.
-18. If no deeper validation command exists for a touched surface, report that clearly and provide deterministic evidence such as file inventory, syntax checks, or generated artifact inspection.
+6. For macOS target or prototype-screen changes, run `xcodebuild -project apps/ios-macos/Likeminded.xcodeproj -scheme LikemindedMac -destination 'platform=macOS' build`.
+7. If a manifest exists, use the package manager or toolchain declared by the repo.
+8. If tests, lint, typecheck, or build scripts exist, run the narrowest command that proves the change.
+9. Run `npm run check` for JavaScript syntax validation.
+10. Run `npm run smoke:mvp` for the zero-token backend MVP contract.
+11. Run `npm run verify:release-config` for static TestFlight config invariants.
+12. Run `npm run verify:goal` after changing goal, progress, validation, grader, or agent-routing files.
+13. Run `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs lint` after docs or workflow changes.
+14. If native SwiftUI files, project spec, entitlements, or simulator script changed, run `npm run verify:simulator-local` last.
+15. Capture or inspect a simulator screenshot when UI gating/navigation changed.
+16. For local signed-in simulator navigation without Apple account UI, run `npm run verify:simulator-local`; this proves local app/auth routing and deterministic transcript-to-placement persistence, not real Apple sign-in or spoken audio quality.
+17. After validation passes, set `goal.json.status` to `completed`, record the completion commit evidence, and commit the validated session changes including that session's `goal.json`.
+18. Before marking the full TestFlight goal complete, run `npm run verify:external-preflight`.
+19. If no deeper validation command exists for a touched surface, report that clearly and provide deterministic evidence such as file inventory, syntax checks, or generated artifact inspection.
 
 ## Delegated Verification
 

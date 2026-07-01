@@ -21,6 +21,7 @@ const project = read("apps/ios-macos/project.yml");
 assertIncludes("apps/ios-macos/project.yml", project, "PRODUCT_BUNDLE_IDENTIFIER: com.likeminded.app");
 assertIncludes("apps/ios-macos/project.yml", project, "CODE_SIGN_ENTITLEMENTS: Entitlements/Likeminded.entitlements");
 assertIncludes("apps/ios-macos/project.yml", project, "INFOPLIST_KEY_NSMicrophoneUsageDescription");
+assertIncludes("apps/ios-macos/project.yml", project, "INFOPLIST_KEY_NSCameraUsageDescription");
 assertIncludes("apps/ios-macos/project.yml", project, "INFOPLIST_KEY_LIKEMINDED_API_BASE_URL");
 assertNotIncludes("apps/ios-macos/project.yml", project, "com.likeminded.prototype");
 
@@ -43,6 +44,9 @@ for (const key of [
   "DATABASE_URL",
   "SESSION_SECRET",
   "OPENAI_API_KEY",
+  "LIVEKIT_API_KEY",
+  "LIVEKIT_API_SECRET",
+  "LIVEKIT_URL",
   "APPLE_BUNDLE_ID",
   "APPLE_CLIENT_ID",
   "APPLE_AUTH_BYPASS"
@@ -56,6 +60,9 @@ const envExample = read(".env.example");
 for (const key of [
   "DATABASE_URL=",
   "SESSION_SECRET=",
+  "LIVEKIT_API_KEY=",
+  "LIVEKIT_API_SECRET=",
+  "LIVEKIT_URL=",
   "APPLE_BUNDLE_ID=com.likeminded.app",
   "APPLE_CLIENT_ID=com.likeminded.app",
   "APPLE_AUTH_BYPASS=0"

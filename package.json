@@ -17,12 +17,13 @@
     "phase:preflight": "node script/phase_preflight.js",
     "verify:simulator-local": "./script/verify_simulator_local.sh",
     "verify:external-preflight": "node script/verify_external_preflight.js",
-    "check": "node --check services/api/src/server.js && node --check services/api/src/migrate.js && node --check services/api/src/lib/model-placement.js && node --check services/ai-orchestrator/src/index.js && node --check script/smoke_mvp.js && node --check script/replay_latest_profile.js && node --check script/seed_test_profiles.js && node --check script/verify_release_config.js && node --check script/verify_goal_contract.js && node --check script/phase_preflight.js"
+    "check": "node --check services/api/src/server.js && node --check services/api/src/migrate.js && node --check services/api/src/lib/model-placement.js && node --check services/api/src/lib/scheduling.js && node --check services/api/src/lib/livekit.js && node --check services/ai-orchestrator/src/index.js && node --check script/smoke_mvp.js && node --check script/replay_latest_profile.js && node --check script/seed_test_profiles.js && node --check script/verify_release_config.js && node --check script/verify_goal_contract.js && node --check script/phase_preflight.js"
   },
   "engines": {
     "node": ">=20"
   },
   "dependencies": {
+    "livekit-server-sdk": "^2.16.0",
     "pg": "^8.22.0"
   }
 }

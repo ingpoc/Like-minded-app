@@ -9,7 +9,7 @@
 ## Scope
 
 - Like-minded-app workspace.
-- Current checkout evidence is a TestFlight MVP placement-loop workspace: SwiftUI auth-gated app, Node HTTP API, OpenAI Realtime backend broker, local JSON development store, Render/Neon deployment config, shared schemas, infra notes, and docs.
+- Current checkout evidence is a TestFlight MVP placement-loop workspace plus a macOS prototype target: SwiftUI auth-gated iOS app, SwiftUI macOS app, Node HTTP API, OpenAI Realtime backend broker, local JSON development store, Render/Neon deployment config, shared schemas, infra notes, and docs.
 - `GOAL.md` owns the ultimate product goal; `PROGRESS.md` owns roadmap state; `goal.json` owns the current per-session goal, graders, rubric, and project-agent model/effort routing.
 - Guidance lives under `docs/` and should load through `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs summary <doc>`.
 
@@ -34,6 +34,9 @@ Next-goal selection: choose the smallest surface that can use a full session: on
 - BEFORE build/run/test: verify API server is running (`curl -s http://127.0.0.1:8787/health`) and check env is loaded.
 - BEFORE adding app structure, dependencies, or framework assumptions: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs summary bootstrap-and-discovery`
 - BEFORE changing app/API/AI/schema/infra boundaries: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs summary project-spine`
+- BEFORE iOS native UI work: treat `apps/ios-macos/Sources/LikemindedApp` as the iOS SwiftUI surface and keep `apps/ios-macos/project.yml` as the Xcode project owner.
+- BEFORE macOS native UI work: treat `apps/ios-macos/Sources/LikemindedMac` as the macOS SwiftUI surface, reuse the same backend base-url contract, and keep Mac-only layout/window decisions out of the iOS source tree.
+- BEFORE backend behavior changes for any native surface: update `services/api/src/server.js` or the relevant API service file, then verify both native surfaces still point at the same `LIKEMINDED_API_BASE_URL` contract.
 - BEFORE recording save-time decisions or changing decision-graph behavior: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs summary context-graph`
 - BEFORE relying on durable project decision history or context graph state: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs summary context-graph`
 - BEFORE context-graph trust claims: follow `docs/workflows/context-graph.md`; use the global beta registry only as maturity tracking, not as a local workflow owner.
@@ -57,7 +60,8 @@ Next-goal selection: choose the smallest surface that can use a full session: on
 - Preserve awareness of what is already loaded in context for the current task; do not repeat retrieval or rerun an equivalent task because another surface mentions the same rule.
 - Global beta tracking can audit maturity, but it does not replace the system's own workflow.
 - Treat `services/api/src/server.js` as the current MVP Node HTTP API surface; do not replace the backend framework or deployment target without explicit acceptance.
-- Treat `apps/ios-macos/project.yml` as the current native project source of truth; regenerate the Xcode project through XcodeGen after project spec changes.
+- Treat `apps/ios-macos/project.yml` as the current native project source of truth for iOS and macOS targets; regenerate the Xcode project through XcodeGen after project spec changes.
+- Keep iOS-only SwiftUI in `apps/ios-macos/Sources/LikemindedApp`; keep macOS-only SwiftUI in `apps/ios-macos/Sources/LikemindedMac`; extract shared Swift only when both targets compile it without platform-specific dependencies.
 - Keep `goal.template.json` and `goal.json` current when graders, validation, release files, or project-agent routing change.
 - Add project-specific agents only after user acceptance and repo evidence justify repeated workflows, risk isolation, or cheaper bounded execution.
 - When stack choices, runnable surfaces, or validation commands change, update `docs/references/project-context.md` and `docs/workflows/validation.md` in the same change.
