@@ -23,6 +23,7 @@ npm run verify:simulator-local
 - dev Apple auth returns a session token,
 - authenticated Realtime SDP reaches the backend and reports `openai_api_key_missing` when no local OpenAI key is configured,
 - authenticated discovery creates a profile and placement,
+- authenticated Realtime `submit_profile_placement` payloads create and resume a persisted profile and placement,
 - resume endpoints return the signed-in user's data,
 - placement defer, swap, and accept persist,
 - feedback stores,

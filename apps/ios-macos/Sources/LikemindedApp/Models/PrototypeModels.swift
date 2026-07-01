@@ -3,6 +3,7 @@ import Foundation
 enum AppTab: String, CaseIterable, Identifiable {
     case talk = "Talk"
     case circles = "Circles"
+    case communities = "Communities"
     case profile = "Profile"
 
     var id: String { rawValue }
@@ -13,6 +14,8 @@ enum AppTab: String, CaseIterable, Identifiable {
             return "waveform.circle"
         case .circles:
             return "person.3.fill"
+        case .communities:
+            return "rectangle.3.group"
         case .profile:
             return "person.crop.circle"
         }

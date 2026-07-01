@@ -12,6 +12,11 @@ mkdir -p "$OUT_DIR"
 sleep 4
 xcrun simctl io booted screenshot "$OUT_DIR/fresh-auth-gate.png"
 
+if curl -fsS http://127.0.0.1:8787/health >/dev/null 2>&1; then
+  echo "Port 8787 is already serving /health; stop the existing API before simulator validation." >&2
+  exit 1
+fi
+
 (
   cd "$ROOT_DIR"
   exec npm run dev:api:local-auth
@@ -23,6 +28,10 @@ cleanup() {
 trap cleanup EXIT
 
 for _ in {1..20}; do
+  if ! kill -0 "$api_pid" >/dev/null 2>&1; then
+    echo "Local auth API exited before becoming healthy. See $API_LOG" >&2
+    exit 1
+  fi
   if curl -fsS http://127.0.0.1:8787/health >/dev/null 2>&1; then
     break
   fi

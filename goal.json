@@ -11,7 +11,7 @@
       "script": "script/verify_simulator_local.sh",
       "command": "npm run verify:simulator-local",
       "workflow_ref": "docs/workflows/validation.md",
-      "purpose": "Build, install, and launch the simulator app; prove fresh auth gate and DEBUG signed-in Talk/Circles/Profile path.",
+      "purpose": "Build, install, and launch the simulator app; prove fresh auth gate and DEBUG signed-in Talk/Circles/Communities/Profile path.",
       "reuse_when": [
         "Native app changes.",
         "Auth or session flow changes.",
@@ -32,7 +32,7 @@
   "validation_state": {
     "local_simulator": {
       "status": "passed",
-      "last_verified_at": "2026-06-30",
+      "last_verified_at": "2026-07-01",
       "command": "npm run verify:simulator-local",
       "artifacts": [
         "output/validation/fresh-auth-gate.png",
@@ -41,7 +41,7 @@
       ],
       "proves": [
         "Fresh simulator launch shows the Sign in with Apple gate.",
-        "DEBUG local auth reaches the signed-in Talk/Circles/Profile app.",
+        "DEBUG local auth reaches the signed-in Talk/Circles/Communities/Profile app.",
         "Deterministic dev voice placement can seed local persisted placement evidence."
       ],
       "does_not_prove": [
@@ -77,7 +77,7 @@
       "name": "mvp_backend_contract",
       "command": "npm run smoke:mvp",
       "cost": "zero_token",
-      "proves": "Auth-gated discovery, persisted profile/placement, placement action, feedback, and cross-user isolation work locally."
+      "proves": "Auth-gated discovery, Realtime profile-placement persistence, placement action, feedback, and cross-user isolation work locally."
     },
     {
       "name": "release_static_config",
@@ -101,7 +101,7 @@
       "name": "local_simulator_validation",
       "command": "npm run verify:simulator-local",
       "cost": "zero_token",
-      "proves": "XcodeGen project builds, installs, launches fresh auth gate, then enters the DEBUG signed-in Talk/Circles/Profile app through backend dev auth."
+      "proves": "XcodeGen project builds, installs, launches fresh auth gate, then enters the DEBUG signed-in Talk/Circles/Communities/Profile app through backend dev auth."
     }
   ],
   "simulator_validation": {
@@ -114,7 +114,7 @@
     },
     "checks": [
       "Fresh install shows Sign in with Apple gate, not old prototype tabs.",
-      "After sign-in, tabs are Talk, Circles, Profile.",
+      "After sign-in, tabs are Talk, Circles, Communities, Profile.",
       "Talk can start Realtime voice through the authenticated backend path.",
       "Stopping voice creates placement UI without mock fallback.",
       "Circles accept/swap/defer visibly round-trips through backend state.",

@@ -11,7 +11,8 @@ Reference for stable Like-minded-app repo facts. This doc owns current repo evid
 - Production persistence target is Neon/Postgres through `DATABASE_URL`; local development and smoke grading use JSON files under `data/` or `LIKEMINDED_DB_DIR`.
 - Mock/profile/recommendation routes still exist for development, but TestFlight placement should use the authenticated `/v1/*` MVP path.
 - `POST /v1/realtime/session` and `POST /v1/realtime/calls` require an app session and broker OpenAI Realtime access when `OPENAI_API_KEY` is configured server-side. Production defaults to `gpt-realtime-2`; local testing uses `OPENAI_REALTIME_MODEL=gpt-realtime-1.5`.
-- The SwiftUI app is now auth-gated with Sign in with Apple, has MVP tabs `Talk`, `Circles`, and `Profile`, and uses bundle id `com.likeminded.app`.
+- The SwiftUI app is now auth-gated with Sign in with Apple, has MVP tabs `Talk`, `Circles`, `Communities`, and `Profile`, and uses bundle id `com.likeminded.app`.
+- UI information architecture and copy density are owned by `docs/references/app-design-language.md`.
 - The Talk surface uses `RealtimeVoiceClient` to connect to OpenAI Realtime over WebRTC through the backend, request microphone permission, stream PCM audio chunks, and commit voice input for signal extraction
 - The native run surface is `./script/build_and_run.sh`, which generates the Xcode project, builds the `Likeminded` iOS target, and launches it in the simulator
 - `GOAL.md` owns the ultimate product goal; `goal.json` owns the current per-session goal, deterministic graders, simulator validation, rubric, and subagent model/effort routing.

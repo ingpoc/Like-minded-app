@@ -11,6 +11,7 @@ struct ProfileCircleMatchResult: Decodable {
     let placement: CirclePlacement
     let allCircleFits: [CircleFitScore]?
     let placementId: String?
+    let profileSummary: String?
 }
 
 struct CircleFitScore: Decodable, Identifiable {

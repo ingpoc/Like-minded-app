@@ -39,7 +39,7 @@ Gurusharan is the first operator and tester. The current MVP target is up to 50 
 As of 2026-06-29:
 - Local MVP backend contract passes through `npm run smoke:mvp`
 - Server has authenticated Apple-session MVP routes for discovery, profile resume/update, placement resume/actions, feedback, and Realtime broker calls
-- iOS app is auth-gated and uses MVP tabs: Talk, Circles, Profile
+- iOS app is auth-gated and uses MVP tabs: Talk, Circles, Communities, Profile
 - Local development persistence uses JSON files; production persistence target is Neon/Postgres through `DATABASE_URL`
 - Device UUID remains local continuity metadata; Sign in with Apple is the primary TestFlight identity path
 - No chat, meetings, subscriptions, push notifications, full community engine, or advanced moderation yet

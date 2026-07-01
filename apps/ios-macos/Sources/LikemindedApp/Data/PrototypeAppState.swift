@@ -393,7 +393,9 @@ final class PrototypeAppState: ObservableObject {
             interests: deriveInterests(from: result.signals),
             privacy: ProfilePrivacy(aiReflectionVisibleToUser: true, matchExplanationVisibleToMatches: false),
             reflection: ProfileReflection(
-                summary: "AI extracted your personality from \(estimateWordCount(from: voiceClient.interviewTranscript)) words of voice conversation.",
+                summary: result.profileSummary?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
+                    ? result.profileSummary!
+                    : "AI extracted your personality from \(estimateWordCount(from: voiceClient.interviewTranscript)) words of voice conversation.",
                 strengths: deriveStrengths(from: result.signals),
                 nextQuestion: nextQuestion(from: result.signals)
             )
@@ -472,7 +474,7 @@ final class PrototypeAppState: ObservableObject {
         }
 
         if let transcript = update.transcript, !transcript.isEmpty {
-            realtimeTranscript += transcript
+            realtimeTranscript = transcript
             let signals = Self.signals(from: realtimeTranscript)
             if !signals.isEmpty {
                 capturedVoiceSignals = signals
@@ -480,9 +482,9 @@ final class PrototypeAppState: ObservableObject {
         }
 
         // Auto-submit transcript when voice session ends with content
-        if update.phase == .stopped && !realtimeTranscript.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+        if update.didPersistProfile {
             Task {
-                await createProfileFromInterview(transcript: realtimeTranscript)
+                await loadCurrentPlacement()
             }
         }
     }

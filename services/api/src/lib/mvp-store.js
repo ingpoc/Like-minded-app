@@ -327,3 +327,4 @@ module.exports = {
   updateLatestPlacement,
   saveFeedback
 };
+module.exports.LOCAL_PATH = LOCAL_PATH;

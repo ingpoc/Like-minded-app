@@ -20,6 +20,12 @@ struct RootView: View {
                         }
                         .tag(AppTab.circles)
 
+                    CommunitiesPrototypeView()
+                        .tabItem {
+                            Label(AppTab.communities.rawValue, systemImage: AppTab.communities.systemImage)
+                        }
+                        .tag(AppTab.communities)
+
                     ProfilePrototypeView()
                         .tabItem {
                             Label(AppTab.profile.rawValue, systemImage: AppTab.profile.systemImage)

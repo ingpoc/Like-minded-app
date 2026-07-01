@@ -74,10 +74,11 @@ async function expectStatus(status, pathname, options) {
 (async () => {
   try {
     const health = await waitForHealth();
-    assert.equal(health.db, "sqlite");
+    assert.equal(health.db, "local-json");
 
     await expectStatus(401, "/v1/discover", { method: "POST", body: {} });
     await expectStatus(401, "/v1/realtime/session", { method: "POST", body: {} });
+    await expectStatus(401, "/v1/realtime/profile-placement", { method: "POST", body: {} });
     await expectStatus(401, "/v1/realtime/calls", {
       method: "POST",
       headers: { "content-type": "application/sdp" },
@@ -93,6 +94,20 @@ async function expectStatus(status, pathname, options) {
     });
     assert.ok(auth.sessionToken, "auth must return a session token");
     assert.ok(auth.user.id, "auth must return a user id");
+
+    const coercedPlacement = await expectStatus(201, "/v1/realtime/profile-placement", {
+      method: "POST",
+      token: auth.sessionToken,
+      body: {
+        signals: {},
+        primaryCircleId: "reflective-builders",
+        secondaryCircleIds: "longform-thinkers",
+        fitReasons: "not an array",
+        sourceReflectionSignals: ["kept", 7]
+      }
+    });
+    assert.deepEqual(coercedPlacement.placement.fitReasons, []);
+    assert.deepEqual(coercedPlacement.placement.sourceReflectionSignals, ["kept"]);
 
     const missingRealtimeKey = await expectStatus(503, "/v1/realtime/calls", {
       method: "POST",
@@ -111,8 +126,32 @@ async function expectStatus(status, pathname, options) {
     assert.ok(discovered.profileId, "discover must return profileId");
     assert.ok(discovered.placement?.primaryCircle?.id, "discover must return a primary circle");
 
+    const realtimePlaced = await expectStatus(201, "/v1/realtime/profile-placement", {
+      method: "POST",
+      token: auth.sessionToken,
+      body: {
+        interviewTranscript: "User: I want small, thoughtful circles.\nAI: I will place you with a warm direct group.",
+        signals: {
+          bigFive: { openness: 0.75, conscientiousness: 0.7, extraversion: 0.35, agreeableness: 0.82, neuroticism: 0.32 },
+          attachment: "secure",
+          socialEnergy: "low-to-medium",
+          communicationStyle: { primary: "direct", pace: 0.42 },
+          trustPattern: "slow earned trust",
+          humorStyle: "dry",
+          conflictStyle: "clear and kind"
+        },
+        primaryCircleId: "reflective-builders",
+        secondaryCircleIds: ["longform-thinkers"],
+        fitReasons: ["Prefers small warm rooms.", "Names direct communication and steady trust."],
+        sourceReflectionSignals: ["Small thoughtful circles.", "Warm direct group."],
+        profileSummary: "Looks for warm, direct, low-pressure connection."
+      }
+    });
+    assert.equal(realtimePlaced.synthesisMode, "realtime_tool");
+    assert.ok(realtimePlaced.profileId, "Realtime placement must return profileId");
+
     const profile = await expectStatus(200, "/v1/me/profile", { method: "GET", token: auth.sessionToken });
-    assert.equal(profile.profile.profileId, discovered.profileId);
+    assert.equal(profile.profile.profileId, realtimePlaced.profileId);
 
     const editedSummary = "Simulator edited private profile summary.";
     const updatedProfile = await expectStatus(200, "/v1/me/profile", {
@@ -125,7 +164,7 @@ async function expectStatus(status, pathname, options) {
     assert.equal(resumedProfile.profile.reflection.summary, editedSummary);
 
     const placement = await expectStatus(200, "/v1/me/placement", { method: "GET", token: auth.sessionToken });
-    assert.equal(placement.profileId, discovered.profileId);
+    assert.equal(placement.profileId, realtimePlaced.profileId);
     assert.ok(placement.placementId, "resume placement must include placementId");
 
     for (const [action, expectedState] of [["defer", "deferred"], ["swap", "swapped"], ["accept", "accepted"]]) {
@@ -141,7 +180,7 @@ async function expectStatus(status, pathname, options) {
       method: "POST",
       token: auth.sessionToken,
       body: {
-        profileId: discovered.profileId,
+        profileId: realtimePlaced.profileId,
         placementId: placement.placementId,
         rating: 5,
         message: "Placement loop works.",

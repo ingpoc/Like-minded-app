@@ -10,7 +10,7 @@ This repository is moving from prototype to a TestFlight MVP for the placement l
 
 ## Structure
 
-- `apps/ios-macos` - SwiftUI iOS app with Sign in with Apple gate and MVP tabs: Talk, Circles, Profile.
+- `apps/ios-macos` - SwiftUI iOS app with Sign in with Apple gate and MVP tabs: Talk, Circles, Communities, Profile.
   - includes an `XcodeGen` iOS project spec, Sign in with Apple entitlement, and simulator run loop
 - `services/api` - Node API with authenticated MVP placement routes, Realtime broker routes, local JSON storage for development, and Postgres support for deployment.
 - `services/ai-orchestrator` - placeholder boundary for realtime session brokering, tool routing, and profile synthesis with an explicit service manifest.

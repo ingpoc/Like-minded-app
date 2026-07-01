@@ -7,7 +7,7 @@ struct CirclesPrototypeView: View {
         NavigationStack {
             ScreenContainer(
                 title: "Circles",
-                subtitle: "Confirm the room before wider social features arrive."
+                subtitle: "Choose your room."
             ) {
                 if let placement = appState.slice?.placement {
                     FeatureCard(title: placement.primaryCircle.name, eyebrow: stateLabel(placement.userState)) {
@@ -32,7 +32,7 @@ struct CirclesPrototypeView: View {
                         }
                     }
 
-                    FeatureCard(title: "Actions", eyebrow: "User confirmed") {
+                    FeatureCard(title: "Actions", eyebrow: stateLabel(placement.userState)) {
                         VStack(spacing: 12) {
                             Button {
                                 appState.acceptPlacement()
@@ -71,7 +71,7 @@ struct CirclesPrototypeView: View {
                     }
                 } else {
                     FeatureCard(title: "No circle yet", eyebrow: "Talk first") {
-                        Text("Complete a voice profile to create your first circle placement.")
+                        Text("Start in Talk.")
                             .font(PrototypeTypography.body)
                             .foregroundStyle(PrototypePalette.subink)
                             .fixedSize(horizontal: false, vertical: true)
@@ -115,4 +115,52 @@ struct CirclesPrototypeView: View {
                 .stroke(PrototypePalette.rule, lineWidth: 1)
         )
     }
+}
+
+struct CommunitiesPrototypeView: View {
+    @EnvironmentObject private var appState: PrototypeAppState
+
+    var body: some View {
+        NavigationStack {
+            ScreenContainer(
+                title: "Communities",
+                subtitle: "Interests, not placement."
+            ) {
+                FeatureCard(title: "Community catalog", eyebrow: "Preview") {
+                    VStack(spacing: 10) {
+                        ForEach(PrototypeData.communities) { community in
+                            VStack(alignment: .leading, spacing: 6) {
+                                HStack {
+                                    Text(community.name)
+                                        .font(PrototypeTypography.bodyStrong)
+                                        .foregroundStyle(PrototypePalette.ink)
+                                    Spacer()
+                                    Text(community.fitLabel)
+                                        .font(PrototypeTypography.caption)
+                                        .foregroundStyle(PrototypePalette.accent)
+                                }
+
+                                Text(community.summary)
+                                    .font(PrototypeTypography.caption)
+                                    .foregroundStyle(PrototypePalette.subink)
+                                    .fixedSize(horizontal: false, vertical: true)
+
+                                FlexibleTagLayout(items: community.themes)
+                            }
+                            .padding(12)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(PrototypePalette.surface)
+                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                    .stroke(PrototypePalette.rule, lineWidth: 1)
+                            )
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Communities")
+        }
+    }
+
 }

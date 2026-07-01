@@ -5,7 +5,7 @@ SwiftUI source for the Likeminded TestFlight MVP placement loop.
 ## Current Status
 
 - Auth gate uses Sign in with Apple.
-- MVP tabs are `Talk`, `Circles`, and `Profile`.
+- MVP tabs are `Talk`, `Circles`, `Communities`, and `Profile`.
 - `Talk` uses `RealtimeVoiceClient` and sends Realtime SDP through the authenticated backend broker.
 - `Circles` shows the current placement and supports accept, swap, and defer actions.
 - `Profile` supports profile review/edit and tester feedback.
@@ -31,4 +31,4 @@ npm run verify:release-config
 ./script/build_and_run.sh --verify
 ```
 
-For visual validation, the first unauthenticated screen should be the Sign in with Apple gate. After sign-in, only `Talk`, `Circles`, and `Profile` tabs should be visible.
+For visual validation, the first unauthenticated screen should be the Sign in with Apple gate. After sign-in, `Talk`, `Circles`, `Communities`, and `Profile` tabs should be visible.

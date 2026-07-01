@@ -12,7 +12,7 @@
       "script": "script/verify_simulator_local.sh",
       "command": "npm run verify:simulator-local",
       "workflow_ref": "docs/workflows/validation.md",
-      "purpose": "Build, install, and launch the simulator app; prove fresh auth gate and DEBUG signed-in Talk/Circles/Profile path.",
+      "purpose": "Build, install, and launch the simulator app; prove fresh auth gate and DEBUG signed-in Talk/Circles/Communities/Profile path.",
       "reuse_when": [
         "Native app changes.",
         "Auth or session flow changes.",
@@ -94,7 +94,7 @@
       "name": "local_simulator_validation",
       "command": "npm run verify:simulator-local",
       "cost": "zero_token",
-      "proves": "XcodeGen project builds, installs, launches fresh auth gate, then enters the DEBUG signed-in Talk/Circles/Profile app through backend dev auth."
+      "proves": "XcodeGen project builds, installs, launches fresh auth gate, then enters the DEBUG signed-in Talk/Circles/Communities/Profile app through backend dev auth."
     }
   ],
   "simulator_validation": {
@@ -107,7 +107,7 @@
     },
     "checks": [
       "Fresh install shows Sign in with Apple gate, not old prototype tabs.",
-      "After sign-in, tabs are Talk, Circles, Profile.",
+      "After sign-in, tabs are Talk, Circles, Communities, Profile.",
       "Talk can start Realtime voice through the authenticated backend path.",
       "Stopping voice creates placement UI without mock fallback.",
       "Circles accept/swap/defer visibly round-trips through backend state.",

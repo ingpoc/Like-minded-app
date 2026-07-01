@@ -23,8 +23,10 @@ const {
   getLatestPlacement,
   updateLatestProfile,
   updateLatestPlacement,
-  saveFeedback
+  saveFeedback,
+  LOCAL_PATH: MVP_STORE_PATH
 } = require("./lib/mvp-store");
+const { modelBackedProfilePlacement, profilePlacementFromModelResult } = require("./lib/model-placement");
 
 function loadLocalEnv() {
   const envPath = path.resolve(process.cwd(), ".env.local");
@@ -95,12 +97,14 @@ async function requireUser(req, res) {
   return null;
 }
 
-function resultEnvelope(profile, placement, allCircleFits = null) {
+function resultEnvelope(profile, placement, allCircleFits = null, synthesisMode = null) {
   return {
     profileId: profile.profileId,
+    profileSummary: profile.profileSummary || null,
     signals: profile.signals,
     placement,
-    allCircleFits
+    allCircleFits,
+    synthesisMode
   };
 }
 
@@ -128,15 +132,14 @@ async function handleRequest(req, res) {
   const url = new URL(req.url, `http://${req.headers.host || `${HOST}:${PORT}`}`);
 
   if (req.method === "GET" && url.pathname === "/health") {
-    const { DB_PATH } = require("./lib/db");
     const fs = require("node:fs");
-    const dbExists = fs.existsSync(DB_PATH);
+    const dbExists = fs.existsSync(MVP_STORE_PATH);
     json(res, 200, {
       status: "ok",
       service: "likeminded-api",
       version: "0.1.0",
-      db: process.env.DATABASE_URL ? "postgres" : dbExists ? "sqlite" : "none",
-      dbPath: process.env.DATABASE_URL ? undefined : DB_PATH
+      db: process.env.DATABASE_URL ? "postgres" : dbExists ? "local-json" : "none",
+      dbPath: process.env.DATABASE_URL ? undefined : MVP_STORE_PATH
     });
     return;
   }
@@ -247,9 +250,32 @@ async function handleRequest(req, res) {
         type: "realtime",
         model: REALTIME_MODEL,
         output_modalities: ["audio"],
+        tools: [
+          {
+            type: "function",
+            name: "submit_profile_placement",
+            description: "Create or update the user's private profile draft and best starter circle from the conversation so far.",
+            parameters: {
+              type: "object",
+              additionalProperties: false,
+              required: ["signals", "primaryCircleId", "fitReasons", "sourceReflectionSignals", "profileSummary"],
+              properties: {
+                signals: { type: "object" },
+                primaryCircleId: { type: "string" },
+                secondaryCircleIds: { type: "array", items: { type: "string" } },
+                fitReasons: { type: "array", items: { type: "string" } },
+                sourceReflectionSignals: { type: "array", items: { type: "string" } },
+                confidenceLabel: { type: "string" },
+                profileSummary: { type: "string" }
+              }
+            }
+          }
+        ],
+        tool_choice: "auto",
         audio: {
           input: {
             format: { type: "audio/pcm", rate: 24000 },
+            transcription: { model: process.env.OPENAI_REALTIME_TRANSCRIPTION_MODEL || "gpt-4o-mini-transcribe" },
             turn_detection: { type: "server_vad", threshold: 0.5, prefix_padding_ms: 500, silence_duration_ms: 1500 }
           },
           output: {
@@ -257,7 +283,7 @@ async function handleRequest(req, res) {
             voice: REALTIME_VOICE
           }
         },
-        instructions: "You are a warm, insightful interviewer conducting a personality discovery conversation for the Likeminded app. Start by introducing yourself briefly and warmly. Ask open-ended questions one at a time. Listen carefully. Let the conversation flow naturally. Aim for 3-5 questions before wrapping up. Be genuine, warm, and curious. IMPORTANT: Wait patiently for the user to finish speaking. Do not interrupt."
+        instructions: "You are a warm, insightful interviewer conducting a personality discovery conversation for the Likeminded app. Start briefly and warmly. Ask open-ended questions one at a time. Listen carefully. After every meaningful user answer, call submit_profile_placement to save the current private profile draft and best starter circle from the conversation so far. If evidence is still early, set confidenceLabel to Draft profile and say what is provisional in fitReasons; once you have enough evidence, set confidenceLabel to Full profile. Choose from these circle ids only: reflective-builders, gentle-romantics, longform-thinkers, bold-explorers, grounded-nurturers. Do not choose by keyword; decide from pacing, trust, room energy, intent, and the whole conversation. IMPORTANT: Wait patiently for the user to finish speaking. Do not interrupt."
       });
 
       const formData = new FormData();
@@ -280,6 +306,24 @@ async function handleRequest(req, res) {
       res.end(answerSdp);
     } catch (error) {
       json(res, 500, { error: "realtime_call_error", message: error.message });
+    }
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname === "/v1/realtime/profile-placement") {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    try {
+      const body = await readJsonBody(req);
+      const { profile, placement } = profilePlacementFromModelResult({
+        modelResult: body,
+        interviewTranscript: body.interviewTranscript || "",
+        reflectionAnswers: body.reflectionAnswers || []
+      });
+      const placed = await saveProfilePlacement({ userId: user.id, profile, placement, transcript: body.interviewTranscript || "" });
+      json(res, 201, { ...resultEnvelope(profile, placement, null, "realtime_tool"), placementId: placed.placementId });
+    } catch (error) {
+      json(res, 400, { error: "invalid_realtime_profile_placement", message: error.message });
     }
     return;
   }
@@ -316,15 +360,14 @@ async function handleRequest(req, res) {
       const body = await readJsonBody(req);
       const { interviewTranscript, reflectionAnswers } = body || {};
       const deviceId = req.headers["x-device-id"] || "";
-      const profile = buildProfileFromInterview(interviewTranscript || "", reflectionAnswers || []);
+      const result = await modelBackedProfilePlacement({ interviewTranscript: interviewTranscript || "", reflectionAnswers: reflectionAnswers || [] });
+      const { profile, placement, allCircleFits, synthesisMode } = result;
       profile.deviceId = deviceId;
       profiles.set(profile.profileId, profile);
-      const fits = matchCircles(profile.signals);
-      const placement = buildPlacement(profile);
 
       await saveProfilePlacement({ userId: user.id, profile, placement, transcript: interviewTranscript });
 
-      json(res, 200, resultEnvelope(profile, placement, fits.map(f => ({ circleId: f.circle.id, name: f.circle.name, score: Math.round(f.score * 100) / 100 }))));
+      json(res, 200, resultEnvelope(profile, placement, allCircleFits, synthesisMode));
     } catch (error) {
       json(res, 400, { error: "invalid_json", message: error.message });
     }

@@ -221,7 +221,7 @@ const CIRCLE_ARCHETYPES = [
 // ---------------------------------------------------------------------------
 // In-memory stores
 // ---------------------------------------------------------------------------
-// Persistent stores (SQLite-backed, survive server restarts)
+// Persistent stores (local JSON-backed, survive server restarts)
 const profiles = new DBMap("profiles", getDb());
 const circles = new DBMap("circles", getDb());
 

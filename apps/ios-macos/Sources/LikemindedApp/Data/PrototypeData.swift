@@ -25,24 +25,24 @@ enum PrototypeData {
     static let communities = [
         CommunityRecommendation(
             id: "builders",
-            name: "Reflective Builders",
-            summary: "A small circle for people who like building ambitious things without losing emotional range.",
+            name: "AI Builders",
+            summary: "People building useful AI products and tools.",
             fitLabel: "High fit",
             membersOnline: 18,
-            themes: ["Founders", "Meaningful work", "Honest feedback"]
+            themes: ["AI", "Products", "UX"]
         ),
         CommunityRecommendation(
             id: "longform",
-            name: "Longform Thinkers",
-            summary: "Bookish, introspective people who prefer layered conversations to fast social churn.",
+            name: "Longform Reading",
+            summary: "Essays, psychology, and slow ideas.",
             fitLabel: "Strong fit",
             membersOnline: 9,
             themes: ["Essays", "Psychology", "Slow living"]
         ),
         CommunityRecommendation(
             id: "gentle",
-            name: "Gentle Romantics",
-            summary: "Users exploring deep one-to-one compatibility with deliberate pacing and clear consent.",
+            name: "Slow Dating",
+            summary: "Consent-first dating with clear pacing.",
             fitLabel: "Promising",
             membersOnline: 6,
             themes: ["Compatibility", "Rituals", "Care"]

@@ -11,7 +11,7 @@ struct ReflectionPrototypeView: View {
         NavigationStack {
             ScreenContainer(
                 title: "Talk",
-                subtitle: "Voice first. Profile signals stay private until you confirm placement."
+                subtitle: "Talk. Then place."
             ) {
                 voiceHero
                     .likemindedEntrance(order: 0, isActive: hasEntered, y: 16, scale: 0.97)
@@ -19,16 +19,8 @@ struct ReflectionPrototypeView: View {
                 profileSignals
                     .likemindedEntrance(order: 1, isActive: hasEntered, y: 14, scale: 0.98)
 
-                if appState.slice == nil {
-                    emptyPlacementCard
-                        .likemindedEntrance(order: 2, isActive: hasEntered, y: 14, scale: 0.98)
-                } else {
-                    placementPreview
-                        .likemindedEntrance(order: 2, isActive: hasEntered, y: 14, scale: 0.98)
-                }
-
                 voiceSignalCapture
-                    .likemindedEntrance(order: 3, isActive: hasEntered, y: 14, scale: 0.98)
+                    .likemindedEntrance(order: 2, isActive: hasEntered, y: 14, scale: 0.98)
             }
             .navigationTitle("Talk")
             .toolbar {
@@ -43,15 +35,6 @@ struct ReflectionPrototypeView: View {
         .task {
             guard !hasEntered else { return }
             hasEntered = true
-        }
-    }
-
-    private var emptyPlacementCard: some View {
-        FeatureCard(title: "No placement yet", eyebrow: "Ready") {
-            Text("Start a voice profile. When the interview ends, Likeminded will create your private profile and first circle placement.")
-                .font(PrototypeTypography.body)
-                .foregroundStyle(PrototypePalette.subink)
-                .fixedSize(horizontal: false, vertical: true)
         }
     }
 
@@ -83,7 +66,7 @@ struct ReflectionPrototypeView: View {
                 Spacer(minLength: 0)
             }
 
-            Text("The first conversation should learn tone, pace, trust, humor, and group comfort before suggesting a room.")
+            Text("Speak naturally. The profile updates as you talk.")
                 .font(PrototypeTypography.body)
                 .foregroundStyle(Color.white.opacity(0.82))
                 .fixedSize(horizontal: false, vertical: true)
@@ -167,33 +150,6 @@ struct ReflectionPrototypeView: View {
 
                 bigFiveScores
                     .likemindedEntrance(order: 2, isActive: hasEntered, y: 8, scale: 0.98)
-
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Reviewable read")
-                        .font(PrototypeTypography.metadata)
-                        .foregroundStyle(PrototypePalette.subink)
-
-                    TextEditor(text: $appState.editedReflection)
-                        .font(PrototypeTypography.body)
-                        .foregroundStyle(PrototypePalette.ink)
-                        .scrollContentBackground(.hidden)
-                        .frame(minHeight: 92)
-                        .padding(10)
-                        .background(Color.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                .stroke(PrototypePalette.rule, lineWidth: 1)
-                        )
-
-                    Button {
-                        // Reflection edits are already in appState.editedReflection
-                        // Just mark as saved (no-op for now, persists in-app)
-                    } label: {
-                        SecondaryActionButton(title: "Save edits", systemImage: "checkmark")
-                    }
-                    .buttonStyle(.plain)
-                }
 
                 PrivacyStrip()
             }
@@ -357,14 +313,14 @@ struct ReflectionPrototypeView: View {
         let signals = appState.slice?.signals
         switch selectedSignal {
         case "Energy":
-            if let energy = signals?.socialEnergy { return "Social energy: \(energy). The room pacing should match this rhythm." }
-            return "How much social energy you bring — from low-key presence to high-energy engagement."
+            if let energy = signals?.socialEnergy { return energy }
+            return "Not read yet"
         case "Trust":
-            if let trust = signals?.trustPattern { return "Trust pattern: \(trust). Placement should respect this pace." }
-            return "How quickly you open up — from cautious and earned to fast and generous trust."
+            if let trust = signals?.trustPattern { return trust }
+            return "Not read yet"
         default:
-            if let style = signals?.communicationStyle?.primary { return "Primary style: \(style). Conversations flow most naturally this way." }
-            return "How you communicate — from warm and direct to analytical and reflective."
+            if let style = signals?.communicationStyle?.primary { return style }
+            return "Not read yet"
         }
     }
 

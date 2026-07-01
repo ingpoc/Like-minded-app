@@ -10,7 +10,7 @@ struct ProfilePrototypeView: View {
         NavigationStack {
             ScreenContainer(
                 title: "Profile",
-                subtitle: "Review the private read before committing to a room."
+                subtitle: "Your private read."
             ) {
                 if let slice = appState.slice {
                     FeatureCard(title: "Your read", eyebrow: appState.sourceLabel) {
@@ -63,7 +63,7 @@ struct ProfilePrototypeView: View {
                     }
                 } else {
                     FeatureCard(title: "No profile yet", eyebrow: "Start in Talk") {
-                        Text("Complete a voice profile to create your private read and first circle placement.")
+                        Text("Start a voice profile.")
                             .font(PrototypeTypography.body)
                             .foregroundStyle(PrototypePalette.subink)
                     }

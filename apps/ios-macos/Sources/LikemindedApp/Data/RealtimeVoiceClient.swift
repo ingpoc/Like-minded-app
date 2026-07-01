@@ -15,6 +15,7 @@ struct RealtimeVoiceUpdate {
     let phase: RealtimeVoicePhase
     let message: String?
     let transcript: String?
+    var didPersistProfile = false
 }
 
 final class RealtimeVoiceClient: NSObject {
@@ -32,7 +33,11 @@ final class RealtimeVoiceClient: NSObject {
     private var currentModel: String = "gpt-realtime-1.5"
     private var currentVoice: String = "marin"
 
-    private var transcriptBuffer = ""
+    private var assistantTranscriptBuffer = ""
+    private var conversationTranscript = ""
+    private var userTurnCount = 0
+    private var didSubmitProfilePlacement = false
+    private var processedFunctionCallIDs = Set<String>()
 
     private let factory: LKRTCPeerConnectionFactory
 
@@ -65,7 +70,11 @@ final class RealtimeVoiceClient: NSObject {
         self.currentModel = model
         self.currentVoice = voice
         isClosing = false
-        transcriptBuffer = ""
+        assistantTranscriptBuffer = ""
+        conversationTranscript = ""
+        userTurnCount = 0
+        didSubmitProfilePlacement = false
+        processedFunctionCallIDs = []
         reconnectAttempts = 0
         publish(.connecting, message: "Connecting to Realtime.", transcript: nil)
         log("start: WebRTC connection")
@@ -116,6 +125,7 @@ final class RealtimeVoiceClient: NSObject {
                 NSLocalizedDescriptionKey: "Failed to create data channel."
             ])
         }
+        dc.delegate = self
         dataChannel = dc
         log("start: data channel created")
 
@@ -149,7 +159,7 @@ final class RealtimeVoiceClient: NSObject {
         publish(.stopping, message: "Wrapping up the conversation.", transcript: nil)
         teardown()
         isStreaming = false
-        publish(.stopped, message: "Interview complete. Creating your profile.", transcript: nil)
+        publish(.stopped, message: stoppedMessage(), transcript: nil)
     }
 
     func disconnect() {
@@ -230,6 +240,7 @@ final class RealtimeVoiceClient: NSObject {
                         NSLocalizedDescriptionKey: "Failed to create data channel."
                     ])
                 }
+                dc.delegate = self
                 self.dataChannel = dc
 
                 // Re-negotiate
@@ -328,14 +339,32 @@ final class RealtimeVoiceClient: NSObject {
         switch type {
         case "session.created", "session.updated":
             log("session ready")
+        case "conversation.item.input_audio_transcription.completed":
+            let transcript = object["transcript"] as? String ?? ""
+            appendTranscript("User", transcript)
+        case "input_audio_buffer.committed":
+            userTurnCount += 1
         case "response.output_audio_transcript.delta", "response.output_text.delta":
             let delta = object["delta"] as? String ?? ""
-            transcriptBuffer += delta
-            publish(.streaming, message: nil, transcript: transcriptBuffer)
+            assistantTranscriptBuffer += delta
+        case "response.output_item.done":
+            if let item = object["item"] as? [String: Any] {
+                handleConversationItem(item)
+            }
+        case "response.function_call_arguments.done":
+            let name = object["name"] as? String
+            if (name == nil || name == "submit_profile_placement"),
+               let arguments = object["arguments"] as? String,
+               !arguments.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                didSubmitProfilePlacement = true
+                Task {
+                    await submitProfilePlacement(arguments, callID: object["call_id"] as? String)
+                }
+            }
         case "response.output_audio_transcript.done", "response.output_text.done":
-            let fullText = object["text"] as? String ?? object["transcript"] as? String ?? transcriptBuffer
-            transcriptBuffer = fullText
-            publish(.streaming, message: nil, transcript: fullText)
+            let fullText = object["text"] as? String ?? object["transcript"] as? String ?? assistantTranscriptBuffer
+            appendTranscript("AI", fullText)
+            assistantTranscriptBuffer = ""
         case "response.output_audio.delta":
             if let delta = object["delta"] as? String {
                 log("recv audio delta: \(delta.count) bytes")
@@ -358,6 +387,78 @@ final class RealtimeVoiceClient: NSObject {
         default:
             break
         }
+    }
+
+    private func handleConversationItem(_ item: [String: Any]) {
+        guard item["type"] as? String == "function_call",
+              item["name"] as? String == "submit_profile_placement",
+              let arguments = item["arguments"] as? String,
+              !arguments.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            return
+        }
+        didSubmitProfilePlacement = true
+        Task {
+            await submitProfilePlacement(arguments, callID: item["call_id"] as? String)
+        }
+    }
+
+    private func submitProfilePlacement(_ arguments: String, callID: String?) async {
+        if let callID {
+            if processedFunctionCallIDs.contains(callID) { return }
+            processedFunctionCallIDs.insert(callID)
+        }
+        guard let data = arguments.data(using: .utf8),
+              var payload = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any] else {
+            log("ignored incomplete profile placement payload")
+            return
+        }
+        payload["interviewTranscript"] = conversationTranscript
+
+        guard let body = try? JSONSerialization.data(withJSONObject: payload) else { return }
+        let url = baseURL.appendingPathComponent("/v1/realtime/profile-placement")
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.timeoutInterval = 4
+        request.setValue("application/json", forHTTPHeaderField: "content-type")
+        if let authToken {
+            request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
+        }
+        request.httpBody = body
+
+        do {
+            let (_, response) = try await URLSession.shared.data(for: request)
+            guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+                throw URLError(.badServerResponse)
+            }
+            if let callID {
+                sendFunctionResult(callID: callID, output: ["saved": true])
+            }
+            publish(.stopped, message: "Profile saved.", transcript: conversationTranscript, didPersistProfile: true)
+        } catch {
+            if let callID {
+                sendFunctionResult(callID: callID, output: ["saved": false, "error": "profile_placement_save_failed"])
+            }
+            publish(.failed, message: "Profile placement could not be saved.", transcript: nil)
+        }
+    }
+
+    private func sendFunctionResult(callID: String, output: [String: Any]) {
+        let outputText = (try? JSONSerialization.data(withJSONObject: output))
+            .flatMap { String(data: $0, encoding: .utf8) } ?? "{}"
+        sendEvent([
+            "type": "conversation.item.create",
+            "item": [
+                "type": "function_call_output",
+                "call_id": callID,
+                "output": outputText
+            ]
+        ])
+        sendEvent([
+            "type": "response.create",
+            "response": [
+                "instructions": "A profile draft was saved. Continue the interview naturally and update the profile again after the next meaningful answer."
+            ]
+        ])
     }
 
     private func sendEvent(_ event: [String: Any?]) {
@@ -384,14 +485,34 @@ final class RealtimeVoiceClient: NSObject {
         return value ?? NSNull()
     }
 
-    private func publish(_ phase: RealtimeVoicePhase, message: String?, transcript: String?) {
+    private func publish(_ phase: RealtimeVoicePhase, message: String?, transcript: String?, didPersistProfile: Bool = false) {
         DispatchQueue.main.async {
-            self.onUpdate?(RealtimeVoiceUpdate(phase: phase, message: message, transcript: transcript))
+            self.onUpdate?(RealtimeVoiceUpdate(phase: phase, message: message, transcript: transcript, didPersistProfile: didPersistProfile))
         }
     }
 
+    private func stoppedMessage() -> String {
+        if didSubmitProfilePlacement {
+            return "Profile placement is being saved."
+        }
+        if userTurnCount == 0 && conversationTranscript.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return "No conversation captured yet. Start again and say a little about how you connect."
+        }
+        return "Not enough conversation yet to create a full profile. Keep talking so the AI can place you."
+    }
+
+    private func appendTranscript(_ speaker: String, _ text: String) {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        if !conversationTranscript.isEmpty {
+            conversationTranscript += "\n"
+        }
+        conversationTranscript += "\(speaker): \(trimmed)"
+        publish(.streaming, message: nil, transcript: conversationTranscript)
+    }
+
     var interviewTranscript: String {
-        transcriptBuffer
+        conversationTranscript
     }
 }
 
