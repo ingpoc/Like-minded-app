@@ -17,12 +17,14 @@
 
 1. If `resume-session` is explicitly triggered, read `.claude/session-data/CURRENT.md` once and verify `route_contract.first_command` if present.
 2. Read `PROGRESS.md` and `goal.json`.
-3. If `goal.json.status == "completed"`, do not resume that goal; set `goal.json` from `goal.template.json` to the first unchecked agent-doable item in `PROGRESS.md`, then continue from that new goal.
+3. If `goal.json.status == "completed"`, do not resume that goal; set `goal.json` from `goal.template.json` to the next coherent unchecked surface in `PROGRESS.md`, then continue from that new goal.
 4. Otherwise treat an existing `goal.json` goal as active unless `PROGRESS.md`, required graders/evidence, and any required completion commit prove it is complete.
-5. If no active goal exists, copy `goal.template.json` → `goal.json` and set `goal` to the first unchecked agent-doable item in `PROGRESS.md`.
+5. If no active goal exists, copy `goal.template.json` → `goal.json` and set `goal` to the next coherent unchecked surface in `PROGRESS.md`.
 6. Set the Codex thread goal from the active `goal.json`, then run `./script/project_context.sh query --task "<active goal>"`.
 7. Load only returned active decisions; if the query returns zero decisions, continue from `goal.json` and the narrow workflow for the lane instead of expanding retrieval.
 8. Before editing, run `git status --short`; at closeout, update `PROGRESS.md` and `goal.json` if state changed.
+
+Next-goal selection: choose the smallest surface that can use a full session: one phase, screen, endpoint family, validation lane, or doc set with its required tests. Do not pick a trivial one-checkbox goal unless it is the only blocker; group adjacent tiny checkboxes under the same owner surface.
 
 ## Trigger Map
 

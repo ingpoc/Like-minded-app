@@ -65,6 +65,8 @@
     "external_preflight": "Run npm run verify:external-preflight only after Render, Neon, Apple Developer, App Store Connect/TestFlight, and manual device proof are ready."
   },
   "agent_guardrails": [
+    "If goal.json status is completed, select the next coherent unchecked surface from PROGRESS.md before querying context.",
+    "Avoid tiny one-checkbox goals unless they are the only blocker; group adjacent small items under the same owner surface.",
     "Check validation_state before rerunning completed proof.",
     "Reuse validation_inventory scripts before creating validation scripts.",
     "Do not add docs or workflows for validation already covered by workflow_refs and validation_inventory."
