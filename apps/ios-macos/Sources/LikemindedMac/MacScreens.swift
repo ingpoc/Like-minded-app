@@ -27,12 +27,6 @@ struct MacScreenView: View {
                     .frame(maxWidth: 460, alignment: .leading)
             }
             Spacer()
-            Text("Screen \(screen.number) of \(MacPrototypeScreen.allCases.count)")
-                .font(MacType.small.weight(.medium))
-                .foregroundStyle(MacPalette.muted)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(MacPalette.surface, in: Capsule())
         }
     }
 

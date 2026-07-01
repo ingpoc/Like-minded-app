@@ -13,7 +13,6 @@ struct MacRootView: View {
                 titleBar
                 ScrollView(.vertical, showsIndicators: true) {
                     VStack(spacing: 18) {
-                        screenStrip
                         MacScreenView(screen: selectedScreen)
                     }
                     .padding(.horizontal, 28)
@@ -24,7 +23,7 @@ struct MacRootView: View {
             VStack {
                 Spacer()
                 MacBottomNav(selectedTab: selectedScreen.tab) { tab in
-                    selectedScreen = MacPrototypeScreen.allCases.first(where: { $0.tab == tab }) ?? .meetOverview
+                    selectedScreen = tab.primaryScreen
                 }
                 .padding(.bottom, 22)
             }
@@ -48,33 +47,14 @@ struct MacRootView: View {
             Text("Likeminded")
                 .font(.system(size: 14, weight: .semibold, design: .rounded))
             Spacer()
-            Text(MacBackendConfig.baseURLString)
-                .font(MacType.small)
-                .foregroundStyle(MacPalette.muted)
+            Image(systemName: "bell")
+                .font(MacType.button)
+                .foregroundStyle(MacPalette.ink)
+                .frame(width: 30, height: 30)
+                .background(MacPalette.surface, in: Circle())
         }
         .padding(.horizontal, 28)
         .padding(.vertical, 18)
-    }
-
-    private var screenStrip: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
-                ForEach(MacPrototypeScreen.allCases) { screen in
-                    Button {
-                        selectedScreen = screen
-                    } label: {
-                        Text("\(screen.number). \(screen.title)")
-                            .font(MacType.small.weight(.medium))
-                            .lineLimit(1)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background(selectedScreen == screen ? MacPalette.accent : MacPalette.surface, in: Capsule())
-                            .foregroundStyle(selectedScreen == screen ? .white : MacPalette.ink)
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-        }
     }
 }
 
@@ -109,4 +89,3 @@ struct MacBottomNav: View {
     MacRootView()
         .frame(width: 1200, height: 760)
 }
-

@@ -6,12 +6,12 @@ Global `/Users/gurusharan/.codex/AGENTS.md` owns instruction control. This file 
 
 ## Current Status
 
-- Product redesign in progress (see `docs/product-redesign.md` for full spec).
+- Product redesign in progress; product behavior lives in `docs/product-redesign.md` and design language lives in `DESIGN.md`.
 - Phases 0-2 complete (auth, MVP loop, deterministic validation).
 - Phases 3-8 are the redesign build-out. TestFlight is Phase 9.
 - Existing auth, backend, Realtime voice, and mvp-store infrastructure stays.
 - Design system stays: warm cream canvas, deep green accent, SF typography.
-- Design doc: `docs/product-redesign.md`. UI/UX research: `docs/references/ui-ux-patterns-research.md`.
+- Design language owner: `DESIGN.md`. Visual references: `mockups/ios/` and `mockups/macos/`.
 - Phase 5 Meet + LiveKit is complete locally: RSVP state, deterministic weekend scheduling, LiveKit participant token generation, backend-driven Meet UI, and local simulator proof are in place. Phase 6 Soulmate + Chat remains unchecked.
 
 ## Phase 0 — Session Control And Graders
@@ -194,27 +194,32 @@ Tab restructure, custom tab bar, animation system, material backgrounds.
 
 ### Tab restructure
 
-- [ ] Update `AppTab` enum in `PrototypeModels.swift`: change `.talk` to `.meet` (`case meet = "Meet"`, `systemImage: "person.2.video"`). Add `case soulmate = "Soulmate"` (`systemImage: "heart.circle"`). Keep `.circles`, `.communities`, `.profile`.
-- [ ] Update `RootView.swift`: replace `ReflectionPrototypeView()` with `MeetView()` in the `TabView`. Add conditional `SoulmateView()` tab — only included when `appState.soulmateEnabled == true`.
-- [ ] Create `CustomTabBar.swift` — replaces system `TabView` tab bar. `HStack` of tab items. Each item: `Image(systemName:)` with `.scaleEffect(selection == tab ? 1.1 : 1.0)` + `symbolVariant(selection == tab ? .fill : .none)`. Label `Text` only on selected tab with `.transition(.opacity.combined(with: .move(edge: .bottom)).combined(with: .scale))`. Background `.ultraThinMaterial`. Tap: `withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { selection = tab }`.
-- [ ] Soulmate tab appear/disappear: when `soulmateEnabled` toggles, the tab bar items array changes with `.animation(.spring(response: 0.38, dampingFraction: 0.82))`.
+- [x] Update `AppTab` enum in `PrototypeModels.swift`: change `.talk` to `.meet` (`case meet = "Meet"`, `systemImage: "person.2.video"`). Add `case soulmate = "Soulmate"` (`systemImage: "heart.circle"`). Keep `.circles`, `.communities`, `.profile`.
+- [x] Update `RootView.swift`: replace `ReflectionPrototypeView()` with `MeetView()` in the `TabView`. Add conditional `SoulmateView()` tab — only included when `appState.soulmateEnabled == true`.
+- [x] Create `CustomTabBar.swift` — replaces system `TabView` tab bar. `HStack` of tab items. Each item: `Image(systemName:)` with `.scaleEffect(selection == tab ? 1.1 : 1.0)` + `symbolVariant(selection == tab ? .fill : .none)`. Label `Text` only on selected tab with `.transition(.opacity.combined(with: .move(edge: .bottom)).combined(with: .scale))`. Background `.ultraThinMaterial`. Tap: `withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { selection = tab }`.
+- [x] Soulmate tab appear/disappear: when `soulmateEnabled` toggles, the tab bar items array changes with `.animation(.spring(response: 0.38, dampingFraction: 0.82))`.
 
 ### Motion system
 
-- [ ] Add to `PrototypeComponents.swift` or a new `MotionConstants.swift`: `extension Animation { static let interactive = .spring(response: 0.38, dampingFraction: 0.82); static let celebratory = .spring(response: 0.50, dampingFraction: 0.70); static let snappy = .spring(response: 0.30, dampingFraction: 0.85) }`.
-- [ ] Apply staggered entrance to card lists: `ForEach(Array(items.enumerated()), id: \.element.id) { index, item in ItemCard(item: item).opacity(show ? 1 : 0).offset(y: show ? 0 : 20).animation(.spring(response: 0.4, dampingFraction: 0.8).delay(Double(index) * 0.06), value: show) }.onAppear { withAnimation { show = true } }`.
-- [ ] Apply `.contentTransition(.numericText())` to member counts, group sizes, countdown values.
-- [ ] Apply `.contentTransition(.opacity)` to voice status labels, placement state labels.
-- [ ] Apply `.scrollTransition(.interactive, axis: .horizontal)` to all horizontal card scrolls (circles, communities).
-- [ ] Apply `.background(.regularMaterial)` to: custom tab bar, chat composer, onboarding wizard container, any `.sheet` content.
-- [ ] Apply `matchedGeometryEffect` for circle card → detail: `@Namespace` in `CirclesPrototypeView`, `.matchedGeometryEffect(id: circle.id, in: namespace)` on both the card and the detail hero.
-- [ ] Apply `.sensoryFeedback(.success, trigger:)` to: RSVP toggle, placement accept/swap/defer, soulmate match, soulmate selection submit.
+- [x] Add to `PrototypeComponents.swift` or a new `MotionConstants.swift`: `extension Animation { static let interactive = .spring(response: 0.38, dampingFraction: 0.82); static let celebratory = .spring(response: 0.50, dampingFraction: 0.70); static let snappy = .spring(response: 0.30, dampingFraction: 0.85) }`.
+- [x] Apply staggered entrance to card lists: `ForEach(Array(items.enumerated()), id: \.element.id) { index, item in ItemCard(item: item).opacity(show ? 1 : 0).offset(y: show ? 0 : 20).animation(.spring(response: 0.4, dampingFraction: 0.8).delay(Double(index) * 0.06), value: show) }.onAppear { withAnimation { show = true } }`.
+- [x] Apply `.contentTransition(.numericText())` to member counts, group sizes, countdown values.
+- [x] Apply `.contentTransition(.opacity)` to voice status labels, placement state labels.
+- [x] Apply `.scrollTransition(.interactive, axis: .horizontal)` to all horizontal card scrolls (circles, communities).
+- [x] Apply `.background(.regularMaterial)` to: custom tab bar, chat composer, onboarding wizard container, any `.sheet` content.
+- [x] Apply `matchedGeometryEffect` for circle card → detail: `@Namespace` in `CirclesPrototypeView`, `.matchedGeometryEffect(id: circle.id, in: namespace)` on both the card and the detail hero.
+- [x] Apply `.sensoryFeedback(.success, trigger:)` to: RSVP toggle, placement accept/swap/defer, soulmate match, soulmate selection submit.
+
+### Screen validation against mockups
+
+- [x] iOS screens 1-20 in `mockups/ios/` checked against `DESIGN.md`: auth, voice/profile, Meet states, Circles/detail, Communities/detail/settings, Soulmate/match/chat, and bottom dock model are represented by the current SwiftUI surfaces. Intentional MVP scope: generated people photos and richer live-call media remain mockup-only.
+- [x] macOS screens 1-20 in `mockups/macos/` checked against `DESIGN.md`: `MacPrototypeScreen` covers auth, Meet, Circles, Profile, Chat/Messages, Communities/detail/members/event, recap, Soulmate overview/discover/detail, notifications/activity, onboarding, and settings with the bottom floating dock model. Intentional MVP scope: richer desktop discovery filters and photo-heavy cards remain prototype mockup detail, not shipped backend behavior.
 
 ## Phase 8 — Docs + Validation
 
 Update docs to match shipped product. Run all graders.
 
-- [ ] Update `app-design-language.md` — new tabs: Meet (RSVP + upcoming/past meets), Circles (your circle + available + concern), Communities (backend catalog + join), Profile (voice interview + signals + interests + onboarding), Soulmate (opt-in matches + chat). New copy rules: one subtitle per screen, model prose in Profile only, meetup info in Meet only, interest tags in Communities and Soulmate match detail only.
+- [ ] Update `DESIGN.md` — new tabs: Meet (RSVP + upcoming/past meets), Circles (your circle + available + concern), Communities (backend catalog + join), Profile (voice interview + signals + interests + onboarding), Soulmate (opt-in matches + chat). New copy rules: one subtitle per screen, model prose in Profile only, meetup info in Meet only, interest tags in Communities and Soulmate match detail only.
 - [ ] Update `product-direction.md` — add: AI-driven meetup flow (RSVP → group formation → host selection → scheduled video call), circles vs communities contrast (personality vs interest, Sunday vs Saturday), soulmate feature (opt-in, post-meet mutual selection, chat), hidden placement signals, onboarding before interview.
 - [ ] Update `goal.json` — replace MVP placement loop goal with redesign goal. Update `deterministic_graders` to include new smoke test coverage. Update `done_criteria` to reflect Phase 3-8 completion.
 - [ ] Update `goal.template.json` to match `goal.json` structure.

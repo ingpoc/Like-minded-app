@@ -30,6 +30,7 @@
 		94B8BB90A08111BEB7490EEE /* RealtimeVoiceClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70685EA3FAE20FBC4827812B /* RealtimeVoiceClient.swift */; };
 		9917E4D207930B06A316F53D /* MacDesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E35A6097677BF379E314306E /* MacDesignSystem.swift */; };
 		9991EE71916006E89457B6E5 /* LikemindedAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DCB9E92C74E864B793C207 /* LikemindedAPIClient.swift */; };
+		B6865DD6F294D8C495E0F118 /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4CC542091C9D3F04D1DE21 /* CustomTabBar.swift */; };
 		BE4F826A0A1C866F945B5AAB /* SettingsPrototypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11E3DAEAEA4F6D6B35D2D32 /* SettingsPrototypeView.swift */; };
 		CE50886875324458689A2D08 /* LiveKitWebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 02402CF435BA0C350E109525 /* LiveKitWebRTC */; };
 		D0960611CC66E6642F609ACD /* ProfilePrototypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75C0F95C041A6C7D0D328202 /* ProfilePrototypeView.swift */; };
@@ -43,6 +44,7 @@
 		12C36748D06319EACF593DE7 /* LikemindedMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LikemindedMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		181BFC9B2D93330133F5C993 /* MacPrototypeData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacPrototypeData.swift; sourceTree = "<group>"; };
 		2B0C51AF9D64677B65F8D49A /* AuthGateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthGateView.swift; sourceTree = "<group>"; };
+		2E4CC542091C9D3F04D1DE21 /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
 		3DCC1BCF1EB18B6214EB4BAA /* TodayPrototypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayPrototypeView.swift; sourceTree = "<group>"; };
 		40664BF795D4C75998E0D941 /* MacRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacRootView.swift; sourceTree = "<group>"; };
 		43D8F9C153E1CAAA2E1D4B53 /* DeviceIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceIdentity.swift; sourceTree = "<group>"; };
@@ -168,6 +170,7 @@
 				2B0C51AF9D64677B65F8D49A /* AuthGateView.swift */,
 				4895BAF5408C8A7CEDEB5EC3 /* CircleCard.swift */,
 				CF864D6E37CD7289F92855DF /* CommunitiesPrototypeView.swift */,
+				2E4CC542091C9D3F04D1DE21 /* CustomTabBar.swift */,
 				9D7107FDFB96FB4B6E50291C /* MeetView.swift */,
 				441C7F09BC786ADFBA9B2A36 /* MVPProfileView.swift */,
 				BC3A363F271D17248AADFD13 /* OnboardingView.swift */,
@@ -272,6 +275,7 @@
 				4319E06107624A793DB13545 /* AuthSessionStore.swift in Sources */,
 				379D8BA56E5821E1680248E7 /* CircleCard.swift in Sources */,
 				8D27A1FA539B87B3019798C6 /* CommunitiesPrototypeView.swift in Sources */,
+				B6865DD6F294D8C495E0F118 /* CustomTabBar.swift in Sources */,
 				1C099E485B7A23A87435717E /* DeviceIdentity.swift in Sources */,
 				9991EE71916006E89457B6E5 /* LikemindedAPIClient.swift in Sources */,
 				638037123B69B011D78BF5A7 /* LikemindedApp.swift in Sources */,

@@ -83,6 +83,7 @@ struct OnboardingView: View {
                 .disabled(!canContinue || appState.isStartingVoice)
             }
         }
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
     }
 
     private var actionTitle: String {

@@ -259,11 +259,13 @@ private struct UpcomingMeetCard: View {
                 Text(countdownText)
                     .font(PrototypeTypography.metadata.monospacedDigit())
                     .foregroundStyle(PrototypePalette.accent)
+                    .contentTransition(.numericText())
             }
 
             Text("\(formattedDate) • Host \(meeting.hostName) • \(meeting.groupSize) people")
                 .font(PrototypeTypography.body)
                 .foregroundStyle(PrototypePalette.subink)
+                .contentTransition(.numericText())
 
             NavigationLink {
                 GroupVideoCallView(meeting: meeting)
@@ -361,6 +363,7 @@ struct GroupVideoCallView: View {
                     Text(room.connectionState == .connected ? "● Live" : "Connecting")
                         .font(PrototypeTypography.metadata)
                         .foregroundStyle(room.connectionState == .connected ? PrototypePalette.success : PrototypePalette.amber)
+                        .contentTransition(.opacity)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 5)
                         .background(Color.white.opacity(0.08))
@@ -369,6 +372,7 @@ struct GroupVideoCallView: View {
                     Text("\(max(1, room.remoteParticipants.count + 1)) participants")
                         .font(PrototypeTypography.metadata)
                         .foregroundStyle(.white)
+                        .contentTransition(.numericText())
 
                     Spacer()
                     Image(systemName: "shield.lefthalf.filled")

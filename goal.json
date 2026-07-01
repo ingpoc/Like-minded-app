@@ -2,7 +2,7 @@
   "schema_version": 1,
   "status": "completed",
   "purpose": "Per-session execution goal. Copy this file to goal.json at session start, set the current goal, and keep graders/validation/agent routing current when files or commands change.",
-  "goal": "Implement Phase 6 Soulmate + Chat: opt-in soulmate status, post-meet mutual selection, match details, in-app chat, Swift UI, and smoke coverage.",
+  "goal": "Complete Phase 7 Navigation + Motion Polish: update iOS tab/navigation behavior, add restrained motion polish, align macOS navigation, and validate every iOS and macOS screen against DESIGN.md and mockups.",
   "ultimate_goal_source": "GOAL.md",
   "progress_source": "PROGRESS.md",
   "workflow_refs": [
@@ -190,7 +190,7 @@
   "rubric": {
     "criteria": [
       {
-        "name": "soulmate_chat_correctness",
+        "name": "navigation_motion_correctness",
         "weight": 0.4,
         "min_score": 0.8
       },
@@ -219,15 +219,16 @@
       "goal.json",
       "all implementation, validation, doc, and stale-cleanup files changed for the session"
     ],
-    "commit_message_template": "Validate Phase 6 Soulmate and Chat"
+    "commit_message_template": "Validate Phase 7 navigation and motion"
   },
   "done_criteria": [
-    "Soulmate backend endpoints persist opt-in state, pending post-meet selections, mutual matches, match detail, archived past matches, and participant-scoped chat messages.",
-    "Swift Soulmate and Chat UI supports opt-in tab visibility, match list/detail, conversation list, chat composer, and post-meet selection.",
-    "Soulmate detail exposes only allowed profile fields: name, gender, and interests.",
-    "PROGRESS.md marks completed Phase 6 items, with scoped phase preflight reporting no unchecked items.",
-    "Deterministic checks pass, including npm run check, npm run verify:goal, npm run smoke:mvp, and npm run verify:release-config.",
-    "Local simulator validation is rerun because native UI and project inputs changed.",
+    "iOS tabs are Meet, Circles, Communities, Profile, plus Soulmate only when enabled.",
+    "iOS uses the custom tab bar and restrained motion listed in Phase 7 preflight without adding unnecessary navigation layers.",
+    "macOS navigation remains aligned with the DESIGN.md and mockup tab model.",
+    "Every iOS and macOS screen is checked against DESIGN.md and the relevant mockups, with mismatches fixed or recorded as intentional.",
+    "PROGRESS.md marks completed Phase 7 items, with scoped phase preflight reporting no unchecked items.",
+    "Deterministic checks pass in the Phase 7 validation order.",
+    "Local simulator validation is rerun because native UI inputs changed.",
     "Validated session changes are committed with the completed goal.json before the goal is marked completed."
   ],
   "max_iterations": 10,

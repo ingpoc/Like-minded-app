@@ -7,28 +7,35 @@ struct RootView: View {
     var body: some View {
         Group {
             if appState.isSignedIn {
-                TabView(selection: $selection) {
-                    ForEach(AppTab.visible(soulmateEnabled: appState.soulmateEnabled)) { tab in
-                        tabContent(for: tab)
-                            .tabItem {
-                                Label(tab.rawValue, systemImage: tab.systemImage)
-                            }
-                            .tag(tab)
+                ZStack(alignment: .bottom) {
+                    tabContent(for: selection)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                    CustomTabBar(
+                        tabs: AppTab.visible(soulmateEnabled: appState.soulmateEnabled),
+                        selection: $selection
+                    )
+                    .padding(.horizontal, 18)
+                    .padding(.bottom, 18)
+                    .animation(.interactive, value: appState.soulmateEnabled)
+                }
+                .background(PrototypePalette.background.ignoresSafeArea())
+                .onChange(of: appState.soulmateEnabled) { _, enabled in
+                    withAnimation(.interactive) {
+                        if !enabled && selection == .soulmate {
+                            selection = .meet
+                        }
                     }
                 }
-                .tint(PrototypePalette.accent)
                 .task {
                     await appState.loadCurrentPlacement()
                     await appState.fetchSoulmateStatus()
                 }
                 .onChange(of: appState.concernFlag) { _, needsReinterview in
                     if needsReinterview {
-                        selection = .profile
-                    }
-                }
-                .onChange(of: appState.soulmateEnabled) { _, enabled in
-                    if !enabled && selection == .soulmate {
-                        selection = .meet
+                        withAnimation(.interactive) {
+                            selection = .profile
+                        }
                     }
                 }
             } else {

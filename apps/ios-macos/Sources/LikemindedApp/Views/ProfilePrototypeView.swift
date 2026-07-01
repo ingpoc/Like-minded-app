@@ -61,6 +61,7 @@ struct VoiceProfileView: View {
                 title: appState.isStartingVoice ? "Opening voice profile" : "Start voice profile",
                 systemImage: "waveform"
             )
+            .contentTransition(.opacity)
         }
         .buttonStyle(.plain)
         .disabled(appState.isStartingVoice)
@@ -83,6 +84,7 @@ struct VoiceProfileView: View {
                     title: appState.isStartingVoice ? "Opening voice" : "Re-interview for placement",
                     systemImage: "waveform"
                 )
+                .contentTransition(.opacity)
             }
             .buttonStyle(.plain)
             .disabled(appState.isStartingVoice)

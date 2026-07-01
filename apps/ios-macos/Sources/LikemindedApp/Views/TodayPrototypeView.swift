@@ -217,9 +217,13 @@ private struct PlacementActionRow: View {
     let title: String
     let detail: String
     let action: () -> Void
+    @State private var feedbackTrigger = 0
 
     var body: some View {
-        Button(action: action) {
+        Button {
+            action()
+            feedbackTrigger += 1
+        } label: {
             HStack(spacing: 12) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
@@ -257,6 +261,7 @@ private struct PlacementActionRow: View {
             )
         }
         .buttonStyle(.plain)
+        .sensoryFeedback(.success, trigger: feedbackTrigger)
     }
 }
 

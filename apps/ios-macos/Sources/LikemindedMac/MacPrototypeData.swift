@@ -18,6 +18,16 @@ enum MacTab: String, CaseIterable, Identifiable {
         case .soulmate: "heart"
         }
     }
+
+    var primaryScreen: MacPrototypeScreen {
+        switch self {
+        case .meet: .meetOverview
+        case .circles: .circlesRoom
+        case .communities: .communitiesBrowse
+        case .profile: .myProfile
+        case .soulmate: .soulmateOverview
+        }
+    }
 }
 
 enum MacPrototypeScreen: String, CaseIterable, Identifiable {
@@ -133,4 +143,3 @@ struct MacBackendConfig {
         #endif
     }
 }
-

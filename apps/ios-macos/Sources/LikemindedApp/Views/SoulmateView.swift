@@ -7,7 +7,9 @@ struct SoulmatePrototypeView: View {
     var body: some View {
         NavigationStack {
             ScreenContainer(title: "Soulmate", subtitle: "Who you connected with.") {
-                FeatureCard(title: "Opt in", eyebrow: "Private") {
+                SoulmateHeroCard()
+
+                FeatureCard(title: "Enable Soulmate", eyebrow: "Private") {
                     Toggle("Enable Soulmate", isOn: Binding(
                         get: { appState.soulmateEnabled },
                         set: { enabled in Task { await appState.setSoulmateEnabled(enabled) } }
@@ -72,6 +74,43 @@ struct SoulmatePrototypeView: View {
                     .presentationDetents([.medium, .large])
             }
         }
+    }
+}
+
+private struct SoulmateHeroCard: View {
+    var body: some View {
+        VStack(spacing: 14) {
+            ZStack {
+                Circle()
+                    .fill(PrototypePalette.accentSoft.opacity(0.55))
+                    .frame(width: 92, height: 92)
+                    .blur(radius: 18)
+                Circle()
+                    .fill(PrototypePalette.surface)
+                    .frame(width: 84, height: 84)
+                    .overlay(
+                        Image(systemName: "heart")
+                            .font(.system(size: 34, weight: .medium))
+                            .foregroundStyle(PrototypePalette.accent)
+                    )
+                    .shadow(color: PrototypePalette.accent.opacity(0.12), radius: 18, y: 10)
+            }
+
+            Text("Matches are mutual.")
+                .font(PrototypeTypography.bodyStrong)
+                .foregroundStyle(PrototypePalette.ink)
+
+            Text("When both of you select each other, you will show up here.")
+                .font(PrototypeTypography.body)
+                .foregroundStyle(PrototypePalette.subink)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: 250)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(28)
+        .background(PrototypePalette.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 24, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
     }
 }
 
@@ -337,6 +376,7 @@ struct SoulmateSelectionDialog: View {
     @EnvironmentObject private var appState: PrototypeAppState
     @Environment(\.dismiss) private var dismiss
     @State private var selectedUserIds: Set<String> = []
+    @State private var feedbackTrigger = 0
 
     private var selection: SoulmatePendingSelection? {
         appState.soulmatePendingSelections.first
@@ -359,6 +399,7 @@ struct SoulmateSelectionDialog: View {
                                 } else {
                                     selectedUserIds.insert(userId)
                                 }
+                                feedbackTrigger += 1
                             } label: {
                                 HStack {
                                     Text(potentialMatch.name)
@@ -375,12 +416,14 @@ struct SoulmateSelectionDialog: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
                             }
                             .buttonStyle(.plain)
+                            .sensoryFeedback(.success, trigger: feedbackTrigger)
                         }
                     }
 
                     Button {
                         Task {
                             await appState.submitSoulmateSelection(meetingId: selection.meetingId, selectedUserIds: Array(selectedUserIds))
+                            feedbackTrigger += 1
                             dismiss()
                         }
                     } label: {
@@ -388,6 +431,7 @@ struct SoulmateSelectionDialog: View {
                     }
                     .buttonStyle(.plain)
                     .disabled(selectedUserIds.isEmpty)
+                    .sensoryFeedback(.success, trigger: feedbackTrigger)
                 } else {
                     Text("No meetup selection is waiting.")
                         .font(PrototypeTypography.body)

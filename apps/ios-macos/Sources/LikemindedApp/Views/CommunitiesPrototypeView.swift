@@ -5,6 +5,8 @@ struct CirclesPrototypeView: View {
     @State private var isCapturingConcern = false
     @State private var concernText = ""
     @State private var isSendingConcern = false
+    @State private var showCards = false
+    @Namespace private var circleNamespace
 
     private var placement: CirclePlacement { appState.currentPlacement }
 
@@ -17,9 +19,10 @@ struct CirclesPrototypeView: View {
                         .foregroundStyle(.white.opacity(0.86))
 
                     NavigationLink {
-                        CircleDetailView(circle: placement.primaryCircle, reasons: placement.fitReasons)
+                        CircleDetailView(circle: placement.primaryCircle, reasons: placement.fitReasons, namespace: circleNamespace)
                     } label: {
                         CircleHeroCard(circle: placement.primaryCircle)
+                            .matchedGeometryEffect(id: placement.primaryCircle.id, in: circleNamespace)
                     }
                     .buttonStyle(.plain)
                 }
@@ -81,15 +84,20 @@ struct CirclesPrototypeView: View {
                         Text("\(availableCircles.count)")
                             .font(PrototypeTypography.metadata)
                             .foregroundStyle(PrototypePalette.subink)
+                            .contentTransition(.numericText())
                     }
 
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 10) {
                             ForEach(Array(availableCircles.enumerated()), id: \.element.id) { index, circle in
                                 NavigationLink {
-                                    CircleDetailView(circle: circle, reasons: placement.fitReasons)
+                                    CircleDetailView(circle: circle, reasons: placement.fitReasons, namespace: circleNamespace)
                                 } label: {
                                     CircleCard(circle: circle, tone: index)
+                                        .matchedGeometryEffect(id: circle.id, in: circleNamespace)
+                                        .opacity(showCards ? 1 : 0)
+                                        .offset(y: showCards ? 0 : 20)
+                                        .animation(.interactive.delay(Double(index) * 0.06), value: showCards)
                                 }
                                 .buttonStyle(.plain)
                                 .scrollTransition(.interactive, axis: .horizontal) { content, phase in
@@ -105,6 +113,9 @@ struct CirclesPrototypeView: View {
             }
             .task {
                 await appState.fetchCircles()
+                withAnimation(.interactive) {
+                    showCards = true
+                }
             }
             .overlay(alignment: .topTrailing) {
                 Image(systemName: "plus")
@@ -159,6 +170,7 @@ private struct CircleHeroCard: View {
                 Label("Sunday 7pm", systemImage: "calendar")
                 Spacer()
                 Label("\(circle.membersOnline) members", systemImage: "person.2")
+                    .contentTransition(.numericText())
                 Image(systemName: "chevron.right")
                     .font(.system(size: 14, weight: .semibold))
                     .frame(width: 42, height: 42)
@@ -180,6 +192,7 @@ private struct CircleHeroCard: View {
 struct CircleDetailView: View {
     let circle: PlacementCircle
     let reasons: [String]
+    let namespace: Namespace.ID
 
     var body: some View {
         ScreenContainer(title: "Circle", subtitle: circle.name) {
@@ -211,6 +224,7 @@ struct CircleDetailView: View {
             .padding(22)
             .background(PrototypePalette.roomGradient(0))
             .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+            .matchedGeometryEffect(id: circle.id, in: namespace)
 
             FeatureCard(title: "Why you fit", eyebrow: "Signal match") {
                 VStack(alignment: .leading, spacing: 14) {
@@ -238,6 +252,7 @@ struct CircleDetailView: View {
 
 struct CommunitiesPrototypeView: View {
     @EnvironmentObject private var appState: PrototypeAppState
+    @State private var showCards = false
 
     var body: some View {
         NavigationStack {
@@ -285,6 +300,7 @@ struct CommunitiesPrototypeView: View {
                         Text("\(appState.joinedCommunities.count)")
                             .font(PrototypeTypography.metadata)
                             .foregroundStyle(PrototypePalette.accent)
+                            .contentTransition(.numericText())
                     }
 
                     if appState.joinedCommunities.isEmpty {
@@ -298,6 +314,9 @@ struct CommunitiesPrototypeView: View {
                                 CommunityDetailView(community: community, isJoined: true)
                             } label: {
                                 CommunityCard(community: community, action: "Joined", tone: index + 3, compact: true)
+                                    .opacity(showCards ? 1 : 0)
+                                    .offset(y: showCards ? 0 : 20)
+                                    .animation(.interactive.delay(Double(index) * 0.06), value: showCards)
                             }
                             .buttonStyle(.plain)
                         }
@@ -315,6 +334,9 @@ struct CommunitiesPrototypeView: View {
                             CommunityDetailView(community: community, isJoined: isJoined)
                         } label: {
                             CommunityCard(community: community, action: isJoined ? "Joined" : "Join", tone: index + 1)
+                                .opacity(showCards ? 1 : 0)
+                                .offset(y: showCards ? 0 : 20)
+                                .animation(.interactive.delay(Double(index) * 0.06), value: showCards)
                         }
                         .buttonStyle(.plain)
                         .simultaneousGesture(TapGesture().onEnded {
@@ -327,6 +349,9 @@ struct CommunitiesPrototypeView: View {
             }
             .task {
                 await appState.fetchCommunities()
+                withAnimation(.interactive) {
+                    showCards = true
+                }
             }
             .toolbar(.hidden, for: .navigationBar)
         }
@@ -381,6 +406,7 @@ struct CommunityDetailView: View {
 
                 HStack(spacing: 18) {
                     Label("\(community.membersCount) members", systemImage: "person.2")
+                        .contentTransition(.numericText())
                     Divider()
                     Label(community.meetingFormat, systemImage: "calendar")
                 }
@@ -430,6 +456,7 @@ struct CommunityDetailView: View {
                         }
 
                         Label("\(community.membersCount) members", systemImage: "person.2")
+                            .contentTransition(.numericText())
                         Label(community.themes.joined(separator: " · "), systemImage: "tag")
                     }
                     .font(PrototypeTypography.metadata)
