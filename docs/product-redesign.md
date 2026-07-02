@@ -466,108 +466,7 @@ Update voice interview system prompt to discover interests with depth, not just 
 
 ## UI/UX Design Language
 
-The app must feel polished, sophisticated, and elegant. First impression determines if the user tries the app or quits. Every interaction should feel intentional, calm, and warm.
-
-### Foundation (already exists — stays)
-
-- Warm cream canvas (#FAF7F1), deep green accent (#0F4A3D)
-- SF native typography (existing PrototypeTypography scale)
-- FeatureCard with top rule line, ScreenContainer with eyebrow + subtitle
-- Entrance animations (existing likemindedEntrance modifier)
-
-### Motion principles
-
-Spring as default animation curve everywhere. Three reusable constants:
-
-| Animation | Values | Use |
-|-----------|--------|-----|
-| Interactive | spring(response: 0.38, dampingFraction: 0.82) | Tab switches, toggles, button taps |
-| Celebratory | spring(response: 0.50, dampingFraction: 0.70) | Profile complete, soulmate match |
-| Snappy | spring(response: 0.30, dampingFraction: 0.85) | Buttons, small controls |
-
-Additional motion patterns:
-- Staggered entrance: cards animate in one at a time, 0.06s delay between each, fade + slide up 20pt
-- contentTransition(.numericText()) for count changes
-- contentTransition(.opacity) for state label changes
-- scrollTransition on horizontal card scrolls — edge cards scale to 0.92, opacity 0.7
-- .background(.regularMaterial) for tab bar, sheets, chat composer — frosted glass that takes on warm cream tint
-
-### Tab bar
-
-Custom tab bar, not system UITabBar. SF Symbols with scale bounce on selection (1.1 → 1.0 spring). Selected tab shows label text; unselected show icon only. Background: .ultraThinMaterial for frosted glass. Soulmate tab appears/disappears with spring animation when toggled.
-
-### Onboarding (pre-voice-interview)
-
-Single-field-per-screen wizard, not a scrollable form. Each step is one question, centered, with the keyboard sliding up beneath. Progress dots at top (thin capsules). Transitions between steps: current slides out left, next slides in right, spring 0.38/0.82.
-
-Steps:
-1. Name — single text field, "What should we call you?"
-2. Gender — three large tappable cards (Male / Female / Non-binary), not a picker
-3. Date of birth — wheel picker inset in rounded container, no labels
-4. City — text field with autocomplete
-5. Pincode — numeric text field
-
-After last step → voice interview starts immediately. No "review" screen, no dead end.
-
-### Voice interview UI
-
-Pulsing orb, not a waveform or mic icon. Radial gradient (accent green, soft center to transparent edge). Responds to audio amplitude — expands/contracts with voice. Four states with cross-faded transitions:
-
-| State | Visual |
-|-------|--------|
-| Idle | Small orb, gentle pulse (PhaseAnimator) |
-| Listening | Orb expands with amplitude, thin audio level bar below |
-| Processing | Orb contracts, subtle spinner |
-| Captured | Checkmark, orb fades to rest |
-
-Orb sits in the existing green hero card (PrototypePalette.accent background) but replaces the mic icon + status pills with the orb as the single focal point. Status text below orb (existing voiceTitle logic stays, but simpler).
-
-### Profile personality display
-
-Trait bars with gradient fills, not percentages or gauges. Horizontal capsule, fill is LinearGradient from accent to accent.opacity(0.4). Left/right labels (e.g., "Reserved" ← → "Outgoing"). No numbers.
-
-Big Five shown as 5 trait bars stacked. Below: signal tabs (Communication / Energy / Trust) using existing SegmentedSignalRow. Each tab shows one TraitBar + detail text.
-
-Interests as tag chips with depth encoding:
-- Deep: filled accent background, white text
-- Active: outlined accent border, accent text
-- Casual: muted background, subink text
-
-### Circles + Communities cards
-
-Gradient background cards (not flat surface). Each circle archetype gets a unique subtle gradient (variations on green/cream/teal). Card contains: circle name (white text on gradient), room energy line, member count, 2-3 theme tags as translucent pills. No avatar stack for MVP (no user photos yet) — use member count number instead.
-
-Horizontal scroll for "Available circles" section, peeking next card. scrollTransition scales edge cards down. "Your circle" is a larger featured card at top, full width.
-
-### Meet RSVP
-
-Toggle pill, not a button. Two-row layout:
-- Saturday row: "Community meetup" + toggle (Available / Not)
-- Sunday row: "Circle meetup" + toggle (Available / Not)
-
-Toggle uses matchedGeometryEffect — the selected segment slides into place with spring. Haptic on toggle (.sensoryFeedback).
-
-Upcoming meetup card: gradient header strip, day/time line, countdown ("2d 4h away" in monospacedDigit), host name, group size, Join button. Join button activates at meetup time with a pulse animation.
-
-### Chat (Soulmate matches)
-
-Bubble-only, no separators, no avatars in 1:1. Generous spacing (10pt between messages). Max bubble width 70% of screen. Outgoing: accent green, white text. Incoming: surface color, ink text. Rounded 18pt continuous corners.
-
-Composer pinned at bottom with .regularMaterial background. Rounded text field (expands 1-4 lines) + arrow.up.circle.fill send button in accent. Send disabled when empty.
-
-Typing indicator: three small circles animating sequentially inside a bubble-shaped container.
-
-Conversation list (top-right chat icon): simple list rows. Name, last message preview, timestamp. Tap → chat view with push transition.
-
-### Soulmate match → interest profile view
-
-Before chat, match detail shows the other person's interests as tag chips (same depth encoding as Profile). Push transition from matches list. Chat icon top-right in the match detail view opens the conversation.
-
-### Navigation transitions
-
-- Push (.navigationDestination) for hierarchical: circle detail, community detail, match detail, chat view
-- Sheet (.sheet with presentationDetents) for modal tasks: edit profile, RSVP, onboarding steps (if needed), concern submission
-- matchedGeometryEffect for circle card → circle detail hero transition when tapped
+Design language is owned by `DESIGN.md`. Keep this product strategy doc focused on product behavior and implementation order.
 
 ---
 
@@ -597,7 +496,7 @@ Before chat, match detail shows the other person's interests as tag chips (same 
 4. **Communities tab**: backend `COMMUNITY_ARCHETYPES` + `seedCommunities()` + routes. Saturday meetup flow. Delete `PrototypeData.communities`.
 5. **Soulmate tab**: opt-in toggle, post-meet selection flow, matches list with interest profile view + chat. Backend: soulmate model + routes + chat message storage.
 6. **Root tab restructure**: rename Talk → Meet, add Soulmate (conditional), update `AppTab` enum.
-7. **Update docs**: `app-design-language.md`, `product-direction.md`, `PROGRESS.md` (Phase 2.5).
+7. **Update docs**: `DESIGN.md`, `product-direction.md`, `PROGRESS.md` (Phase 2.5).
 
 ### Dependencies
 

@@ -14,7 +14,7 @@ Reference for stable Like-minded-app repo facts. This doc owns current repo evid
 - `POST /v1/realtime/session` and `POST /v1/realtime/calls` require an app session and broker OpenAI Realtime access when `OPENAI_API_KEY` is configured server-side. Production defaults to `gpt-realtime-2`; local testing uses `OPENAI_REALTIME_MODEL=gpt-realtime-1.5`.
 - The iOS SwiftUI app is now auth-gated with Sign in with Apple, has MVP tabs `Talk`, `Circles`, `Communities`, and `Profile`, and uses bundle id `com.likeminded.app`.
 - The macOS SwiftUI target lives in `apps/ios-macos/Sources/LikemindedMac`, uses bundle id `com.likeminded.mac`, and shares the `LIKEMINDED_API_BASE_URL` backend contract with the iOS app.
-- UI information architecture and copy density are owned by `docs/references/app-design-language.md`.
+- UI information architecture, copy density, and visual language are owned by `DESIGN.md`.
 - The Talk surface uses `RealtimeVoiceClient` to connect to OpenAI Realtime over WebRTC through the backend, request microphone permission, stream PCM audio chunks, and commit voice input for signal extraction
 - The iOS native run surface is `./script/build_and_run.sh`, which generates the Xcode project, builds the `Likeminded` iOS target, and launches it in the simulator
 - The macOS native validation surface is `(cd apps/ios-macos && xcodegen generate)` followed by `xcodebuild -project Likeminded.xcodeproj -scheme LikemindedMac -destination 'platform=macOS' build`.

@@ -9,6 +9,19 @@
     "docs/workflows/validation.md",
     "docs/product-redesign.md"
   ],
+  "design_references": {
+    "owner": "DESIGN.md",
+    "purpose": "Single source of truth for Like-minded visual language, copy tone, interaction principles, and iOS/macOS design rules.",
+    "mockups": {
+      "ios": "mockups/ios/",
+      "macos": "mockups/macos/"
+    },
+    "usage": [
+      "Before iOS native UI work, consult DESIGN.md and the relevant screen-range images in mockups/ios/.",
+      "Before macOS native UI work, consult DESIGN.md and the relevant screen-range images in mockups/macos/.",
+      "Skip mockups for backend-only, validation-only, or non-visual changes."
+    ]
+  },
   "validation_inventory": {
     "local_simulator": {
       "script": "script/verify_simulator_local.sh",
