@@ -30,6 +30,13 @@ struct MacRootView: View {
         .foregroundStyle(MacPalette.ink)
         .task {
             await appState.signInForLocalValidationIfNeeded()
+            if appState.isSignedIn {
+                await appState.fetchMeetings()
+                await appState.fetchCircles()
+                await appState.fetchCommunities()
+                await appState.fetchSoulmateStatus()
+                await appState.fetchNotifications()
+            }
         }
         .onReceive(NotificationCenter.default.publisher(for: .macPrototypeSelectMeet)) { _ in selectedScreen = .meetOverview }
         .onReceive(NotificationCenter.default.publisher(for: .macPrototypeSelectCircles)) { _ in selectedScreen = .circlesRoom }

@@ -168,7 +168,7 @@ check_screen_integration() {
         print_fail "Circles screen missing appState.fetchCircles()"
     fi
 
-    if grep -q "appState.circles.map" "$screens_file" 2>/dev/null; then
+    if grep -Eq "appState\.circles(\.map|\.enumerated\(\))" "$screens_file" 2>/dev/null; then
         print_pass "Circles screen displays circles from appState"
     else
         print_fail "Circles screen not using appState.circles"
@@ -181,7 +181,7 @@ check_screen_integration() {
         print_fail "Communities screen missing appState.fetchCommunities()"
     fi
 
-    if grep -q "appState.communities.map" "$screens_file" 2>/dev/null; then
+    if grep -Eq "appState\.communities(\.map|\.enumerated\(\))" "$screens_file" 2>/dev/null; then
         print_pass "Communities screen displays communities from appState"
     else
         print_fail "Communities screen not using appState.communities"

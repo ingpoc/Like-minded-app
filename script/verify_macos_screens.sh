@@ -54,6 +54,31 @@ wait_for_api() {
   exit 1
 }
 
+capture_likeminded_window() {
+  local output_path="$1"
+  local window_id
+  window_id="$(python3 - <<'PY'
+import Quartz
+
+windows = Quartz.CGWindowListCopyWindowInfo(
+    Quartz.kCGWindowListOptionOnScreenOnly | Quartz.kCGWindowListExcludeDesktopElements,
+    Quartz.kCGNullWindowID,
+)
+for window in windows:
+    owner = window.get("kCGWindowOwnerName") or ""
+    bounds = window.get("kCGWindowBounds", {})
+    if owner.startswith("Likeminded") and bounds.get("Width", 0) > 400 and bounds.get("Height", 0) > 300:
+        print(window["kCGWindowNumber"])
+        break
+PY
+)"
+  if [[ -n "$window_id" ]]; then
+    screencapture -x -l "$window_id" "$output_path"
+  else
+    screencapture -x -R80,80,1200,760 "$output_path"
+  fi
+}
+
 mkdir -p "$OUT_DIR"
 "$ROOT_DIR/script/run_validation_api.sh" >"$API_LOG" 2>&1 &
 api_pid="$!"
@@ -70,20 +95,22 @@ xcodebuild \
 
 for screen in "${screens[@]}"; do
   pkill -x LikemindedMac >/dev/null 2>&1 || true
-  open -n "$APP_PATH" --args --mac-screen "$screen"
-  sleep 1
-  osascript <<'APPLESCRIPT' >/dev/null
-tell application "LikemindedMac" to activate
-delay 0.2
-tell application "System Events"
-  tell process "LikemindedMac"
-    set frontmost to true
-    set size of window 1 to {1200, 760}
-    set position of window 1 to {80, 80}
+  open -F -n "$APP_PATH" --args --likeminded-reset-auth-session --likeminded-dev-auth-bypass --likeminded-dev-auth-token validation-priya --likeminded-dev-auth-name "Priya Shah" --mac-screen "$screen"
+  sleep 3
+  osascript <<'APPLESCRIPT' >/dev/null || true
+with timeout of 3 seconds
+  tell application "LikemindedMac" to activate
+  delay 0.2
+  tell application "System Events"
+    tell process "LikemindedMac"
+      set frontmost to true
+      set size of window 1 to {1200, 760}
+      set position of window 1 to {80, 80}
+    end tell
   end tell
-end tell
+end timeout
 APPLESCRIPT
-  screencapture -x -R80,80,1200,760 "$OUT_DIR/$screen.png"
+  capture_likeminded_window "$OUT_DIR/$screen.png"
 done
 
 (cd "$ROOT_DIR" && npm run remove:validation-data >/tmp/likeminded-validation-remove.log)

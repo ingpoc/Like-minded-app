@@ -2,7 +2,7 @@ import SwiftUI
 
 struct RootView: View {
     @EnvironmentObject private var appState: PrototypeAppState
-    @State private var selection: AppTab = .meet
+    @State private var selection: AppTab = RootView.initialSelection()
 
     var body: some View {
         Group {
@@ -61,5 +61,14 @@ struct RootView: View {
         case .soulmate:
             SoulmatePrototypeView()
         }
+    }
+
+    private static func initialSelection() -> AppTab {
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("--likeminded-start-profile") {
+            return .profile
+        }
+        #endif
+        return .meet
     }
 }

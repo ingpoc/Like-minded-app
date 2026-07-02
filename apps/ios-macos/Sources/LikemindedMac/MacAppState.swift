@@ -46,10 +46,11 @@ final class MacAppState: ObservableObject {
     func signInForLocalValidationIfNeeded() async {
         #if DEBUG
         let environment = ProcessInfo.processInfo.environment
-        guard environment["LIKEMINDED_DEV_AUTH_BYPASS"] == "1" || ProcessInfo.processInfo.arguments.contains("--likeminded-dev-auth-bypass") else { return }
+        let arguments = ProcessInfo.processInfo.arguments
+        guard environment["LIKEMINDED_DEV_AUTH_BYPASS"] == "1" || arguments.contains("--likeminded-dev-auth-bypass") else { return }
         // Default to validation-gurusharan (primary seeded user with prod-like data).
-        let identityToken = environment["LIKEMINDED_DEV_AUTH_TOKEN"] ?? "validation-gurusharan"
-        let fullName = environment["LIKEMINDED_DEV_AUTH_NAME"] ?? "Gurusharan Gupta"
+        let identityToken = Self.argumentValue(after: "--likeminded-dev-auth-token", in: arguments) ?? environment["LIKEMINDED_DEV_AUTH_TOKEN"] ?? "validation-gurusharan"
+        let fullName = Self.argumentValue(after: "--likeminded-dev-auth-name", in: arguments) ?? environment["LIKEMINDED_DEV_AUTH_NAME"] ?? "Gurusharan Gupta"
         isAuthenticating = true
         authError = nil
         do {
@@ -64,6 +65,13 @@ final class MacAppState: ObservableObject {
         }
         isAuthenticating = false
         #endif
+    }
+
+    private static func argumentValue(after flag: String, in arguments: [String]) -> String? {
+        guard let index = arguments.firstIndex(of: flag), arguments.indices.contains(index + 1) else {
+            return nil
+        }
+        return arguments[index + 1]
     }
 
     private func saveSessionAndLoadPlacement(_ response: AppleAuthResponse) async {

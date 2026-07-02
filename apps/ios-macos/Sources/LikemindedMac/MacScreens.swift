@@ -121,8 +121,10 @@ struct MacScreenView: View {
                 if appState.isSignedIn {
                     if let meeting = appState.upcomingMeetings.first {
                         heroCard(meeting)
+                            .frame(minWidth: 560)
                     } else {
                         emptyMeetupCard
+                            .frame(minWidth: 560)
                     }
                     availabilityPanel
                 } else {
@@ -507,8 +509,8 @@ struct MacScreenView: View {
     // MARK: - 6. communitiesBrowse
 
     private var communitiesBrowse: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            HStack(spacing: 12) {
+        HStack(alignment: .top, spacing: 24) {
+            VStack(alignment: .leading, spacing: 18) {
                 HStack(spacing: 8) {
                     Image(systemName: "magnifyingglass")
                         .foregroundStyle(MacPalette.muted)
@@ -520,19 +522,21 @@ struct MacScreenView: View {
                 .padding(12)
                 .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 14))
                 .overlay(RoundedRectangle(cornerRadius: 14).stroke(MacPalette.line, lineWidth: 1))
-                HStack(spacing: 8) {
+                VStack(alignment: .leading, spacing: 8) {
                     MacPill(text: "All", isSelected: true)
                     MacPill(text: "Trending", isSelected: false)
                     MacPill(text: "Nearby", isSelected: false)
                     MacPill(text: "New", isSelected: false)
                 }
+                createCommunityCard
             }
-            LazyVGrid(columns: [GridItem(.flexible(), spacing: 18), GridItem(.flexible(), spacing: 18)], spacing: 18) {
+            .frame(width: 280)
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 18), count: 3), spacing: 18) {
                 ForEach(Array(appState.communities.enumerated()), id: \.offset) { index, community in
                     communityCard(community, index: index)
                 }
-                createCommunityCard
             }
+            .frame(maxWidth: .infinity)
         }
         .task {
             await appState.fetchCommunities()
@@ -587,6 +591,7 @@ struct MacScreenView: View {
         }
         .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(MacPalette.line, lineWidth: 1))
+        .frame(minHeight: 230)
     }
 
     private var createCommunityCard: some View {
@@ -606,6 +611,7 @@ struct MacScreenView: View {
         .padding(32)
         .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(MacPalette.accent.opacity(0.3), style: StrokeStyle(lineWidth: 1.5, dash: [6, 4])))
+        .frame(minHeight: 230)
     }
 
     // MARK: - 7. communityDetail / circleDetail
@@ -832,31 +838,48 @@ struct MacScreenView: View {
     // MARK: - 11. soulmateDiscover
 
     private var soulmateDiscover: some View {
-        VStack(alignment: .leading, spacing: 24) {
-            // Minimal filter row — no sidebar per DESIGN.md
-            HStack(spacing: 12) {
+        HStack(alignment: .top, spacing: 24) {
+            MacPanel(title: "Filters") {
+                VStack(alignment: .leading, spacing: 14) {
+                    formLine("Age range", value: "24 to 32")
+                    Slider(value: .constant(0.45))
+                        .tint(MacPalette.accent)
+                    formLine("Distance", value: "25 km")
+                    tagWrap(["Jazz", "Books", "Design"])
+                    MacPill(text: "Active this week")
+                }
+            }
+            .frame(width: 250)
+
+            VStack(alignment: .leading, spacing: 18) {
+                HStack(spacing: 12) {
                 MacPill(text: "All", isSelected: true)
                 MacPill(text: "Nearby")
                 MacPill(text: "Interests")
                 Spacer()
-            }
-
-            // Match cards — the main content
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 20) {
+                    Button("New matches") {}
+                        .font(MacType.small.weight(.semibold))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(MacPalette.surface, in: Capsule())
+                        .overlay(Capsule().stroke(MacPalette.line, lineWidth: 1))
+                        .buttonStyle(.plain)
+                }
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 18), count: 3), spacing: 18) {
                     ForEach(appState.soulmateMatches) { match in
                         matchCard(match)
                     }
                 }
-            }
 
-            if appState.soulmateMatches.isEmpty {
-                Text("Matches will appear here after your meetups.")
-                    .font(MacType.body)
-                    .foregroundStyle(MacPalette.muted)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.top, 60)
+                if appState.soulmateMatches.isEmpty {
+                    Text("Matches will appear here after your meetups.")
+                        .font(MacType.body)
+                        .foregroundStyle(MacPalette.muted)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.top, 60)
+                }
             }
+            .frame(maxWidth: .infinity)
         }
         .task {
             if appState.isSignedIn && appState.soulmateEnabled {
@@ -907,7 +930,8 @@ struct MacScreenView: View {
             }
             .padding(14)
         }
-        .frame(width: 220)
+        .frame(maxWidth: .infinity)
+        .frame(minHeight: 330)
         .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(MacPalette.line, lineWidth: 1))
     }
@@ -933,6 +957,11 @@ struct MacScreenView: View {
             .frame(width: 360, height: 410)
             .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
             VStack(alignment: .leading, spacing: 18) {
+                Text("Meera, 27")
+                    .font(.system(size: 28, weight: .semibold, design: .serif))
+                Text("Writer · Bangalore · 5 km away")
+                    .font(MacType.body)
+                    .foregroundStyle(MacPalette.muted)
                 MacPanel(title: "About") {
                     Text("I love stories that make you feel something. Coffee, bookstores and long conversations are my love language.")
                         .font(MacType.body)
@@ -971,6 +1000,12 @@ struct MacScreenView: View {
                         .foregroundStyle(MacPalette.ink)
                         .buttonStyle(.plain)
                 }
+            }
+            .frame(maxWidth: .infinity)
+            VStack(alignment: .leading, spacing: 18) {
+                MacPanel(title: "You both like") {
+                    tagWrap(["Jazz music", "Long walks", "Books", "Thoughtful conversations"])
+                }
                 MacPanel(title: "Compatibility") {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("92%")
@@ -982,7 +1017,7 @@ struct MacScreenView: View {
                     }
                 }
             }
-            .frame(maxWidth: .infinity)
+            .frame(width: 280)
         }
     }
 
