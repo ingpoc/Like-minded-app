@@ -213,7 +213,7 @@ Tab restructure, custom tab bar, animation system, material backgrounds.
 ### Screen validation against mockups
 
 - [x] iOS screens 1-20 in `mockups/ios/` checked against `DESIGN.md`: auth, voice/profile, Meet states, Circles/detail, Communities/detail/settings, Soulmate/match/chat, and bottom dock model are represented by the current SwiftUI surfaces. Intentional MVP scope: generated people photos and richer live-call media remain mockup-only.
-- [x] macOS screens 1-20 in `mockups/macos/` inventoried against `DESIGN.md`: `MacPrototypeScreen` covers auth, Meet, Circles, Profile, Chat/Messages, Communities/detail/members/event, recap, Soulmate overview/discover/detail, notifications/activity, onboarding, and settings with the bottom floating dock model. Phase 8 audit evidence in `docs/references/macos-screen-audit.md` supersedes any parity claim: current macOS screens are static prototype screens, are not backend-backed, and still have mockup mismatches before validation closeout.
+- [x] macOS screens 1-20 in `mockups/macos/` inventoried against `DESIGN.md`: `MacPrototypeScreen` covers auth, Meet, Circles, Profile, Chat/Messages, Communities/detail/members/event, recap, Soulmate overview/discover/detail, notifications/activity, onboarding, and settings with the bottom floating dock model. Phase 8 audit evidence in `docs/references/macos-screen-audit.md` supersedes any parity claim: macOS backend connectivity now has pre-seeded validation DB evidence, while visual mockup mismatches remain before validation closeout.
 
 ## Phase 8 — Docs + Validation
 

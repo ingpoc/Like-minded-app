@@ -37,6 +37,8 @@ Use `npm run dev:api:validation` for repeatable local flow testing. It attaches 
 
 `npm run reset:validation-data` removes local validation users, profiles, meetings, memberships, soulmate matches, and messages from the attached local database, then reseeds them through the API. Use `npm run seed:validation-data` to seed only, and `npm run remove:validation-data` to clean up. Removal is local-only and refuses `DATABASE_URL`. For empty database or real-user local testing, use the normal API/database path instead of `dev:api:validation`.
 
+For native UI validation, do not use sparse local data as proof. Start `npm run dev:api:validation`, run `npm run reset:validation-data`, launch iOS and macOS against the same `LIKEMINDED_API_BASE_URL`, and compare screen-by-screen against `mockups/ios/` and `mockups/macos/`. Do not claim iOS/macOS behavior is seamless until both surfaces show the same seeded user state, tab ownership, settings/soulmate behavior, profile placement, meetings, communities, messages, and empty/error states.
+
 `npm run verify:macos-screens` starts the validation API against `data/validation-db`, resets seeded validation data, builds `LikemindedMac`, launches each `MacPrototypeScreen` deterministically with `--mac-screen`, captures screenshots under `output/validation/macos-screens/`, removes seeded data, and stops the validation API.
 
 `npm run verify:release-config` verifies TestFlight-critical static configuration:

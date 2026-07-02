@@ -635,9 +635,15 @@ async function handleRequest(req, res) {
     const user = await requireUser(req, res);
     if (!user) return;
     const profile = await getLatestProfile(user.id);
-    const circleList = profile
-      ? Array.from(circles.values()).filter((circle) => (circle.members || []).includes(profile.profileId)).map(circleSummary)
+    const placed = await getLatestPlacement(user.id);
+    const placementCircles = placed?.placement
+      ? [placed.placement.primaryCircle, ...(placed.placement.secondaryCircles || [])].filter(Boolean)
       : [];
+    const circleList = placementCircles.length > 0
+      ? placementCircles.map(circleSummary)
+      : profile
+        ? Array.from(circles.values()).filter((circle) => (circle.members || []).includes(profile.profileId)).map(circleSummary)
+        : [];
     json(res, 200, { circles: circleList });
     return;
   }
@@ -742,6 +748,79 @@ async function handleRequest(req, res) {
       upcoming: meetings.filter((meeting) => Date.parse(meeting.scheduledAt) >= now),
       past: meetings.filter((meeting) => Date.parse(meeting.scheduledAt) < now)
     });
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/v1/me/notifications") {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    const meetings = (await listMeetingsForUser(user.id)).map(meetingSummary);
+    const joinedCommunities = (await getJoinedCommunities(user.id)).map(communitySummary);
+    const matches = await getSoulmateMatches(user.id);
+    const notifications = [];
+    const activity = [];
+
+    for (const meeting of meetings.slice(0, 3)) {
+      notifications.push({
+        id: `meeting-${meeting.id}`,
+        title: meeting.title,
+        detail: meeting.compositionSummary || "A meetup is ready for you.",
+        createdAt: meeting.scheduledAt,
+        kind: "meeting"
+      });
+      activity.push({
+        id: `activity-meeting-${meeting.id}`,
+        title: `You have a ${meeting.kind} meetup: ${meeting.title}`,
+        detail: meeting.hostName || null,
+        createdAt: meeting.scheduledAt,
+        kind: "meeting"
+      });
+    }
+
+    for (const community of joinedCommunities.slice(0, 3)) {
+      activity.push({
+        id: `activity-community-${community.id}`,
+        title: `You joined ${community.name}`,
+        detail: community.summary || null,
+        createdAt: null,
+        kind: "community"
+      });
+    }
+
+    for (const match of matches.slice(0, 3)) {
+      const response = await matchResponse(user.id, match);
+      if (!response) continue;
+      const summary = soulmateMatchSummary(match, response.otherProfile, response.meeting);
+      notifications.push({
+        id: `match-${summary.matchId}`,
+        title: `New soulmate match: ${summary.name}`,
+        detail: response.meeting?.title || "Matched from a recent meetup.",
+        createdAt: summary.createdAt,
+        kind: "soulmate"
+      });
+      const messages = await getMessages(summary.matchId);
+      if (messages.length > 0) {
+        notifications.push({
+          id: `message-${messages[messages.length - 1].id}`,
+          title: `New message from ${summary.name}`,
+          detail: messages[messages.length - 1].text,
+          createdAt: messages[messages.length - 1].createdAt,
+          kind: "message"
+        });
+      }
+    }
+
+    if (notifications.length === 0) {
+      notifications.push({
+        id: "profile-ready",
+        title: "Your backend profile is ready",
+        detail: "Profile, circles, meetups, and soulmate state are synced.",
+        createdAt: new Date().toISOString(),
+        kind: "profile"
+      });
+    }
+
+    json(res, 200, { notifications, activity });
     return;
   }
 

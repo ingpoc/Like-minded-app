@@ -120,6 +120,12 @@
       "proves": "LikemindedMac builds and every MacPrototypeScreen can be launched and captured for mockup comparison."
     },
     {
+      "name": "macos_backend_connectivity",
+      "command": "npm run verify:macos-backend",
+      "cost": "zero_token",
+      "proves": "LikemindedMac app connects to backend API for auth, profile, circles, communities, meetings, soulmate, messages, and notifications; renders real data instead of static prototypes."
+    },
+    {
       "name": "local_simulator_validation",
       "command": "npm run verify:simulator-local",
       "cost": "zero_token",

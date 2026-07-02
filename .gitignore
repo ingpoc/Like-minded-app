@@ -13,5 +13,6 @@ __pycache__/
 *.pyc
 *.egg-info/
 codex.js
+.codex/proof/
 output/validation/
 release/testflight-evidence.json

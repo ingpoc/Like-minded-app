@@ -10,11 +10,16 @@ Global `/Users/gurusharan/.codex/AGENTS.md` owns instruction control. This file 
 - Current captures: `output/validation/macos-screens/`.
 - Capture command: `npm run verify:macos-screens`.
 - Backend seed command: `npm run seed:validation-data`.
-- Last local evidence: `npm run check` passed, `npm run reset:validation-data` passed, `npm run remove:validation-data` passed, and `npm run verify:macos-screens` captured all 20 screens while owning validation API setup and cleanup.
+- Last local screen-capture evidence: `npm run check` passed, `npm run reset:validation-data` passed, `npm run remove:validation-data` passed, and `npm run verify:macos-screens` captured all 20 screens while owning validation API setup and cleanup.
+- Backend connectivity evidence on 2026-07-02 used the existing pre-seeded `data/validation-db` rather than resetting it:
+  - `npm run dev:api:validation` served `data/validation-db` on `http://127.0.0.1:8787`.
+  - Direct auth as seeded user `validation-priya` returned backend data for `/v1/me/profile`, `/v1/me/placement`, `/v1/me/circles`, `/v1/circles/:id`, `/v1/communities`, `/v1/me/communities`, `/v1/meetings/upcoming`, `/v1/me/soulmate/matches`, `/v1/me/soulmate/matches/:id/messages`, and `/v1/me/notifications`.
+  - Evidence counts: profile name `Priya Shah`, profile interests `3`, placement circle `Reflective Builders`, joined circles `2`, joined communities `2`, upcoming meetings `1`, soulmate matches `1`, messages `1`, notifications `3`, activity items `3`.
+  - `npm run check`, `LIKEMINDED_API_BASE_URL=http://127.0.0.1:8787 npm run verify:macos-screens-backend`, and `LIKEMINDED_API_BASE_URL=http://127.0.0.1:8787 npm run verify:macos-backend` passed. The backend verifier includes `xcodebuild -project apps/ios-macos/Likeminded.xcodeproj -scheme LikemindedMac -destination 'platform=macOS' build`.
 
 ## Blocking Functional Finding
 
-The macOS app is not backend-backed yet. `apps/ios-macos/Sources/LikemindedMac` renders static prototype data and does not call the API. `MacBackendConfig` exists, but no macOS screen uses it for profile, circles, communities, meetings, soulmate, messages, or notifications. Backend validation data can now be seeded, but the current macOS UI cannot prove that data is rendered from the backend.
+Resolved for backend connectivity on 2026-07-02. `apps/ios-macos/Sources/LikemindedMac` now routes backend-facing state through `MacAppState` and `LikemindedAPIClient`, with the client using `MacBackendConfig.baseURLString`. Profile, circles, communities, meetings, soulmate matches, chat messages, and notifications have real API load paths. Remaining findings below are visual/product parity gaps against mockups, not evidence that the macOS target is prototype-only.
 
 ## Screen Findings
 
@@ -43,7 +48,7 @@ The macOS app is not backend-backed yet. `apps/ios-macos/Sources/LikemindedMac` 
 
 ## Required Fix Order
 
-1. Wire macOS to backend-backed state for auth bypass, profile, circles, communities, meetings, soulmate, messages, and notifications, or clearly mark the target as prototype-only.
+1. Re-run a screen-capture validation that preserves the pre-seeded validation DB, or intentionally run `npm run verify:macos-screens` when resetting/removing validation data is acceptable.
 2. Fix the highest-impact layout mismatches: Meet Overview, Communities Browse, Community Detail, Soulmate Discover, Soulmate Detail, and Circle Detail.
 3. Replace placeholder gradient/person cards with real generated or backend-provided image fields before claiming visual parity.
 4. Re-run `npm run seed:validation-data`, `npm run verify:macos-screens`, and compare the regenerated contact sheet before Phase 8 validation closeout.

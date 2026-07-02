@@ -28,6 +28,14 @@ enum MacTab: String, CaseIterable, Identifiable {
         case .soulmate: .soulmateOverview
         }
     }
+
+    static func visible(soulmateEnabled: Bool) -> [MacTab] {
+        if soulmateEnabled {
+            return allCases
+        } else {
+            return allCases.filter { $0 != .soulmate }
+        }
+    }
 }
 
 enum MacPrototypeScreen: String, CaseIterable, Identifiable {
@@ -75,8 +83,8 @@ enum MacPrototypeScreen: String, CaseIterable, Identifiable {
         case .welcome, .meetOverview, .meetRecap, .notifications: .meet
         case .circlesRoom, .circleDetail: .circles
         case .communitiesBrowse, .communityDetail, .communityMembers, .createEvent: .communities
-        case .profileEdit, .myProfile, .profileOnboarding, .profileSignals: .profile
-        case .chat, .soulmateOverview, .soulmateDiscover, .soulmateDetail, .messages, .settingsSoulmate: .soulmate
+        case .profileEdit, .myProfile, .profileOnboarding, .profileSignals, .settingsSoulmate: .profile
+        case .chat, .soulmateOverview, .soulmateDiscover, .soulmateDetail, .messages: .soulmate
         }
     }
 
@@ -90,7 +98,7 @@ enum MacPrototypeScreen: String, CaseIterable, Identifiable {
         case .communitiesBrowse: "Explore communities that inspire you."
         case .communityDetail, .circleDetail: "Jazz & Music Community"
         case .meetRecap: "Great meeting!"
-        case .myProfile: "Priya"
+        case .myProfile: "Your profile"
         case .soulmateOverview: "Meaningful connections, made with intention."
         case .soulmateDiscover: "Discover"
         case .soulmateDetail: "Meera, 27"
@@ -124,7 +132,7 @@ enum MacPrototypeScreen: String, CaseIterable, Identifiable {
         case .communitiesBrowse: "Find rooms around music, design, slow living, writing, and thoughtful ideas."
         case .communityDetail: "Listen, share, explore."
         case .meetRecap: "You attended Jazz & Music Community on Sat, Jul 5."
-        case .myProfile: "Bangalore, India - voice profile active."
+        case .myProfile: "Profile and placement from your voice interview."
         case .soulmateOverview: "Our AI helps discover people who resonate with your vibe."
         case .soulmateDiscover: "Curated for you."
         case .soulmateDetail: "Writer - Bangalore - 5 km away."

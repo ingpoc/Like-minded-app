@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		00C5C47C4D3A69486DC493D3 /* LikemindedMacApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7700EF7A1FAAF31D9ACEF8F4 /* LikemindedMacApp.swift */; };
 		0F0F08547C69AA374756B919 /* LiveKitTokenProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A931FF701084ED1753234F3A /* LiveKitTokenProvider.swift */; };
+		132444A82981B36C69EF5C56 /* LikemindedAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14190A43716DF2A52AB8F7DD /* LikemindedAPIClient.swift */; };
 		1434DA300C4A5A2400A859A3 /* PrototypeModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8C121E18E6BF523CE92D82 /* PrototypeModels.swift */; };
 		1C099E485B7A23A87435717E /* DeviceIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D8F9C153E1CAAA2E1D4B53 /* DeviceIdentity.swift */; };
 		29D0CE0EDA18A3BB956B5C6E /* VoiceOrbView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0C1C21CE1F16D519FC056E /* VoiceOrbView.swift */; };
@@ -36,12 +37,15 @@
 		D0960611CC66E6642F609ACD /* ProfilePrototypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75C0F95C041A6C7D0D328202 /* ProfilePrototypeView.swift */; };
 		E4C21F153CB397BCA7E4CF65 /* MeetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7107FDFB96FB4B6E50291C /* MeetView.swift */; };
 		E5F05FF2F77CDC1BC4866782 /* PrototypeComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83237B0C66BA3537CAB89B87 /* PrototypeComponents.swift */; };
+		EA5E724579022F5894D30BCE /* MacAppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C848990D583124075A5332A9 /* MacAppState.swift */; };
 		F278DF831E8C66D2F941194F /* TodayPrototypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DCC1BCF1EB18B6214EB4BAA /* TodayPrototypeView.swift */; };
+		F5B8DF9B8360B797123A8F3F /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99419D847C29F69421A296E7 /* Models.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0A0C1C21CE1F16D519FC056E /* VoiceOrbView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceOrbView.swift; sourceTree = "<group>"; };
 		12C36748D06319EACF593DE7 /* LikemindedMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LikemindedMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		14190A43716DF2A52AB8F7DD /* LikemindedAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikemindedAPIClient.swift; sourceTree = "<group>"; };
 		181BFC9B2D93330133F5C993 /* MacPrototypeData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacPrototypeData.swift; sourceTree = "<group>"; };
 		2B0C51AF9D64677B65F8D49A /* AuthGateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthGateView.swift; sourceTree = "<group>"; };
 		2E4CC542091C9D3F04D1DE21 /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
@@ -60,11 +64,13 @@
 		7700EF7A1FAAF31D9ACEF8F4 /* LikemindedMacApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikemindedMacApp.swift; sourceTree = "<group>"; };
 		83237B0C66BA3537CAB89B87 /* PrototypeComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrototypeComponents.swift; sourceTree = "<group>"; };
 		8C8C121E18E6BF523CE92D82 /* PrototypeModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrototypeModels.swift; sourceTree = "<group>"; };
+		99419D847C29F69421A296E7 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		9D7107FDFB96FB4B6E50291C /* MeetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetView.swift; sourceTree = "<group>"; };
 		A931FF701084ED1753234F3A /* LiveKitTokenProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveKitTokenProvider.swift; sourceTree = "<group>"; };
 		BC3A363F271D17248AADFD13 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		C615B2CB5D4009DE9EDF7F48 /* PrototypeAppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrototypeAppState.swift; sourceTree = "<group>"; };
 		C716780C8187703C6E293080 /* PrototypeData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrototypeData.swift; sourceTree = "<group>"; };
+		C848990D583124075A5332A9 /* MacAppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacAppState.swift; sourceTree = "<group>"; };
 		CDF2490A9727FEEB417EED9F /* AuthSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthSessionStore.swift; sourceTree = "<group>"; };
 		CF864D6E37CD7289F92855DF /* CommunitiesPrototypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunitiesPrototypeView.swift; sourceTree = "<group>"; };
 		E11E3DAEAEA4F6D6B35D2D32 /* SettingsPrototypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPrototypeView.swift; sourceTree = "<group>"; };
@@ -138,11 +144,14 @@
 		6E51BDA68770073E19BBE3B1 /* LikemindedMac */ = {
 			isa = PBXGroup;
 			children = (
+				14190A43716DF2A52AB8F7DD /* LikemindedAPIClient.swift */,
 				7700EF7A1FAAF31D9ACEF8F4 /* LikemindedMacApp.swift */,
+				C848990D583124075A5332A9 /* MacAppState.swift */,
 				E35A6097677BF379E314306E /* MacDesignSystem.swift */,
 				181BFC9B2D93330133F5C993 /* MacPrototypeData.swift */,
 				40664BF795D4C75998E0D941 /* MacRootView.swift */,
 				F693CC73A97F4BA64FD34B2D /* MacScreens.swift */,
+				99419D847C29F69421A296E7 /* Models.swift */,
 			);
 			path = LikemindedMac;
 			sourceTree = "<group>";
@@ -301,11 +310,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				132444A82981B36C69EF5C56 /* LikemindedAPIClient.swift in Sources */,
 				00C5C47C4D3A69486DC493D3 /* LikemindedMacApp.swift in Sources */,
+				EA5E724579022F5894D30BCE /* MacAppState.swift in Sources */,
 				9917E4D207930B06A316F53D /* MacDesignSystem.swift in Sources */,
 				31D1987C09EEBD76447D0DF7 /* MacPrototypeData.swift in Sources */,
 				8298F29B28F7DBDF337EDD96 /* MacRootView.swift in Sources */,
 				7CB71404A390802C745BF8F1 /* MacScreens.swift in Sources */,
+				F5B8DF9B8360B797123A8F3F /* Models.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

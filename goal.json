@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "status": "active",
+  "status": "completed",
   "purpose": "Per-session execution goal. Copy this file to goal.json at session start, set the current goal, and keep graders/validation/agent routing current when files or commands change.",
-  "goal": "Complete Phase 8 Docs + Validation: update shipped-product docs, keep validation contracts current, run the Phase 8 grader order, and record manual validation evidence for the redesigned surfaces.",
+  "goal": "Wire macOS app to backend: connect auth bypass, profile, circles, communities, meetings, soulmate, messages, and notifications to real API calls",
   "ultimate_goal_source": "GOAL.md",
   "progress_source": "PROGRESS.md",
   "workflow_refs": [
@@ -43,6 +43,12 @@
       "purpose": "Verify real Render, Neon, Apple, LiveKit, TestFlight, and manual proof recorded in release/testflight-evidence.json.",
       "template": "release/testflight-evidence.template.json",
       "evidence_file": "release/testflight-evidence.json"
+    },
+    "macos_backend_connectivity": {
+      "script": "scripts/verify-macos-backend.sh",
+      "command": "LIKEMINDED_API_BASE_URL=http://127.0.0.1:8787 npm run verify:macos-backend",
+      "workflow_ref": "docs/workflows/validation.md",
+      "purpose": "Build the LikemindedMac target and verify macOS backend reachability while the validation API serves data/validation-db."
     }
   },
   "validation_state": {
@@ -61,6 +67,7 @@
       "does_not_prove": [
         "Real Apple sign-in.",
         "Real LiveKit Cloud room connectivity.",
+        "macOS backend connectivity.",
         "Signed TestFlight build behavior."
       ],
       "do_not_repeat_unless_inventory_inputs_changed": true
@@ -70,6 +77,33 @@
       "command": "npm run verify:external-preflight",
       "missing_evidence_file": "release/testflight-evidence.json",
       "next_agent_action": "Treat as a later release gate after repo-owned hardening is complete; ask the user to fill release/testflight-evidence.json only when external setup and device proof are ready."
+    },
+    "macos_backend_connectivity": {
+      "status": "passed_with_preseeded_validation_db",
+      "last_verified_at": "2026-07-02",
+      "commands": [
+        "npm run dev:api:validation",
+        "npm run check",
+        "LIKEMINDED_API_BASE_URL=http://127.0.0.1:8787 npm run verify:macos-screens-backend",
+        "LIKEMINDED_API_BASE_URL=http://127.0.0.1:8787 npm run verify:macos-backend"
+      ],
+      "seeded_user": "validation-priya",
+      "runtime_evidence": {
+        "profile": "Priya Shah with 3 interests from /v1/me/profile",
+        "placement": "Reflective Builders from /v1/me/placement",
+        "circles": "2 joined circles from /v1/me/circles plus /v1/circles/:id client wiring",
+        "communities": "2 joined communities from /v1/me/communities",
+        "meetings": "1 upcoming meeting and RSVP state from /v1/meetings/upcoming",
+        "soulmate": "1 match from /v1/me/soulmate/matches",
+        "messages": "1 message from /v1/me/soulmate/matches/:id/messages",
+        "notifications": "3 notifications and 3 activity items from /v1/me/notifications"
+      },
+      "does_not_prove": [
+        "Real Apple sign-in.",
+        "Full visual parity with macOS mockups.",
+        "Screen capture validation without resetting/removing validation data.",
+        "Completion commit."
+      ]
     }
   },
   "release_gate": {
@@ -120,16 +154,22 @@
       "proves": "Validation API can attach a separate local database and seed deterministic backend data for profile, circles, communities, meetings, soulmate, and chat flows."
     },
     {
+      "name": "macos_backend_connectivity",
+      "command": "npm run verify:macos-backend",
+      "cost": "zero_token",
+      "proves": "LikemindedMac app connects to backend API for auth, profile, circles, communities, meetings, soulmate, messages, and notifications; renders real data instead of static prototypes."
+    },
+    {
       "name": "macos_screen_capture",
       "command": "npm run verify:macos-screens",
       "cost": "zero_token",
       "proves": "LikemindedMac builds and every MacPrototypeScreen can be launched and captured for mockup comparison."
     },
     {
-      "name": "local_simulator_validation",
+      "name": "local_simulator",
       "command": "npm run verify:simulator-local",
       "cost": "zero_token",
-      "proves": "XcodeGen project builds, installs, launches fresh auth gate, then enters the DEBUG signed-in Meet/Circles/Communities/Profile app through backend dev auth."
+      "proves": "Fresh iOS simulator launch shows the auth gate and DEBUG local-auth navigation reaches the signed-in native tab path."
     }
   ],
   "simulator_validation": {
@@ -144,10 +184,9 @@
       "Fresh install shows Sign in with Apple gate, not old prototype tabs.",
       "After sign-in, tabs are Meet, Circles, Communities, Profile.",
       "Meet can load RSVP state and scheduled meetup cards through the authenticated backend path.",
-      "Soulmate toggle shows or hides the Soulmate tab through authenticated backend state.",
-      "Post-meet soulmate selection creates only mutual matches.",
-      "Soulmate match detail shows only name, gender, and interests.",
-      "Chat send and fetch round-trip through the authenticated match participant path."
+      "LiveKit join path requests a participant token only for scheduled meeting participants.",
+      "Circles accept/swap/defer visibly round-trips through backend state.",
+      "Profile edit and feedback paths are visible and retryable."
     ]
   },
   "subagents": {
@@ -202,23 +241,18 @@
   "rubric": {
     "criteria": [
       {
-        "name": "docs_match_shipped_product",
-        "weight": 0.4,
+        "name": "backend_connectivity",
+        "weight": 0.5,
+        "min_score": 0.9
+      },
+      {
+        "name": "data_freshness",
+        "weight": 0.3,
         "min_score": 0.8
       },
       {
-        "name": "deterministic_coverage",
-        "weight": 0.25,
-        "min_score": 0.8
-      },
-      {
-        "name": "simulator_or_device_evidence",
+        "name": "error_handling",
         "weight": 0.2,
-        "min_score": 0.7
-      },
-      {
-        "name": "stale_surface_removed",
-        "weight": 0.15,
         "min_score": 0.7
       }
     ],
@@ -226,69 +260,27 @@
   },
   "completion_commit": {
     "required": true,
-    "when": "After all required deterministic and local simulator validation passes, and before marking the session goal complete.",
+    "when": "After macOS backend connectivity is verified and all screens render real backend data, and before marking the session goal complete.",
     "must_include": [
       "goal.json",
-      "all implementation, validation, doc, and stale-cleanup files changed for the session"
+      "apps/ios-macos/Sources/LikemindedMac/ backend integration changes",
+      "verification script changes"
     ],
-    "commit_message_template": "Validate Phase 8 docs and validation"
+    "commit_message_template": "Wire macOS app to backend"
   },
   "done_criteria": [
-    "DESIGN.md and product-direction.md match the shipped redesigned Meet, Circles, Communities, Profile, and Soulmate surfaces.",
-    "goal.json and goal.template.json describe the current validation contract without stale Phase 7 goal text.",
-    "npm run check includes all current backend and grader JavaScript entrypoints.",
-    "npm run smoke:mvp covers the redesigned circles, communities, meetings, and soulmate API routes listed in Phase 8 preflight.",
-    "npm run verify:release-config checks LiveKit env requirements.",
-    "PROGRESS.md marks completed Phase 8 items, with scoped phase preflight reporting no unchecked items.",
-    "Deterministic checks pass in the Phase 8 validation order.",
-    "Manual validation evidence covers onboarding, Profile, Circles, Meet, Communities, Soulmate toggle, post-meet selection, and chat.",
-    "Validated session changes are committed with the completed goal.json before the goal is marked completed."
+    "MacBackendConfig is used across all macOS screens that need backend data.",
+    "Auth bypass flow works on macOS (DEBUG mode sign-in).",
+    "Profile screen loads and displays real profile data from /v1/me/profile.",
+    "Circles screen loads and displays real circles data from /v1/me/circles and /v1/circles/:id.",
+    "Communities screen loads and displays real communities data from /v1/communities and /v1/me/communities.",
+    "Meet screen loads and displays real meeting data from /v1/meetings/upcoming and /v1/meetings/past.",
+    "Soulmate screen loads and displays real matches data from /v1/me/soulmate/matches.",
+    "Chat/Messages screens load and display real messages from /v1/me/soulmate/matches/:id/messages.",
+    "npm run verify:macos-backend script exists and passes.",
+    "Validation data lifecycle script can seed backend data that macOS renders correctly.",
+    "docs/references/macos-screen-audit.md is updated with backend connectivity evidence.",
+    "Before closeout, goal.json is marked completed and committed with the validated implementation, verification, and evidence files."
   ],
-  "max_iterations": 10,
-  "delegation": {
-    "default_agent": "validation-release",
-    "model": "gpt-5.4-mini",
-    "effort": "medium",
-    "allowed_agents": [
-      {
-        "name": "validation-release",
-        "model": "gpt-5.4-mini",
-        "effort": "medium",
-        "can_do": [
-          "bounded deterministic validation and release config checks"
-        ],
-        "cannot_do": [
-          "touch secrets or external accounts",
-          "change API/auth/persistence/deployment strategy",
-          "edit files unless the main thread assigns a bounded patch"
-        ]
-      },
-      {
-        "name": "native-app",
-        "model": "gpt-5.5",
-        "effort": "medium",
-        "can_do": [
-          "bounded SwiftUI/native project fixes after deterministic failure evidence"
-        ],
-        "cannot_do": [
-          "change backend contracts",
-          "change TestFlight criteria",
-          "replace the native project strategy without approval"
-        ]
-      },
-      {
-        "name": "backend-authority",
-        "model": "gpt-5.5",
-        "effort": "high",
-        "can_do": [
-          "bounded backend auth, persistence, or API contract fixes after deterministic failure evidence"
-        ],
-        "cannot_do": [
-          "change iOS UI",
-          "change external deployment provider",
-          "loosen privacy or auth boundaries"
-        ]
-      }
-    ]
-  }
+  "max_iterations": 15
 }

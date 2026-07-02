@@ -1,7 +1,9 @@
 import SwiftUI
 
 struct MacRootView: View {
+    @StateObject private var appState = MacAppState()
     @State private var selectedScreen: MacPrototypeScreen = .initial
+    @State private var returnScreen: MacPrototypeScreen?
 
     var body: some View {
         ZStack {
@@ -13,27 +15,56 @@ struct MacRootView: View {
                 titleBar
                 ScrollView(.vertical, showsIndicators: true) {
                     VStack(spacing: 18) {
-                        MacScreenView(screen: selectedScreen)
+                        MacScreenView(screen: selectedScreen, appState: appState)
                     }
                     .padding(.horizontal, 28)
-                    .padding(.bottom, 98)
+                    .padding(.bottom, 18)
                 }
-            }
-
-            VStack {
-                Spacer()
-                MacBottomNav(selectedTab: selectedScreen.tab) { tab in
+                MacBottomNav(selectedTab: activeTab, soulmateEnabled: appState.soulmateEnabled) { tab in
+                    returnScreen = nil
                     selectedScreen = tab.primaryScreen
                 }
-                .padding(.bottom, 22)
+                .padding(.bottom, 18)
             }
         }
         .foregroundStyle(MacPalette.ink)
+        .task {
+            await appState.signInForLocalValidationIfNeeded()
+        }
         .onReceive(NotificationCenter.default.publisher(for: .macPrototypeSelectMeet)) { _ in selectedScreen = .meetOverview }
         .onReceive(NotificationCenter.default.publisher(for: .macPrototypeSelectCircles)) { _ in selectedScreen = .circlesRoom }
         .onReceive(NotificationCenter.default.publisher(for: .macPrototypeSelectCommunities)) { _ in selectedScreen = .communitiesBrowse }
         .onReceive(NotificationCenter.default.publisher(for: .macPrototypeSelectProfile)) { _ in selectedScreen = .myProfile }
         .onReceive(NotificationCenter.default.publisher(for: .macPrototypeSelectSoulmate)) { _ in selectedScreen = .soulmateOverview }
+    }
+
+    private var activeTab: MacTab {
+        if selectedScreen == .messages, let returnScreen {
+            return returnScreen.tab
+        }
+        return selectedScreen.tab
+    }
+
+    private var titleActionIcon: String {
+        if selectedScreen == .settingsSoulmate || selectedScreen == .messages {
+            return "xmark"
+        }
+        return selectedScreen == .myProfile ? "gearshape" : "bubble.left.and.bubble.right"
+    }
+
+    private func performTitleAction() {
+        switch selectedScreen {
+        case .settingsSoulmate:
+            selectedScreen = .myProfile
+        case .messages:
+            selectedScreen = returnScreen ?? .meetOverview
+            returnScreen = nil
+        case .myProfile:
+            selectedScreen = .settingsSoulmate
+        default:
+            returnScreen = selectedScreen
+            selectedScreen = .messages
+        }
     }
 
     private var titleBar: some View {
@@ -47,11 +78,16 @@ struct MacRootView: View {
             Text("Likeminded")
                 .font(.system(size: 14, weight: .semibold, design: .rounded))
             Spacer()
-            Image(systemName: "bell")
-                .font(MacType.button)
-                .foregroundStyle(MacPalette.ink)
-                .frame(width: 30, height: 30)
-                .background(MacPalette.surface, in: Circle())
+            Button {
+                performTitleAction()
+            } label: {
+                Image(systemName: titleActionIcon)
+                    .font(MacType.button)
+                    .foregroundStyle(MacPalette.ink)
+                    .frame(width: 30, height: 30)
+                    .background(MacPalette.surface, in: Circle())
+            }
+            .buttonStyle(.plain)
         }
         .padding(.horizontal, 28)
         .padding(.vertical, 18)
@@ -60,11 +96,12 @@ struct MacRootView: View {
 
 struct MacBottomNav: View {
     let selectedTab: MacTab
+    let soulmateEnabled: Bool
     let select: (MacTab) -> Void
 
     var body: some View {
         HStack(spacing: 6) {
-            ForEach(MacTab.allCases) { tab in
+            ForEach(MacTab.visible(soulmateEnabled: soulmateEnabled)) { tab in
                 Button {
                     select(tab)
                 } label: {
