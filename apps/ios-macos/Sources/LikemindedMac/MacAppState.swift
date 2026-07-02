@@ -47,13 +47,16 @@ final class MacAppState: ObservableObject {
         #if DEBUG
         let environment = ProcessInfo.processInfo.environment
         guard environment["LIKEMINDED_DEV_AUTH_BYPASS"] == "1" || ProcessInfo.processInfo.arguments.contains("--likeminded-dev-auth-bypass") else { return }
+        // Default to validation-gurusharan (primary seeded user with prod-like data).
+        let identityToken = environment["LIKEMINDED_DEV_AUTH_TOKEN"] ?? "validation-gurusharan"
+        let fullName = environment["LIKEMINDED_DEV_AUTH_NAME"] ?? "Gurusharan Gupta"
         isAuthenticating = true
         authError = nil
         do {
             let response = try await client.authenticateWithApple(
-                identityToken: environment["LIKEMINDED_DEV_AUTH_TOKEN"] ?? "local-mac-tester",
+                identityToken: identityToken,
                 authorizationCode: nil,
-                fullName: "Mac Tester"
+                fullName: fullName
             )
             await saveSessionAndLoadPlacement(response)
         } catch {

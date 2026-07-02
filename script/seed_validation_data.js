@@ -18,7 +18,9 @@ const baseURL = process.env.LIKEMINDED_API_BASE_URL || "http://127.0.0.1:8787";
 // selection, soulmate matching, and realistic notification/chat volume.
 // ---------------------------------------------------------------------------
 const PEOPLE = [
-  // reflective-builders — 8 people (4M/4F), forms 1 circle group
+  // gurusharan = primary validation user (reflective-builders circle)
+  ["gurusharan", "Gurusharan Gupta", "male", "reflective-builders", ["AI","Startups","Design"], "Systems thinker who builds deliberately — high openness, analytical depth, warm underneath. Prefers small rooms with honest feedback over performative networking.", { o:.85,c:.80,e:.48,a:.72,n:.30, att:"secure",     se:"medium",     cs:"analytical", tp:"slowTrust",  hs:"observational", cf:"analytical" }],
+  // reflective-builders — 7 more (3M/4F), forms 1 circle group
   ["priya",    "Priya Shah",      "female", "reflective-builders", ["Design","Cooking","Tech"],     "Reflective host energy, warm direct speech, steady trust.",          { o:.78,c:.74,e:.44,a:.83,n:.28, att:"secure",     se:"medium",     cs:"warm",       tp:"fastTrust",  hs:"observational", cf:"analytical" }],
   ["rohan",    "Rohan Mehta",     "male",   "reflective-builders", ["Startups","Tech","Books"],     "Energetic builder, curious, comfortable with momentum.",             { o:.82,c:.80,e:.58,a:.65,n:.30, att:"secure",     se:"medium",     cs:"direct",     tp:"fastTrust",  hs:"witty",          cf:"engaging"    }],
   ["ananya",   "Ananya Rao",      "female", "reflective-builders", ["Books","Psychology","Writing"],"Thoughtful listener, slow trust, low-pressure conversation.",        { o:.85,c:.70,e:.38,a:.80,n:.40, att:"avoidant",   se:"low",        cs:"analytical", tp:"slowTrust",  hs:"observational", cf:"analytical" }],
@@ -53,6 +55,7 @@ const PEOPLE = [
 
 // Community memberships per user (by seed id)
 const COMMUNITY_JOINS = {
+  gurusharan: ["ai-builders","startups","design-craft"],
   priya:   ["jazz-music","design-craft","creative-writing"],
   rohan:   ["ai-builders","startups","jazz-music"],
   ananya:  ["longform-reading","creative-writing","mindful-living"],
@@ -81,7 +84,7 @@ const COMMUNITY_JOINS = {
 
 // Soulmate matches: pairs of seed ids who mutually selected each other
 const SOULMATE_PAIRS = [
-  ["priya", "rohan"],
+  ["gurusharan", "priya"],
   ["ananya", "arjun"],
   ["karan", "zara"],
   ["meera", "sanjay"],
@@ -89,11 +92,11 @@ const SOULMATE_PAIRS = [
 
 // Chat messages per soulmate pair (seedId, text)
 const CHAT_MESSAGES = [
-  // priya ↔ rohan
-  ["priya",  "Loved the listening session. Want to compare notes tomorrow?"],
-  ["rohan",  "Absolutely. The Coltrane discussion hit different in person."],
-  ["priya",  "Right? I've been relistening to A Love Supreme all week."],
-  ["rohan",  "Same. Also — your point about design and jazz sharing improvisation logic stuck with me."],
+  // gurusharan ↔ priya
+  ["gurusharan", "Really enjoyed the builders room. The conversation about systems thinking vs fast iteration stuck with me."],
+  ["priya",      "Same! You had this way of cutting through the noise without being dismissive. Rare."],
+  ["gurusharan", "Appreciate that. Your point about design and systems sharing the same bones — I've been turning it over since."],
+  ["priya",      "Let's compare notes before the next meetup? I want to show you something I've been prototyping."],
   // ananya ↔ arjun
   ["ananya", "That book recommendation you gave — I ordered it immediately."],
   ["arjun",  "Haha, trust me it rewards slow reading. Let me know when you hit chapter 4."],
@@ -258,8 +261,8 @@ function addPastMeetings(userMap) {
       targetId: "reflective-builders",
       title: "Reflective Builders",
       scheduledAt: lastWeek,
-      hostUserId: reflectiveIds[1] || reflectiveIds[0],
-      hostName: "Rohan Mehta",
+      hostUserId: reflectiveIds[0],
+      hostName: "Gurusharan Gupta",
       participantIds: reflectiveIds,
       groupSize: reflectiveIds.length,
       status: "completed",
@@ -333,7 +336,7 @@ async function seedValidationData() {
 
   // Soulmate matches — need meeting context for selection
   // Find meetings that participants share
-  const upcoming = await request("/v1/meetings/upcoming", { token: userMap["priya"].sessionToken });
+  const upcoming = await request("/v1/meetings/upcoming", { token: userMap["gurusharan"].sessionToken });
   const allUpcoming = upcoming.upcoming || [];
 
   // For soulmate selection we need a meeting both share
@@ -378,7 +381,7 @@ async function seedValidationData() {
   }
 
   // Verify data density
-  const primaryUser = userMap["priya"];
+  const primaryUser = userMap["gurusharan"];
   const verifyProfile = await request("/v1/me/profile", { token: primaryUser.sessionToken });
   const verifyCircles = await request("/v1/me/circles", { token: primaryUser.sessionToken });
   const verifyMeetings = await request("/v1/meetings/upcoming", { token: primaryUser.sessionToken });
