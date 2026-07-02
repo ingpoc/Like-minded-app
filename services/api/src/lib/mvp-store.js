@@ -260,10 +260,14 @@ async function getLatestProfile(userId) {
     const result = await getPool().query("SELECT data FROM profiles WHERE user_id = $1 ORDER BY created_at DESC LIMIT 1", [userId]);
     return result.rows[0]?.data || null;
   }
-  const row = readLocalStore().profiles
-    .filter((profile) => profile.user_id === userId)
-    .sort((a, b) => b.created_at.localeCompare(a.created_at))[0];
-  return row?.data || null;
+  const profiles = readLocalStore().profiles
+    .filter((profile) => profile.user_id === userId);
+  if (!profiles.length) return null;
+  let latest = profiles[0];
+  for (let i = 1; i < profiles.length; i++) {
+    if (profiles[i].created_at >= latest.created_at) latest = profiles[i];
+  }
+  return latest?.data || null;
 }
 
 async function getLatestPlacement(userId) {
@@ -271,10 +275,14 @@ async function getLatestPlacement(userId) {
     const result = await getPool().query("SELECT id, profile_id, data FROM placements WHERE user_id = $1 ORDER BY created_at DESC LIMIT 1", [userId]);
     return rowToPlacement(result.rows[0]);
   }
-  const row = readLocalStore().placements
-    .filter((placement) => placement.user_id === userId)
-    .sort((a, b) => b.created_at.localeCompare(a.created_at))[0];
-  return rowToPlacement(row);
+  const placements = readLocalStore().placements
+    .filter((placement) => placement.user_id === userId);
+  if (!placements.length) return rowToPlacement(null);
+  let latest = placements[0];
+  for (let i = 1; i < placements.length; i++) {
+    if (placements[i].created_at >= latest.created_at) latest = placements[i];
+  }
+  return rowToPlacement(latest);
 }
 
 async function updateLatestProfile(userId, updates) {
