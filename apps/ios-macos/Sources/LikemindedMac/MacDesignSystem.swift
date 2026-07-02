@@ -1,28 +1,32 @@
 import SwiftUI
 
 enum MacPalette {
-    static let background = Color(red: 0.972, green: 0.954, blue: 0.928)
-    static let surface = Color.white.opacity(0.72)
-    static let ink = Color(red: 0.055, green: 0.057, blue: 0.048)
+    static let background = Color(red: 0.980, green: 0.969, blue: 0.945) // #FAF7F1 warm cream
+    static let surface = Color(red: 1.0, green: 0.988, blue: 0.973)     // #FFFBF7 warm white
+    static let surfaceTranslucent = Color.white.opacity(0.72)
+    static let ink = Color(red: 0.059, green: 0.165, blue: 0.145)      // #0F2A25 near-black green
     static let muted = Color(red: 0.34, green: 0.35, blue: 0.31)
-    static let accent = Color(red: 0.0, green: 0.29, blue: 0.20)
-    static let accentSoft = Color(red: 0.80, green: 0.88, blue: 0.80)
-    static let clay = Color(red: 0.66, green: 0.30, blue: 0.20)
-    static let sage = Color(red: 0.47, green: 0.59, blue: 0.48)
-    static let line = Color.black.opacity(0.08)
+    static let accent = Color(red: 0.059, green: 0.290, blue: 0.239)   // #0F4A3D forest green
+    static let accentSoft = Color(red: 0.78, green: 0.84, blue: 0.78)  // ~#C8D8C7 sage
+    static let clay = Color(red: 0.77, green: 0.44, blue: 0.29)        // #C46F4A
+    static let sage = Color(red: 0.78, green: 0.85, blue: 0.78)        // #C8D8C7
+    static let ochre = Color(red: 0.84, green: 0.71, blue: 0.43)       // #D7B56D
+    static let line = Color.black.opacity(0.07)
 }
 
 enum MacType {
-    static let eyebrow = Font.system(size: 11, weight: .bold, design: .rounded)
+    static let eyebrow = Font.system(size: 11, weight: .semibold, design: .rounded)
     static let title = Font.system(size: 34, weight: .semibold, design: .serif)
     static let section = Font.system(size: 20, weight: .semibold, design: .serif)
-    static let body = Font.system(size: 14, weight: .regular, design: .rounded)
-    static let small = Font.system(size: 12, weight: .regular, design: .rounded)
+    static let body = Font.system(size: 16, weight: .regular, design: .serif)
+    static let small = Font.system(size: 12, weight: .medium, design: .rounded)
     static let button = Font.system(size: 13, weight: .semibold, design: .rounded)
 }
 
 struct MacPanel<Content: View>: View {
     var title: String? = nil
+    var dark: Bool = false
+    var glass: Bool = false
     @ViewBuilder var content: Content
 
     var body: some View {
@@ -30,17 +34,31 @@ struct MacPanel<Content: View>: View {
             if let title {
                 Text(title)
                     .font(MacType.section)
-                    .foregroundStyle(MacPalette.ink)
+                    .foregroundStyle(dark ? .white : MacPalette.ink)
             }
             content
         }
         .padding(22)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .background(bgView)
         .overlay(
             RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .stroke(MacPalette.line, lineWidth: 1)
+                .stroke(dark ? MacPalette.accent : MacPalette.line, lineWidth: 1)
         )
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .foregroundStyle(dark ? .white : .primary)
+    }
+
+    @ViewBuilder
+    private var bgView: some View {
+        let shape = RoundedRectangle(cornerRadius: 18, style: .continuous)
+        if dark {
+            shape.fill(MacPalette.accent)
+        } else if glass {
+            shape.fill(.ultraThinMaterial)
+        } else {
+            shape.fill(MacPalette.surface)
+        }
     }
 }
 
@@ -111,12 +129,87 @@ struct MacHeroArt: View {
 struct MacAvatar: View {
     let initials: String
     var color = MacPalette.accentSoft
+    var size: CGFloat = 42
 
     var body: some View {
         Circle()
             .fill(color)
-            .frame(width: 42, height: 42)
-            .overlay(Text(initials).font(.system(size: 16, weight: .medium, design: .serif)).foregroundStyle(MacPalette.accent))
+            .frame(width: size, height: size)
+            .overlay(Text(initials).font(.system(size: size * 0.38, weight: .medium, design: .serif)).foregroundStyle(MacPalette.accent))
+    }
+}
+
+// ponytail: gradient tones cycling for card variety
+enum MacTone: CaseIterable {
+    case sage, clay, accent, night
+    var color: Color {
+        switch self {
+        case .sage: MacPalette.sage
+        case .clay: MacPalette.clay
+        case .accent: MacPalette.accent
+        case .night: Color(red: 0.12, green: 0.14, blue: 0.18)
+        }
+    }
+}
+
+struct MacGradientCard: View {
+    let tone: MacTone
+    var height: CGFloat = 130
+    var title: String
+    var subtitle: String? = nil
+    var tags: [String] = []
+
+    var body: some View {
+        ZStack(alignment: .bottomLeading) {
+            LinearGradient(colors: [tone.color, tone.color.opacity(0.75), .black.opacity(0.55)], startPoint: .topLeading, endPoint: .bottomTrailing)
+            ForEach(0..<3, id: \.self) { i in
+                Circle().stroke(.white.opacity(0.05), lineWidth: 1)
+                    .frame(width: 120 + CGFloat(i * 60))
+                    .offset(x: CGFloat(i * 20), y: CGFloat(i * 10))
+            }
+            VStack(alignment: .leading, spacing: 6) {
+                Text(title).font(MacType.section).foregroundStyle(.white)
+                if let subtitle { Text(subtitle).font(MacType.small).foregroundStyle(.white.opacity(0.8)) }
+                if !tags.isEmpty {
+                    HStack(spacing: 6) {
+                        ForEach(tags.prefix(3), id: \.self) { tag in
+                            Text(tag).font(MacType.small).foregroundStyle(.white)
+                                .padding(.horizontal, 10).padding(.vertical, 5)
+                                .background(.white.opacity(0.2), in: Capsule())
+                        }
+                    }
+                }
+            }
+            .padding(18)
+        }
+        .frame(height: height)
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+    }
+}
+
+struct MacSearchField: View {
+    var placeholder: String = "Search"
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "magnifyingglass").font(MacType.body).foregroundStyle(MacPalette.muted)
+            Text(placeholder).font(MacType.body).foregroundStyle(MacPalette.muted)
+            Spacer()
+        }
+        .padding(.horizontal, 14).padding(.vertical, 10)
+        .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 12))
+        .overlay(RoundedRectangle(cornerRadius: 12).stroke(MacPalette.line, lineWidth: 1))
+    }
+}
+
+struct MacFilterTab: View {
+    let label: String
+    var isSelected = false
+    var body: some View {
+        Text(label)
+            .font(MacType.button)
+            .foregroundStyle(isSelected ? .white : MacPalette.muted)
+            .padding(.horizontal, 16).padding(.vertical, 8)
+            .background(isSelected ? MacPalette.accent : .clear, in: Capsule())
     }
 }
 
