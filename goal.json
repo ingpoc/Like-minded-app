@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "status": "completed",
-  "purpose": "Per-session execution goal. Copy this file to goal.json at session start, set the current goal, and keep graders/validation/agent routing current when files or commands change.",
-  "goal": "Wire macOS app to backend: connect auth bypass, profile, circles, communities, meetings, soulmate, messages, and notifications to real API calls",
+  "purpose": "Per-session execution goal.",
+  "goal": "Close Phase 8 validation: run all deterministic graders, resolve dirty macOS files, verify backend connectivity, and prepare closeout documentation",
   "ultimate_goal_source": "GOAL.md",
   "progress_source": "PROGRESS.md",
   "workflow_refs": [
@@ -154,16 +154,16 @@
       "proves": "Validation API can attach a separate local database and seed deterministic backend data for profile, circles, communities, meetings, soulmate, and chat flows."
     },
     {
-      "name": "macos_backend_connectivity",
-      "command": "npm run verify:macos-backend",
-      "cost": "zero_token",
-      "proves": "LikemindedMac app connects to backend API for auth, profile, circles, communities, meetings, soulmate, messages, and notifications; renders real data instead of static prototypes."
-    },
-    {
       "name": "macos_screen_capture",
       "command": "npm run verify:macos-screens",
       "cost": "zero_token",
       "proves": "LikemindedMac builds and every MacPrototypeScreen can be launched and captured for mockup comparison."
+    },
+    {
+      "name": "macos_backend_connectivity",
+      "command": "npm run verify:macos-backend",
+      "cost": "zero_token",
+      "proves": "LikemindedMac app connects to backend API for auth, profile, circles, communities, meetings, soulmate, messages, and notifications; renders real data instead of static prototypes."
     },
     {
       "name": "local_simulator",
@@ -242,17 +242,22 @@
     "criteria": [
       {
         "name": "backend_connectivity",
-        "weight": 0.5,
+        "weight": 0.4,
         "min_score": 0.9
       },
       {
-        "name": "data_freshness",
+        "name": "deterministic_coverage",
         "weight": 0.3,
         "min_score": 0.8
       },
       {
         "name": "error_handling",
-        "weight": 0.2,
+        "weight": 0.15,
+        "min_score": 0.7
+      },
+      {
+        "name": "stale_surface_removed",
+        "weight": 0.15,
         "min_score": 0.7
       }
     ],
@@ -260,27 +265,21 @@
   },
   "completion_commit": {
     "required": true,
-    "when": "After macOS backend connectivity is verified and all screens render real backend data, and before marking the session goal complete.",
+    "when": "After all required deterministic and local simulator validation passes, and before marking the session goal complete.",
     "must_include": [
       "goal.json",
-      "apps/ios-macos/Sources/LikemindedMac/ backend integration changes",
-      "verification script changes"
+      "apps/ios-macos/Sources/LikemindedMac/MacDesignSystem.swift",
+      "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift",
+      "PROGRESS.md"
     ],
-    "commit_message_template": "Wire macOS app to backend"
+    "commit_message_template": "Close Phase 8 validation"
   },
   "done_criteria": [
-    "MacBackendConfig is used across all macOS screens that need backend data.",
-    "Auth bypass flow works on macOS (DEBUG mode sign-in).",
-    "Profile screen loads and displays real profile data from /v1/me/profile.",
-    "Circles screen loads and displays real circles data from /v1/me/circles and /v1/circles/:id.",
-    "Communities screen loads and displays real communities data from /v1/communities and /v1/me/communities.",
-    "Meet screen loads and displays real meeting data from /v1/meetings/upcoming and /v1/meetings/past.",
-    "Soulmate screen loads and displays real matches data from /v1/me/soulmate/matches.",
-    "Chat/Messages screens load and display real messages from /v1/me/soulmate/matches/:id/messages.",
-    "npm run verify:macos-backend script exists and passes.",
-    "Validation data lifecycle script can seed backend data that macOS renders correctly.",
-    "docs/references/macos-screen-audit.md is updated with backend connectivity evidence.",
-    "Before closeout, goal.json is marked completed and committed with the validated implementation, verification, and evidence files."
+    "All deterministic graders pass (node_syntax, mvp_backend_contract, release_static_config, goal_contract, repo_docs_lint, validation_data_lifecycle, macos_screen_capture, macos_backend_connectivity, local_simulator).",
+    "PROGRESS.md is updated with Phase 8 closeout notes.",
+    "Validation_state in goal.json reflects current proof state.",
+    "Manual Phase 8 items are documented as pending manual verification.",
+    "Validated session changes are committed with the session's goal.json before the goal is marked completed."
   ],
-  "max_iterations": 15
+  "max_iterations": 10
 }

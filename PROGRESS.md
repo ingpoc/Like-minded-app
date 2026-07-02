@@ -231,12 +231,15 @@ Update docs to match shipped product. Run all graders.
 - [x] `npm run verify:release-config` — add LiveKit env var checks (`LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`, `LIVEKIT_URL`) to `script/verify_release_config.js`.
 - [x] `npm run verify:goal` — passes with updated `goal.json`.
 - [x] `./script/build_and_run.sh --verify` — builds and launches with new tab structure, LiveKit dependency, new views.
-- [ ] Manual: onboarding wizard flows into voice interview.
-- [ ] Manual: Profile shows voice orb + trait bars + interests.
-- [ ] Manual: Circles shows your circle + available circles + concern button.
-- [ ] Manual: Meet shows RSVP toggles + upcoming meets.
-- [ ] Manual: Communities shows backend-driven catalog.
-- [ ] Manual: Soulmate toggle shows/hides tab. Post-meet dialog works. Chat works.
+- [x] `npm run verify:macos-screens` — all 20 MacPrototypeScreens captured to `output/validation/macos-screens/`.
+- [x] All deterministic graders pass (node_syntax, mvp_backend_contract, release_static_config, goal_contract, repo_docs_lint, validation_data_lifecycle, macos_screen_capture).
+- [~] Manual proofs (device/simulator verification, not automatable):
+  - [ ] Onboarding wizard flows into voice interview.
+  - [ ] Profile shows voice orb + trait bars + interests.
+  - [ ] Circles shows your circle + available circles + concern button.
+  - [ ] Meet shows RSVP toggles + upcoming meets.
+  - [ ] Communities shows backend-driven catalog.
+  - [ ] Soulmate toggle shows/hides tab. Post-meet dialog works. Chat works.
 
 ## Phase 9 — External TestFlight Readiness (after redesign complete)
 
