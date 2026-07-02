@@ -37,9 +37,11 @@ Use `npm run dev:api:validation` for repeatable local flow testing. It attaches 
 
 `npm run reset:validation-data` removes local validation users, profiles, meetings, memberships, soulmate matches, and messages from the attached local database, then reseeds them through the API. Use `npm run seed:validation-data` to seed only, and `npm run remove:validation-data` to clean up. Removal is local-only and refuses `DATABASE_URL`. For empty database or real-user local testing, use the normal API/database path instead of `dev:api:validation`.
 
-For native UI validation, do not use sparse local data as proof. Start `npm run dev:api:validation`, run `npm run reset:validation-data`, launch iOS and macOS against the same `LIKEMINDED_API_BASE_URL`, and compare screen-by-screen against `mockups/ios/` and `mockups/macos/`. Do not claim iOS/macOS behavior is seamless until both surfaces show the same seeded user state, tab ownership, settings/soulmate behavior, profile placement, meetings, communities, messages, and empty/error states.
+For native UI validation, do not use sparse local data as proof. Use `npm run verify:macos-screens` for seeded macOS validation DB screenshots and `npm run verify:simulator-local` for iOS fresh auth, empty-dev-db onboarding, and DEBUG placement screenshots. Do not claim iOS/macOS behavior is seamless until both surfaces show the expected seeded user state, tab ownership, settings/soulmate behavior, profile placement, meetings, communities, messages, and empty/error states.
 
-`npm run verify:macos-screens` starts the validation API against `data/validation-db`, resets seeded validation data, builds `LikemindedMac`, launches each `MacPrototypeScreen` deterministically with `--mac-screen`, captures screenshots under `output/validation/macos-screens/`, removes seeded data, and stops the validation API.
+`npm run verify:macos-screens` starts the validation API against `data/validation-db`, resets seeded validation data, builds `LikemindedMac`, launches each `MacPrototypeScreen` deterministically with Priya validation auth and `--mac-screen`, captures the real `Likeminded` app window under `output/validation/macos-screens/`, removes seeded data, and stops the validation API. Do not trust region screenshots unless the capture target is confirmed to be the app window; region fallback can capture Codex or the desktop.
+
+`npm run verify:simulator-local` builds and installs the iOS simulator app, captures `output/validation/fresh-auth-gate.png`, starts a temporary empty local dev DB, captures `output/validation/local-dev-empty-onboarding.png`, then launches the DEBUG placement path and captures `output/validation/local-dev-auth-tabs.png`.
 
 `npm run verify:release-config` verifies TestFlight-critical static configuration:
 - bundle id is `com.likeminded.app`, not the old prototype id,
@@ -86,6 +88,7 @@ Expected first-run simulator evidence:
 - prototype tabs are hidden before auth,
 - the Sign in with Apple entitlement is present,
 - the microphone purpose string is present.
+- the empty local dev DB path can reach Profile onboarding without seeded user data.
 
 After a real Apple sign-in and API configuration, validate the placement loop on simulator or device:
 - Profile starts Realtime voice,

@@ -12,7 +12,7 @@ Global `/Users/gurusharan/.codex/AGENTS.md` owns instruction control. This file 
 - Existing auth, backend, Realtime voice, and mvp-store infrastructure stays.
 - Design system stays: warm cream canvas, deep green accent, SF typography.
 - Design language owner: `DESIGN.md`. Visual references: `mockups/ios/` and `mockups/macos/`.
-- Phase 7 Navigation + Motion Polish is complete locally. Run `npm run goal:next` for the next unchecked phase and first command.
+- Phase 8 Docs + Validation is the active local route. First command: `npm run phase:preflight -- 8`; use its validation order before deciding whether to commit or continue visual parity polish.
 
 ## Phase 0 — Session Control And Graders
 

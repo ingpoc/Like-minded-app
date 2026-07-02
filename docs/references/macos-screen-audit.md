@@ -10,12 +10,12 @@ Global `/Users/gurusharan/.codex/AGENTS.md` owns instruction control. This file 
 - Current captures: `output/validation/macos-screens/`.
 - Capture command: `npm run verify:macos-screens`.
 - Backend seed command: `npm run seed:validation-data`.
-- Last local screen-capture evidence: `npm run check` passed, `npm run reset:validation-data` passed, `npm run remove:validation-data` passed, and `npm run verify:macos-screens` captured all 20 screens while owning validation API setup and cleanup.
-- Backend connectivity evidence on 2026-07-02 used the existing pre-seeded `data/validation-db` rather than resetting it:
-  - `npm run dev:api:validation` served `data/validation-db` on `http://127.0.0.1:8787`.
+- Last local screen-capture evidence: `npm run verify:macos-screens` reset seeded validation data, launched each screen with `validation-priya`, captured the real `Likeminded` app window for all 20 screens under `output/validation/macos-screens/`, removed seeded data, and stopped the validation API.
+- Backend connectivity evidence on 2026-07-02:
+  - `npm run verify:macos-screens` served `data/validation-db` on `http://127.0.0.1:8787`, launched with `--likeminded-dev-auth-token validation-priya`, waited for backend state preload, and captured real app-window screenshots rather than desktop regions.
   - Direct auth as seeded user `validation-priya` returned backend data for `/v1/me/profile`, `/v1/me/placement`, `/v1/me/circles`, `/v1/circles/:id`, `/v1/communities`, `/v1/me/communities`, `/v1/meetings/upcoming`, `/v1/me/soulmate/matches`, `/v1/me/soulmate/matches/:id/messages`, and `/v1/me/notifications`.
-  - Evidence counts: profile name `Priya Shah`, profile interests `3`, placement circle `Reflective Builders`, joined circles `2`, joined communities `2`, upcoming meetings `1`, soulmate matches `1`, messages `1`, notifications `3`, activity items `3`.
-  - `npm run check`, `LIKEMINDED_API_BASE_URL=http://127.0.0.1:8787 npm run verify:macos-screens-backend`, and `LIKEMINDED_API_BASE_URL=http://127.0.0.1:8787 npm run verify:macos-backend` passed. The backend verifier includes `xcodebuild -project apps/ios-macos/Likeminded.xcodeproj -scheme LikemindedMac -destination 'platform=macOS' build`.
+  - Evidence counts: profile name `Priya Shah`, profile interests `3`, placement circle `Reflective Builders`, joined circles `2`, joined communities `2`, upcoming meetings `1+`, soulmate matches `1`, messages `1`, notifications `3`, activity items `3`.
+  - `npm run check`, `npm run verify:macos-screens`, and `LIKEMINDED_API_BASE_URL=http://127.0.0.1:8787 npm run verify:macos-screens-backend` passed. The backend verifier includes `xcodebuild -project apps/ios-macos/Likeminded.xcodeproj -scheme LikemindedMac -destination 'platform=macOS' build`.
 
 ## Blocking Functional Finding
 
@@ -48,7 +48,7 @@ Resolved for backend connectivity on 2026-07-02. `apps/ios-macos/Sources/Likemin
 
 ## Required Fix Order
 
-1. Re-run a screen-capture validation that preserves the pre-seeded validation DB, or intentionally run `npm run verify:macos-screens` when resetting/removing validation data is acceptable.
-2. Fix the highest-impact layout mismatches: Meet Overview, Communities Browse, Community Detail, Soulmate Discover, Soulmate Detail, and Circle Detail.
+1. Use `npm run verify:macos-screens` for current seeded macOS evidence; do not trust screenshots unless they capture the real `Likeminded` app window.
+2. Continue highest-impact visual parity polish from the current captures: Community Detail, Circle Detail, Settings/Soulmate, member/activity density, and generated/backend image fields.
 3. Replace placeholder gradient/person cards with real generated or backend-provided image fields before claiming visual parity.
 4. Re-run `npm run seed:validation-data`, `npm run verify:macos-screens`, and compare the regenerated contact sheet before Phase 8 validation closeout.

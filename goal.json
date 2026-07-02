@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "status": "completed",
-  "purpose": "Per-session execution goal.",
-  "goal": "Close Phase 8 validation: run all deterministic graders, resolve dirty macOS files, verify backend connectivity, and prepare closeout documentation",
+  "status": "pending",
+  "purpose": "Per-session execution goal. Copy this file to goal.json at session start, set the current goal, and keep graders/validation/agent routing current when files or commands change.",
+  "goal": "Complete Phase 8 local native/backend validation: keep iOS and macOS wired to the backend, prove seeded validation DB screens, prove empty-dev-db iOS onboarding, and keep validation routes explicit.",
   "ultimate_goal_source": "GOAL.md",
   "progress_source": "PROGRESS.md",
   "workflow_refs": [
@@ -27,7 +27,7 @@
       "script": "script/verify_simulator_local.sh",
       "command": "npm run verify:simulator-local",
       "workflow_ref": "docs/workflows/validation.md",
-      "purpose": "Build, install, and launch the simulator app; prove fresh auth gate and DEBUG signed-in Meet/Circles/Communities/Profile path.",
+      "purpose": "Build, install, and launch the simulator app; prove fresh auth gate, empty-dev-db Profile onboarding, and DEBUG signed-in backend placement tabs.",
       "reuse_when": [
         "Native app changes.",
         "Auth or session flow changes.",
@@ -43,67 +43,27 @@
       "purpose": "Verify real Render, Neon, Apple, LiveKit, TestFlight, and manual proof recorded in release/testflight-evidence.json.",
       "template": "release/testflight-evidence.template.json",
       "evidence_file": "release/testflight-evidence.json"
-    },
-    "macos_backend_connectivity": {
-      "script": "scripts/verify-macos-backend.sh",
-      "command": "LIKEMINDED_API_BASE_URL=http://127.0.0.1:8787 npm run verify:macos-backend",
-      "workflow_ref": "docs/workflows/validation.md",
-      "purpose": "Build the LikemindedMac target and verify macOS backend reachability while the validation API serves data/validation-db."
     }
   },
   "validation_state": {
     "local_simulator": {
-      "status": "passed",
-      "last_verified_at": "2026-07-02",
+      "status": "<pending|passed|stale>",
+      "last_verified_at": "",
       "command": "npm run verify:simulator-local",
-      "artifacts": [
-        "output/validation/fresh-auth-gate.png",
-        "output/validation/local-dev-auth-tabs.png"
-      ],
-      "proves": [
-        "Fresh simulator launch shows the Sign in with Apple gate.",
-        "DEBUG local auth reaches the signed-in Meet/Circles/Communities/Profile path after current native changes."
-      ],
+      "artifacts": [],
+      "proves": [],
       "does_not_prove": [
         "Real Apple sign-in.",
-        "Real LiveKit Cloud room connectivity.",
-        "macOS backend connectivity.",
+        "Real spoken audio creating persisted profile and placement.",
         "Signed TestFlight build behavior."
       ],
       "do_not_repeat_unless_inventory_inputs_changed": true
     },
     "external_preflight": {
-      "status": "waiting_for_user_external_setup",
+      "status": "<pending|waiting_for_user_external_setup|passed>",
       "command": "npm run verify:external-preflight",
       "missing_evidence_file": "release/testflight-evidence.json",
-      "next_agent_action": "Treat as a later release gate after repo-owned hardening is complete; ask the user to fill release/testflight-evidence.json only when external setup and device proof are ready."
-    },
-    "macos_backend_connectivity": {
-      "status": "passed_with_preseeded_validation_db",
-      "last_verified_at": "2026-07-02",
-      "commands": [
-        "npm run dev:api:validation",
-        "npm run check",
-        "LIKEMINDED_API_BASE_URL=http://127.0.0.1:8787 npm run verify:macos-screens-backend",
-        "LIKEMINDED_API_BASE_URL=http://127.0.0.1:8787 npm run verify:macos-backend"
-      ],
-      "seeded_user": "validation-priya",
-      "runtime_evidence": {
-        "profile": "Priya Shah with 3 interests from /v1/me/profile",
-        "placement": "Reflective Builders from /v1/me/placement",
-        "circles": "2 joined circles from /v1/me/circles plus /v1/circles/:id client wiring",
-        "communities": "2 joined communities from /v1/me/communities",
-        "meetings": "1 upcoming meeting and RSVP state from /v1/meetings/upcoming",
-        "soulmate": "1 match from /v1/me/soulmate/matches",
-        "messages": "1 message from /v1/me/soulmate/matches/:id/messages",
-        "notifications": "3 notifications and 3 activity items from /v1/me/notifications"
-      },
-      "does_not_prove": [
-        "Real Apple sign-in.",
-        "Full visual parity with macOS mockups.",
-        "Screen capture validation without resetting/removing validation data.",
-        "Completion commit."
-      ]
+      "next_agent_action": "Treat as a later release gate after repo-owned hardening is complete; ask the user to fill release/testflight-evidence.json only when external setup and device proof are actually ready."
     }
   },
   "release_gate": {
@@ -157,7 +117,7 @@
       "name": "macos_screen_capture",
       "command": "npm run verify:macos-screens",
       "cost": "zero_token",
-      "proves": "LikemindedMac builds and every MacPrototypeScreen can be launched and captured for mockup comparison."
+      "proves": "LikemindedMac builds and every MacPrototypeScreen can be launched with seeded validation auth, backend state preloaded, and real app-window screenshots captured for mockup comparison."
     },
     {
       "name": "macos_backend_connectivity",
@@ -166,10 +126,10 @@
       "proves": "LikemindedMac app connects to backend API for auth, profile, circles, communities, meetings, soulmate, messages, and notifications; renders real data instead of static prototypes."
     },
     {
-      "name": "local_simulator",
+      "name": "local_simulator_validation",
       "command": "npm run verify:simulator-local",
       "cost": "zero_token",
-      "proves": "Fresh iOS simulator launch shows the auth gate and DEBUG local-auth navigation reaches the signed-in native tab path."
+      "proves": "XcodeGen project builds, installs, launches fresh auth gate, proves empty-dev-db Profile onboarding, then enters the DEBUG signed-in Meet/Circles/Communities/Profile app through backend dev auth."
     }
   ],
   "simulator_validation": {
@@ -182,7 +142,8 @@
     },
     "checks": [
       "Fresh install shows Sign in with Apple gate, not old prototype tabs.",
-      "After sign-in, tabs are Meet, Circles, Communities, Profile.",
+      "Empty dev DB sign-in can route to Profile onboarding with no pre-seeded user data.",
+      "After DEBUG placement sign-in, tabs are Meet, Circles, Communities, Profile.",
       "Meet can load RSVP state and scheduled meetup cards through the authenticated backend path.",
       "LiveKit join path requests a participant token only for scheduled meeting participants.",
       "Circles accept/swap/defer visibly round-trips through backend state.",
@@ -241,18 +202,18 @@
   "rubric": {
     "criteria": [
       {
-        "name": "backend_connectivity",
+        "name": "mvp_loop_correctness",
         "weight": 0.4,
-        "min_score": 0.9
-      },
-      {
-        "name": "deterministic_coverage",
-        "weight": 0.3,
         "min_score": 0.8
       },
       {
-        "name": "error_handling",
-        "weight": 0.15,
+        "name": "deterministic_coverage",
+        "weight": 0.25,
+        "min_score": 0.8
+      },
+      {
+        "name": "simulator_or_device_evidence",
+        "weight": 0.2,
         "min_score": 0.7
       },
       {
@@ -268,17 +229,15 @@
     "when": "After all required deterministic and local simulator validation passes, and before marking the session goal complete.",
     "must_include": [
       "goal.json",
-      "apps/ios-macos/Sources/LikemindedMac/MacDesignSystem.swift",
-      "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift",
-      "PROGRESS.md"
+      "all implementation, validation, doc, and stale-cleanup files changed for the session"
     ],
-    "commit_message_template": "Close Phase 8 validation"
+    "commit_message_template": "Validate <short session goal>"
   },
   "done_criteria": [
-    "All deterministic graders pass (node_syntax, mvp_backend_contract, release_static_config, goal_contract, repo_docs_lint, validation_data_lifecycle, macos_screen_capture, macos_backend_connectivity, local_simulator).",
-    "PROGRESS.md is updated with Phase 8 closeout notes.",
-    "Validation_state in goal.json reflects current proof state.",
-    "Manual Phase 8 items are documented as pending manual verification.",
+    "All deterministic graders pass.",
+    "Local simulator build and launch pass when local validation inputs changed.",
+    "Repo-owned MVP loop surfaces are ready for later external Render, Neon, Apple, and TestFlight proof.",
+    "No stale docs or config describe prototype tabs, prototype bundle id, no auth, or SQLite as the production path.",
     "Validated session changes are committed with the session's goal.json before the goal is marked completed."
   ],
   "max_iterations": 10
