@@ -12,13 +12,100 @@ const mvpStorePath = path.join(dbDir, "mvp-store.json");
 const architectureStorePath = path.join(dbDir, "likeminded.json");
 const baseURL = process.env.LIKEMINDED_API_BASE_URL || "http://127.0.0.1:8787";
 
-const people = [
-  ["priya", "Priya Shah", "female", ["Jazz", "Design", "Cooking"], "Reflective host energy, warm direct speech, steady trust."],
-  ["marco", "Marco D'Souza", "male", ["Jazz", "Film", "Startups"], "Playful host, inclusive, good at drawing quiet people in."],
-  ["ananya", "Ananya Rao", "female", ["Books", "Psychology", "Writing"], "Thoughtful listener, slow trust, low-pressure conversation."],
-  ["rohan", "Rohan Mehta", "male", ["Trekking", "Startups", "Design"], "Energetic builder, curious, comfortable with momentum."],
-  ["meera", "Meera Iyer", "female", ["Poetry", "Film", "Travel"], "Tender, expressive, emotionally careful and direct."],
-  ["arjun", "Arjun Nair", "male", ["Books", "Music", "Cooking"], "Calm, analytical, grounded, likes small rooms."]
+// ---------------------------------------------------------------------------
+// 24 users: varied personalities, genders, circles, interests, communities.
+// Enough density to form multiple groups, exercise gender balance, host
+// selection, soulmate matching, and realistic notification/chat volume.
+// ---------------------------------------------------------------------------
+const PEOPLE = [
+  // reflective-builders — 8 people (4M/4F), forms 1 circle group
+  ["priya",    "Priya Shah",      "female", "reflective-builders", ["Design","Cooking","Tech"],     "Reflective host energy, warm direct speech, steady trust.",          { o:.78,c:.74,e:.44,a:.83,n:.28, att:"secure",     se:"medium",     cs:"warm",       tp:"fastTrust",  hs:"observational", cf:"analytical" }],
+  ["rohan",    "Rohan Mehta",     "male",   "reflective-builders", ["Startups","Tech","Books"],     "Energetic builder, curious, comfortable with momentum.",             { o:.82,c:.80,e:.58,a:.65,n:.30, att:"secure",     se:"medium",     cs:"direct",     tp:"fastTrust",  hs:"witty",          cf:"engaging"    }],
+  ["ananya",   "Ananya Rao",      "female", "reflective-builders", ["Books","Psychology","Writing"],"Thoughtful listener, slow trust, low-pressure conversation.",        { o:.85,c:.70,e:.38,a:.80,n:.40, att:"avoidant",   se:"low",        cs:"analytical", tp:"slowTrust",  hs:"observational", cf:"analytical" }],
+  ["arjun",    "Arjun Nair",      "male",   "reflective-builders", ["Books","Music","Cooking"],     "Calm, analytical, grounded, likes small rooms.",                     { o:.72,c:.78,e:.42,a:.75,n:.25, att:"secure",     se:"low",        cs:"direct",     tp:"slowTrust",  hs:"absent",         cf:"analytical" }],
+  ["kavya",    "Kavya Reddy",     "female", "reflective-builders", ["Design","Art","Writing"],      "Precise, visual thinker, builds with intention.",                   { o:.80,c:.82,e:.48,a:.70,n:.32, att:"secure",     se:"medium",     cs:"analytical", tp:"conditionalTrust", hs:"observational", cf:"avoiding" }],
+  ["vivek",    "Vivek Kumar",     "male",   "reflective-builders", ["Tech","Startups","Music"],     "Systems thinker, patient, builds deep before shipping.",            { o:.76,c:.85,e:.40,a:.72,n:.28, att:"avoidant",   se:"low",        cs:"analytical", tp:"slowTrust",  hs:"dry",            cf:"analytical" }],
+  ["isha",     "Isha Gupta",      "female", "reflective-builders", ["Tech","Books","Design"],       "Direct, warm underneath, values honesty over comfort.",             { o:.75,c:.70,e:.52,a:.68,n:.35, att:"secure",     se:"medium",     cs:"direct",     tp:"fastTrust",  hs:"witty",          cf:"engaging"    }],
+  ["aditya",   "Aditya Verma",    "male",   "reflective-builders", ["Startups","Outdoors","Film"],  "Quiet intensity, leads by doing, earns trust through consistency.", { o:.70,c:.80,e:.45,a:.76,n:.22, att:"secure",     se:"medium",     cs:"warm",       tp:"slowTrust",  hs:"observational", cf:"accommodating"}],
+
+  // bold-explorers — 6 people (3M/3F), forms 1 circle group
+  ["karan",    "Karan Singh",     "male",   "bold-explorers",      ["Outdoors","Film","Travel"],    "High energy, tries everything, fast trust, loves momentum.",         { o:.90,c:.45,e:.85,a:.55,n:.35, att:"secure",     se:"high",       cs:"expressive", tp:"fastTrust",  hs:"physical",       cf:"engaging"    }],
+  ["zara",     "Zara Khan",       "female", "bold-explorers",      ["Travel","Music","Film"],       "Spontaneous, expressive, collects experiences not things.",        { o:.88,c:.40,e:.82,a:.60,n:.38, att:"secure",     se:"high",       cs:"expressive", tp:"fastTrust",  hs:"witty",          cf:"engaging"    }],
+  ["neil",     "Neil Patel",      "male",   "bold-explorers",      ["Outdoors","Tech","Travel"],    "Adventurous builder, prototypes life like products.",               { o:.85,c:.50,e:.80,a:.50,n:.30, att:"secure",     se:"high",       cs:"direct",     tp:"fastTrust",  hs:"observational", cf:"engaging"    }],
+  ["diya",     "Diya Joshi",      "female", "bold-explorers",      ["Travel","Art","Cooking"],      "Fearless creative, says yes first, figures it out later.",         { o:.92,c:.38,e:.88,a:.58,n:.32, att:"anxious",    se:"high",       cs:"expressive", tp:"fastTrust",  hs:"physical",       cf:"engaging"    }],
+  ["raj",      "Raj Malhotra",    "male",   "bold-explorers",      ["Outdoors","Film","Startups"],  "Bold, irreverent, action over analysis.",                           { o:.80,c:.42,e:.85,a:.48,n:.25, att:"secure",     se:"high",       cs:"direct",     tp:"fastTrust",  hs:"witty",          cf:"engaging"    }],
+  ["naina",    "Naina Chopra",    "female", "bold-explorers",      ["Music","Travel","Writing"],    "Energetic conversationalist, draws people out, lives loudly.",     { o:.87,c:.48,e:.78,a:.62,n:.40, att:"secure",     se:"high",       cs:"warm",       tp:"fastTrust",  hs:"warm",           cf:"engaging"    }],
+
+  // grounded-nurturers — 5 people (2M/3F), below threshold — no circle meeting
+  ["meera",    "Meera Iyer",      "female", "grounded-nurturers",  ["Poetry","Film","Travel"],      "Tender, expressive, emotionally careful and direct.",               { o:.65,c:.75,e:.50,a:.88,n:.45, att:"secure",     se:"medium",     cs:"warm",       tp:"slowTrust",  hs:"warm",           cf:"accommodating"}],
+  ["sanjay",   "Sanjay Rao",      "male",   "grounded-nurturers",  ["Cooking","Books","Mindfulness"],"Steady presence, shows up consistently, quiet strength.",          { o:.55,c:.82,e:.42,a:.85,n:.20, att:"secure",     se:"medium",     cs:"warm",       tp:"slowTrust",  hs:"warm",           cf:"avoiding"    }],
+  ["pooja",    "Pooja Desai",     "female", "grounded-nurturers",  ["Cooking","Art","Mindfulness"], "Nurturing, patient, holds space for others without resentment.",   { o:.60,c:.78,e:.48,a:.90,n:.30, att:"secure",     se:"medium",     cs:"warm",       tp:"conditionalTrust", hs:"warm", cf:"accommodating"}],
+  ["nikhil",   "Nikhil Shah",     "male",   "grounded-nurturers",  ["Books","Outdoors","Cooking"],  "Grounded, reliable, prefers depth over breadth in friendship.",     { o:.50,c:.80,e:.40,a:.82,n:.25, att:"secure",     se:"low",        cs:"analytical", tp:"slowTrust",  hs:"observational", cf:"analytical" }],
+  ["richa",    "Richa Agarwal",   "female", "grounded-nurturers",  ["Mindfulness","Writing","Art"], "Calm, deliberate, creates safe spaces naturally.",                 { o:.62,c:.72,e:.45,a:.87,n:.35, att:"secure",     se:"medium",     cs:"warm",       tp:"slowTrust",  hs:"warm",           cf:"accommodating"}],
+
+  // longform-thinkers — 5 people (2M/3F), below threshold — no circle meeting
+  ["farhan",   "Farhan Ahmed",    "male",   "longform-thinkers",   ["Books","Psychology","Film"],   "Bookish, introspective, prefers layered conversation.",             { o:.95,c:.65,e:.25,a:.65,n:.50, att:"avoidant",   se:"low",        cs:"analytical", tp:"slowTrust",  hs:"observational", cf:"analytical" }],
+  ["tara",     "Tara Menon",      "female", "longform-thinkers",   ["Books","Writing","Psychology"],"Quietly expansive, reads deeply, thinks before speaking.",         { o:.92,c:.60,e:.28,a:.70,n:.55, att:"avoidant",   se:"low",        cs:"analytical", tp:"slowTrust",  hs:"dry",            cf:"avoiding"    }],
+  ["dhruv",    "Dhruv Kapoor",    "male",   "longform-thinkers",   ["Books","Music","Tech"],        "Intellectual companion, values ideas over small talk.",             { o:.88,c:.55,e:.35,a:.60,n:.48, att:"secure",     se:"low",        cs:"analytical", tp:"slowTrust",  hs:"observational", cf:"analytical" }],
+  ["sonal",    "Sonal Bhatia",    "female", "longform-thinkers",   ["Writing","Books","Art"],       "Essayist mind, finds patterns others miss, slow to open.",          { o:.90,c:.58,e:.30,a:.68,n:.52, att:"avoidant",   se:"low",        cs:"expressive", tp:"slowTrust",  hs:"observational", cf:"analytical" }],
+  ["amit",     "Amit Saxena",     "male",   "longform-thinkers",   ["Books","Psychology","Music"],  "Philosophical, patient, seeks root causes in everything.",          { o:.85,c:.62,e:.38,a:.72,n:.42, att:"secure",     se:"low",        cs:"analytical", tp:"conditionalTrust", hs:"dry", cf:"analytical" }],
+];
+
+// Community memberships per user (by seed id)
+const COMMUNITY_JOINS = {
+  priya:   ["jazz-music","design-craft","creative-writing"],
+  rohan:   ["ai-builders","startups","jazz-music"],
+  ananya:  ["longform-reading","creative-writing","mindful-living"],
+  arjun:   ["jazz-music","longform-reading","trekking-outdoors"],
+  kavya:   ["design-craft","creative-writing","ai-builders"],
+  vivek:   ["ai-builders","startups","longform-reading"],
+  isha:    ["ai-builders","design-craft","startups"],
+  aditya:  ["startups","trekking-outdoors","jazz-music"],
+  karan:   ["trekking-outdoors","startups","jazz-music"],
+  zara:    ["jazz-music","creative-writing","trekking-outdoors"],
+  neil:    ["ai-builders","trekking-outdoors","startups"],
+  diya:    ["design-craft","creative-writing","jazz-music"],
+  raj:     ["startups","trekking-outdoors","ai-builders"],
+  naina:   ["jazz-music","creative-writing","longform-reading"],
+  meera:   ["creative-writing","jazz-music","mindful-living"],
+  sanjay:  ["mindful-living","longform-reading","trekking-outdoors"],
+  pooja:   ["mindful-living","design-craft","creative-writing"],
+  nikhil:  ["trekking-outdoors","longform-reading","mindful-living"],
+  richa:   ["mindful-living","creative-writing","design-craft"],
+  farhan:  ["longform-reading","creative-writing","mindful-living"],
+  tara:    ["longform-reading","creative-writing","design-craft"],
+  dhruv:   ["ai-builders","longform-reading","jazz-music"],
+  sonal:   ["creative-writing","longform-reading","design-craft"],
+  amit:    ["longform-reading","jazz-music","mindful-living"],
+};
+
+// Soulmate matches: pairs of seed ids who mutually selected each other
+const SOULMATE_PAIRS = [
+  ["priya", "rohan"],
+  ["ananya", "arjun"],
+  ["karan", "zara"],
+  ["meera", "sanjay"],
+];
+
+// Chat messages per soulmate pair (seedId, text)
+const CHAT_MESSAGES = [
+  // priya ↔ rohan
+  ["priya",  "Loved the listening session. Want to compare notes tomorrow?"],
+  ["rohan",  "Absolutely. The Coltrane discussion hit different in person."],
+  ["priya",  "Right? I've been relistening to A Love Supreme all week."],
+  ["rohan",  "Same. Also — your point about design and jazz sharing improvisation logic stuck with me."],
+  // ananya ↔ arjun
+  ["ananya", "That book recommendation you gave — I ordered it immediately."],
+  ["arjun",  "Haha, trust me it rewards slow reading. Let me know when you hit chapter 4."],
+  ["ananya",  "Already on chapter 3. Can't put it down."],
+  // karan ↔ zara
+  ["karan",   "Next trek — I'm thinking Hampi. You in?"],
+  ["zara",    "Say less. I'm already looking at trains."],
+  ["karan",   "Haha that energy is exactly why this works."],
+  ["zara",    "Stop, you're going to make me blush. Saturday can't come fast enough."],
+  // meera ↔ sanjay
+  ["meera",   "The mindful living room felt like a exhale. Thank you for holding that space."],
+  ["sanjay",  "That means a lot. You brought something really honest to the circle."],
 ];
 
 function userIdForSeed(seedId) {
@@ -27,7 +114,7 @@ function userIdForSeed(seedId) {
 }
 
 function seededUserIds() {
-  return people.map(([seedId]) => userIdForSeed(seedId));
+  return PEOPLE.map(([seedId]) => userIdForSeed(seedId));
 }
 
 function readJson(file, fallback) {
@@ -50,10 +137,8 @@ function removeLocalValidationData() {
   if (mvp) {
     for (const [id, user] of Object.entries(mvp.users || {})) {
       if (ids.has(id) || String(user.apple_sub || "").startsWith("dev-")) {
-        if (ids.has(id)) {
-          delete mvp.users[id];
-          removed += 1;
-        }
+        delete mvp.users[id];
+        removed += 1;
       }
     }
     mvp.profiles = (mvp.profiles || []).filter((row) => !ids.has(row.user_id));
@@ -107,35 +192,108 @@ async function request(pathname, options = {}) {
   return body;
 }
 
-function profileFor(index, [id, name, gender, interests, summary]) {
+const INTEREST_AREAS = {
+  "Books": "books", "Writing": "art", "Psychology": "books", "Film": "movies",
+  "Music": "music", "Jazz": "music", "Design": "art", "Art": "art",
+  "Cooking": "food", "Tech": "tech", "Startups": "tech", "Outdoors": "outdoors",
+  "Travel": "outdoors", "Mindfulness": "books", "Poetry": "art",
+};
+
+const DEPTHS = ["casual", "active", "deep"];
+
+function profileFor([id, name, gender, circleId, interests, summary, s]) {
+  const interestObjects = interests.map((label, i) => ({
+    area: INTEREST_AREAS[label] || "general",
+    label,
+    depth: DEPTHS[i % DEPTHS.length]
+  }));
   return {
     interviewTranscript: `${name}: ${summary} I want real weekend conversations, not passive browsing.`,
     signals: {
-      bigFive: { openness: 0.82, conscientiousness: 0.72, extraversion: index % 2 ? 0.58 : 0.42, agreeableness: 0.83, neuroticism: 0.28 },
-      attachment: "secure",
-      socialEnergy: index % 2 ? "medium" : "low-to-medium",
-      communicationStyle: { primary: index % 2 ? "warm" : "direct", pace: 0.48 },
-      trustPattern: index % 2 ? "fastTrust" : "slowTrust",
-      humorStyle: "observational",
-      conflictStyle: "analytical"
+      bigFive: { openness: s.o, conscientiousness: s.c, extraversion: s.e, agreeableness: s.a, neuroticism: s.n },
+      attachment: s.att,
+      socialEnergy: s.se,
+      communicationStyle: { primary: s.cs, pace: 0.48 },
+      trustPattern: s.tp,
+      humorStyle: s.hs,
+      conflictStyle: s.cf
     },
     basicInfo: { name, gender, dateOfBirth: "1996-01-01", city: "Bangalore", pincode: "560001" },
-    interests: interests.map((label) => ({ label, depth: "active" })),
-    hiddenSignals: { shyness: 0.35, languageComfort: 0.9, warmth: 0.86, vulnerabilityOpenness: 0.74, dominanceTendency: 0.24, energyTrajectory: "warms_up" },
-    primaryCircleId: index === 4 ? "gentle-romantics" : "reflective-builders",
-    secondaryCircleIds: ["longform-thinkers"],
-    fitReasons: ["Prefers small rooms.", "Shows warm, steady trust.", "Can contribute without dominating."],
+    interests: interestObjects,
+    hiddenSignals: {
+      shyness: s.se === "low" ? 0.6 : s.se === "medium" ? 0.35 : 0.15,
+      languageComfort: 0.9,
+      warmth: s.a,
+      vulnerabilityOpenness: s.e > 0.6 ? 0.7 : 0.5,
+      dominanceTendency: s.cs === "direct" ? 0.6 : 0.25,
+      energyTrajectory: s.se === "high" ? "steady_high" : "warms_up"
+    },
+    primaryCircleId: circleId,
+    secondaryCircleIds: ["longform-thinkers", "grounded-nurturers"].slice(0, 2),
+    fitReasons: [`Matches ${circleId.replace("-", " ")} energy.`, "Shows warm, steady trust.", "Can contribute without dominating."],
     sourceReflectionSignals: [summary],
     profileSummary: summary
   };
 }
 
+// Create past meetings directly in the local store for users who have upcoming meetings
+function addPastMeetings(userMap) {
+  if (process.env.DATABASE_URL) return; // local-only
+  if (!fs.existsSync(mvpStorePath)) return;
+  const store = readJson(mvpStorePath, null);
+  if (!store) return;
+
+  const now = Date.now();
+  const lastWeek = new Date(now - 7 * 86400000).toISOString();
+  const twoWeeksAgo = new Date(now - 14 * 86400000).toISOString();
+
+  // ponytail: two past meetings with realistic participant groups from seeded users
+  const reflectiveIds = PEOPLE.filter(([, , , c]) => c === "reflective-builders").slice(0, 8).map(([sid]) => userMap[sid].id);
+  const jazzIds = PEOPLE.filter((p) => (COMMUNITY_JOINS[p[0]] || []).includes("jazz-music")).slice(0, 7).map(([sid]) => userMap[sid].id);
+
+  const pastMeetings = [
+    {
+      id: `mtg_circle_reflective-builders_${new Date(now - 7 * 86400000).toISOString().slice(0,10)}_1`,
+      kind: "circle",
+      targetId: "reflective-builders",
+      title: "Reflective Builders",
+      scheduledAt: lastWeek,
+      hostUserId: reflectiveIds[1] || reflectiveIds[0],
+      hostName: "Rohan Mehta",
+      participantIds: reflectiveIds,
+      groupSize: reflectiveIds.length,
+      status: "completed",
+      compositionSummary: `${reflectiveIds.length} people. You share slow-trust patterns and analytical communication.`
+    },
+    {
+      id: `mtg_community_jazz-music_${new Date(now - 14 * 86400000).toISOString().slice(0,10)}_1`,
+      kind: "community",
+      targetId: "jazz-music",
+      title: "Jazz Music",
+      scheduledAt: twoWeeksAgo,
+      hostUserId: jazzIds[0] || reflectiveIds[0],
+      hostName: "Priya Shah",
+      participantIds: jazzIds,
+      groupSize: jazzIds.length,
+      status: "completed",
+      compositionSummary: `${jazzIds.length} people from nearby circles. Good mix of listeners and players.`
+    }
+  ];
+
+  for (const meeting of pastMeetings) {
+    if (!store.meetings.some((m) => m.id === meeting.id)) {
+      store.meetings.push(meeting);
+    }
+  }
+  writeJson(mvpStorePath, store);
+}
+
 async function seedValidationData() {
   await request("/health");
-  const users = [];
+  const userMap = {};
 
-  for (let index = 0; index < people.length; index += 1) {
-    const person = people[index];
+  // Create users, profiles, placements
+  for (const person of PEOPLE) {
     const auth = await request("/v1/auth/apple", {
       method: "POST",
       body: { identityToken: `validation-${person[0]}`, fullName: person[1] }
@@ -143,38 +301,109 @@ async function seedValidationData() {
     await request("/v1/realtime/profile-placement", {
       method: "POST",
       token: auth.sessionToken,
-      body: profileFor(index, person)
+      body: profileFor(person)
     });
-    await request("/v1/communities/jazz-music/join", { method: "POST", token: auth.sessionToken });
-    if (index < 3) await request("/v1/communities/creative-writing/join", { method: "POST", token: auth.sessionToken });
-    await request("/v1/meetings/rsvp", { method: "POST", token: auth.sessionToken, body: { kind: "community", available: true } });
-    await request("/v1/meetings/rsvp", { method: "POST", token: auth.sessionToken, body: { kind: "circle", available: true } });
-    await request("/v1/me/soulmate/enable", { method: "POST", token: auth.sessionToken, body: { enabled: true } });
-    users.push({ id: auth.user.id, name: person[1], sessionToken: auth.sessionToken });
+    userMap[person[0]] = { id: auth.user.id, name: person[1], sessionToken: auth.sessionToken };
   }
 
-  const scheduled = await request("/v1/admin/run-scheduling", { method: "POST" });
-  const upcoming = await request("/v1/meetings/upcoming", { token: users[0].sessionToken });
-  const meetingId = upcoming.upcoming[0]?.id || scheduled.meetings[0]?.id;
-  assert.ok(meetingId, "expected at least one seeded meeting");
+  // Community joins
+  for (const [seedId, communityIds] of Object.entries(COMMUNITY_JOINS)) {
+    if (!userMap[seedId]) continue;
+    for (const cid of communityIds) {
+      await request(`/v1/communities/${cid}/join`, { method: "POST", token: userMap[seedId].sessionToken });
+    }
+  }
 
-  await request("/v1/me/soulmate/select", { method: "POST", token: users[0].sessionToken, body: { meetingId, selectedUserIds: [users[1].id] } });
-  await request("/v1/me/soulmate/select", { method: "POST", token: users[1].sessionToken, body: { meetingId, selectedUserIds: [users[0].id] } });
-  const matches = await request("/v1/me/soulmate/matches", { token: users[0].sessionToken });
-  assert.ok(matches.length > 0, "expected seeded soulmate match");
-  await request(`/v1/me/soulmate/matches/${matches[0].matchId}/messages`, {
-    method: "POST",
-    token: users[0].sessionToken,
-    body: { text: "Loved the listening session. Want to compare notes tomorrow?" }
-  });
+  // RSVPs — circle and community for all users
+  for (const seedId of Object.keys(userMap)) {
+    await request("/v1/meetings/rsvp", { method: "POST", token: userMap[seedId].sessionToken, body: { kind: "community", available: true } });
+    await request("/v1/meetings/rsvp", { method: "POST", token: userMap[seedId].sessionToken, body: { kind: "circle", available: true } });
+  }
+
+  // Enable soulmate for all users
+  for (const seedId of Object.keys(userMap)) {
+    await request("/v1/me/soulmate/enable", { method: "POST", token: userMap[seedId].sessionToken, body: { enabled: true } });
+  }
+
+  // Run scheduling to form upcoming meetings
+  const scheduled = await request("/v1/admin/run-scheduling", { method: "POST" });
+
+  // Add past meetings directly to store
+  addPastMeetings(userMap);
+
+  // Soulmate matches — need meeting context for selection
+  // Find meetings that participants share
+  const upcoming = await request("/v1/meetings/upcoming", { token: userMap["priya"].sessionToken });
+  const allUpcoming = upcoming.upcoming || [];
+
+  // For soulmate selection we need a meeting both share
+  for (const [seedA, seedB] of SOULMATE_PAIRS) {
+    const userA = userMap[seedA];
+    const userB = userMap[seedB];
+    if (!userA || !userB) continue;
+
+    // Find a meeting userA is part of; the server validates that userB is also a participant
+    const userAMeetings = await request("/v1/meetings/upcoming", { token: userA.sessionToken });
+    const candidates = userAMeetings.upcoming || [];
+    let matched = false;
+    for (const meeting of candidates) {
+      try {
+        await request("/v1/me/soulmate/select", {
+          method: "POST", token: userA.sessionToken,
+          body: { meetingId: meeting.id, selectedUserIds: [userB.id] }
+        });
+        await request("/v1/me/soulmate/select", {
+          method: "POST", token: userB.sessionToken,
+          body: { meetingId: meeting.id, selectedUserIds: [userA.id] }
+        });
+        matched = true;
+        break;
+      } catch {
+        // meeting doesn't include both users — try next
+      }
+    }
+    if (!matched) console.warn(`No shared meeting for soulmate pair ${seedA}/${seedB}`);
+  }
+
+  // Chat messages for each match
+  for (const [senderSeed, text] of CHAT_MESSAGES) {
+    // Find the match for this sender
+    const matches = await request("/v1/me/soulmate/matches", { token: userMap[senderSeed].sessionToken });
+    if (matches.length === 0) continue;
+    const matchId = matches[0].matchId;
+    await request(`/v1/me/soulmate/matches/${matchId}/messages`, {
+      method: "POST", token: userMap[senderSeed].sessionToken,
+      body: { text }
+    });
+  }
+
+  // Verify data density
+  const primaryUser = userMap["priya"];
+  const verifyProfile = await request("/v1/me/profile", { token: primaryUser.sessionToken });
+  const verifyCircles = await request("/v1/me/circles", { token: primaryUser.sessionToken });
+  const verifyMeetings = await request("/v1/meetings/upcoming", { token: primaryUser.sessionToken });
+  const verifyMatches = await request("/v1/me/soulmate/matches", { token: primaryUser.sessionToken });
+  const verifyNotifications = await request("/v1/me/notifications", { token: primaryUser.sessionToken });
+
+  assert.ok(verifyProfile.profile?.basicInfo?.name || verifyProfile.basicInfo?.name, "profile must have basicInfo");
+  assert.ok((verifyCircles.circles || []).length > 0, "must have joined circles");
+  assert.ok((verifyMeetings.upcoming || []).length > 0, "must have upcoming meetings");
+  assert.ok(verifyMatches.length > 0, "must have soulmate matches");
 
   console.log(JSON.stringify({
     action: "seed",
     baseURL,
-    primaryUser: showToken ? users[0] : { id: users[0].id, name: users[0].name },
-    meetingId,
-    matchId: matches[0].matchId,
-    users: users.map(({ id, name }) => ({ id, name }))
+    primaryUser: showToken ? primaryUser : { id: primaryUser.id, name: primaryUser.name },
+    stats: {
+      users: PEOPLE.length,
+      circlesRepresented: [...new Set(PEOPLE.map((p) => p[3]))].length,
+      communitiesJoined: Object.values(COMMUNITY_JOINS).flat().length,
+      soulmateMatches: SOULMATE_PAIRS.length,
+      chatMessages: CHAT_MESSAGES.length,
+      upcomingMeetingsScheduled: scheduled.meetings?.length || 0,
+      notificationsForPriya: verifyNotifications.notifications?.length || 0,
+      activityItemsForPriya: verifyNotifications.activity?.length || 0
+    }
   }, null, 2));
 }
 
