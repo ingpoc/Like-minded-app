@@ -12,12 +12,12 @@ struct MacRootView: View {
                 .ignoresSafeArea()
 
             VStack(spacing: 0) {
-                titleBar
                 ScrollView(.vertical, showsIndicators: true) {
                     VStack(spacing: 18) {
                         MacScreenView(screen: selectedScreen, appState: appState)
                     }
                     .padding(.horizontal, 28)
+                    .padding(.top, 54)
                     .padding(.bottom, 18)
                 }
                 MacBottomNav(selectedTab: activeTab, soulmateEnabled: appState.soulmateEnabled) { tab in
@@ -25,6 +25,22 @@ struct MacRootView: View {
                     selectedScreen = tab.primaryScreen
                 }
                 .padding(.bottom, 18)
+            }
+            .overlay(alignment: .topTrailing) {
+                Button {
+                    performTitleAction()
+                } label: {
+                    Image(systemName: titleActionIcon)
+                        .font(MacType.button)
+                        .foregroundStyle(MacPalette.ink)
+                        .frame(width: 30, height: 30)
+                        .background(MacPalette.surface, in: Circle())
+                        .overlay(Circle().stroke(MacPalette.line, lineWidth: 1))
+                }
+                .buttonStyle(.plain)
+                .focusable(false)
+                .padding(.top, 18)
+                .padding(.trailing, 28)
             }
         }
         .foregroundStyle(MacPalette.ink)
@@ -74,31 +90,6 @@ struct MacRootView: View {
         }
     }
 
-    private var titleBar: some View {
-        HStack {
-            HStack(spacing: 9) {
-                Circle().fill(Color.red).frame(width: 12, height: 12)
-                Circle().fill(Color.orange).frame(width: 12, height: 12)
-                Circle().fill(Color.green).frame(width: 12, height: 12)
-            }
-            Spacer()
-            Text("Likeminded")
-                .font(.system(size: 14, weight: .semibold, design: .rounded))
-            Spacer()
-            Button {
-                performTitleAction()
-            } label: {
-                Image(systemName: titleActionIcon)
-                    .font(MacType.button)
-                    .foregroundStyle(MacPalette.ink)
-                    .frame(width: 30, height: 30)
-                    .background(MacPalette.surface, in: Circle())
-            }
-            .buttonStyle(.plain)
-        }
-        .padding(.horizontal, 28)
-        .padding(.vertical, 18)
-    }
 }
 
 struct MacBottomNav: View {
@@ -120,10 +111,11 @@ struct MacBottomNav: View {
                         .background(selectedTab == tab ? MacPalette.accentSoft.opacity(0.62) : .clear, in: Capsule())
                 }
                 .buttonStyle(.plain)
+                .focusable(false)
             }
         }
         .padding(8)
-        .background(.ultraThinMaterial, in: Capsule())
+        .background(MacPalette.surface, in: Capsule())
         .overlay(Capsule().stroke(MacPalette.line, lineWidth: 1))
         .shadow(color: Color.black.opacity(0.08), radius: 18, y: 10)
     }

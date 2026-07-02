@@ -57,7 +57,9 @@ wait_for_api() {
 capture_likeminded_window() {
   local output_path="$1"
   local window_id
-  window_id="$(python3 - <<'PY'
+  local deadline=$((SECONDS + 10))
+  while (( SECONDS < deadline )); do
+    window_id="$(python3 - <<'PY'
 import Quartz
 
 windows = Quartz.CGWindowListCopyWindowInfo(
@@ -72,11 +74,14 @@ for window in windows:
         break
 PY
 )"
-  if [[ -n "$window_id" ]]; then
-    screencapture -x -l "$window_id" "$output_path"
-  else
-    screencapture -x -R80,80,1200,760 "$output_path"
-  fi
+    if [[ -n "$window_id" ]]; then
+      screencapture -x -l "$window_id" "$output_path"
+      return 0
+    fi
+    sleep 0.5
+  done
+  echo "Likeminded app window not found for $output_path" >&2
+  exit 1
 }
 
 mkdir -p "$OUT_DIR"

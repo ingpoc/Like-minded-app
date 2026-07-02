@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 @main
@@ -6,6 +7,8 @@ struct LikemindedMacApp: App {
         WindowGroup {
             MacRootView()
                 .frame(minWidth: 1120, minHeight: 720)
+                .preferredColorScheme(.light)
+                .background(MacWindowChromeHider())
         }
         .commands {
             CommandMenu("Prototype") {
@@ -46,3 +49,29 @@ extension Notification.Name {
     static let macPrototypeSelectSoulmate = Notification.Name("macPrototypeSelectSoulmate")
 }
 
+private struct MacWindowChromeHider: NSViewRepresentable {
+    func makeNSView(context: Context) -> NSView {
+        let view = NSView()
+        DispatchQueue.main.async {
+            configure(view.window)
+        }
+        return view
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {
+        DispatchQueue.main.async {
+            configure(nsView.window)
+        }
+    }
+
+    private func configure(_ window: NSWindow?) {
+        guard let window else { return }
+        window.titleVisibility = .hidden
+        window.titlebarAppearsTransparent = true
+        window.isMovableByWindowBackground = true
+        window.styleMask.insert(.fullSizeContentView)
+        window.standardWindowButton(.closeButton)?.isHidden = true
+        window.standardWindowButton(.miniaturizeButton)?.isHidden = true
+        window.standardWindowButton(.zoomButton)?.isHidden = true
+    }
+}
