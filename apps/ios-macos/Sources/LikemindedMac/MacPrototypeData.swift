@@ -54,6 +54,18 @@ enum MacPrototypeScreen: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
+    static var initial: MacPrototypeScreen {
+        let env = ProcessInfo.processInfo.environment["LIKEMINDED_MAC_SCREEN"]
+        let args = ProcessInfo.processInfo.arguments
+        let arg = args.firstIndex(of: "--mac-screen").flatMap { index in
+            args.indices.contains(index + 1) ? args[index + 1] : nil
+        }
+        return [arg, env]
+            .compactMap { $0 }
+            .compactMap(MacPrototypeScreen.init(rawValue:))
+            .first ?? .welcome
+    }
+
     var number: Int {
         MacPrototypeScreen.allCases.firstIndex(of: self)! + 1
     }

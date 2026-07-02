@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "status": "completed",
+  "status": "active",
   "purpose": "Per-session execution goal. Copy this file to goal.json at session start, set the current goal, and keep graders/validation/agent routing current when files or commands change.",
-  "goal": "Complete Phase 7 Navigation + Motion Polish: update iOS tab/navigation behavior, add restrained motion polish, align macOS navigation, and validate every iOS and macOS screen against DESIGN.md and mockups.",
+  "goal": "Complete Phase 8 Docs + Validation: update shipped-product docs, keep validation contracts current, run the Phase 8 grader order, and record manual validation evidence for the redesigned surfaces.",
   "ultimate_goal_source": "GOAL.md",
   "progress_source": "PROGRESS.md",
   "workflow_refs": [
     "docs/workflows/validation.md",
-    "docs/product-redesign.md"
+    "docs/product-direction.md"
   ],
   "design_references": {
     "owner": "DESIGN.md",
@@ -56,7 +56,7 @@
       ],
       "proves": [
         "Fresh simulator launch shows the Sign in with Apple gate.",
-      "DEBUG local auth reaches the signed-in Meet/Circles/Communities/Profile path after Phase 6 Soulmate + Chat native changes."
+        "DEBUG local auth reaches the signed-in Meet/Circles/Communities/Profile path after current native changes."
       ],
       "does_not_prove": [
         "Real Apple sign-in.",
@@ -112,6 +112,18 @@
       "command": "workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs lint",
       "cost": "zero_token",
       "proves": "Repo docs follow the local workflow documentation contract."
+    },
+    {
+      "name": "validation_data_lifecycle",
+      "command": "npm run reset:validation-data",
+      "cost": "zero_token",
+      "proves": "Validation API can attach a separate local database and seed deterministic backend data for profile, circles, communities, meetings, soulmate, and chat flows."
+    },
+    {
+      "name": "macos_screen_capture",
+      "command": "npm run verify:macos-screens",
+      "cost": "zero_token",
+      "proves": "LikemindedMac builds and every MacPrototypeScreen can be launched and captured for mockup comparison."
     },
     {
       "name": "local_simulator_validation",
@@ -190,7 +202,7 @@
   "rubric": {
     "criteria": [
       {
-        "name": "navigation_motion_correctness",
+        "name": "docs_match_shipped_product",
         "weight": 0.4,
         "min_score": 0.8
       },
@@ -219,16 +231,17 @@
       "goal.json",
       "all implementation, validation, doc, and stale-cleanup files changed for the session"
     ],
-    "commit_message_template": "Validate Phase 7 navigation and motion"
+    "commit_message_template": "Validate Phase 8 docs and validation"
   },
   "done_criteria": [
-    "iOS tabs are Meet, Circles, Communities, Profile, plus Soulmate only when enabled.",
-    "iOS uses the custom tab bar and restrained motion listed in Phase 7 preflight without adding unnecessary navigation layers.",
-    "macOS navigation remains aligned with the DESIGN.md and mockup tab model.",
-    "Every iOS and macOS screen is checked against DESIGN.md and the relevant mockups, with mismatches fixed or recorded as intentional.",
-    "PROGRESS.md marks completed Phase 7 items, with scoped phase preflight reporting no unchecked items.",
-    "Deterministic checks pass in the Phase 7 validation order.",
-    "Local simulator validation is rerun because native UI inputs changed.",
+    "DESIGN.md and product-direction.md match the shipped redesigned Meet, Circles, Communities, Profile, and Soulmate surfaces.",
+    "goal.json and goal.template.json describe the current validation contract without stale Phase 7 goal text.",
+    "npm run check includes all current backend and grader JavaScript entrypoints.",
+    "npm run smoke:mvp covers the redesigned circles, communities, meetings, and soulmate API routes listed in Phase 8 preflight.",
+    "npm run verify:release-config checks LiveKit env requirements.",
+    "PROGRESS.md marks completed Phase 8 items, with scoped phase preflight reporting no unchecked items.",
+    "Deterministic checks pass in the Phase 8 validation order.",
+    "Manual validation evidence covers onboarding, Profile, Circles, Meet, Communities, Soulmate toggle, post-meet selection, and chat.",
     "Validated session changes are committed with the completed goal.json before the goal is marked completed."
   ],
   "max_iterations": 10,

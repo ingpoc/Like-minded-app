@@ -176,6 +176,14 @@ Metadata:
 
 Avoid long technical titles. The interface should speak like a calm host, not a SaaS dashboard.
 
+Copy rules:
+
+* one subtitle per screen
+* model prose only in Profile
+* meetup info only in Meet
+* interest tags only in Communities and Soulmate match detail
+* hidden placement signals stay hidden outside Profile
+
 6. Layout Philosophy
 
 iOS
@@ -187,6 +195,8 @@ Use a 5-tab bottom navigation:
 * Communities
 * Profile
 * Soulmate
+
+Meet owns RSVP, upcoming and past meetups, and live-call entry. Circles owns the user's personality-fit circle, available circles, and the concern action. Communities owns the backend interest catalog and join state. Profile owns onboarding, voice interview, private signals, and interests. Soulmate appears only when enabled and owns opt-in matches and chat.
 
 Tabs should feel light, glassy, and native.
 

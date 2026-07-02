@@ -16,6 +16,8 @@ npm run check
 npm run smoke:mvp
 npm run verify:release-config
 npm run verify:goal
+npm run reset:validation-data
+npm run verify:macos-screens
 npm run verify:simulator-local
 ```
 
@@ -30,6 +32,12 @@ npm run verify:simulator-local
 - placement defer, swap, and accept persist,
 - feedback stores,
 - a second tester cannot read the first tester's placement.
+
+Use `npm run dev:api:validation` for repeatable local flow testing. It attaches the API to `data/validation-db` through `LIKEMINDED_DB_DIR`, enables local Apple auth bypass, and leaves the normal local database untouched.
+
+`npm run reset:validation-data` removes local validation users, profiles, meetings, memberships, soulmate matches, and messages from the attached local database, then reseeds them through the API. Use `npm run seed:validation-data` to seed only, and `npm run remove:validation-data` to clean up. Removal is local-only and refuses `DATABASE_URL`. For empty database or real-user local testing, use the normal API/database path instead of `dev:api:validation`.
+
+`npm run verify:macos-screens` starts the validation API against `data/validation-db`, resets seeded validation data, builds `LikemindedMac`, launches each `MacPrototypeScreen` deterministically with `--mac-screen`, captures screenshots under `output/validation/macos-screens/`, removes seeded data, and stops the validation API.
 
 `npm run verify:release-config` verifies TestFlight-critical static configuration:
 - bundle id is `com.likeminded.app`, not the old prototype id,
@@ -78,7 +86,7 @@ Expected first-run simulator evidence:
 - the microphone purpose string is present.
 
 After a real Apple sign-in and API configuration, validate the placement loop on simulator or device:
-- Talk starts Realtime voice,
+- Profile starts Realtime voice,
 - stopping voice creates a persisted profile and circle placement,
 - relaunch restores the latest placement,
 - Circles accept/swap/defer updates through the backend,
@@ -93,7 +101,7 @@ Simulator validation proves the app shell, entitlement, launch, and UI state pat
 3. For phase-scoped work, run `npm run phase:preflight -- <phase-number>` before edits and use its unchecked items as the acceptance checklist.
 4. Run the stale-name gate from preflight before final validation.
 5. Regenerate the Xcode project only with `(cd apps/ios-macos && xcodegen generate)`.
-6. For macOS target or prototype-screen changes, run `xcodebuild -project apps/ios-macos/Likeminded.xcodeproj -scheme LikemindedMac -destination 'platform=macOS' build`.
+6. For macOS target or prototype-screen changes, run `npm run verify:macos-screens`.
 7. If a manifest exists, use the package manager or toolchain declared by the repo.
 8. If tests, lint, typecheck, or build scripts exist, run the narrowest command that proves the change.
 9. Run `npm run check` for JavaScript syntax validation.
@@ -101,12 +109,13 @@ Simulator validation proves the app shell, entitlement, launch, and UI state pat
 11. Run `npm run verify:release-config` for static TestFlight config invariants.
 12. Run `npm run verify:goal` after changing goal, progress, validation, grader, or agent-routing files.
 13. Run `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs lint` after docs or workflow changes.
-14. If native SwiftUI files, project spec, entitlements, or simulator script changed, run `npm run verify:simulator-local` last.
-15. Capture or inspect a simulator screenshot when UI gating/navigation changed.
-16. For local signed-in simulator navigation without Apple account UI, run `npm run verify:simulator-local`; this proves local app/auth routing and deterministic transcript-to-placement persistence, not real Apple sign-in or spoken audio quality.
-17. After validation passes, set `goal.json.status` to `completed`, record the completion commit evidence, and commit the validated session changes including that session's `goal.json`.
-18. Before marking the full TestFlight goal complete, run `npm run verify:external-preflight`.
-19. If no deeper validation command exists for a touched surface, report that clearly and provide deterministic evidence such as file inventory, syntax checks, or generated artifact inspection.
+14. Use `npm run dev:api:validation` plus `npm run reset:validation-data` for manual repeatable backend flow validation; `npm run verify:macos-screens` owns this setup for macOS screenshots.
+15. If native SwiftUI files, project spec, entitlements, or simulator script changed, run `npm run verify:simulator-local` last.
+16. Capture or inspect a simulator screenshot when UI gating/navigation changed.
+17. For local signed-in simulator navigation without Apple account UI, run `npm run verify:simulator-local`; this proves local app/auth routing and deterministic transcript-to-placement persistence, not real Apple sign-in or spoken audio quality.
+18. After validation passes, set `goal.json.status` to `completed`, record the completion commit evidence, and commit the validated session changes including that session's `goal.json`.
+19. Before marking the full TestFlight goal complete, run `npm run verify:external-preflight`.
+20. If no deeper validation command exists for a touched surface, report that clearly and provide deterministic evidence such as file inventory, syntax checks, or generated artifact inspection.
 
 ## Delegated Verification
 

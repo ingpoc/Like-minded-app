@@ -6,13 +6,13 @@ Global `/Users/gurusharan/.codex/AGENTS.md` owns instruction control. This file 
 
 ## Current Status
 
-- Product redesign in progress; product behavior lives in `docs/product-redesign.md` and design language lives in `DESIGN.md`.
+- Product redesign complete; product behavior lives in `docs/product-direction.md` and design language lives in `DESIGN.md`.
 - Phases 0-2 complete (auth, MVP loop, deterministic validation).
 - Phases 3-8 are the redesign build-out. TestFlight is Phase 9.
 - Existing auth, backend, Realtime voice, and mvp-store infrastructure stays.
 - Design system stays: warm cream canvas, deep green accent, SF typography.
 - Design language owner: `DESIGN.md`. Visual references: `mockups/ios/` and `mockups/macos/`.
-- Phase 5 Meet + LiveKit is complete locally: RSVP state, deterministic weekend scheduling, LiveKit participant token generation, backend-driven Meet UI, and local simulator proof are in place. Phase 6 Soulmate + Chat remains unchecked.
+- Phase 7 Navigation + Motion Polish is complete locally. Run `npm run goal:next` for the next unchecked phase and first command.
 
 ## Phase 0 — Session Control And Graders
 
@@ -213,22 +213,24 @@ Tab restructure, custom tab bar, animation system, material backgrounds.
 ### Screen validation against mockups
 
 - [x] iOS screens 1-20 in `mockups/ios/` checked against `DESIGN.md`: auth, voice/profile, Meet states, Circles/detail, Communities/detail/settings, Soulmate/match/chat, and bottom dock model are represented by the current SwiftUI surfaces. Intentional MVP scope: generated people photos and richer live-call media remain mockup-only.
-- [x] macOS screens 1-20 in `mockups/macos/` checked against `DESIGN.md`: `MacPrototypeScreen` covers auth, Meet, Circles, Profile, Chat/Messages, Communities/detail/members/event, recap, Soulmate overview/discover/detail, notifications/activity, onboarding, and settings with the bottom floating dock model. Intentional MVP scope: richer desktop discovery filters and photo-heavy cards remain prototype mockup detail, not shipped backend behavior.
+- [x] macOS screens 1-20 in `mockups/macos/` inventoried against `DESIGN.md`: `MacPrototypeScreen` covers auth, Meet, Circles, Profile, Chat/Messages, Communities/detail/members/event, recap, Soulmate overview/discover/detail, notifications/activity, onboarding, and settings with the bottom floating dock model. Phase 8 audit evidence in `docs/references/macos-screen-audit.md` supersedes any parity claim: current macOS screens are static prototype screens, are not backend-backed, and still have mockup mismatches before validation closeout.
 
 ## Phase 8 — Docs + Validation
 
 Update docs to match shipped product. Run all graders.
 
-- [ ] Update `DESIGN.md` — new tabs: Meet (RSVP + upcoming/past meets), Circles (your circle + available + concern), Communities (backend catalog + join), Profile (voice interview + signals + interests + onboarding), Soulmate (opt-in matches + chat). New copy rules: one subtitle per screen, model prose in Profile only, meetup info in Meet only, interest tags in Communities and Soulmate match detail only.
-- [ ] Update `product-direction.md` — add: AI-driven meetup flow (RSVP → group formation → host selection → scheduled video call), circles vs communities contrast (personality vs interest, Sunday vs Saturday), soulmate feature (opt-in, post-meet mutual selection, chat), hidden placement signals, onboarding before interview.
-- [ ] Update `goal.json` — replace MVP placement loop goal with redesign goal. Update `deterministic_graders` to include new smoke test coverage. Update `done_criteria` to reflect Phase 3-8 completion.
-- [ ] Update `goal.template.json` to match `goal.json` structure.
-- [ ] Run `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs lint` — must pass with no errors.
-- [ ] Update `npm run check` script in `package.json` — add new backend files to the syntax check chain: `services/api/src/lib/scheduling.js`, `services/api/src/lib/livekit.js`.
-- [ ] Update `npm run smoke:mvp` (`script/smoke_mvp.js`) — add test coverage for: `GET /v1/me/circles`, `GET /v1/circles/:id`, `POST /v1/me/circles/concern`, `GET /v1/communities`, `POST /v1/communities/:id/join`, `GET /v1/me/communities`, `POST /v1/meetings/rsvp`, `GET /v1/meetings/upcoming`, `POST /v1/me/soulmate/enable`, `POST /v1/me/soulmate/select`, `GET /v1/me/soulmate/matches`, `GET /v1/me/soulmate/matches/:id`, `POST /v1/me/soulmate/matches/:id/messages`.
-- [ ] `npm run verify:release-config` — add LiveKit env var checks (`LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`, `LIVEKIT_URL`) to `script/verify_release_config.js`.
-- [ ] `npm run verify:goal` — passes with updated `goal.json`.
-- [ ] `./script/build_and_run.sh --verify` — builds and launches with new tab structure, LiveKit dependency, new views.
+- [x] Update `DESIGN.md` — new tabs: Meet (RSVP + upcoming/past meets), Circles (your circle + available + concern), Communities (backend catalog + join), Profile (voice interview + signals + interests + onboarding), Soulmate (opt-in matches + chat). New copy rules: one subtitle per screen, model prose in Profile only, meetup info in Meet only, interest tags in Communities and Soulmate match detail only.
+- [x] Update `product-direction.md` — add: AI-driven meetup flow (RSVP → group formation → host selection → scheduled video call), circles vs communities contrast (personality vs interest, Sunday vs Saturday), soulmate feature (opt-in, post-meet mutual selection, chat), hidden placement signals, onboarding before interview.
+- [x] Set the next active docs/validation goal in `goal.json`. Update `deterministic_graders` and `done_criteria` only if Phase 8 changes validation coverage.
+- [x] Update `goal.template.json` to match `goal.json` structure.
+- [x] Run `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs lint` — must pass with no errors.
+- [x] Update `npm run check` script in `package.json` — add new backend files to the syntax check chain: `services/api/src/lib/scheduling.js`, `services/api/src/lib/livekit.js`.
+- [x] Add deterministic validation database lifecycle: `npm run dev:api:validation` attaches `data/validation-db`; `npm run reset:validation-data` reseeds through the API; `npm run remove:validation-data` cleans seeded data.
+- [x] Add macOS screen capture validation with `npm run verify:macos-screens` and record screen-by-screen mockup evidence.
+- [x] Update `npm run smoke:mvp` (`script/smoke_mvp.js`) — add test coverage for: `GET /v1/me/circles`, `GET /v1/circles/:id`, `POST /v1/me/circles/concern`, `GET /v1/communities`, `POST /v1/communities/:id/join`, `GET /v1/me/communities`, `POST /v1/meetings/rsvp`, `GET /v1/meetings/upcoming`, `POST /v1/me/soulmate/enable`, `POST /v1/me/soulmate/select`, `GET /v1/me/soulmate/matches`, `GET /v1/me/soulmate/matches/:id`, `POST /v1/me/soulmate/matches/:id/messages`.
+- [x] `npm run verify:release-config` — add LiveKit env var checks (`LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`, `LIVEKIT_URL`) to `script/verify_release_config.js`.
+- [x] `npm run verify:goal` — passes with updated `goal.json`.
+- [x] `./script/build_and_run.sh --verify` — builds and launches with new tab structure, LiveKit dependency, new views.
 - [ ] Manual: onboarding wizard flows into voice interview.
 - [ ] Manual: Profile shows voice orb + trait bars + interests.
 - [ ] Manual: Circles shows your circle + available circles + concern button.
@@ -275,3 +277,10 @@ Update docs to match shipped product. Run all graders.
 - Community-created content/feeds.
 - Host volunteer path.
 - Account deletion flow (required before wider beta).
+- RSVP window: always open, closes Friday midnight? (Proposed: yes.)
+- Min RSVP threshold: if 15 RSVP, skip the remainder < 6. (Proposed: skip groups smaller than 6.)
+- Non-binary in group formation: exclude from gender balance, place by fit only? (Proposed: yes.)
+- Meetup duration: 60 min default or open-ended?
+- Multiple time slots per day: all groups within one timezone meet at 7pm local.
+- Soulmate match expiry: archive after 30 days of inactivity?
+- Interest profile visibility: can soulmate matches see full interest profile? (Proposed: yes.)

@@ -76,7 +76,7 @@ After editing `project.yml`, run `cd apps/ios-macos && xcodegen generate` to reg
 1. Start API: `./script/run_api.sh`
 2. Build + launch: `./script/build_and_run.sh`
 3. Sign in with Apple
-4. In simulator/device: tap Talk → grant mic permission → speak to AI interviewer → stop
+4. In simulator/device: tap Profile → grant mic permission → speak to AI interviewer → stop
 5. App sends transcript to authenticated `/v1/discover` → personality signals + circle placement appear
 
 For local API-only smoke checks without Apple services, `npm run smoke:mvp` uses `APPLE_AUTH_BYPASS=1` in an isolated child process. Do not enable `APPLE_AUTH_BYPASS` in TestFlight or production.

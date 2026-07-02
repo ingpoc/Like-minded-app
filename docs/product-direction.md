@@ -20,7 +20,7 @@ The goal is not passive browsing. The goal is active human placement and interac
 
 ## Profile First
 
-The profile must be built through active voice conversation with AI. It should not begin as a written form or diary. The AI should learn how the user thinks, talks, jokes, listens, opens up, and responds to others.
+The profile must be built through onboarding and then active voice conversation with AI. It should not begin as a written form or diary. The AI should learn how the user thinks, talks, jokes, listens, opens up, and responds to others.
 
 The profile should capture signals such as:
 
@@ -51,9 +51,11 @@ Communities are based on interests and taste. Examples include jazz, hip hop, bo
 
 A user can belong to multiple communities. Communities are broader than circles and can be easier entry points. Community fit is based mostly on liking, curiosity, and participation intent, while circle fit is based mostly on personality and interaction compatibility.
 
+Circles and communities must stay distinct: circles are personality-fit rooms that usually meet on Sunday; communities are interest-led spaces that usually meet on Saturday.
+
 ## Meetings
 
-Circle and community meetings should happen inside the app first. In-app meetings allow AI to transcribe the conversation and understand how the group is actually functioning.
+Circle and community meetings should happen inside the app first. The shipped flow is RSVP, group formation, host selection, scheduled video call, then post-meet reflection or soulmate selection. In-app meetings allow AI to transcribe the conversation and understand how the group is actually functioning.
 
 The AI should learn:
 
@@ -101,5 +103,7 @@ The AI should:
 - track group chemistry,
 - suggest future meetings,
 - help likeminded people become friends, collaborators, or soulmates when the fit is real.
+
+Placement signals can be used for matching and explanations, but hidden compatibility signals should not become public profile content.
 
 The product promise is simple: the AI finds the right people and helps the first meaningful interaction happen.

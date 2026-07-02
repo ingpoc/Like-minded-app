@@ -7,7 +7,7 @@
   "progress_source": "PROGRESS.md",
   "workflow_refs": [
     "docs/workflows/validation.md",
-    "docs/product-redesign.md"
+    "docs/product-direction.md"
   ],
   "design_references": {
     "owner": "DESIGN.md",
@@ -106,6 +106,18 @@
       "command": "workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs lint",
       "cost": "zero_token",
       "proves": "Repo docs follow the local workflow documentation contract."
+    },
+    {
+      "name": "validation_data_lifecycle",
+      "command": "npm run reset:validation-data",
+      "cost": "zero_token",
+      "proves": "Validation API can attach a separate local database and seed deterministic backend data for profile, circles, communities, meetings, soulmate, and chat flows."
+    },
+    {
+      "name": "macos_screen_capture",
+      "command": "npm run verify:macos-screens",
+      "cost": "zero_token",
+      "proves": "LikemindedMac builds and every MacPrototypeScreen can be launched and captured for mockup comparison."
     },
     {
       "name": "local_simulator_validation",

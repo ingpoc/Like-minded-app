@@ -170,6 +170,11 @@ async function expectStatus(status, pathname, options) {
     assert.equal(placement.profileId, realtimePlaced.profileId);
     assert.ok(placement.placementId, "resume placement must include placementId");
 
+    const myCircles = await expectStatus(200, "/v1/me/circles", { method: "GET", token: auth.sessionToken });
+    assert.ok(Array.isArray(myCircles.circles), "user circles endpoint must return an array");
+    const circleDetail = await expectStatus(200, "/v1/circles/reflective-builders", { method: "GET", token: auth.sessionToken });
+    assert.equal(circleDetail.circle.id, "reflective-builders");
+
     for (const [action, expectedState] of [["defer", "deferred"], ["swap", "swapped"], ["accept", "accepted"]]) {
       const updated = await expectStatus(200, "/v1/me/placement/actions", {
         method: "POST",
@@ -196,8 +201,22 @@ async function expectStatus(status, pathname, options) {
       token: auth.sessionToken,
       body: { kind: "circle", available: true }
     });
+    await expectStatus(200, "/v1/meetings/rsvp", {
+      method: "POST",
+      token: auth.sessionToken,
+      body: { kind: "community", available: true }
+    });
     const initialMeetings = await expectStatus(200, "/v1/meetings/upcoming", { method: "GET", token: auth.sessionToken });
     assert.equal(initialMeetings.rsvps.circle, true);
+    assert.equal(initialMeetings.rsvps.community, true);
+
+    const communities = await expectStatus(200, "/v1/communities", { method: "GET", token: auth.sessionToken });
+    assert.ok(communities.communities.length >= 1, "communities catalog must not be empty");
+    const communityId = communities.communities[0].id;
+    const joined = await expectStatus(200, `/v1/communities/${communityId}/join`, { method: "POST", token: auth.sessionToken });
+    assert.equal(joined.status, "joined");
+    const myCommunities = await expectStatus(200, "/v1/me/communities", { method: "GET", token: auth.sessionToken });
+    assert.ok(myCommunities.communities.some((community) => community.id === communityId), "joined community must appear in user communities");
 
     let scheduledParticipantToken = null;
     const scheduledUsers = [];

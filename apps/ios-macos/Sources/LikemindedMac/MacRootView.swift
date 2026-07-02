@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct MacRootView: View {
-    @State private var selectedScreen: MacPrototypeScreen = .welcome
+    @State private var selectedScreen: MacPrototypeScreen = .initial
 
     var body: some View {
         ZStack {

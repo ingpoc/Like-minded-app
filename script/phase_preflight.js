@@ -60,7 +60,8 @@ function docLintRisks() {
         file,
         missingControlOwner: !text.includes("## Control Owner")
       };
-    });
+    })
+    .filter((risk) => risk.missingControlOwner);
 }
 
 const staleGates = {
@@ -110,7 +111,13 @@ console.log("- npm run verify:goal");
 console.log("- xcodebuild -project apps/ios-macos/Likeminded.xcodeproj -scheme Likeminded -destination 'generic/platform=iOS Simulator' build");
 console.log("- npm run smoke:mvp");
 console.log("- npm run verify:release-config");
+if (phase === "8") {
+  console.log("- npm run verify:macos-screens");
+}
 console.log("- workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs lint");
+if (phase === "8") {
+  console.log("- npm run remove:validation-data (after seeded validation evidence is captured)");
+}
 console.log("- npm run verify:simulator-local (last, only after native UI/project inputs change)");
 
 console.log("");
@@ -120,10 +127,9 @@ console.log("- Canonical command: (cd apps/ios-macos && xcodegen generate)");
 console.log("");
 console.log("## Doc Lint Risks");
 if (docsRisk.length === 0) {
-  console.log("- No untracked Markdown docs under docs/.");
+  console.log("- No untracked Markdown docs missing ## Control Owner.");
 } else {
   for (const risk of docsRisk) {
-    const status = risk.missingControlOwner ? "missing ## Control Owner" : "has ## Control Owner";
-    console.log(`- ${risk.file}: ${status}`);
+    console.log(`- ${risk.file}: missing ## Control Owner`);
   }
 }
