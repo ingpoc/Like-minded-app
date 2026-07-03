@@ -324,6 +324,23 @@ async function expectStatus(status, pathname, options) {
     });
     await expectStatus(404, "/v1/me/placement", { method: "GET", token: secondAuth.sessionToken });
 
+    const deleteAuth = await expectStatus(200, "/v1/auth/apple", {
+      method: "POST",
+      body: { identityToken: "tester-delete", fullName: "Tester Delete" }
+    });
+    await expectStatus(201, "/v1/realtime/profile-placement", {
+      method: "POST",
+      token: deleteAuth.sessionToken,
+      body: {
+        interviewTranscript: "Delete test profile.",
+        primaryCircleId: "reflective-builders",
+        profileSummary: "Temporary profile for account deletion."
+      }
+    });
+    await expectStatus(200, "/v1/me/profile", { method: "GET", token: deleteAuth.sessionToken });
+    await expectStatus(200, "/v1/me/account", { method: "DELETE", token: deleteAuth.sessionToken });
+    await expectStatus(401, "/v1/me/profile", { method: "GET", token: deleteAuth.sessionToken });
+
     console.log("MVP smoke passed");
   } finally {
     stop();

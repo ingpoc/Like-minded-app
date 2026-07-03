@@ -1,0 +1,52 @@
+{
+  "screen": "Contact Support Sheet",
+  "platform": "ios",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedApp/Views/SettingsPrototypeView.swift (ContactSupportSheet)"
+  ],
+  "mockup_ref": null,
+  "mockup_missing": true,
+  "entry_points": [
+    "Settings Contact support row"
+  ],
+  "backend_dependencies": [
+    "POST /v1/feedback"
+  ],
+  "controls": [
+    {
+      "id": "message",
+      "type": "text",
+      "label": "What needs help? field",
+      "expected": "Editable support message",
+      "result": "pass",
+      "evidence": "ContactSupportSheet has text field + Send button + Done",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "send",
+      "type": "button",
+      "label": "Send support note",
+      "expected": "POST feedback; disabled when empty",
+      "result": "pass",
+      "evidence": "Send support note button present; posts to /v1/feedback",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "done",
+      "type": "button",
+      "label": "Done",
+      "expected": "Dismisses sheet",
+      "result": "pass",
+      "evidence": "Done button dismisses sheet",
+      "blocker": "",
+      "stub": false
+    }
+  ],
+  "visual_parity": {
+    "result": "pending-mockup-compare",
+    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+  },
+  "notes": ""
+}

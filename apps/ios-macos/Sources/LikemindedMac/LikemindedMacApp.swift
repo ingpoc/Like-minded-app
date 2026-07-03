@@ -10,6 +10,7 @@ struct LikemindedMacApp: App {
                 .preferredColorScheme(.light)
                 .background(MacWindowChromeHider())
         }
+        .defaultSize(width: 1200, height: 760)
         .commands {
             CommandMenu("Prototype") {
                 Button("Meet") {
@@ -70,8 +71,8 @@ private struct MacWindowChromeHider: NSViewRepresentable {
         window.titlebarAppearsTransparent = true
         window.isMovableByWindowBackground = true
         window.styleMask.insert(.fullSizeContentView)
-        window.standardWindowButton(.closeButton)?.isHidden = true
-        window.standardWindowButton(.miniaturizeButton)?.isHidden = true
-        window.standardWindowButton(.zoomButton)?.isHidden = true
+        window.standardWindowButton(.closeButton)?.isHidden = false
+        window.standardWindowButton(.miniaturizeButton)?.isHidden = false
+        window.standardWindowButton(.zoomButton)?.isHidden = false
     }
 }

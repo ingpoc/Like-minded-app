@@ -1,0 +1,42 @@
+{
+  "screen": "Auth Gate (Sign in with Apple)",
+  "platform": "ios",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedApp/Views/AuthGateView.swift"
+  ],
+  "mockup_ref": "mockups/ios/01-04-onboarding-voice-meet-soulmate.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "App launch when no signed-in session"
+  ],
+  "backend_dependencies": [
+    "Apple Sign In credential \u2192 AuthSessionStore.signIn"
+  ],
+  "controls": [
+    {
+      "id": "sign-in-apple",
+      "type": "button",
+      "label": "Sign in with Apple",
+      "expected": "Authenticates via Apple ID, creates session, advances to onboarding or app",
+      "result": "blocked",
+      "evidence": "SignInWithAppleButton requires real Apple ID/iCloud account in simulator; none configured. Dev-bypass launch arg (--likeminded-dev-auth-bypass) used for testing instead. Bypass confirmed working: validation-gurusharan token \u2192 seeded primary user.",
+      "blocker": "Real Apple ID unavailable in simulator without TestFlight creds",
+      "stub": false
+    },
+    {
+      "id": "promise-rows",
+      "type": "display",
+      "label": "Voice profile / Private by design / Circle placement rows",
+      "expected": "Display-only promise copy",
+      "result": "pending",
+      "evidence": "",
+      "blocker": "",
+      "stub": false
+    }
+  ],
+  "visual_parity": {
+    "result": "pending-mockup-compare",
+    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+  },
+  "notes": ""
+}

@@ -1,0 +1,50 @@
+{
+  "screen": "Profile Edit (trait sliders)",
+  "platform": "macos",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (profileEdit)"
+  ],
+  "mockup_ref": "mockups/macos/09-12-profile-soulmate-discover-detail.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "Profile share-profile flow"
+  ],
+  "backend_dependencies": [],
+  "controls": [
+    {
+      "id": "comm-pills",
+      "type": "display",
+      "label": "Communication/Energy/Trust pills",
+      "expected": "STUB — hard-coded 'Communication' selected, no action",
+      "result": "fail",
+      "evidence": "STUB confirmed: 'Communication' hard-coded isSelected; pills are decoration, no action",
+      "blocker": "",
+      "stub": true
+    },
+    {
+      "id": "trait-sliders",
+      "type": "slider",
+      "label": "5 trait sliders (Reserved/Outgoing, Analytical/Intuitive, Low/High Energy, Steady/Spontaneous, Slow/Fast Trust)",
+      "expected": "STUB — all 5 share single local profileTraitValue=0.55; not persisted",
+      "result": "fail",
+      "evidence": "STUB confirmed: all 5 sliders share single local profileTraitValue=0.55; not persisted to backend",
+      "blocker": "",
+      "stub": true
+    },
+    {
+      "id": "save",
+      "type": "button",
+      "label": "Save profile edits",
+      "expected": "Navigate → myProfile; does NOT actually save trait values",
+      "result": "fail",
+      "evidence": "STUB confirmed: Save button only navigates → myProfile; does NOT save trait values",
+      "blocker": "",
+      "stub": false
+    }
+  ],
+  "visual_parity": {
+    "result": "pending",
+    "notes": ""
+  },
+  "notes": ""
+}

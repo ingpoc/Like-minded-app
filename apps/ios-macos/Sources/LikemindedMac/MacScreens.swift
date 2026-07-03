@@ -6,6 +6,7 @@ struct MacScreenView: View {
     var navigate: ((MacPrototypeScreen) -> Void)?
     @State private var showSignOutConfirm = false
     @State private var selectedCommunityId: String?
+    @State private var selectedRecapMeetingId: String?
     @State private var communitySearch = ""
     @State private var memberSearch = ""
     @State private var recapNote = ""
@@ -14,16 +15,18 @@ struct MacScreenView: View {
     @State private var selectedChatMatchId: String?
     @State private var notificationStatus: String?
     @State private var profileTraitValue = 0.55
-    @State private var visibility = "Circles only"
-    @State private var ageRange = 0.45
     @State private var soulmateDistance = 0.45
+    @State private var showDeleteAccountConfirm = false
+    @State private var isDeletingAccount = false
+    @State private var isCallMuted = false
+    @State private var callSidePanel = "Participants"
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             header
             content
         }
-        .frame(maxWidth: 1180, alignment: .leading)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
     private var header: some View {
@@ -47,6 +50,9 @@ struct MacScreenView: View {
 
     private var subtitleText: String {
         let state = _appState.wrappedValue
+        if screen == .meetRecap, let meeting = currentRecapMeeting {
+            return "You attended \(meeting.title) on \(LikemindedDate.full(meeting.scheduledAt))."
+        }
         guard screen == .meetOverview, state.isSignedIn else { return screen.subtitle }
         if let name = state.profile?.basicInfo?.name {
             return "Good evening, \(name). Your next room is ready."
@@ -81,6 +87,14 @@ struct MacScreenView: View {
         appState.profile?.interests ?? []
     }
 
+    private var currentRecapMeeting: Meeting? {
+        if let selectedRecapMeetingId,
+           let meeting = (appState.pastMeetings + appState.upcomingMeetings).first(where: { $0.id == selectedRecapMeetingId }) {
+            return meeting
+        }
+        return appState.pastMeetings.first ?? appState.upcomingMeetings.first
+    }
+
     @ViewBuilder
     private var content: some View {
         switch screen {
@@ -92,6 +106,7 @@ struct MacScreenView: View {
         case .communitiesBrowse: communitiesBrowse
         case .communityDetail: communityDetail(memberMode: false)
         case .meetRecap: meetRecap
+        case .meetVideoCall: meetVideoCall
         case .myProfile: myProfile(editing: false)
         case .soulmateOverview: soulmateOverview
         case .soulmateDiscover: soulmateDiscover
@@ -146,6 +161,7 @@ struct MacScreenView: View {
                 }
                 .buttonStyle(.plain)
                 .disabled(appState.isAuthenticating)
+                .accessibilityLabel("Sign in with Apple")
                 if let authError = appState.authError {
                     Text(authError)
                         .font(MacType.small)
@@ -221,7 +237,10 @@ struct MacScreenView: View {
     private func heroCard(_ meeting: Meeting) -> some View {
         VStack(alignment: .leading, spacing: 20) {
             VStack(alignment: .leading, spacing: 6) {
-                Text(meeting.scheduledAt)
+                Text("Upcoming meetup")
+                    .font(MacType.small.weight(.semibold))
+                    .foregroundStyle(.white.opacity(0.8))
+                Text(LikemindedDate.full(meeting.scheduledAt))
                     .font(MacType.eyebrow)
                     .foregroundStyle(.white.opacity(0.75))
                 Text(meeting.title)
@@ -229,7 +248,7 @@ struct MacScreenView: View {
                     .foregroundStyle(.white)
             }
             HStack(spacing: 16) {
-                Label(meeting.hostName, systemImage: "person.circle")
+                Label("Host: \(meeting.hostName)", systemImage: "person.circle")
                     .font(MacType.body)
                 Label("\(meeting.groupSize) participants", systemImage: "person.2")
                     .font(MacType.body)
@@ -237,19 +256,186 @@ struct MacScreenView: View {
             .foregroundStyle(.white.opacity(0.85))
             Spacer()
             Button("Join meetup") {
-                navigate?(.meetRecap)
+                navigate?(.meetVideoCall)
             }
                 .font(MacType.button)
-                .padding(.horizontal, 24)
-                .padding(.vertical, 10)
-                .background(.white, in: Capsule())
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(.white.opacity(0.92), in: Capsule())
                 .foregroundStyle(MacPalette.accent)
                 .buttonStyle(.plain)
+                .accessibilityLabel("Join \(meeting.title) meetup")
         }
         .padding(24)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(MacPalette.accent, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
         .frame(height: 250)
+    }
+
+    // MARK: - 21. meetVideoCall
+
+    private var meetVideoCall: some View {
+        let meeting = appState.upcomingMeetings.first
+        return VStack(alignment: .leading, spacing: 18) {
+            HStack(spacing: 16) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(meeting?.title ?? "Sunday Circle Meetup")
+                        .font(MacType.section)
+                    Text(meeting.map { LikemindedDate.full($0.scheduledAt) } ?? "Today - 7:00 PM - 8:00 PM")
+                        .font(MacType.body)
+                        .foregroundStyle(MacPalette.muted)
+                }
+                Spacer()
+                callStatus(icon: "video.fill", title: "Camera on", detail: "Everyone's camera is on")
+                callStatus(icon: "person.2", title: "\(meeting?.groupSize ?? 10) participants", detail: nil)
+            }
+
+            HStack(alignment: .top, spacing: 20) {
+                VStack(spacing: 14) {
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 2), spacing: 10) {
+                        ForEach(callParticipants.prefix(4), id: \.self) { name in
+                            callTile(name)
+                        }
+                    }
+                    callControls
+                }
+                .frame(maxWidth: .infinity)
+
+                VStack(spacing: 16) {
+                    MacPanel {
+                        HStack(spacing: 12) {
+                            ForEach(["Participants", "Agenda"], id: \.self) { panel in
+                                Button(panel) { callSidePanel = panel }
+                                    .font(MacType.button)
+                                    .foregroundStyle(callSidePanel == panel ? MacPalette.accent : MacPalette.muted)
+                                    .buttonStyle(.plain)
+                                    .accessibilityLabel(panel)
+                                    .accessibilityValue(callSidePanel == panel ? "Selected" : "Not selected")
+                            }
+                        }
+                        Divider()
+                        if callSidePanel == "Participants" {
+                            ForEach(callParticipants, id: \.self) { participant in
+                                HStack {
+                                    Text(participant)
+                                    if participant == meeting?.hostName {
+                                        MacPill(text: "Host", isSelected: true)
+                                    }
+                                    Spacer()
+                                    Image(systemName: "mic.fill")
+                                        .foregroundStyle(MacPalette.accent)
+                                }
+                                .font(MacType.body)
+                                .accessibilityLabel("\(participant) microphone on")
+                            }
+                        } else {
+                            VStack(alignment: .leading, spacing: 10) {
+                                Text("Opening check-in")
+                                Text("Share one useful signal")
+                                Text("Pick one follow-up")
+                            }
+                            .font(MacType.body)
+                        }
+                    }
+                    MacPanel {
+                        Label("A safe, respectful space", systemImage: "shield.checkered")
+                            .font(MacType.button)
+                        Text("Be present, be kind, and listen with an open heart.")
+                            .font(MacType.small)
+                            .foregroundStyle(MacPalette.muted)
+                    }
+                }
+                .frame(width: 330)
+            }
+        }
+        .task {
+            if appState.upcomingMeetings.isEmpty {
+                await appState.fetchMeetings()
+            }
+        }
+    }
+
+    private var callParticipants: [String] {
+        var names = [appState.upcomingMeetings.first?.hostName, appState.profile?.basicInfo?.name]
+            .compactMap { $0 }
+        names.append(contentsOf: appState.soulmateMatches.map(\.name))
+        names.append(contentsOf: ["Arjun", "Meera", "Rohan", "Karan", "Neha"])
+        return Array(NSOrderedSet(array: names).compactMap { $0 as? String }.prefix(8))
+    }
+
+    private func callTile(_ name: String) -> some View {
+        ZStack(alignment: .bottomLeading) {
+            LinearGradient(colors: [MacPalette.sage.opacity(0.9), MacPalette.accent.opacity(0.65)], startPoint: .topLeading, endPoint: .bottomTrailing)
+            Text(String(name.prefix(1)))
+                .font(.system(size: 72, weight: .semibold, design: .serif))
+                .foregroundStyle(.white.opacity(0.75))
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            Label(name, systemImage: "cellularbars")
+                .font(MacType.button)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(.black.opacity(0.55), in: Capsule())
+                .foregroundStyle(.white)
+                .padding(12)
+        }
+        .frame(height: 210)
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .accessibilityLabel("\(name) video tile")
+    }
+
+    private var callControls: some View {
+        HStack(spacing: 22) {
+            Button("Chat") { navigate?(.messages) }
+                .buttonStyle(.bordered)
+                .accessibilityLabel("Open call chat")
+            Button("Participants") { callSidePanel = "Participants" }
+                .buttonStyle(.bordered)
+                .accessibilityLabel("Show call participants")
+            Button {
+                isCallMuted.toggle()
+            } label: {
+                Label(isCallMuted ? "Unmute mic" : "Mute mic", systemImage: isCallMuted ? "mic.slash.fill" : "mic.fill")
+                    .labelStyle(.iconOnly)
+                    .frame(width: 56, height: 56)
+                    .background(MacPalette.accent, in: Circle())
+                    .foregroundStyle(.white)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(isCallMuted ? "Unmute microphone" : "Mute microphone")
+            .accessibilityValue(isCallMuted ? "Muted" : "Unmuted")
+            Label("Good connection", systemImage: "cellularbars")
+                .font(MacType.button)
+                .foregroundStyle(MacPalette.ink)
+            Button("Leave") { navigate?(.meetOverview) }
+                .buttonStyle(.borderedProminent)
+                .tint(.red)
+                .accessibilityLabel("Leave meetup")
+        }
+        .padding(18)
+        .frame(maxWidth: .infinity)
+        .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(MacPalette.line, lineWidth: 1))
+    }
+
+    private func callStatus(icon: String, title: String, detail: String?) -> some View {
+        Label {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(MacType.button)
+                if let detail {
+                    Text(detail)
+                        .font(MacType.small)
+                        .foregroundStyle(MacPalette.muted)
+                }
+            }
+        } icon: {
+            Image(systemName: icon)
+                .foregroundStyle(MacPalette.accent)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(MacPalette.line, lineWidth: 1))
     }
 
     private var availabilityPanel: some View {
@@ -283,12 +469,16 @@ struct MacScreenView: View {
                     MacPill(text: "Available", isSelected: available)
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel("\(day) \(detail) available")
+                .accessibilityValue(available ? "Selected" : "Not selected")
                 Button {
                     Task { await appState.updateMeetingRSVP(kind: kind, available: false) }
                 } label: {
                     MacPill(text: "Not", isSelected: !available)
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel("\(day) \(detail) not available")
+                .accessibilityValue(!available ? "Selected" : "Not selected")
             }
         }
     }
@@ -757,7 +947,7 @@ struct MacScreenView: View {
     // MARK: - 8. meetRecap
 
     private var meetRecap: some View {
-        let meeting = appState.pastMeetings.first ?? appState.upcomingMeetings.first
+        let meeting = currentRecapMeeting
         let connectedPeople = appState.soulmateMatches
         return HStack(alignment: .top, spacing: 24) {
             VStack(alignment: .leading, spacing: 20) {
@@ -1497,15 +1687,15 @@ struct MacScreenView: View {
         HStack(alignment: .top, spacing: 22) {
             MacPanel(title: "Settings") {
                 VStack(alignment: .leading, spacing: 4) {
-                    settingsItem("Account", icon: "person.circle")
-                    settingsItem("Privacy & safety", icon: "shield")
-                    settingsItem("Notifications", icon: "bell")
+                    settingsItem("Account", icon: "person.circle", detail: "Current")
+                    settingsItem("Privacy & safety", icon: "shield", detail: "Planned")
+                    settingsItem("Notifications", icon: "bell", detail: "Planned")
                     settingsItem("Soulmate", icon: "heart.fill", selected: true)
-                    settingsItem("Voice profile", icon: "waveform")
-                    settingsItem("Connected apps", icon: "square.grid.2x2")
-                    settingsItem("Appearance", icon: "sun.max")
-                    settingsItem("Language", icon: "globe")
-                    settingsItem("Help & support", icon: "questionmark.circle")
+                    settingsItem("Voice profile", icon: "waveform", detail: "Profile tab")
+                    settingsItem("Connected apps", icon: "square.grid.2x2", detail: "Planned")
+                    settingsItem("Appearance", icon: "sun.max", detail: "Planned")
+                    settingsItem("Language", icon: "globe", detail: "Planned")
+                    settingsItem("Help & support", icon: "questionmark.circle", detail: "Use iOS support")
                     Divider().padding(.vertical, 4)
                     Button {
                         showSignOutConfirm = true
@@ -1514,6 +1704,14 @@ struct MacScreenView: View {
                             .foregroundStyle(.red)
                     }
                     .buttonStyle(.plain)
+                    Button {
+                        showDeleteAccountConfirm = true
+                    } label: {
+                        settingsItem(isDeletingAccount ? "Deleting account" : "Delete account", icon: "trash")
+                            .foregroundStyle(.red)
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(isDeletingAccount)
                 }
             }
             .frame(width: 290)
@@ -1541,17 +1739,12 @@ struct MacScreenView: View {
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Age range")
                             .font(MacType.small.weight(.semibold))
-                        Slider(value: $ageRange)
-                            .tint(MacPalette.accent)
+                        formLine("Current preference", value: "Default beta range")
                     }
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Visibility")
                             .font(MacType.small.weight(.semibold))
-                        HStack(spacing: 12) {
-                            radioButton("Everyone", selected: visibility == "Everyone") { visibility = "Everyone" }
-                            radioButton("Circles only", selected: visibility == "Circles only") { visibility = "Circles only" }
-                            radioButton("Hidden", selected: visibility == "Hidden") { visibility = "Hidden" }
-                        }
+                        formLine("Current preference", value: "Circles only")
                     }
                 }
             }
@@ -1573,33 +1766,41 @@ struct MacScreenView: View {
         } message: {
             Text("You will need to sign in again to restore your profile and placement.")
         }
-    }
-
-    private func settingsItem(_ title: String, icon: String, selected: Bool = false) -> some View {
-        Label(title, systemImage: icon)
-            .font(MacType.button)
-            .foregroundStyle(selected ? MacPalette.accent : MacPalette.ink)
-            .padding(.vertical, 8)
-            .padding(.horizontal, 6)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(selected ? MacPalette.accentSoft.opacity(0.5) : .clear, in: RoundedRectangle(cornerRadius: 10))
-    }
-
-    private func radioButton(_ label: String, selected: Bool, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            HStack(spacing: 8) {
-                Image(systemName: selected ? "circle.fill" : "circle")
-                    .foregroundStyle(selected ? MacPalette.accent : MacPalette.muted)
-                    .font(.caption)
-                Text(label)
-                    .font(MacType.small)
+        .confirmationDialog(
+            "Delete your account?",
+            isPresented: $showDeleteAccountConfirm,
+            titleVisibility: .visible
+        ) {
+            Button("Delete account", role: .destructive) {
+                Task {
+                    isDeletingAccount = true
+                    _ = await appState.deleteAccount()
+                    isDeletingAccount = false
+                }
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(MacPalette.surface, in: Capsule())
-            .overlay(Capsule().stroke(MacPalette.line, lineWidth: 1))
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This removes your backend tester data and clears the local macOS session.")
         }
-        .buttonStyle(.plain)
+    }
+
+    private func settingsItem(_ title: String, icon: String, selected: Bool = false, detail: String? = nil) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: icon)
+            Text(title)
+            Spacer()
+            if let detail {
+                Text(detail)
+                    .font(MacType.small)
+                    .foregroundStyle(MacPalette.muted)
+            }
+        }
+        .font(MacType.button)
+        .foregroundStyle(selected ? MacPalette.accent : (detail == nil ? MacPalette.ink : MacPalette.muted))
+        .padding(.vertical, 8)
+        .padding(.horizontal, 6)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(selected ? MacPalette.accentSoft.opacity(0.5) : .clear, in: RoundedRectangle(cornerRadius: 10))
     }
 
     private func featureCard(icon: String, title: String, detail: String) -> some View {
@@ -1647,6 +1848,7 @@ struct MacScreenView: View {
             } else {
                 ForEach(appState.pastMeetings) { meeting in
                     Button {
+                        selectedRecapMeetingId = meeting.id
                         navigate?(.meetRecap)
                     } label: {
                         eventRow(meeting.title, date: meeting.hostName)

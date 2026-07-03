@@ -1,0 +1,62 @@
+{
+  "screen": "Community Members",
+  "platform": "macos",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (communityMembers)"
+  ],
+  "mockup_ref": "mockups/macos/13-16-community-members-event-messages-activity.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "Community Detail View members"
+  ],
+  "backend_dependencies": [
+    "GET /v1/communities/:id/members"
+  ],
+  "controls": [
+    {
+      "id": "sidebar-nav",
+      "type": "display",
+      "label": "About/Events/Members/Resources/Highlights/Settings sidebar",
+      "expected": "STUB — static Labels, not buttons, no nav",
+      "result": "fail",
+      "evidence": "STUB confirmed: About/Events/Members/Resources/Highlights/Settings sidebar items are static Labels, NOT buttons, no navigation",
+      "blocker": "",
+      "stub": true
+    },
+    {
+      "id": "search",
+      "type": "text",
+      "label": "Search members",
+      "expected": "Filters filteredCommunityMembers",
+      "result": "blocked",
+      "evidence": "Cannot interact: macOS GUI automation unavailable",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "filter-pills",
+      "type": "display",
+      "label": "All/Active now/Most active pills",
+      "expected": "STUB — 'All' hard-coded selected, no action",
+      "result": "fail",
+      "evidence": "STUB confirmed: All/Active now/Most active — 'All' hard-coded, no action",
+      "blocker": "",
+      "stub": true
+    },
+    {
+      "id": "member-rows",
+      "type": "display",
+      "label": "Member rows",
+      "expected": "STUB — static, no tap action",
+      "result": "fail",
+      "evidence": "STUB confirmed: member rows are static, no tap action",
+      "blocker": "",
+      "stub": true
+    }
+  ],
+  "visual_parity": {
+    "result": "pending",
+    "notes": ""
+  },
+  "notes": ""
+}

@@ -1,0 +1,52 @@
+{
+  "screen": "Past Meet Detail (recap)",
+  "platform": "ios",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedApp/Views/MeetView.swift (PastMeetDetailView)"
+  ],
+  "mockup_ref": "mockups/ios/09-12-meet-video-postmeet.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "Past meet row on Meet tab"
+  ],
+  "backend_dependencies": [
+    "POST /v1/meetings/:id/recap-note"
+  ],
+  "controls": [
+    {
+      "id": "reflection-note",
+      "type": "text",
+      "label": "Reflection note field",
+      "expected": "Editable text bound to reflectionNote",
+      "result": "pending",
+      "evidence": "",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "save-note",
+      "type": "button",
+      "label": "Save note",
+      "expected": "Persists note via recap-note endpoint",
+      "result": "pending",
+      "evidence": "",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "select-connections",
+      "type": "button",
+      "label": "Select connections (when soulmate enabled)",
+      "expected": "Opens SoulmateSelectionDialog",
+      "result": "pending",
+      "evidence": "",
+      "blocker": "",
+      "stub": false
+    }
+  ],
+  "visual_parity": {
+    "result": "pending-mockup-compare",
+    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+  },
+  "notes": ""
+}

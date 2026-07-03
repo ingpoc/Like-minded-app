@@ -1,0 +1,62 @@
+{
+  "screen": "Meet Video Call (LiveKit parity — mockup 21)",
+  "platform": "macos",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift"
+  ],
+  "mockup_ref": "mockups/macos/21-meet-video-call.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "Join meetup from Meet (parity target, Phase 10)"
+  ],
+  "backend_dependencies": [
+    "POST /v1/meetings/:id/join (LiveKit token)"
+  ],
+  "controls": [
+    {
+      "id": "join-room",
+      "type": "button",
+      "label": "Join meetup",
+      "expected": "Calls POST /meetings/:id/join, opens in-app LiveKit room with camera on",
+      "result": "blocked",
+      "evidence": "No LiveKit server provisioned; macOS video-call parity is Phase 10 unchecked. mockup 21 exists but implementation not reachable.",
+      "blocker": "No LiveKit server provisioned; macOS parity is Phase 10 unchecked",
+      "stub": false
+    },
+    {
+      "id": "tiles",
+      "type": "display",
+      "label": "Participant tiles",
+      "expected": "Camera tiles grid",
+      "result": "blocked",
+      "evidence": "LiveKit not provisioned",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "mute",
+      "type": "button",
+      "label": "Mute toggle",
+      "expected": "Toggles local mic",
+      "result": "blocked",
+      "evidence": "LiveKit not provisioned",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "leave",
+      "type": "button",
+      "label": "Leave",
+      "expected": "Disconnects room",
+      "result": "blocked",
+      "evidence": "LiveKit not provisioned",
+      "blocker": "",
+      "stub": false
+    }
+  ],
+  "visual_parity": {
+    "result": "pending",
+    "notes": ""
+  },
+  "notes": "mockups/macos/21-meet-video-call.png exists but implementation is Phase 10 unchecked. Likely not reachable in current build."
+}

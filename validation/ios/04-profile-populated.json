@@ -1,0 +1,72 @@
+{
+  "screen": "Profile (populated \u2014 signals + interests + update)",
+  "platform": "ios",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedApp/Views/ProfilePrototypeView.swift (VoiceProfileView)"
+  ],
+  "mockup_ref": "mockups/ios/17-20-profile-community-settings.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "Profile tab when profile exists"
+  ],
+  "backend_dependencies": [
+    "GET /v1/me/profile"
+  ],
+  "controls": [
+    {
+      "id": "update-profile",
+      "type": "button",
+      "label": "Update profile",
+      "expected": "Reopens voice session sheet",
+      "result": "pass",
+      "evidence": "Tapping Update profile starts Realtime voice session (WebRTC ICE connected, session.ready in logs). Sheet presents with Stop/Done controls.",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "signal-pills",
+      "type": "display",
+      "label": "Communication/Energy/Trust pills",
+      "expected": "Show profile signals (display only, no tap)",
+      "result": "pass",
+      "evidence": "Communication/Energy/Trust pills render with real data (Thoughtful Communicator, Reserved-Outgoing trait bars visible)",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "comm-read-card",
+      "type": "display",
+      "label": "Communication read card with chevron",
+      "expected": "Display only; chevron is decorative, no tap action (STUB)",
+      "result": "fail",
+      "evidence": "Communication card shows decorative chevron (Forward image) + ellipsis.image; no Button/action wired (STUB)",
+      "blocker": "",
+      "stub": true
+    },
+    {
+      "id": "trait-bars",
+      "type": "display",
+      "label": "Big Five TraitBars",
+      "expected": "Render trait bars from slice.signals.bigFive",
+      "result": "pass",
+      "evidence": "Big Five TraitBars render with real values from slice.signals.bigFive",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "interest-chips",
+      "type": "display",
+      "label": "Interest tag chips",
+      "expected": "Render interests with depth encoding",
+      "result": "pass",
+      "evidence": "Interest chips render (visible in scroll)",
+      "blocker": "",
+      "stub": false
+    }
+  ],
+  "visual_parity": {
+    "result": "pending-mockup-compare",
+    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+  },
+  "notes": ""
+}

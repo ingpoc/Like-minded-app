@@ -285,6 +285,7 @@ Update docs to match shipped product. Run all graders.
 - [ ] Enable Sign in with Apple capability for the app id.
 - [ ] Configure App Store Connect/TestFlight metadata and privacy policy.
 - [ ] Add `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` to `Info.plist` — required for LiveKit video + OpenAI Realtime audio.
+- [x] Add repo-side account deletion readiness before wider beta: Settings entry on iOS and macOS, `DELETE /v1/me/account`, session revocation through user deletion, removal/anonymization of user-owned profile/placement/transcript/feedback/chat/meeting data, and runtime proof in `npm run smoke:mvp`. App Store Connect metadata still ships under the TestFlight metadata checklist above.
 - [ ] Build signed TestFlight candidate.
 
 ## Phase 10 — Simulator/Device Proof (after Phase 9)
@@ -300,7 +301,9 @@ Update docs to match shipped product. Run all graders.
 - [ ] Meet shows RSVP toggles.
 - [ ] Communities shows backend-driven catalog.
 - [ ] Soulmate toggle shows/hides tab. Post-meet selection works. Chat works.
-- [ ] Group video call joins with camera on.
+- [ ] iOS group video call joins with camera on.
+- [ ] macOS group video call parity: `mockups/macos/21-meet-video-call.png` is implemented, `Join meetup` calls `POST /v1/meetings/:id/join`, the app opens an in-app LiveKit room with camera on and mute/leave controls, and runtime proof records the seeded validation API path.
+- [x] macOS Settings rows are honest: Account/Soulmate controls are real, destructive account actions open confirmations, and Privacy & safety, Notifications, Voice profile, Connected apps, Appearance, Language, and Help & support are muted/static labels instead of selectable-looking no-op rows.
 - [ ] A second tester cannot access the first tester's profile, placement, or chat.
 
 ## Deferred
@@ -313,7 +316,6 @@ Update docs to match shipped product. Run all graders.
 - Same-sex Soulmate.
 - Community-created content/feeds.
 - Host volunteer path.
-- Account deletion flow (required before wider beta).
 - RSVP window: always open, closes Friday midnight? (Proposed: yes.)
 - Min RSVP threshold: if 15 RSVP, skip the remainder < 6. (Proposed: skip groups smaller than 6.)
 - Non-binary in group formation: exclude from gender balance, place by fit only? (Proposed: yes.)

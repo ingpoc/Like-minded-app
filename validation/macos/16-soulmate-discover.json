@@ -1,0 +1,63 @@
+{
+  "screen": "Soulmate Discover",
+  "platform": "macos",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (soulmateDiscover)"
+  ],
+  "mockup_ref": "mockups/macos/09-12-profile-soulmate-discover-detail.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "Soulmate Overview How it works"
+  ],
+  "backend_dependencies": [
+    "GET /v1/me/soulmate/status",
+    "GET /v1/me/soulmate/matches"
+  ],
+  "controls": [
+    {
+      "id": "distance-slider",
+      "type": "slider",
+      "label": "Distance slider",
+      "expected": "STUB — '25 km' label static; local binding, not persisted, doesn't filter",
+      "result": "fail",
+      "evidence": "STUB confirmed: '25 km' label is static; local binding, not persisted, doesn't filter",
+      "blocker": "",
+      "stub": true
+    },
+    {
+      "id": "filter-pills",
+      "type": "display",
+      "label": "All/Nearby/Interests pills",
+      "expected": "STUB — 'All' hard-coded, no action",
+      "result": "fail",
+      "evidence": "STUB confirmed: All/Nearby/Interests — 'All' hard-coded, no action",
+      "blocker": "",
+      "stub": true
+    },
+    {
+      "id": "new-matches",
+      "type": "button",
+      "label": "New matches",
+      "expected": "Calls fetchSoulmateStatus",
+      "result": "blocked",
+      "evidence": "Cannot interact: macOS GUI automation unavailable",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "match-card",
+      "type": "button",
+      "label": "Match card",
+      "expected": "Navigate → soulmateDetail",
+      "result": "blocked",
+      "evidence": "Cannot interact: macOS GUI automation unavailable",
+      "blocker": "",
+      "stub": false
+    }
+  ],
+  "visual_parity": {
+    "result": "pending",
+    "notes": ""
+  },
+  "notes": ""
+}

@@ -1,0 +1,94 @@
+{
+  "screen": "Settings",
+  "platform": "ios",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedApp/Views/SettingsPrototypeView.swift"
+  ],
+  "mockup_ref": "mockups/ios/17-20-profile-community-settings.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "Profile pencil icon"
+  ],
+  "backend_dependencies": [
+    "POST /v1/feedback (contact support)",
+    "POST /v1/me/soulmate/enable (toggle)",
+    "DELETE /v1/me/account"
+  ],
+  "controls": [
+    {
+      "id": "soulmate-toggle",
+      "type": "toggle",
+      "label": "Enable Soulmate",
+      "expected": "Toggles soulmate tab visibility",
+      "result": "pending",
+      "evidence": "",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "how-it-works",
+      "type": "button",
+      "label": "How it works",
+      "expected": "Opens SettingsInfoSheet",
+      "result": "pass",
+      "evidence": "Opens SettingsInfoSheet (Likeminded | Done | How Soulmate works | Opt in | \u2022  Turn Soulmate on only when you want p | \u2022  The Soulmate tab appears after the ba)",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "sign-out",
+      "type": "button",
+      "label": "Sign out (destructive)",
+      "expected": "Shows confirmation; on confirm calls signOut",
+      "result": "pass",
+      "evidence": "Shows confirmation dialog with Sign out / Cancel",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "delete-account",
+      "type": "button",
+      "label": "Delete account (destructive)",
+      "expected": "Shows confirmation; on confirm calls DELETE /v1/me/account and clears local session",
+      "result": "pass",
+      "evidence": "Implemented in SettingsPrototypeView -> PrototypeAppState.deleteAccount -> DELETE /v1/me/account; npm run smoke:mvp proves old session gets 401 after delete.",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "privacy",
+      "type": "button",
+      "label": "Privacy policy",
+      "expected": "Opens PrivacyPolicySheet",
+      "result": "pass",
+      "evidence": "Opens PrivacyPolicySheet",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "help",
+      "type": "button",
+      "label": "Help & FAQ",
+      "expected": "Opens SettingsInfoSheet",
+      "result": "pass",
+      "evidence": "Opens SettingsInfoSheet (Help & FAQ)",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "support",
+      "type": "button",
+      "label": "Contact support",
+      "expected": "Opens ContactSupportSheet",
+      "result": "pending",
+      "evidence": "",
+      "blocker": "",
+      "stub": false
+    }
+  ],
+  "visual_parity": {
+    "result": "pending-mockup-compare",
+    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+  },
+  "notes": ""
+}

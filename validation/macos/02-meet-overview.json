@@ -1,0 +1,85 @@
+{
+  "screen": "Meet Overview",
+  "platform": "macos",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (meetOverview)"
+  ],
+  "mockup_ref": "mockups/macos/01-04-auth-meet-circles-profile.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "Meet tab",
+    "⌘1"
+  ],
+  "backend_dependencies": [
+    "GET /v1/meetings/upcoming",
+    "GET /v1/meetings/past",
+    "POST /v1/meetings/rsvp"
+  ],
+  "controls": [
+    {
+      "id": "join-meetup",
+      "type": "button",
+      "label": "Join meetup (hero)",
+      "expected": "Navigate → meetRecap (when upcoming exists)",
+      "result": "blocked",
+      "evidence": "Cannot interact: macOS GUI automation unavailable (no screencapture/assistive access). Source-trace: navigate → meetRecap. LiveKit not provisioned.",
+      "blocker": "LiveKit join not exercised; route goes to recap, not video room, in this build",
+      "stub": false
+    },
+    {
+      "id": "rsvp-sat-yes",
+      "type": "button",
+      "label": "Saturday Available pill",
+      "expected": "POST rsvp community available=true",
+      "result": "blocked",
+      "evidence": "Cannot interact: macOS GUI automation unavailable. Source-trace: appState.updateMeetingRSVP(kind:'community',available:true)",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "rsvp-sat-no",
+      "type": "button",
+      "label": "Saturday Not pill",
+      "expected": "POST rsvp community available=false",
+      "result": "blocked",
+      "evidence": "Cannot interact: macOS GUI automation unavailable",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "rsvp-sun-yes",
+      "type": "button",
+      "label": "Sunday Available pill",
+      "expected": "POST rsvp circle available=true",
+      "result": "blocked",
+      "evidence": "Cannot interact: macOS GUI automation unavailable",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "rsvp-sun-no",
+      "type": "button",
+      "label": "Sunday Not pill",
+      "expected": "POST rsvp circle available=false",
+      "result": "blocked",
+      "evidence": "Cannot interact: macOS GUI automation unavailable",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "past-row",
+      "type": "button",
+      "label": "Past meeting row",
+      "expected": "Navigate → meetRecap",
+      "result": "blocked",
+      "evidence": "Cannot interact: macOS GUI automation unavailable",
+      "blocker": "",
+      "stub": false
+    }
+  ],
+  "visual_parity": {
+    "result": "pending",
+    "notes": ""
+  },
+  "notes": ""
+}

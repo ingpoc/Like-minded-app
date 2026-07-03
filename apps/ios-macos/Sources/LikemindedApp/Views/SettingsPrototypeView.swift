@@ -3,6 +3,8 @@ import SwiftUI
 struct SettingsPrototypeView: View {
     @EnvironmentObject private var appState: PrototypeAppState
     @State private var showingSignOutConfirm = false
+    @State private var showingDeleteConfirm = false
+    @State private var isDeletingAccount = false
     @State private var activeSheet: SettingsSheet?
 
     var body: some View {
@@ -31,8 +33,17 @@ struct SettingsPrototypeView: View {
             }
 
             settingsSection("Account") {
-                SettingsRow(title: "Sign out", role: .destructive) {
-                    showingSignOutConfirm = true
+                VStack(spacing: 0) {
+                    SettingsRow(title: "Sign out", role: .destructive) {
+                        showingSignOutConfirm = true
+                    }
+
+                    Divider().overlay(PrototypePalette.rule)
+
+                    SettingsRow(title: isDeletingAccount ? "Deleting account" : "Delete account", role: .destructive) {
+                        showingDeleteConfirm = true
+                    }
+                    .disabled(isDeletingAccount)
                 }
             }
 
@@ -80,6 +91,22 @@ struct SettingsPrototypeView: View {
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("You will need to sign in again to restore your profile and placement.")
+        }
+        .confirmationDialog(
+            "Delete your account?",
+            isPresented: $showingDeleteConfirm,
+            titleVisibility: .visible
+        ) {
+            Button("Delete account", role: .destructive) {
+                Task {
+                    isDeletingAccount = true
+                    _ = await appState.deleteAccount()
+                    isDeletingAccount = false
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This removes your profile, placement, transcript, feedback, Soulmate, chat, community, and meetup data from this backend.")
         }
         .sheet(item: $activeSheet) { sheet in
             switch sheet {
@@ -171,7 +198,7 @@ private struct PrivacyPolicySheet: View {
                         "You can re-take the voice interview at any time from Profile.",
                         "You can flag a circle that does not feel right and prompt a re-evaluation.",
                         "Soulmate is opt-in only and visible when both people choose each other.",
-                        "Sign out clears the local session; profile data remains tied to your Apple ID."
+                        "Delete account removes your backend tester data and clears this device session."
                     ])
                 }
                 .padding(20)

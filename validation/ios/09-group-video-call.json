@@ -1,0 +1,52 @@
+{
+  "screen": "Group Video Call (LiveKit)",
+  "platform": "ios",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedApp/Views/MeetView.swift (GroupVideoCallView)"
+  ],
+  "mockup_ref": "mockups/ios/09-12-meet-video-postmeet.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "Join live room from Upcoming meet card"
+  ],
+  "backend_dependencies": [
+    "POST /v1/meetings/:id/join (LiveKit token)"
+  ],
+  "controls": [
+    {
+      "id": "tiles",
+      "type": "display",
+      "label": "Participant tiles grid",
+      "expected": "LazyVGrid of Participant camera tiles",
+      "result": "blocked",
+      "evidence": "LiveKit server not provisioned locally; Join button disabled until meetup time. Cannot test video room.",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "mute",
+      "type": "button",
+      "label": "Mic mute toggle",
+      "expected": "Toggles localParticipant microphone",
+      "result": "blocked",
+      "evidence": "LiveKit server not provisioned locally",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "leave",
+      "type": "button",
+      "label": "Leave (destructive)",
+      "expected": "Disconnects room",
+      "result": "blocked",
+      "evidence": "LiveKit server not provisioned locally",
+      "blocker": "",
+      "stub": false
+    }
+  ],
+  "visual_parity": {
+    "result": "pending-mockup-compare",
+    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+  },
+  "notes": "Entire screen blocked locally without LiveKit server + LIVEKIT_URL/API_KEY/SECRET."
+}

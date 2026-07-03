@@ -46,6 +46,7 @@ const {
   saveMessage,
   getMessages,
   saveFeedback,
+  deleteUserAccount,
   LOCAL_PATH: MVP_STORE_PATH
 } = require("./lib/mvp-store");
 const { generateParticipantToken } = require("./lib/livekit");
@@ -1068,6 +1069,14 @@ async function handleRequest(req, res) {
     } catch (error) {
       json(res, 400, { error: "invalid_feedback", message: error.message });
     }
+    return;
+  }
+
+  if (req.method === "DELETE" && url.pathname === "/v1/me/account") {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    await deleteUserAccount(user.id);
+    json(res, 200, { status: "deleted" });
     return;
   }
 

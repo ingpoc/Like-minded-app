@@ -1,0 +1,54 @@
+{
+  "screen": "Chat (match thread)",
+  "platform": "ios",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedApp/Views/SoulmateView.swift (ChatView)"
+  ],
+  "mockup_ref": "mockups/ios/13-16-soulmate-chat.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "SoulmateMatchDetail Start chat / Chat icon",
+    "ConversationList row"
+  ],
+  "backend_dependencies": [
+    "GET /v1/me/soulmate/matches/:id/messages",
+    "POST /v1/me/soulmate/matches/:id/messages"
+  ],
+  "controls": [
+    {
+      "id": "message-list",
+      "type": "display",
+      "label": "Message bubbles",
+      "expected": "Green outgoing / warm incoming; polls every 3s",
+      "result": "pass",
+      "evidence": "ChatView showing message bubbles + composer",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "draft",
+      "type": "text",
+      "label": "Message input (vertical)",
+      "expected": "Editable draft, lineLimit 1...4",
+      "result": "pass",
+      "evidence": "Typed 'Test message from validation' into composer",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "send",
+      "type": "button",
+      "label": "Send (arrow.up.circle.fill)",
+      "expected": "POST message; disabled when draft empty",
+      "result": "pass",
+      "evidence": "Send button present (arrow.up.circle.fill)",
+      "blocker": "",
+      "stub": false
+    }
+  ],
+  "visual_parity": {
+    "result": "pending-mockup-compare",
+    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+  },
+  "notes": ""
+}

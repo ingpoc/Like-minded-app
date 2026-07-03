@@ -1,0 +1,207 @@
+---
+name: build-macos-app
+description: Likeminded macOS build/run/validate skill for the SwiftUI LikemindedMac target in apps/ios-macos. Use when building, running, signing, or screen-validating the macOS surface against mockups/macos — covers xcodegen, xcodebuild for macOS, open with --mac-screen deep-link args, validation-data seeding, screen-capture, and parity checks across the welcome/meet/circles/profile/chat/communities/soulmate/settings flow set.
+---
+
+# Build macOS App — Likeminded
+
+Project-specific skill for the **macOS SwiftUI surface** of the Like-minded-app:
+the `LikemindedMac` target in `apps/ios-macos/project.yml`, source at
+`apps/ios-macos/Sources/LikemindedMac/`.
+
+## When to Use This Skill
+
+Apply when working on the **macOS app** (`LikemindedMac`) for any of:
+
+- Building, running, or debugging the macOS target natively (not Catalyst)
+- Adding or modifying SwiftUI views/scenes under `Sources/LikemindedMac/`
+- Wiring the macOS client to the Node API (`LIKEMINDED_API_BASE_URL` contract)
+- Window, toolbar, menu, sidebar layout specific to the desktop surface
+- Validation: capturing screenshots of all 20 `--mac-screen` flows and
+  comparing against `mockups/macos/`
+- macOS-specific design system / component work
+
+**Skip this skill** for iOS simulator work (use `build-ios-app`), backend-only
+changes, schema work, or non-visual infra changes — they don't need a Mac
+build or mockup comparison.
+
+## Project Layout (macOS-relevant)
+
+```
+apps/ios-macos/
+  project.yml                         # XcodeGen owner — iOS + macOS targets
+  Likeminded.xcodeproj/               # generated, do NOT hand-edit
+  Sources/LikemindedMac/
+    LikemindedMacApp.swift            # app entry / scene
+    MacRootView.swift                 # root layout
+    MacScreens.swift                  # --mac-screen switch
+    MacAppState.swift                 # auth + placement state
+    MacPrototypeData.swift
+    MacDesignSystem.swift             # macOS-only colors/typography/materials
+    LikemindedAPIClient.swift         # HTTP client — same backend contract
+    Models.swift
+mockups/macos/                        # montage references:
+  01-04-auth-meet-circles-profile.png
+  05-08-chat-communities-detail-recap.png
+  09-12-profile-soulmate-discover-detail.png
+  13-16-community-members-event-messages-activity.png
+  17-20-profile-onboarding-detail-settings.png
+  21-meet-video-call.png
+```
+
+Bundle id: `com.likeminded.mac`. Deployment target: **macOS 15.0**. No LiveKit
+dependency on this target. `GENERATE_INFOPLIST_FILE: YES`. No entitlements
+file declared in `project.yml` for the Mac target (Apple Sign-In is iOS-only).
+
+## Build / Run / Debug Workflow
+
+### 0. Prerequisites
+- The API server must be running for in-app auth + placement flows. Verify:
+  ```
+  curl -s http://127.0.0.1:8787/health
+  ```
+- For realistic validation data, use the validation lane (see §Validation).
+- XcodeGen must be installed: `brew install xcodegen`.
+
+### 1. Regenerate the Xcode project after any `project.yml` change
+```
+(cd apps/ios-macos && xcodegen generate)
+```
+Never hand-edit `Likeminded.xcodeproj`. The spec is the source of truth.
+
+### 2. Build only
+```
+xcodebuild \
+  -project apps/ios-macos/Likeminded.xcodeproj \
+  -scheme LikemindedMac \
+  -destination 'platform=macOS' \
+  -derivedDataPath .build/macos \
+  build
+```
+App lands at `.build/macos/Build/Products/Debug/LikemindedMac.app`.
+
+### 3. Run the built app (native open, not simulator)
+```
+open -F -n .build/macos/Build/Products/Debug/LikemindedMac.app
+```
+- `-F` launches a fresh instance even if one is running.
+- `-n` opens a new instance.
+- Use `--args …` to pass launch arguments (see §Launch Arguments).
+
+### 4. Terminate / restart
+```
+pkill -x LikemindedMac
+```
+Always `pkill` before re-`open`ing during validation so the new launch args
+take effect.
+
+### 5. Stream runtime logs
+```
+log stream --level debug --style compact --predicate 'process == "LikemindedMac"'
+```
+
+## Launch Arguments (project-specific)
+
+The macOS app reads these `open --args` flags. The most important is
+`--mac-screen <name>`, which deep-links the app to a specific screen flow
+for validation:
+
+Auth / dev:
+- `--likeminded-reset-auth-session` — wipe cached session
+- `--likeminded-dev-auth-bypass` — skip Apple Sign-In (local-auth mode)
+- `--likeminded-dev-auth-token <token>` — pre-seed a profile token
+- `--likeminded-dev-auth-name "<Name>"` — pre-seed display name
+
+Deep-link screen (one of):
+```
+welcome, meetOverview, circlesRoom, profileEdit, chat, communitiesBrowse,
+communityDetail, meetRecap, myProfile, soulmateOverview, soulmateDiscover,
+soulmateDetail, communityMembers, createEvent, messages, notifications,
+profileOnboarding, profileSignals, circleDetail, settingsSoulmate
+```
+
+Example (deep-link to soulmate discover with seeded validation profile):
+```
+open -F -n .build/macos/Build/Products/Debug/LikemindedMac.app --args \
+  --likeminded-reset-auth-session --likeminded-dev-auth-bypass \
+  --likeminded-dev-auth-token validation-priya --likeminded-dev-auth-name "Priya Shah" \
+  --mac-screen soulmateDiscover
+```
+
+## Validation (against `mockups/macos/`)
+
+Per AGENTS.md: before claiming seamless behavior, point both apps at
+`data/validation-db` with the validation API and seeded data.
+
+The repo ships an end-to-end script that captures **all 20** screen flows:
+```
+./script/verify_macos_screens.sh
+```
+What it does, in order:
+1. Kills any prior app instance + frees port `${PORT:-8787}`.
+2. Starts the validation API (`script/run_validation_api.sh`) and waits for `/health`.
+3. `npm run reset:validation-data` — seeds `data/validation-db`.
+4. `(cd apps/ios-macos && xcodegen generate)`.
+5. `xcodebuild … -scheme LikemindedMac -destination 'platform=macOS' build` into `.build/macos`.
+6. For each of the 20 screens: `pkill`, `open … --args … --mac-screen <name>`,
+   activate + resize the window to 1200×760 at {80,80} via AppleScript,
+   then `screencapture -x -l <window_id>` the Likeminded window only
+   (filtered by owner + size through CoreGraphics).
+7. `npm run remove:validation-data` cleanup on exit.
+8. Writes PNGs to `output/validation/macos-screens/<screen>.png`.
+
+Then compare each capture against the matching montage in `mockups/macos/`:
+
+| Screens (`--mac-screen`) | Mockup file |
+|---|---|
+| welcome, meetOverview, circlesRoom, profileEdit | `01-04-auth-meet-circles-profile.png` |
+| chat, communitiesBrowse, communityDetail, meetRecap | `05-08-chat-communities-detail-recap.png` |
+| myProfile, soulmateOverview, soulmateDiscover, soulmateDetail | `09-12-profile-soulmate-discover-detail.png` |
+| communityMembers, createEvent, messages, notifications | `13-16-community-members-event-messages-activity.png` |
+| profileOnboarding, profileSignals, circleDetail, settingsSoulmate | `17-20-profile-onboarding-detail-settings.png` |
+| meet video call (extra) | `21-meet-video-call.png` |
+
+Ad-hoc single-screen capture (without the full script):
+```
+# build + open with the desired deep-link, then capture the window:
+screencapture -x -l "$(python3 -c 'import Quartz; \
+  ws=Quartz.CGWindowListCopyWindowInfo(Quartz.kCGWindowListOptionOnScreenOnly|Quartz.kCGWindowListExcludeDesktopElements,Quartz.kCGNullWindowID); \
+  print(next((w["kCGWindowNumber"] for w in ws if (w.get("kCGWindowOwnerName") or "").startswith("Likeminded") and w.get("kCGWindowBounds",{}).get("Width",0)>400), ""))')" \
+  output/validation/macos-screens/soulmateDiscover.png
+```
+
+## Conventions Specific to This App
+
+- **Backend contract is `LIKEMINDED_API_BASE_URL`.** Both iOS and macOS read
+  the same key from their Info.plist (`INFOPLIST_KEY_LIKEMINDED_API_BASE_URL`).
+  Never hardcode a URL in the Swift client; never fork the contract per platform.
+- **No LiveKit on macOS.** The `LikemindedMac` target does not depend on
+  LiveKit/LiveKitWebRTC. The `meetVideoCall` mockup (21) is a Mac prototype
+  surface for the meet video flow without the LiveKit SDK link.
+- **Keep macOS-only SwiftUI in `Sources/LikemindedMac`.** Do not put Mac-only
+  window/toolbar/menu/sidebar layout into `Sources/LikemindedApp`.
+- **Window size for validation is 1200×760** at {80,80} — match this when
+  capturing for parity with `mockups/macos/`.
+- **Apple Sign-In is iOS-only** (entitlement lives at
+  `Entitlements/Likeminded.entitlements` for the iOS target). macOS uses
+  `--likeminded-dev-auth-bypass` with `dev:api:local-auth` or the validation
+  API's dev tokens.
+- **`GENERATE_INFOPLIST_FILE: YES`** — no hand-written Info.plist; configure
+  keys via `project.yml` (`INFOPLIST_KEY_*`), then regenerate.
+- **Shell-first.** No simulator tooling on this surface — use `xcodebuild`,
+  `open`, `pkill`, `screencapture`, `log stream`, `osascript`.
+
+## Common Pitfalls
+
+- Editing `Likeminded.xcodeproj` directly → always edit `project.yml` and run `xcodegen generate`.
+- Building for `platform=iOS Simulator` when you wanted the Mac → use `-destination 'platform=macOS'` and scheme `LikemindedMac`.
+- Leaving a prior `LikemindedMac` instance running → new `--mac-screen` args won't take effect. Always `pkill -x LikemindedMac` first.
+- Forgetting to start the validation API → blank/auth-gated screens. Always `curl /health` first.
+- `screencapture` without `-l <window_id>` → grabs the whole screen, breaking mockup parity.
+- Port 8787 already in use → `verify_macos_screens.sh` will kill the existing listener, but be aware it does so unconditionally.
+- Treating macOS as Catalyst → this project is **native macOS**, not Catalyst (`SUPPORTS_MACCATALYST: NO` on the iOS target). Don't switch to a Catalyst destination.
+
+## Related
+- `build-ios-app` skill — the iOS SwiftUI surface (`Likeminded`).
+- AGENTS.md "Trigger Map" for the canonical validation order and the
+  `npm run verify:macos-screens` / `npm run verify:simulator-local` aliases.

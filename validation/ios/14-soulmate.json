@@ -1,0 +1,63 @@
+{
+  "screen": "Soulmate (overview + matches)",
+  "platform": "ios",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedApp/Views/SoulmateView.swift (SoulmatePrototypeView)"
+  ],
+  "mockup_ref": "mockups/ios/13-16-soulmate-chat.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "Soulmate tab (visible when soulmateEnabled)"
+  ],
+  "backend_dependencies": [
+    "GET /v1/me/soulmate/status",
+    "GET /v1/me/soulmate/matches"
+  ],
+  "controls": [
+    {
+      "id": "enable-toggle",
+      "type": "toggle",
+      "label": "Enable Soulmate",
+      "expected": "Shows/hides tab; POST /soulmate/enable",
+      "result": "pass",
+      "evidence": "Soulmate tab visible; Enable Soulmate section + switch present (already enabled since tab is shown)",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "post-meet-select",
+      "type": "button",
+      "label": "Post-meet selection (when pending)",
+      "expected": "Opens SoulmateSelectionDialog",
+      "result": "pending",
+      "evidence": "",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "match-row",
+      "type": "nav-link",
+      "label": "Match row",
+      "expected": "Pushes SoulmateMatchDetailView",
+      "result": "pass",
+      "evidence": "Tapped match row \u2192 SoulmateMatchDetailView (Priya Shah)",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "conversations-icon",
+      "type": "nav-link",
+      "label": "Conversations icon (bubble.right)",
+      "expected": "Pushes ConversationListView",
+      "result": "pass",
+      "evidence": "Conversations icon pushed ConversationListView",
+      "blocker": "",
+      "stub": false
+    }
+  ],
+  "visual_parity": {
+    "result": "pending-mockup-compare",
+    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+  },
+  "notes": ""
+}

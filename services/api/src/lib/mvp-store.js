@@ -645,6 +645,72 @@ async function saveFeedback({ userId, profileId, placementId, rating, message, a
   writeLocalStore(store);
 }
 
+async function deleteUserAccount(userId) {
+  if (isPostgres) {
+    const client = await getPool().connect();
+    try {
+      await client.query("BEGIN");
+      const matchRows = await client.query(
+        "SELECT id FROM soulmate_matches WHERE data->>'userAId' = $1 OR data->>'userBId' = $1",
+        [userId]
+      );
+      const matchIds = matchRows.rows.map((row) => row.id);
+      if (matchIds.length) {
+        await client.query("DELETE FROM chat_messages WHERE match_id = ANY($1::text[])", [matchIds]);
+        await client.query("DELETE FROM soulmate_matches WHERE id = ANY($1::text[])", [matchIds]);
+      }
+      const meetings = await client.query("SELECT id, data FROM meetings");
+      for (const row of meetings.rows) {
+        const data = row.data || {};
+        data.participantIds = (data.participantIds || []).filter((id) => id !== userId);
+        if (data.recapNotes) delete data.recapNotes[userId];
+        if (data.hostUserId === userId) {
+          data.hostUserId = null;
+          data.hostName = "Likeminded host";
+        }
+        await client.query("UPDATE meetings SET data = $1::jsonb, updated_at = now() WHERE id = $2", [JSON.stringify(data), row.id]);
+      }
+      await client.query("DELETE FROM users WHERE id = $1", [userId]);
+      await client.query("COMMIT");
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+    return;
+  }
+
+  const store = readLocalStore();
+  const deletedMatchIds = store.soulmateMatches
+    .filter((match) => match.userAId === userId || match.userBId === userId)
+    .map((match) => match.id);
+  delete store.users[userId];
+  store.profiles = store.profiles.filter((row) => row.user_id !== userId);
+  store.placements = store.placements.filter((row) => row.user_id !== userId);
+  store.transcripts = store.transcripts.filter((row) => row.user_id !== userId);
+  store.feedback = store.feedback.filter((row) => row.user_id !== userId);
+  store.communityMemberships = store.communityMemberships.filter((row) => row.user_id !== userId);
+  store.meetingRsvps = store.meetingRsvps.filter((row) => row.user_id !== userId);
+  delete store.soulmateUsers[userId];
+  store.soulmateSelections = store.soulmateSelections.filter((row) => row.userId !== userId);
+  store.soulmateMatches = store.soulmateMatches.filter((match) => !deletedMatchIds.includes(match.id));
+  store.chatMessages = store.chatMessages.filter((message) => !deletedMatchIds.includes(message.matchId) && message.userId !== userId);
+  store.meetings = store.meetings.map((meeting) => {
+    const next = {
+      ...meeting,
+      participantIds: (meeting.participantIds || []).filter((id) => id !== userId)
+    };
+    if (next.recapNotes) delete next.recapNotes[userId];
+    if (next.hostUserId === userId) {
+      next.hostUserId = null;
+      next.hostName = "Likeminded host";
+    }
+    return next;
+  });
+  writeLocalStore(store);
+}
+
 function rowToUser(row) {
   if (!row) return null;
   return {
@@ -690,6 +756,7 @@ module.exports = {
   archiveStaleMatches,
   saveMessage,
   getMessages,
-  saveFeedback
+  saveFeedback,
+  deleteUserAccount
 };
 module.exports.LOCAL_PATH = LOCAL_PATH;

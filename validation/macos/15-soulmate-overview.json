@@ -1,0 +1,43 @@
+{
+  "screen": "Soulmate Overview",
+  "platform": "macos",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (soulmateOverview)"
+  ],
+  "mockup_ref": "mockups/macos/09-12-profile-soulmate-discover-detail.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "Soulmate tab",
+    "⌘5 (when enabled)"
+  ],
+  "backend_dependencies": [
+    "POST /v1/me/soulmate/enable"
+  ],
+  "controls": [
+    {
+      "id": "enable-toggle",
+      "type": "toggle",
+      "label": "Enable Soulmate",
+      "expected": "Toggles soulmate via backend",
+      "result": "blocked",
+      "evidence": "Cannot interact: macOS GUI automation unavailable",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "how-it-works",
+      "type": "button",
+      "label": "How it works (underlined)",
+      "expected": "Navigate → soulmateDiscover",
+      "result": "blocked",
+      "evidence": "Cannot interact: macOS GUI automation unavailable",
+      "blocker": "",
+      "stub": false
+    }
+  ],
+  "visual_parity": {
+    "result": "pending",
+    "notes": ""
+  },
+  "notes": ""
+}

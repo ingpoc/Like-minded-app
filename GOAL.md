@@ -24,7 +24,7 @@ Likeminded is an AI-native iOS app that helps people who should meet actually me
 
 ## Target Users
 
-Gurusharan is the first operator and tester. The current MVP target is up to 50 invited TestFlight users proving the placement loop before chat, meetings, subscriptions, or a full community engine.
+Gurusharan is the first operator and tester. The current MVP target is up to 50 invited TestFlight users proving the placement loop across voice profile, circles, communities, meetings, recap, and optional Soulmate chat before subscriptions, push notifications, or a full community engine.
 
 ## Tech Stack
 
@@ -36,27 +36,26 @@ Gurusharan is the first operator and tester. The current MVP target is up to 50 
 - **Repo:** https://github.com/ingpoc/Like-minded-app
 
 ## Current State
-As of 2026-06-29:
-- Local MVP backend contract passes through `npm run smoke:mvp`
-- Server has authenticated Apple-session MVP routes for discovery, profile resume/update, placement resume/actions, feedback, and Realtime broker calls
-- iOS app is auth-gated and uses MVP tabs: Talk, Circles, Communities, Profile
-- Local development persistence uses JSON files; production persistence target is Neon/Postgres through `DATABASE_URL`
+As of 2026-07-03:
+- Local MVP backend contract passes through `npm run smoke:mvp`, seeded validation data, and native screen validators
+- Server has authenticated Apple-session MVP routes for discovery, profile resume/update, placement resume/actions, feedback, account deletion, Realtime broker calls, notifications, communities, meetings, recap notes, and Soulmate chat
+- iOS app is auth-gated and uses product tabs: Meet, Circles, Communities, Profile, plus Soulmate when enabled
+- macOS has native screens for the same product areas, with remaining parity gaps tracked in `PROGRESS.md`
+- Local development persistence uses JSON files and validation DB data; production persistence target is Neon/Postgres through `DATABASE_URL`
 - Device UUID remains local continuity metadata; Sign in with Apple is the primary TestFlight identity path
-- No chat, meetings, subscriptions, push notifications, full community engine, or advanced moderation yet
+- Not yet production-ready: external Render/Neon/LiveKit setup, signed TestFlight proof, macOS video-call parity, push notifications, subscriptions, full community engine, and advanced moderation
 
 ## What Needs to Happen
 
 See **PROGRESS.md** for the full roadmap with checkboxes. Summary:
 
 1. **Phase 0 — Session control:** `goal.template.json`, `goal.json`, deterministic graders, validation routing
-2. **Phase 1 — Local MVP loop:** auth-gated Talk → Profile → Circles loop, profile edit, placement actions, feedback
-3. **Phase 2 — Deterministic validation:** backend smoke, release config, goal contract, docs lint, simulator build/launch
-4. **Phase 3 — External TestFlight readiness:** Render, Neon, Apple Developer, App Store Connect, TestFlight metadata
-5. **Phase 4 — Device proof:** real sign-in, voice, placement, profile edit, placement action, feedback, relaunch restore
+2. **Phases 1-8 — Local product loop and native parity:** auth, voice profile, Meet, Circles, Communities, Profile, Soulmate, seeded backend data, and runtime-tapped iOS/macOS screens
+3. **Phase 9 — External TestFlight readiness:** Render, Neon, LiveKit, Apple Developer, App Store Connect, privacy metadata, account deletion readiness, signed candidate
+4. **Phase 10 — Simulator/device proof:** real sign-in, voice, placement, group video, chat, privacy isolation, and native parity proof
 
 ## Open Questions
 
 - Keep Render + Neon for first TestFlight, or replace only after explicit operator decision?
 - Voice interview design: what should the AI ask, how many turns?
 - When should heuristic profile extraction be replaced by a reasoning model?
-- What minimal account deletion path is required before wider beta?

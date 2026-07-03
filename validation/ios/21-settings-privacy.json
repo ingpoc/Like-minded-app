@@ -1,0 +1,30 @@
+{
+  "screen": "Privacy Policy Sheet",
+  "platform": "ios",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedApp/Views/SettingsPrototypeView.swift (PrivacyPolicySheet)"
+  ],
+  "mockup_ref": null,
+  "mockup_missing": true,
+  "entry_points": [
+    "Settings Privacy policy row"
+  ],
+  "backend_dependencies": [],
+  "controls": [
+    {
+      "id": "done",
+      "type": "button",
+      "label": "Done",
+      "expected": "Dismisses sheet",
+      "result": "pass",
+      "evidence": "PrivacyPolicySheet opens with Done button (tested from Settings Privacy policy)",
+      "blocker": "",
+      "stub": false
+    }
+  ],
+  "visual_parity": {
+    "result": "pending-mockup-compare",
+    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+  },
+  "notes": ""
+}

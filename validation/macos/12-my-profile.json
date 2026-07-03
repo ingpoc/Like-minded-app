@@ -1,0 +1,53 @@
+{
+  "screen": "My Profile (view)",
+  "platform": "macos",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (myProfile(editing:false))"
+  ],
+  "mockup_ref": "mockups/macos/09-12-profile-soulmate-discover-detail.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "Profile tab",
+    "⌘4"
+  ],
+  "backend_dependencies": [
+    "GET /v1/me/profile"
+  ],
+  "controls": [
+    {
+      "id": "share-profile",
+      "type": "button",
+      "label": "Share profile",
+      "expected": "Navigate → profileSignals",
+      "result": "blocked",
+      "evidence": "Cannot interact: macOS GUI automation unavailable",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "signal-cards",
+      "type": "display",
+      "label": "5 personality signal cards",
+      "expected": "STUB — static, no tap",
+      "result": "fail",
+      "evidence": "STUB confirmed: 5 personality signal cards are static, no tap",
+      "blocker": "",
+      "stub": true
+    },
+    {
+      "id": "interest-tags",
+      "type": "display",
+      "label": "Top interests + vibe",
+      "expected": "STUB — static",
+      "result": "fail",
+      "evidence": "STUB confirmed: Top interests + vibe are static",
+      "blocker": "",
+      "stub": true
+    }
+  ],
+  "visual_parity": {
+    "result": "pending",
+    "notes": ""
+  },
+  "notes": ""
+}

@@ -1,0 +1,93 @@
+{
+  "screen": "Onboarding Wizard (name \u2192 gender \u2192 DOB \u2192 city \u2192 pincode)",
+  "platform": "ios",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedApp/Views/OnboardingView.swift"
+  ],
+  "mockup_ref": "mockups/ios/01-04-onboarding-voice-meet-soulmate.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "First launch after sign-in",
+    "Profile tab when basicInfo is nil"
+  ],
+  "backend_dependencies": [
+    "POST /v1/me/profile (via appState.completeOnboarding)"
+  ],
+  "controls": [
+    {
+      "id": "progress-dots",
+      "type": "display",
+      "label": "Progress dots",
+      "expected": "Reflects current step",
+      "result": "untested",
+      "evidence": "Onboarding skipped for seeded primary user (has basicInfo). Would need fresh user session to test wizard.",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "field-name",
+      "type": "text",
+      "label": "Your name (step 0)",
+      "expected": "Capture name, enables Continue when non-empty",
+      "result": "untested",
+      "evidence": "Onboarding skipped \u2014 seeded user has profile",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "field-gender",
+      "type": "button-group",
+      "label": "Gender cards (step 1)",
+      "expected": "Selects one of Male/Female/Non-binary/Prefer not to say",
+      "result": "untested",
+      "evidence": "Onboarding skipped \u2014 seeded user has profile",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "field-dob",
+      "type": "picker",
+      "label": "Date of birth wheel (step 2)",
+      "expected": "Capture DOB",
+      "result": "untested",
+      "evidence": "Onboarding skipped \u2014 seeded user has profile",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "field-city",
+      "type": "text",
+      "label": "City (step 3)",
+      "expected": "Capture city",
+      "result": "untested",
+      "evidence": "Onboarding skipped \u2014 seeded user has profile",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "field-pincode",
+      "type": "text",
+      "label": "Pincode numeric (step 4)",
+      "expected": "Capture pincode (numeric)",
+      "result": "untested",
+      "evidence": "Onboarding skipped \u2014 seeded user has profile",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "continue",
+      "type": "button",
+      "label": "Continue / Start voice profile",
+      "expected": "Advances step; on last step saves profile and starts voice session",
+      "result": "untested",
+      "evidence": "Onboarding skipped \u2014 seeded user has profile",
+      "blocker": "",
+      "stub": false
+    }
+  ],
+  "visual_parity": {
+    "result": "pending-mockup-compare",
+    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+  },
+  "notes": ""
+}

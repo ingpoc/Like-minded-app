@@ -1,0 +1,42 @@
+{
+  "screen": "Profile (empty \u2014 voice interview hero)",
+  "platform": "ios",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedApp/Views/ProfilePrototypeView.swift (VoiceProfileView)"
+  ],
+  "mockup_ref": "mockups/ios/01-04-onboarding-voice-meet-soulmate.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "Profile tab after onboarding, before voice session"
+  ],
+  "backend_dependencies": [
+    "GET /v1/me/profile"
+  ],
+  "controls": [
+    {
+      "id": "pencil-settings",
+      "type": "nav-link",
+      "label": "Pencil icon \u2192 Settings",
+      "expected": "Pushes SettingsPrototypeView",
+      "result": "pass",
+      "evidence": "Edit pencil icon confirmed on populated Profile (same view hierarchy); pushes SettingsPrototypeView",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "start-voice",
+      "type": "button",
+      "label": "Start voice profile",
+      "expected": "Opens voice session sheet and calls startVoiceSession",
+      "result": "untested",
+      "evidence": "Profile-empty state not reachable for seeded user (has profile). Start voice button logic shared with Update profile (tested).",
+      "blocker": "",
+      "stub": false
+    }
+  ],
+  "visual_parity": {
+    "result": "pending-mockup-compare",
+    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+  },
+  "notes": ""
+}

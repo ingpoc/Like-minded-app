@@ -47,6 +47,7 @@ enum MacPrototypeScreen: String, CaseIterable, Identifiable {
     case communitiesBrowse
     case communityDetail
     case meetRecap
+    case meetVideoCall
     case myProfile
     case soulmateOverview
     case soulmateDiscover
@@ -80,7 +81,7 @@ enum MacPrototypeScreen: String, CaseIterable, Identifiable {
 
     var tab: MacTab {
         switch self {
-        case .welcome, .meetOverview, .meetRecap, .notifications: .meet
+        case .welcome, .meetOverview, .meetRecap, .meetVideoCall, .notifications: .meet
         case .circlesRoom, .circleDetail: .circles
         case .communitiesBrowse, .communityDetail, .communityMembers, .createEvent: .communities
         case .profileEdit, .myProfile, .profileOnboarding, .profileSignals, .settingsSoulmate: .profile
@@ -98,6 +99,7 @@ enum MacPrototypeScreen: String, CaseIterable, Identifiable {
         case .communitiesBrowse: "Explore communities that inspire you."
         case .communityDetail, .circleDetail: "Jazz & Music Community"
         case .meetRecap: "Great meeting!"
+        case .meetVideoCall: "Meet"
         case .myProfile: "Your profile"
         case .soulmateOverview: "Meaningful connections, made with intention."
         case .soulmateDiscover: "Discover"
@@ -132,6 +134,7 @@ enum MacPrototypeScreen: String, CaseIterable, Identifiable {
         case .communitiesBrowse: "Find rooms around music, design, slow living, writing, and thoughtful ideas."
         case .communityDetail: "Listen, share, explore."
         case .meetRecap: "You attended Jazz & Music Community on Sat, Jul 5."
+        case .meetVideoCall: "Today - 7:00 PM - 8:00 PM"
         case .myProfile: "Profile and placement from your voice interview."
         case .soulmateOverview: "Our AI helps discover people who resonate with your vibe."
         case .soulmateDiscover: "Curated for you."

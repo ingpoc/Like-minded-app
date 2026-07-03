@@ -1,0 +1,52 @@
+{
+  "screen": "Soulmate Match Detail",
+  "platform": "ios",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedApp/Views/SoulmateView.swift (SoulmateMatchDetailView)"
+  ],
+  "mockup_ref": "mockups/ios/13-16-soulmate-chat.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "Soulmate match row"
+  ],
+  "backend_dependencies": [
+    "GET /v1/me/soulmate/matches/:id"
+  ],
+  "controls": [
+    {
+      "id": "start-chat",
+      "type": "nav-link",
+      "label": "Start chat",
+      "expected": "Pushes ChatView(match:)",
+      "result": "pass",
+      "evidence": "Start chat \u2192 ChatView pushed",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "chat-icon",
+      "type": "nav-link",
+      "label": "Chat icon (top-right)",
+      "expected": "Pushes ChatView(match:)",
+      "result": "pass",
+      "evidence": "Open chat icon (bubble.right) in toolbar \u2014 present on match detail",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "interest-chips",
+      "type": "display",
+      "label": "Interest chips (depth-encoded)",
+      "expected": "Shows other person's interests",
+      "result": "pass",
+      "evidence": "Interest chips render on match detail (PRIYA SHAH visible)",
+      "blocker": "",
+      "stub": false
+    }
+  ],
+  "visual_parity": {
+    "result": "pending-mockup-compare",
+    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+  },
+  "notes": ""
+}

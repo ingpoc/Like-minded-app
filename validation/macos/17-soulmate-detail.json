@@ -1,0 +1,42 @@
+{
+  "screen": "Soulmate Detail",
+  "platform": "macos",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (soulmateDetail)"
+  ],
+  "mockup_ref": "mockups/macos/09-12-profile-soulmate-discover-detail.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "Soulmate Discover match card"
+  ],
+  "backend_dependencies": [
+    "GET /v1/me/soulmate/matches/:id"
+  ],
+  "controls": [
+    {
+      "id": "message",
+      "type": "button",
+      "label": "Message",
+      "expected": "Navigate → chat",
+      "result": "blocked",
+      "evidence": "Cannot interact: macOS GUI automation unavailable",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "about-panels",
+      "type": "display",
+      "label": "About / You both like / Compatibility (92% hard-coded)",
+      "expected": "STUB — static panels, no controls",
+      "result": "fail",
+      "evidence": "STUB confirmed: About/You both like/Compatibility (92% hard-coded) are static, no controls",
+      "blocker": "",
+      "stub": true
+    }
+  ],
+  "visual_parity": {
+    "result": "pending",
+    "notes": ""
+  },
+  "notes": ""
+}

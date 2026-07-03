@@ -1,0 +1,19 @@
+{
+  "screen": "Create Event (Coming Soon placeholder)",
+  "platform": "macos",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (createEvent)"
+  ],
+  "mockup_ref": null,
+  "mockup_missing": true,
+  "entry_points": [
+    "(Currently no live entry point \u2014 community detail events are static)"
+  ],
+  "backend_dependencies": [],
+  "controls": [],
+  "visual_parity": {
+    "result": "blocked",
+    "notes": "Intentionally deferred \u2014 placeholder screen per Phase 7.B. No mockup; no interactive controls."
+  },
+  "notes": "Entire screen is a coming-soon placeholder. Zero interactive controls. Confirmed from source as deliberate Phase 7.B decision."
+}

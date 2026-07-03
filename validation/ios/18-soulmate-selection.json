@@ -1,0 +1,43 @@
+{
+  "screen": "Soulmate Selection Dialog (post-meet)",
+  "platform": "ios",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedApp/Views/SoulmateView.swift (SoulmateSelectionDialog)"
+  ],
+  "mockup_ref": null,
+  "mockup_missing": true,
+  "entry_points": [
+    "Past meet detail Select connections",
+    "Soulmate Post-meet selection"
+  ],
+  "backend_dependencies": [
+    "POST /v1/me/soulmate/select"
+  ],
+  "controls": [
+    {
+      "id": "match-toggle",
+      "type": "button",
+      "label": "Potential match row (multi-select)",
+      "expected": "Toggles selection in selectedUserIds",
+      "result": "untested",
+      "evidence": "SoulmateSelectionDialog requires post-meet flow (PastMeetDetailView Select connections); past-meet NavigationLink not firing (bug). Cannot reach dialog.",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "submit",
+      "type": "button",
+      "label": "Submit",
+      "expected": "POST selection; creates mutual matches; disabled when empty",
+      "result": "untested",
+      "evidence": "Cannot reach dialog \u2014 past-meet nav blocked",
+      "blocker": "",
+      "stub": false
+    }
+  ],
+  "visual_parity": {
+    "result": "pending-mockup-compare",
+    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+  },
+  "notes": ""
+}

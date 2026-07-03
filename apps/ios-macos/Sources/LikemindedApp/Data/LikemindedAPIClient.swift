@@ -429,6 +429,17 @@ struct LikemindedAPIClient {
         }
     }
 
+    func deleteAccount() async throws {
+        let url = baseURL.appendingPathComponent("/v1/me/account")
+        var request = URLRequest(url: url)
+        request.httpMethod = "DELETE"
+        applyCommonHeaders(&request, isJSON: false)
+        let (_, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+    }
+
     func fetchNotifications() async throws -> NotificationsResponse {
         let url = baseURL.appendingPathComponent("/v1/me/notifications")
         var request = URLRequest(url: url)

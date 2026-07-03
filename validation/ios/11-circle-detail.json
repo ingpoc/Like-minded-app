@@ -1,0 +1,53 @@
+{
+  "screen": "Circle Detail (fullScreenCover)",
+  "platform": "ios",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedApp/Views/CommunitiesPrototypeView.swift (CircleDetailView)"
+  ],
+  "mockup_ref": "mockups/ios/05-08-circles-meet-communities.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "Your circle hero card",
+    "Available circle card"
+  ],
+  "backend_dependencies": [
+    "GET /v1/circles/:id"
+  ],
+  "controls": [
+    {
+      "id": "back",
+      "type": "button",
+      "label": "Back to circles",
+      "expected": "Dismisses cover",
+      "result": "pass",
+      "evidence": "Back to circles button present",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "detail-rows",
+      "type": "display",
+      "label": "Members / socialFormat rows with chevron",
+      "expected": "Display only; chevron decorative, no tap (STUB)",
+      "result": "fail",
+      "evidence": "Detail rows render as StaticText with decorative chevron; no Button/action (STUB confirmed)",
+      "blocker": "",
+      "stub": true
+    },
+    {
+      "id": "leave-circle",
+      "type": "button",
+      "label": "Leave circle",
+      "expected": "STUB \u2014 bare SecondaryActionButton label, no Button/action wired",
+      "result": "fail",
+      "evidence": "Leave circle label renders but no Button/action wired (STUB confirmed)",
+      "blocker": "",
+      "stub": true
+    }
+  ],
+  "visual_parity": {
+    "result": "pending-mockup-compare",
+    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+  },
+  "notes": ""
+}

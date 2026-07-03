@@ -1,0 +1,54 @@
+{
+  "screen": "Community Detail",
+  "platform": "ios",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedApp/Views/CommunitiesPrototypeView.swift (CommunityDetailView)"
+  ],
+  "mockup_ref": "mockups/ios/13-16-soulmate-chat.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "Community card nav"
+  ],
+  "backend_dependencies": [
+    "GET /v1/communities/:id",
+    "POST /v1/communities/:id/join",
+    "POST /v1/communities/:id/leave"
+  ],
+  "controls": [
+    {
+      "id": "back",
+      "type": "button",
+      "label": "Back chevron",
+      "expected": "Dismisses/pops",
+      "result": "pass",
+      "evidence": "Back button present (top-left)",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "ellipsis",
+      "type": "display",
+      "label": "Ellipsis icon",
+      "expected": "STUB \u2014 Image only, no Button/action",
+      "result": "fail",
+      "evidence": "'More' renders as Image (ellipsis); not a Button, no action (STUB confirmed)",
+      "blocker": "",
+      "stub": true
+    },
+    {
+      "id": "join-leave",
+      "type": "button",
+      "label": "Join community / Leave community",
+      "expected": "Toggles membership via backend; updates member count",
+      "result": "pass",
+      "evidence": "Join/Leave button found after scroll (['Leave community'])",
+      "blocker": "",
+      "stub": false
+    }
+  ],
+  "visual_parity": {
+    "result": "pending-mockup-compare",
+    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+  },
+  "notes": ""
+}

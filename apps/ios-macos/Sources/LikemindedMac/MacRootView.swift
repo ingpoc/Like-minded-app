@@ -20,32 +20,40 @@ struct MacRootView: View {
                             }
                             selectedScreen = destination
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
+                    .frame(maxWidth: .infinity, alignment: .top)
                     .padding(.horizontal, 28)
                     .padding(.top, 54)
                     .padding(.bottom, 18)
                 }
-                MacBottomNav(selectedTab: activeTab, soulmateEnabled: appState.soulmateEnabled) { tab in
-                    returnScreen = nil
-                    selectedScreen = tab.primaryScreen
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                if appState.isSignedIn {
+                    MacBottomNav(selectedTab: activeTab, soulmateEnabled: appState.soulmateEnabled) { tab in
+                        returnScreen = nil
+                        selectedScreen = tab.primaryScreen
+                    }
+                    .padding(.bottom, 18)
                 }
-                .padding(.bottom, 18)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .overlay(alignment: .topTrailing) {
-                Button {
-                    performTitleAction()
-                } label: {
-                    Image(systemName: titleActionIcon)
-                        .font(MacType.button)
-                        .foregroundStyle(MacPalette.ink)
-                        .frame(width: 30, height: 30)
-                        .background(MacPalette.surface, in: Circle())
-                        .overlay(Circle().stroke(MacPalette.line, lineWidth: 1))
+                if titleActionAvailable {
+                    Button {
+                        performTitleAction()
+                    } label: {
+                        Image(systemName: titleActionIcon)
+                            .font(MacType.button)
+                            .foregroundStyle(MacPalette.ink)
+                            .frame(width: 30, height: 30)
+                            .background(MacPalette.surface, in: Circle())
+                            .overlay(Circle().stroke(MacPalette.line, lineWidth: 1))
+                    }
+                    .buttonStyle(.plain)
+                    .focusable(false)
+                    .padding(.top, 18)
+                    .padding(.trailing, 28)
                 }
-                .buttonStyle(.plain)
-                .focusable(false)
-                .padding(.top, 18)
-                .padding(.trailing, 28)
             }
         }
         .foregroundStyle(MacPalette.ink)
@@ -64,6 +72,11 @@ struct MacRootView: View {
         .onReceive(NotificationCenter.default.publisher(for: .macPrototypeSelectCommunities)) { _ in selectedScreen = .communitiesBrowse }
         .onReceive(NotificationCenter.default.publisher(for: .macPrototypeSelectProfile)) { _ in selectedScreen = .myProfile }
         .onReceive(NotificationCenter.default.publisher(for: .macPrototypeSelectSoulmate)) { _ in selectedScreen = .soulmateOverview }
+        .onChange(of: appState.isSignedIn) { _, isSignedIn in
+            if isSignedIn, selectedScreen == .welcome {
+                selectedScreen = .meetOverview
+            }
+        }
     }
 
     private var activeTab: MacTab {
@@ -78,6 +91,14 @@ struct MacRootView: View {
             return "xmark"
         }
         return selectedScreen == .myProfile ? "gearshape" : "bubble.left.and.bubble.right"
+    }
+
+    private var titleActionAvailable: Bool {
+        guard appState.isSignedIn else { return false }
+        if selectedScreen == .myProfile || selectedScreen == .settingsSoulmate || selectedScreen == .messages {
+            return true
+        }
+        return !appState.soulmateMatches.isEmpty
     }
 
     private func performTitleAction() {

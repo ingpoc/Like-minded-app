@@ -1,0 +1,32 @@
+{
+  "screen": "Welcome / Sign in with Apple",
+  "platform": "macos",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (welcome)"
+  ],
+  "mockup_ref": "mockups/macos/01-04-auth-meet-circles-profile.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "App launch when not signed in"
+  ],
+  "backend_dependencies": [
+    "Apple Sign In via appState.signInWithApple"
+  ],
+  "controls": [
+    {
+      "id": "sign-in-apple",
+      "type": "button",
+      "label": "Sign in with Apple",
+      "expected": "Authenticates and loads profile+placement",
+      "result": "blocked",
+      "evidence": "Sign in with Apple requires real Apple ID/iCloud creds; dev-bypass launch arg exists (--likeminded-dev-auth-bypass, defaults to validation-gurusharan) but app needs GUI session to fire .task. macOS screencapture/AppleScript blocked in this environment.",
+      "blocker": "Real Apple ID unavailable without TestFlight creds",
+      "stub": false
+    }
+  ],
+  "visual_parity": {
+    "result": "pending",
+    "notes": ""
+  },
+  "notes": ""
+}

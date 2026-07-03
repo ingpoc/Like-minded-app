@@ -1,0 +1,94 @@
+{
+  "screen": "Meet (RSVP + upcoming + past)",
+  "platform": "ios",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedApp/Views/MeetView.swift"
+  ],
+  "mockup_ref": "mockups/ios/05-08-circles-meet-communities.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "Meet tab"
+  ],
+  "backend_dependencies": [
+    "GET /v1/meetings/upcoming",
+    "GET /v1/meetings/past",
+    "POST /v1/meetings/rsvp"
+  ],
+  "controls": [
+    {
+      "id": "bell",
+      "type": "button",
+      "label": "Bell icon (top-right)",
+      "expected": "Opens NotificationsView sheet; badge shows unread",
+      "result": "pass",
+      "evidence": "Opened NotificationsView sheet (Likeminded | Notifications | Done | All | Meets | Matches | Messages | NOTIFICATIONS)",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "rsvp-sat-yes",
+      "type": "button",
+      "label": "Saturday Available",
+      "expected": "POST rsvp community available=true",
+      "result": "pass",
+      "evidence": "Tapped; backend GET /v1/meetings/upcoming confirms rsvps.community=true",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "rsvp-sat-no",
+      "type": "button",
+      "label": "Saturday Not",
+      "expected": "POST rsvp community available=false",
+      "result": "pass",
+      "evidence": "Tapped; backend rsvps.community now = False",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "rsvp-sun-yes",
+      "type": "button",
+      "label": "Sunday Available",
+      "expected": "POST rsvp circle available=true",
+      "result": "pending",
+      "evidence": "",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "rsvp-sun-no",
+      "type": "button",
+      "label": "Sunday Not",
+      "expected": "POST rsvp circle available=false",
+      "result": "pending",
+      "evidence": "",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "join-upcoming",
+      "type": "nav-link",
+      "label": "Join live room (upcoming)",
+      "expected": "Pushes GroupVideoCallView; disabled until meetup time",
+      "result": "blocked",
+      "evidence": "Join button present but labeled 'Join unlocks at meetup time' (disabled until meetup time); LiveKit server not provisioned locally so video call cannot be tested",
+      "blocker": "LiveKit server + LIVEKIT_* env not provisioned locally",
+      "stub": false
+    },
+    {
+      "id": "past-row",
+      "type": "nav-link",
+      "label": "Past meet row",
+      "expected": "Pushes PastMeetDetailView",
+      "result": "fail",
+      "evidence": "NavigationLink not firing on tap (long hold tried); screen unchanged. Possible SwiftUI nav bug with .buttonStyle(.plain) in FeatureCard container",
+      "blocker": "",
+      "stub": false
+    }
+  ],
+  "visual_parity": {
+    "result": "pending-mockup-compare",
+    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+  },
+  "notes": ""
+}

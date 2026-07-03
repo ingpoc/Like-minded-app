@@ -125,6 +125,17 @@ final class MacAppState: ObservableObject {
         activityItems = []
     }
 
+    func deleteAccount() async -> Bool {
+        do {
+            try await client.deleteAccount()
+            signOut()
+            return true
+        } catch {
+            authError = "Account could not be deleted. Please try again or contact support."
+            return false
+        }
+    }
+
     func loadCurrentProfile() async {
         guard isSignedIn else { return }
         isLoading = true

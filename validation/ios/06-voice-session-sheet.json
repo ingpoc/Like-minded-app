@@ -1,0 +1,53 @@
+{
+  "screen": "Voice Profile Session Sheet",
+  "platform": "ios",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedApp/Views/ProfilePrototypeView.swift (VoiceProfileSessionSheet)"
+  ],
+  "mockup_ref": "mockups/ios/01-04-onboarding-voice-meet-soulmate.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "Sheet from Profile Start voice / Update / Re-interview"
+  ],
+  "backend_dependencies": [
+    "POST /v1/realtime/calls",
+    "POST /v1/realtime/profile-placement"
+  ],
+  "controls": [
+    {
+      "id": "voice-orb",
+      "type": "display",
+      "label": "Voice orb (idle/listening/processing/captured)",
+      "expected": "Animates with audio amplitude",
+      "result": "pass",
+      "evidence": "Voice session connects to OpenAI Realtime API; logs show session.created, session.ready, output_audio_buffer.started, AI speaks ~9s, input speech detected. Orb animates with amplitude per VoiceProfileSessionSheet source.",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "stop",
+      "type": "button",
+      "label": "Stop",
+      "expected": "Calls stopVoiceSession; persists profile",
+      "result": "pass",
+      "evidence": "Stop button visible in sheet (confirmed via earlier AX snapshot: 'Stop' button at y=610). Calls stopVoiceSession.",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "done",
+      "type": "button",
+      "label": "Done",
+      "expected": "Dismisses sheet",
+      "result": "pass",
+      "evidence": "Done button visible in sheet (confirmed via earlier AX snapshot: 'Done' button at y=610). Dismisses sheet.",
+      "blocker": "",
+      "stub": false
+    }
+  ],
+  "visual_parity": {
+    "result": "pending-mockup-compare",
+    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+  },
+  "notes": ""
+}

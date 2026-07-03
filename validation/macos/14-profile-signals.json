@@ -1,0 +1,31 @@
+{
+  "screen": "Profile Signals (myProfile editing:true)",
+  "platform": "macos",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (myProfile(editing:true))"
+  ],
+  "mockup_ref": "mockups/macos/09-12-profile-soulmate-discover-detail.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "Continue from profileOnboarding",
+    "Share profile from myProfile"
+  ],
+  "backend_dependencies": [],
+  "controls": [
+    {
+      "id": "share-profile",
+      "type": "button",
+      "label": "Share profile",
+      "expected": "STUB — navigates to itself; effectively no-op",
+      "result": "fail",
+      "evidence": "STUB confirmed: navigates to itself (myProfile(editing:true)); effectively a no-op",
+      "blocker": "",
+      "stub": true
+    }
+  ],
+  "visual_parity": {
+    "result": "pending",
+    "notes": ""
+  },
+  "notes": ""
+}

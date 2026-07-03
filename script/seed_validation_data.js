@@ -252,7 +252,10 @@ function addPastMeetings(userMap) {
 
   // ponytail: two past meetings with realistic participant groups from seeded users
   const reflectiveIds = PEOPLE.filter(([, , , c]) => c === "reflective-builders").slice(0, 8).map(([sid]) => userMap[sid].id);
-  const jazzIds = PEOPLE.filter((p) => (COMMUNITY_JOINS[p[0]] || []).includes("jazz-music")).slice(0, 7).map(([sid]) => userMap[sid].id);
+  const jazzIds = [
+    userMap.gurusharan.id,
+    ...PEOPLE.filter((p) => (COMMUNITY_JOINS[p[0]] || []).includes("jazz-music")).slice(0, 7).map(([sid]) => userMap[sid].id)
+  ].filter((id, index, ids) => ids.indexOf(id) === index);
 
   const pastMeetings = [
     {
@@ -394,12 +397,19 @@ async function seedValidationData() {
   const verifyMeetings = await request("/v1/meetings/upcoming", { token: primaryUser.sessionToken });
   const verifyMatches = await request("/v1/me/soulmate/matches", { token: primaryUser.sessionToken });
   const verifyNotifications = await request("/v1/me/notifications", { token: primaryUser.sessionToken });
+  const verifyMessages = verifyMatches[0]
+    ? await request(`/v1/me/soulmate/matches/${verifyMatches[0].matchId}/messages`, { token: primaryUser.sessionToken })
+    : { messages: [] };
 
   assert.ok(verifyProfile.profile?.basicInfo?.name || verifyProfile.basicInfo?.name, "profile must have basicInfo");
   assert.ok((verifyCircles.circles || []).length > 0, "must have joined circles");
   assert.ok((verifyMeetings.upcoming || []).length > 0, "must have upcoming meetings");
+  assert.ok((verifyMeetings.past || []).length >= 2, "must have at least two past meetings");
   assert.ok(verifyMeetings.upcoming.some((meeting) => meeting.recapNote), "must have a seeded recap note");
   assert.ok(verifyMatches.length > 0, "must have soulmate matches");
+  assert.ok((verifyMessages.messages || []).length > 0, "must have seeded chat messages");
+  assert.ok((verifyNotifications.notifications || []).length > 0, "must have seeded notifications");
+  assert.ok((verifyNotifications.activity || []).length > 0, "must have seeded activity items");
 
   console.log(JSON.stringify({
     action: "seed",
@@ -412,8 +422,11 @@ async function seedValidationData() {
       soulmateMatches: SOULMATE_PAIRS.length,
       chatMessages: CHAT_MESSAGES.length,
       upcomingMeetingsScheduled: scheduled.meetings?.length || 0,
-      notificationsForPriya: verifyNotifications.notifications?.length || 0,
-      activityItemsForPriya: verifyNotifications.activity?.length || 0
+      primaryUpcomingMeetings: verifyMeetings.upcoming?.length || 0,
+      primaryPastMeetings: verifyMeetings.past?.length || 0,
+      primaryChatMessages: verifyMessages.messages?.length || 0,
+      primaryNotifications: verifyNotifications.notifications?.length || 0,
+      primaryActivityItems: verifyNotifications.activity?.length || 0
     }
   }, null, 2));
 }

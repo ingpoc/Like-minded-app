@@ -1,0 +1,42 @@
+{
+  "screen": "Community Detail",
+  "platform": "macos",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (communityDetail(memberMode:false))"
+  ],
+  "mockup_ref": "mockups/macos/05-08-chat-communities-detail-recap.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "Community card nav"
+  ],
+  "backend_dependencies": [
+    "GET /v1/communities/:id"
+  ],
+  "controls": [
+    {
+      "id": "view-members",
+      "type": "button",
+      "label": "View members",
+      "expected": "Navigate → communityMembers",
+      "result": "blocked",
+      "evidence": "Cannot interact: macOS GUI automation unavailable. Source-trace: navigate → communityMembers",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "event-rows",
+      "type": "display",
+      "label": "Upcoming event rows",
+      "expected": "STUB — static rows, no tap",
+      "result": "fail",
+      "evidence": "STUB confirmed: Upcoming event rows are static, no tap action",
+      "blocker": "",
+      "stub": true
+    }
+  ],
+  "visual_parity": {
+    "result": "pending",
+    "notes": ""
+  },
+  "notes": ""
+}

@@ -1,0 +1,53 @@
+{
+  "screen": "Communities (browse + search)",
+  "platform": "ios",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedApp/Views/CommunitiesPrototypeView.swift (CommunitiesPrototypeView)"
+  ],
+  "mockup_ref": "mockups/ios/05-08-circles-meet-communities.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "Communities tab"
+  ],
+  "backend_dependencies": [
+    "GET /v1/communities",
+    "GET /v1/me/communities"
+  ],
+  "controls": [
+    {
+      "id": "search",
+      "type": "text",
+      "label": "Search communities",
+      "expected": "Filters catalog by name/summary/themes",
+      "result": "pass",
+      "evidence": "Typed 'design' \u2192 Design Craft appeared in filtered results",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "joined-card",
+      "type": "nav-link",
+      "label": "Your communities card",
+      "expected": "Pushes CommunityDetailView",
+      "result": "pending",
+      "evidence": "",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "browse-card",
+      "type": "nav-link",
+      "label": "Browse community card",
+      "expected": "Pushes CommunityDetailView",
+      "result": "pass",
+      "evidence": "Community card tap \u2192 CommunityDetailView (AI Builders) pushed. Detail shows summary, themes, members, upcoming meetup, fit info",
+      "blocker": "",
+      "stub": false
+    }
+  ],
+  "visual_parity": {
+    "result": "pending-mockup-compare",
+    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+  },
+  "notes": ""
+}

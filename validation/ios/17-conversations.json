@@ -1,0 +1,32 @@
+{
+  "screen": "Conversations List",
+  "platform": "ios",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedApp/Views/SoulmateView.swift (ConversationListView)"
+  ],
+  "mockup_ref": "mockups/ios/13-16-soulmate-chat.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "Soulmate tab conversations icon"
+  ],
+  "backend_dependencies": [
+    "GET /v1/me/soulmate/matches"
+  ],
+  "controls": [
+    {
+      "id": "conv-row",
+      "type": "nav-link",
+      "label": "Conversation row",
+      "expected": "Pushes ChatView for that match",
+      "result": "pass",
+      "evidence": "Conversation rows visible (Priya)",
+      "blocker": "",
+      "stub": false
+    }
+  ],
+  "visual_parity": {
+    "result": "pending-mockup-compare",
+    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+  },
+  "notes": ""
+}

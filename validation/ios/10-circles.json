@@ -1,0 +1,83 @@
+{
+  "screen": "Circles (your circle + available + concern)",
+  "platform": "ios",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedApp/Views/CommunitiesPrototypeView.swift (CirclesPrototypeView)"
+  ],
+  "mockup_ref": "mockups/ios/05-08-circles-meet-communities.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "Circles tab"
+  ],
+  "backend_dependencies": [
+    "GET /v1/me/placement",
+    "GET /v1/circles"
+  ],
+  "controls": [
+    {
+      "id": "hero-circle",
+      "type": "button",
+      "label": "Your circle hero card",
+      "expected": "Opens CircleDetailView fullScreenCover",
+      "result": "pass",
+      "evidence": "Tapped hero card \u2192 CircleDetailView fullScreenCover opened",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "concern-btn",
+      "type": "button",
+      "label": "This doesn't feel like my circle",
+      "expected": "Reveals concern TextField",
+      "result": "pass",
+      "evidence": "Concern button revealed TextField",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "concern-field",
+      "type": "text",
+      "label": "Concern text field",
+      "expected": "Capture concern detail",
+      "result": "pass",
+      "evidence": "Typed 'Test concern from validation' into concern field",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "concern-submit",
+      "type": "button",
+      "label": "Continue in Profile",
+      "expected": "Sends concern, sets concernFlag, routes to Profile",
+      "result": "pass",
+      "evidence": "Submitted concern; routed to: Likeminded | Meet | Circles | Communities | Profile | Soulmate | Add | CIRCLES",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "browse-card",
+      "type": "button",
+      "label": "Available circle card",
+      "expected": "Opens CircleDetailView fullScreenCover",
+      "result": "pass",
+      "evidence": "Browse circle card tap \u2192 CircleDetailView opened (Likeminded | Reflective Builders | CIRCLE | Reflective Builders | Back to circles | Warm, thoughtful, honest feedback without performa | A small circle for people who build ambitious thin | Founders)",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "plus-icon",
+      "type": "display",
+      "label": "+ icon (top-right)",
+      "expected": "DISPLAY ONLY \u2014 plain Image, no Button, no action (STUB)",
+      "result": "fail",
+      "evidence": "'+' icon renders as Image (not Button); no action wired (STUB confirmed). AX label='Add' type=Image",
+      "blocker": "",
+      "stub": true
+    }
+  ],
+  "visual_parity": {
+    "result": "pending-mockup-compare",
+    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+  },
+  "notes": ""
+}

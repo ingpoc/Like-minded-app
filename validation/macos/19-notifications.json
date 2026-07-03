@@ -1,0 +1,72 @@
+{
+  "screen": "Notifications + Activity",
+  "platform": "macos",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (notifications)"
+  ],
+  "mockup_ref": "mockups/macos/13-16-community-members-event-messages-activity.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "(Mac notifications entry — title action / command)"
+  ],
+  "backend_dependencies": [
+    "GET /v1/me/notifications"
+  ],
+  "controls": [
+    {
+      "id": "notif-filter-pills",
+      "type": "display",
+      "label": "All/Unread/Mentions pills",
+      "expected": "STUB — 'All' hard-coded, no action",
+      "result": "fail",
+      "evidence": "STUB confirmed: All/Unread/Mentions — 'All' hard-coded, no action",
+      "blocker": "",
+      "stub": true
+    },
+    {
+      "id": "mark-all-read",
+      "type": "button",
+      "label": "Mark all as read",
+      "expected": "STUB — local clear only (appState.notifications=[]); no backend call",
+      "result": "fail",
+      "evidence": "STUB confirmed: local clear only (appState.notifications=[]); no backend call — MacAppState has no markNotificationsRead",
+      "blocker": "",
+      "stub": true
+    },
+    {
+      "id": "activity-filter-pills",
+      "type": "display",
+      "label": "All/Circles/Communities pills",
+      "expected": "STUB — 'All' hard-coded, no action",
+      "result": "fail",
+      "evidence": "STUB confirmed: All/Circles/Communities — 'All' hard-coded, no action",
+      "blocker": "",
+      "stub": true
+    },
+    {
+      "id": "enable",
+      "type": "button",
+      "label": "Enable",
+      "expected": "Misleading: actually calls fetchNotifications (refresh), not system-enable",
+      "result": "fail",
+      "evidence": "Misleading label: actually calls fetchNotifications (refresh), not system-enable. Backend reachability not testable without GUI.",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "rows",
+      "type": "display",
+      "label": "Notification/activity rows",
+      "expected": "STUB — static, no tap",
+      "result": "fail",
+      "evidence": "STUB confirmed: notification/activity rows are static, no tap",
+      "blocker": "",
+      "stub": true
+    }
+  ],
+  "visual_parity": {
+    "result": "pending",
+    "notes": ""
+  },
+  "notes": ""
+}

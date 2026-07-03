@@ -1,0 +1,44 @@
+{
+  "screen": "Circles Room",
+  "platform": "macos",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (circlesRoom)"
+  ],
+  "mockup_ref": "mockups/macos/01-04-auth-meet-circles-profile.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "Circles tab",
+    "⌘2"
+  ],
+  "backend_dependencies": [
+    "GET /v1/me/placement",
+    "GET /v1/circles"
+  ],
+  "controls": [
+    {
+      "id": "concern-btn",
+      "type": "button",
+      "label": "This doesn't feel like my circle",
+      "expected": "Calls reportCircleConcern('') — STUB: empty string, no input field wired",
+      "result": "fail",
+      "evidence": "STUB confirmed from source: reportCircleConcern('') called with empty string literal; no input field wired",
+      "blocker": "",
+      "stub": true
+    },
+    {
+      "id": "circle-card",
+      "type": "display",
+      "label": "Circle cards (horizontal scroll)",
+      "expected": "STUB — plain VStack, not a Button, no tap action",
+      "result": "fail",
+      "evidence": "STUB confirmed from source: circle cards are plain VStack, NOT Buttons; no tap action",
+      "blocker": "",
+      "stub": true
+    }
+  ],
+  "visual_parity": {
+    "result": "pending",
+    "notes": ""
+  },
+  "notes": ""
+}
