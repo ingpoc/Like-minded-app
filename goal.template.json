@@ -87,7 +87,7 @@
       "name": "mvp_backend_contract",
       "command": "npm run smoke:mvp",
       "cost": "zero_token",
-      "proves": "Auth-gated discovery, persisted profile/placement, placement action, feedback, meetings RSVP/scheduling, LiveKit token generation, and cross-user isolation work locally."
+      "proves": "Auth-gated discovery, persisted profile/placement, placement action, feedback, meetings RSVP/scheduling, LiveKit token generation, notifications, community members, and cross-user isolation work locally."
     },
     {
       "name": "release_static_config",

@@ -229,7 +229,7 @@ struct ConversationListView: View {
                                         .foregroundStyle(PrototypePalette.subink)
                                 }
                                 Spacer()
-                                Text(shortDate(match.createdAt))
+                                Text(LikemindedDate.short(match.createdAt))
                                     .font(PrototypeTypography.metadata)
                                     .foregroundStyle(PrototypePalette.subink)
                             }
@@ -244,9 +244,6 @@ struct ConversationListView: View {
         }
     }
 
-    private func shortDate(_ value: String) -> String {
-        String(value.prefix(10))
-    }
 }
 
 struct ChatView: View {
@@ -283,9 +280,11 @@ struct ChatView: View {
                         .font(.system(size: 34))
                         .foregroundStyle(PrototypePalette.accent)
                 }
+                .accessibilityLabel("Send message")
                 .disabled(draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
             .padding(16)
+            .padding(.bottom, 96)
             .background(.regularMaterial)
         }
         .navigationTitle(match.name)

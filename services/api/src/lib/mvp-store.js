@@ -377,6 +377,28 @@ async function getJoinedCommunities(userId) {
     .map((row) => row.community_id);
 }
 
+async function getCommunityMembers(communityId) {
+  let userIds;
+  if (isPostgres) {
+    const result = await getPool().query("SELECT user_id FROM community_memberships WHERE community_id = $1 ORDER BY created_at", [communityId]);
+    userIds = result.rows.map((row) => row.user_id);
+  } else {
+    userIds = readLocalStore().communityMemberships
+      .filter((row) => row.community_id === communityId)
+      .map((row) => row.user_id);
+  }
+  const members = [];
+  for (const userId of userIds) {
+    const profile = await getLatestProfile(userId);
+    members.push({
+      userId,
+      name: profile?.basicInfo?.name || "Likeminded member",
+      gender: profile?.basicInfo?.gender || null
+    });
+  }
+  return members;
+}
+
 async function saveMeetingRsvp(userId, kind, available) {
   if (isPostgres) {
     await getPool().query(
@@ -444,6 +466,20 @@ async function getMeetingById(id) {
     return result.rows[0]?.data || null;
   }
   return readLocalStore().meetings.find((meeting) => meeting.id === id) || null;
+}
+
+async function saveMeetingRecapNote(userId, meetingId, note) {
+  const meeting = await getMeetingById(meetingId);
+  if (!meeting || !(meeting.participantIds || []).includes(userId)) return null;
+  const next = {
+    ...meeting,
+    recapNotes: {
+      ...(meeting.recapNotes || {}),
+      [userId]: note
+    }
+  };
+  await saveMeeting(next);
+  return next.recapNotes[userId];
 }
 
 async function setSoulmateEnabled(userId, enabled) {
@@ -638,12 +674,14 @@ module.exports = {
   joinCommunity,
   leaveCommunity,
   getJoinedCommunities,
+  getCommunityMembers,
   saveMeetingRsvp,
   getMeetingRsvps,
   getUserMeetingRsvps,
   saveMeeting,
   listMeetingsForUser,
   getMeetingById,
+  saveMeetingRecapNote,
   setSoulmateEnabled,
   isSoulmateEnabled,
   saveSoulmateSelection,

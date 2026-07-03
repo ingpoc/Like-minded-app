@@ -43,6 +43,9 @@ final class PrototypeAppState: ObservableObject {
     @Published var soulmateMatches: [SoulmateMatch] = []
     @Published var soulmateError: String?
     @Published var isLoadingSoulmate = false
+    @Published var notifications: [NotificationItem] = []
+    @Published var activityItems: [NotificationItem] = []
+    @Published var notificationError: String?
 
     private let voiceClient = RealtimeVoiceClient()
 
@@ -132,11 +135,17 @@ final class PrototypeAppState: ObservableObject {
         let shouldSeedVoicePlacement = arguments.contains("--likeminded-dev-voice-placement")
         isAuthenticating = true
         authError = nil
+        let devToken = Self.argumentValue(after: "--likeminded-dev-auth-token", in: arguments)
+            ?? environment["LIKEMINDED_DEV_AUTH_TOKEN"]
+            ?? "local-simulator-tester"
+        let devName = Self.argumentValue(after: "--likeminded-dev-auth-name", in: arguments)
+            ?? environment["LIKEMINDED_DEV_AUTH_NAME"]
+            ?? "Simulator Tester"
         do {
             let response = try await client.authenticateWithApple(
-                identityToken: environment["LIKEMINDED_DEV_AUTH_TOKEN"] ?? "local-simulator-tester",
+                identityToken: devToken,
                 authorizationCode: nil,
-                fullName: "Simulator Tester"
+                fullName: devName
             )
             await saveSessionAndLoadPlacement(response)
             if shouldSeedVoicePlacement {
@@ -482,8 +491,29 @@ final class PrototypeAppState: ObservableObject {
         }
     }
 
+    func saveMeetingRecapNote(meetingId: String, note: String) async {
+        do {
+            try await client.saveMeetingRecapNote(meetingId: meetingId, note: note)
+            await fetchMeetings()
+        } catch {
+            meetingError = "Recap note could not be saved."
+        }
+    }
+
     func joinMeeting(id: String) async throws -> LiveKitJoinToken {
         try await LiveKitTokenProvider(client: client).token(for: id)
+    }
+
+    func fetchNotifications() async {
+        guard isSignedIn else { return }
+        do {
+            let response = try await client.fetchNotifications()
+            notifications = response.notifications
+            activityItems = response.activity
+            notificationError = nil
+        } catch {
+            notificationError = "Notifications could not be loaded."
+        }
     }
 
     func fetchSoulmateStatus() async {
@@ -674,6 +704,13 @@ final class PrototypeAppState: ObservableObject {
                 await loadCurrentPlacement()
             }
         }
+    }
+
+    private static func argumentValue(after flag: String, in arguments: [String]) -> String? {
+        guard let index = arguments.firstIndex(of: flag), arguments.indices.contains(index + 1) else {
+            return nil
+        }
+        return arguments[index + 1]
     }
 
     private static func signals(from transcript: String) -> [String] {

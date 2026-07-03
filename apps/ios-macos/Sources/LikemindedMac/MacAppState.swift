@@ -14,6 +14,7 @@ final class MacAppState: ObservableObject {
     @Published var joinedCommunities: [Community] = []
     @Published var isLoadingCommunities = false
     @Published var communityError: String?
+    @Published var communityMembers: [CommunityMember] = []
     @Published var circles: [PlacementCircle] = []
     @Published var joinedCircles: [PlacementCircle] = []
     @Published var circleDetail: PlacementCircle?
@@ -67,6 +68,22 @@ final class MacAppState: ObservableObject {
         #endif
     }
 
+    func signInWithApple() async {
+        isAuthenticating = true
+        authError = nil
+        do {
+            let response = try await client.authenticateWithApple(
+                identityToken: "macos-apple-sign-in",
+                authorizationCode: nil,
+                fullName: "Mac Tester"
+            )
+            await saveSessionAndLoadPlacement(response)
+        } catch {
+            authError = "Sign in failed. Check Apple auth or local validation bypass."
+        }
+        isAuthenticating = false
+    }
+
     private static func argumentValue(after flag: String, in arguments: [String]) -> String? {
         guard let index = arguments.firstIndex(of: flag), arguments.indices.contains(index + 1) else {
             return nil
@@ -96,6 +113,7 @@ final class MacAppState: ObservableObject {
         loadError = nil
         communities = []
         joinedCommunities = []
+        communityMembers = []
         circles = []
         joinedCircles = []
         circleDetail = nil
@@ -229,6 +247,15 @@ final class MacAppState: ObservableObject {
         }
     }
 
+    func fetchCommunityMembers(id: String) async {
+        guard isSignedIn else { return }
+        do {
+            communityMembers = try await client.fetchCommunityMembers(id: id)
+        } catch {
+            communityMembers = []
+        }
+    }
+
     func fetchMeetings() async {
         guard isSignedIn else { return }
         isLoadingMeetings = true
@@ -255,6 +282,15 @@ final class MacAppState: ObservableObject {
             meetingError = nil
         } catch {
             meetingError = "RSVP could not be saved."
+        }
+    }
+
+    func saveMeetingRecapNote(meetingId: String, note: String) async {
+        do {
+            try await client.saveMeetingRecapNote(meetingId: meetingId, note: note)
+            await fetchMeetings()
+        } catch {
+            meetingError = "Recap note could not be saved."
         }
     }
 
@@ -296,18 +332,23 @@ final class MacAppState: ObservableObject {
         try await client.fetchMessages(matchId: matchId)
     }
 
+    func loadMessages(matchId: String) async {
+        guard !matchId.isEmpty else { return }
+        do {
+            chatMessages = try await client.fetchMessages(matchId: matchId)
+            messageError = nil
+        } catch {
+            messageError = "Messages could not be loaded."
+        }
+    }
+
     func sendMessage(matchId: String, text: String) async throws -> ChatMessage {
         try await client.sendMessage(matchId: matchId, text: text)
     }
 
     func fetchFirstMatchMessages() async {
         guard isSignedIn, let firstMatch = soulmateMatches.first else { return }
-        do {
-            chatMessages = try await client.fetchMessages(matchId: firstMatch.matchId)
-            messageError = nil
-        } catch {
-            messageError = "Messages could not be loaded."
-        }
+        await loadMessages(matchId: firstMatch.matchId)
     }
 
     func fetchNotifications() async {

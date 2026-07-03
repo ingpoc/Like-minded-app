@@ -281,6 +281,21 @@ struct LikemindedAPIClient {
         return try JSONDecoder().decode(MeetingsResponse.self, from: data)
     }
 
+    func saveMeetingRecapNote(meetingId: String, note: String) async throws {
+        let url = baseURL
+            .appendingPathComponent("/v1/meetings")
+            .appendingPathComponent(meetingId)
+            .appendingPathComponent("recap-note")
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        applyCommonHeaders(&request)
+        request.httpBody = try JSONEncoder().encode(MeetingRecapNoteRequest(note: note))
+        let (_, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+    }
+
     func joinMeeting(id: String) async throws -> LiveKitJoinToken {
         let url = baseURL
             .appendingPathComponent("/v1/meetings")
@@ -412,5 +427,29 @@ struct LikemindedAPIClient {
         guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
             throw URLError(.badServerResponse)
         }
+    }
+
+    func fetchNotifications() async throws -> NotificationsResponse {
+        let url = baseURL.appendingPathComponent("/v1/me/notifications")
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        applyCommonHeaders(&request)
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+        return try JSONDecoder().decode(NotificationsResponse.self, from: data)
+    }
+
+    func fetchCommunityMembers(id: String) async throws -> [CommunityMember] {
+        let url = baseURL.appendingPathComponent("/v1/communities/\(id)/members")
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        applyCommonHeaders(&request)
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+        return try JSONDecoder().decode(CommunityMembersResponse.self, from: data).members
     }
 }

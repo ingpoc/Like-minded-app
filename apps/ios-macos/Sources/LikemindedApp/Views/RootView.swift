@@ -30,6 +30,7 @@ struct RootView: View {
                 .task {
                     await appState.loadCurrentPlacement()
                     await appState.fetchSoulmateStatus()
+                    await appState.fetchNotifications()
                 }
                 .onChange(of: appState.concernFlag) { _, needsReinterview in
                     if needsReinterview {
@@ -65,9 +66,11 @@ struct RootView: View {
 
     private static func initialSelection() -> AppTab {
         #if DEBUG
-        if ProcessInfo.processInfo.arguments.contains("--likeminded-start-profile") {
-            return .profile
-        }
+        let args = ProcessInfo.processInfo.arguments
+        if args.contains("--likeminded-start-circles") { return .circles }
+        if args.contains("--likeminded-start-communities") { return .communities }
+        if args.contains("--likeminded-start-soulmate") { return .soulmate }
+        if args.contains("--likeminded-start-profile") { return .profile }
         #endif
         return .meet
     }

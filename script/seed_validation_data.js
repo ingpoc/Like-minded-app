@@ -338,6 +338,13 @@ async function seedValidationData() {
   // Find meetings that participants share
   const upcoming = await request("/v1/meetings/upcoming", { token: userMap["gurusharan"].sessionToken });
   const allUpcoming = upcoming.upcoming || [];
+  if (allUpcoming[0]) {
+    await request(`/v1/meetings/${allUpcoming[0].id}/recap-note`, {
+      method: "POST",
+      token: userMap["gurusharan"].sessionToken,
+      body: { note: "I felt the group warmed up once the host slowed the pace." }
+    });
+  }
 
   // For soulmate selection we need a meeting both share
   for (const [seedA, seedB] of SOULMATE_PAIRS) {
@@ -391,6 +398,7 @@ async function seedValidationData() {
   assert.ok(verifyProfile.profile?.basicInfo?.name || verifyProfile.basicInfo?.name, "profile must have basicInfo");
   assert.ok((verifyCircles.circles || []).length > 0, "must have joined circles");
   assert.ok((verifyMeetings.upcoming || []).length > 0, "must have upcoming meetings");
+  assert.ok(verifyMeetings.upcoming.some((meeting) => meeting.recapNote), "must have a seeded recap note");
   assert.ok(verifyMatches.length > 0, "must have soulmate matches");
 
   console.log(JSON.stringify({

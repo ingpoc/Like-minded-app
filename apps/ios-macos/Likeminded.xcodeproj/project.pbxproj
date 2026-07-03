@@ -12,14 +12,13 @@
 		132444A82981B36C69EF5C56 /* LikemindedAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14190A43716DF2A52AB8F7DD /* LikemindedAPIClient.swift */; };
 		1434DA300C4A5A2400A859A3 /* PrototypeModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8C121E18E6BF523CE92D82 /* PrototypeModels.swift */; };
 		1C099E485B7A23A87435717E /* DeviceIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D8F9C153E1CAAA2E1D4B53 /* DeviceIdentity.swift */; };
-		29D0CE0EDA18A3BB956B5C6E /* VoiceOrbView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0C1C21CE1F16D519FC056E /* VoiceOrbView.swift */; };
 		31D1987C09EEBD76447D0DF7 /* MacPrototypeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 181BFC9B2D93330133F5C993 /* MacPrototypeData.swift */; };
+		3790F3067C86B1DF4F11FF86 /* NotificationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F51BCAB677E4C2BEAE840EE /* NotificationsView.swift */; };
 		379D8BA56E5821E1680248E7 /* CircleCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4895BAF5408C8A7CEDEB5EC3 /* CircleCard.swift */; };
 		399834A377ADFBCE54D30DF9 /* PrototypeAppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C615B2CB5D4009DE9EDF7F48 /* PrototypeAppState.swift */; };
 		3C82F0006DF2BAE5048D0B43 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3A363F271D17248AADFD13 /* OnboardingView.swift */; };
 		3FC6508C115AA08A823B19CB /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71F1782CC0FAAD3C06C76E5C /* RootView.swift */; };
 		4319E06107624A793DB13545 /* AuthSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDF2490A9727FEEB417EED9F /* AuthSessionStore.swift */; };
-		574EC5E783BCAF6EFAA327F5 /* MVPProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 441C7F09BC786ADFBA9B2A36 /* MVPProfileView.swift */; };
 		5F0E79024B1B152EBBD80D88 /* LiveKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9109FD768D670024E68556DC /* LiveKit */; };
 		638037123B69B011D78BF5A7 /* LikemindedApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 704749A39D4B879E03561B1B /* LikemindedApp.swift */; };
 		676E4A1C5FC17EE494C1AB2F /* AuthGateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B0C51AF9D64677B65F8D49A /* AuthGateView.swift */; };
@@ -38,23 +37,20 @@
 		E4C21F153CB397BCA7E4CF65 /* MeetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7107FDFB96FB4B6E50291C /* MeetView.swift */; };
 		E5F05FF2F77CDC1BC4866782 /* PrototypeComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83237B0C66BA3537CAB89B87 /* PrototypeComponents.swift */; };
 		EA5E724579022F5894D30BCE /* MacAppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C848990D583124075A5332A9 /* MacAppState.swift */; };
-		F278DF831E8C66D2F941194F /* TodayPrototypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DCC1BCF1EB18B6214EB4BAA /* TodayPrototypeView.swift */; };
 		F5B8DF9B8360B797123A8F3F /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99419D847C29F69421A296E7 /* Models.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0A0C1C21CE1F16D519FC056E /* VoiceOrbView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceOrbView.swift; sourceTree = "<group>"; };
 		12C36748D06319EACF593DE7 /* LikemindedMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LikemindedMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		14190A43716DF2A52AB8F7DD /* LikemindedAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikemindedAPIClient.swift; sourceTree = "<group>"; };
 		181BFC9B2D93330133F5C993 /* MacPrototypeData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacPrototypeData.swift; sourceTree = "<group>"; };
 		2B0C51AF9D64677B65F8D49A /* AuthGateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthGateView.swift; sourceTree = "<group>"; };
 		2E4CC542091C9D3F04D1DE21 /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
-		3DCC1BCF1EB18B6214EB4BAA /* TodayPrototypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayPrototypeView.swift; sourceTree = "<group>"; };
 		40664BF795D4C75998E0D941 /* MacRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacRootView.swift; sourceTree = "<group>"; };
 		43D8F9C153E1CAAA2E1D4B53 /* DeviceIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceIdentity.swift; sourceTree = "<group>"; };
-		441C7F09BC786ADFBA9B2A36 /* MVPProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MVPProfileView.swift; sourceTree = "<group>"; };
 		4895BAF5408C8A7CEDEB5EC3 /* CircleCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleCard.swift; sourceTree = "<group>"; };
 		583CD7AF0A74916366CBF8AF /* Likeminded.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Likeminded.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5F51BCAB677E4C2BEAE840EE /* NotificationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsView.swift; sourceTree = "<group>"; };
 		63DCB9E92C74E864B793C207 /* LikemindedAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikemindedAPIClient.swift; sourceTree = "<group>"; };
 		704749A39D4B879E03561B1B /* LikemindedApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikemindedApp.swift; sourceTree = "<group>"; };
 		70685EA3FAE20FBC4827812B /* RealtimeVoiceClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeVoiceClient.swift; sourceTree = "<group>"; };
@@ -181,14 +177,12 @@
 				CF864D6E37CD7289F92855DF /* CommunitiesPrototypeView.swift */,
 				2E4CC542091C9D3F04D1DE21 /* CustomTabBar.swift */,
 				9D7107FDFB96FB4B6E50291C /* MeetView.swift */,
-				441C7F09BC786ADFBA9B2A36 /* MVPProfileView.swift */,
+				5F51BCAB677E4C2BEAE840EE /* NotificationsView.swift */,
 				BC3A363F271D17248AADFD13 /* OnboardingView.swift */,
 				75C0F95C041A6C7D0D328202 /* ProfilePrototypeView.swift */,
 				71F1782CC0FAAD3C06C76E5C /* RootView.swift */,
 				E11E3DAEAEA4F6D6B35D2D32 /* SettingsPrototypeView.swift */,
 				75383C5F7FE5874C6F987690 /* SoulmateView.swift */,
-				3DCC1BCF1EB18B6214EB4BAA /* TodayPrototypeView.swift */,
-				0A0C1C21CE1F16D519FC056E /* VoiceOrbView.swift */,
 				6226DDE8442F9FB130F5B0EB /* Shared */,
 			);
 			path = Views;
@@ -289,8 +283,8 @@
 				9991EE71916006E89457B6E5 /* LikemindedAPIClient.swift in Sources */,
 				638037123B69B011D78BF5A7 /* LikemindedApp.swift in Sources */,
 				0F0F08547C69AA374756B919 /* LiveKitTokenProvider.swift in Sources */,
-				574EC5E783BCAF6EFAA327F5 /* MVPProfileView.swift in Sources */,
 				E4C21F153CB397BCA7E4CF65 /* MeetView.swift in Sources */,
+				3790F3067C86B1DF4F11FF86 /* NotificationsView.swift in Sources */,
 				3C82F0006DF2BAE5048D0B43 /* OnboardingView.swift in Sources */,
 				D0960611CC66E6642F609ACD /* ProfilePrototypeView.swift in Sources */,
 				399834A377ADFBCE54D30DF9 /* PrototypeAppState.swift in Sources */,
@@ -301,8 +295,6 @@
 				3FC6508C115AA08A823B19CB /* RootView.swift in Sources */,
 				BE4F826A0A1C866F945B5AAB /* SettingsPrototypeView.swift in Sources */,
 				6BC67532CE7285221B1396E7 /* SoulmateView.swift in Sources */,
-				F278DF831E8C66D2F941194F /* TodayPrototypeView.swift in Sources */,
-				29D0CE0EDA18A3BB956B5C6E /* VoiceOrbView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

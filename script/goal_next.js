@@ -44,13 +44,22 @@ function phaseSections(markdown) {
   return phases;
 }
 
+function activeFirstCommand(markdown) {
+  const match = markdown.match(/active local route\. First command: `([^`]+)`/);
+  return match ? match[1] : null;
+}
+
 const goal = readJson("goal.json");
 const dirty = gitStatus();
-const nextPhase = phaseSections(read("PROGRESS.md")).find((phase) => phase.unchecked > 0);
+const progress = read("PROGRESS.md");
+const nextPhase = phaseSections(progress).find((phase) => phase.unchecked > 0);
+const activeCommand = activeFirstCommand(progress);
 const dirtyFirst = dirty.length > 0;
 const firstCommand = dirtyFirst
   ? "git status --short"
-  : goal.status !== "completed"
+  : activeCommand
+    ? activeCommand
+    : goal.status !== "completed"
     ? `./script/project_context.sh query --task ${JSON.stringify(goal.goal)}`
     : nextPhase
       ? `npm run phase:preflight -- ${nextPhase.number}`
@@ -65,6 +74,6 @@ next_phase: ${nextPhase ? nextPhase.title : "none"}
 next_phase_unchecked: ${nextPhase ? nextPhase.unchecked : 0}
 first_command: ${firstCommand}`);
 
-if (dirtyFirst && nextPhase) {
-  console.log(`after_dirty_resolved: npm run phase:preflight -- ${nextPhase.number}`);
+if (dirtyFirst) {
+  console.log(`after_dirty_resolved: ${activeCommand || (nextPhase ? `npm run phase:preflight -- ${nextPhase.number}` : "npm run verify:goal")}`);
 }

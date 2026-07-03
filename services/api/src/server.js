@@ -29,12 +29,14 @@ const {
   joinCommunity,
   leaveCommunity,
   getJoinedCommunities,
+  getCommunityMembers,
   saveMeetingRsvp,
   getMeetingRsvps,
   getUserMeetingRsvps,
   saveMeeting,
   listMeetingsForUser,
   getMeetingById,
+  saveMeetingRecapNote,
   setSoulmateEnabled,
   isSoulmateEnabled,
   saveSoulmateSelection,
@@ -127,10 +129,34 @@ function resultEnvelope(profile, placement, allCircleFits = null, synthesisMode 
     signals: safeProfile.signals,
     basicInfo: safeProfile.basicInfo || null,
     interests: safeProfile.interests || [],
-    placement,
+    placement: placementWithMemberCounts(placement),
     allCircleFits,
     synthesisMode
   };
+}
+
+function circleWithMemberCount(circle) {
+  if (!circle || typeof circle !== "object") return circle;
+  const count = (circles.get(circle.id)?.members || circle.members || []).length;
+  return { ...circle, membersCount: count, membersOnline: count };
+}
+
+function placementWithMemberCounts(placement) {
+  if (!placement || typeof placement !== "object") return placement;
+  return {
+    ...placement,
+    primaryCircle: circleWithMemberCount(placement.primaryCircle),
+    secondaryCircles: (placement.secondaryCircles || []).map(circleWithMemberCount)
+  };
+}
+
+function rememberCircleMember(placement, profileId) {
+  const circleId = placement?.primaryCircle?.id;
+  if (!circleId || !profileId) return;
+  const circle = circles.get(circleId);
+  if (!circle) return;
+  circle.members = Array.from(new Set([...(circle.members || []), profileId]));
+  circles.set(circleId, circle);
 }
 
 function publicProfile(profile) {
@@ -146,6 +172,7 @@ function circleSummary(circle) {
     roomEnergy: circle.roomEnergy,
     themes: circle.themes || [],
     membersCount: (circle.members || []).length,
+    membersOnline: (circle.members || []).length,
     meetingFormat: circle.meetingFormat
   };
 }
@@ -161,7 +188,7 @@ function communitySummary(community) {
   };
 }
 
-function meetingSummary(meeting) {
+function meetingSummary(meeting, userId = null) {
   return {
     id: meeting.id,
     kind: meeting.kind,
@@ -172,7 +199,8 @@ function meetingSummary(meeting) {
     hostName: meeting.hostName,
     groupSize: meeting.groupSize,
     status: meeting.status,
-    compositionSummary: meeting.compositionSummary
+    compositionSummary: meeting.compositionSummary,
+    recapNote: userId ? meeting.recapNotes?.[userId] || "" : ""
   };
 }
 
@@ -510,6 +538,7 @@ async function handleRequest(req, res) {
         reflectionAnswers: body.reflectionAnswers || []
       });
       const placed = await saveProfilePlacement({ userId: user.id, profile, placement, transcript: body.interviewTranscript || "" });
+      rememberCircleMember(placement, profile.profileId);
       json(res, 201, { ...resultEnvelope(profile, placement, null, "realtime_tool"), placementId: placed.placementId });
     } catch (error) {
       json(res, 400, { error: "invalid_realtime_profile_placement", message: error.message });
@@ -555,6 +584,7 @@ async function handleRequest(req, res) {
       profiles.set(profile.profileId, profile);
 
       await saveProfilePlacement({ userId: user.id, profile, placement, transcript: interviewTranscript });
+      rememberCircleMember(placement, profile.profileId);
 
       json(res, 200, resultEnvelope(profile, placement, allCircleFits, synthesisMode));
     } catch (error) {
@@ -716,6 +746,25 @@ async function handleRequest(req, res) {
     return;
   }
 
+  if (req.method === "GET" && url.pathname.match(/^\/v1\/communities\/[^/]+\/members$/)) {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    const communityId = decodeURIComponent(url.pathname.split("/")[3]);
+    const community = communities.get(communityId);
+    if (!community) {
+      json(res, 404, { error: "community_not_found", message: `No community found for id: ${communityId}` });
+      return;
+    }
+    const joinedCommunityIds = await getJoinedCommunities(user.id);
+    if (!joinedCommunityIds.includes(communityId)) {
+      json(res, 403, { error: "community_membership_required", message: "Join this community before viewing members." });
+      return;
+    }
+    const members = await getCommunityMembers(communityId);
+    json(res, 200, { members });
+    return;
+  }
+
   if (req.method === "POST" && url.pathname === "/v1/meetings/rsvp") {
     const user = await requireUser(req, res);
     if (!user) return;
@@ -739,7 +788,7 @@ async function handleRequest(req, res) {
     if (!user) return;
     const now = Date.now();
     const rsvps = await getUserMeetingRsvps(user.id);
-    const meetings = (await listMeetingsForUser(user.id)).map(meetingSummary);
+    const meetings = (await listMeetingsForUser(user.id)).map((meeting) => meetingSummary(meeting, user.id));
     json(res, 200, {
       rsvps: {
         circle: rsvps.find((row) => row.kind === "circle")?.available || false,
@@ -751,10 +800,25 @@ async function handleRequest(req, res) {
     return;
   }
 
+  if (req.method === "POST" && url.pathname.match(/^\/v1\/meetings\/[^/]+\/recap-note$/)) {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    const meetingId = decodeURIComponent(url.pathname.split("/")[3]);
+    const body = await readJsonBody(req);
+    const note = typeof body.note === "string" ? body.note.trim().slice(0, 2000) : "";
+    const saved = await saveMeetingRecapNote(user.id, meetingId, note);
+    if (saved === null) {
+      json(res, 404, { error: "meeting_not_found", message: "No accessible meeting found for this recap." });
+      return;
+    }
+    json(res, 200, { status: "saved", recapNote: saved });
+    return;
+  }
+
   if (req.method === "GET" && url.pathname === "/v1/me/notifications") {
     const user = await requireUser(req, res);
     if (!user) return;
-    const meetings = (await listMeetingsForUser(user.id)).map(meetingSummary);
+    const meetings = (await listMeetingsForUser(user.id)).map((meeting) => meetingSummary(meeting, user.id));
     const joinedCommunities = (await getJoinedCommunities(user.id)).map(communitySummary);
     const matches = await getSoulmateMatches(user.id);
     const notifications = [];

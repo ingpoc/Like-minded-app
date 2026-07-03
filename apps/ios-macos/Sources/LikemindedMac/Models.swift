@@ -44,6 +44,18 @@ struct Community: Codable, Identifiable, Equatable {
     let membersCount: Int
 }
 
+struct CommunityMember: Codable, Identifiable, Equatable {
+    let userId: String
+    let name: String
+    let gender: String?
+
+    var id: String { userId }
+}
+
+struct CommunityMembersResponse: Decodable {
+    let members: [CommunityMember]
+}
+
 struct Meeting: Codable, Identifiable, Equatable {
     let id: String
     let kind: String
@@ -55,11 +67,47 @@ struct Meeting: Codable, Identifiable, Equatable {
     let groupSize: Int
     let status: String
     let compositionSummary: String
+    var recapNote: String?
+
+    var scheduledAtDate: Date {
+        LikemindedDate.parse(scheduledAt) ?? Date()
+    }
+}
+
+enum LikemindedDate {
+    private static let fractionalISO8601: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return formatter
+    }()
+
+    private static let plainISO8601 = ISO8601DateFormatter()
+
+    static func parse(_ value: String?) -> Date? {
+        guard let value else { return nil }
+        return fractionalISO8601.date(from: value) ?? plainISO8601.date(from: value)
+    }
+
+    static func short(_ value: String?) -> String {
+        guard let date = parse(value) else { return value.map { String($0.prefix(10)) } ?? "Now" }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d"
+        return formatter.string(from: date)
+    }
+
+    static func full(_ value: String) -> String {
+        guard let date = parse(value) else { return value }
+        return date.formatted(date: .abbreviated, time: .shortened)
+    }
 }
 
 struct MeetingRsvps: Codable, Equatable {
     let circle: Bool
     let community: Bool
+}
+
+struct MeetingRecapNoteRequest: Encodable {
+    let note: String
 }
 
 struct MeetingsResponse: Decodable {

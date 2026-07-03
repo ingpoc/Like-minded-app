@@ -21,6 +21,20 @@ Global `/Users/gurusharan/.codex/AGENTS.md` owns instruction control. This file 
 
 Resolved for backend connectivity on 2026-07-02. `apps/ios-macos/Sources/LikemindedMac` now routes backend-facing state through `MacAppState` and `LikemindedAPIClient`, with the client using `MacBackendConfig.baseURLString`. Profile, circles, communities, meetings, soulmate matches, chat messages, and notifications have real API load paths. Remaining findings below are visual/product parity gaps against mockups, not evidence that the macOS target is prototype-only.
 
+## Phase 7.B Functional Gap Closure (2026-07-03)
+
+Phase 7.B closed remaining functional gaps on top of the 2026-07-02 backend connectivity pass. Visual/mockup pixel-parity is still deferred to a dedicated later phase. The changes below make every macOS screen exercise real functionality instead of static placeholders:
+
+- Chat composer send button now calls `MacAppState.sendMessage` and refreshes messages (was an empty `// send` stub).
+- Soulmate detail Pass/Like stub buttons removed (no backend for swipe-like likes); Message action wired to navigate to the chat screen.
+- Settings "Log out" now calls `signOut()` with a confirmation dialog (was a no-op label).
+- Community members screen now loads real members via `GET /v1/communities/:id/members` (was a hardcoded demo roster).
+- Create event screen replaced with an honest "Coming soon" placeholder (community-created events are a deferred feature).
+- Deep screens (chat, soulmateDetail, communityDetail, communityMembers, meetRecap) are now reachable through in-app navigation via a `navigate` closure on `MacScreenView` (were only reachable via launch args).
+- Conversations now select and load the chosen backend soulmate match thread instead of pinning all message panes to the first match.
+- Meet recap private notes now persist through `POST /v1/meetings/:id/recap-note`; validation seed data includes a saved note for the primary tester.
+- Welcome sign-in and Notifications refresh actions are no longer dead controls; they call the existing backend auth/notifications paths.
+
 ## Screen Findings
 
 | # | Screen | Capture | Status | Findings |

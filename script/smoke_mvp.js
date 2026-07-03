@@ -265,6 +265,15 @@ async function expectStatus(status, pathname, options) {
     assert.ok(join.token, "LiveKit join must return a token");
     assert.equal(join.url, "ws://127.0.0.1:7880");
 
+    const recapNote = "Private recap note from smoke.";
+    await expectStatus(200, `/v1/meetings/${upcoming.upcoming[0].id}/recap-note`, {
+      method: "POST",
+      token: scheduledParticipantToken,
+      body: { note: recapNote }
+    });
+    const recapReadback = await expectStatus(200, "/v1/meetings/upcoming", { method: "GET", token: scheduledParticipantToken });
+    assert.equal(recapReadback.upcoming[0].recapNote, recapNote, "meeting recap note must persist per user");
+
     const soulmateStatus = await expectStatus(200, "/v1/me/soulmate/status", { method: "GET", token: scheduledUsers[0].sessionToken });
     assert.equal(soulmateStatus.enabled, true);
     assert.ok(soulmateStatus.pendingSelections.some((selection) => selection.meetingId === upcoming.upcoming[0].id), "soulmate status must expose pending meetup selection");
@@ -297,6 +306,17 @@ async function expectStatus(status, pathname, options) {
     assert.equal(sent.message.text, "Good to meet you.");
     const messages = await expectStatus(200, `/v1/me/soulmate/matches/${matches[0].matchId}/messages`, { method: "GET", token: scheduledUsers[1].sessionToken });
     assert.equal(messages.messages.length, 1, "match participant must read chat messages");
+
+    // Seeded native parity: notifications + authorized community members
+    const notifications = await expectStatus(200, "/v1/me/notifications", { method: "GET", token: scheduledUsers[0].sessionToken });
+    assert.ok(Array.isArray(notifications.notifications), "notifications response must include a notifications array");
+    assert.ok(Array.isArray(notifications.activity), "notifications response must include an activity array");
+
+    await expectStatus(403, `/v1/communities/${communityId}/members`, { method: "GET", token: scheduledUsers[0].sessionToken });
+    const communityMembers = await expectStatus(200, `/v1/communities/${communityId}/members`, { method: "GET", token: auth.sessionToken });
+    assert.ok(Array.isArray(communityMembers.members), "community members response must include a members array");
+    assert.ok(communityMembers.members.some((member) => member.name), "community members must expose at least one name");
+    assert.equal(communityMembers.members[0].hiddenSignals, undefined, "community members must not expose hidden signals");
 
     const secondAuth = await expectStatus(200, "/v1/auth/apple", {
       method: "POST",

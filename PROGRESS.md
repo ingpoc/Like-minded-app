@@ -215,6 +215,38 @@ Tab restructure, custom tab bar, animation system, material backgrounds.
 - [x] iOS screens 1-20 in `mockups/ios/` checked against `DESIGN.md`: auth, voice/profile, Meet states, Circles/detail, Communities/detail/settings, Soulmate/match/chat, and bottom dock model are represented by the current SwiftUI surfaces. Intentional MVP scope: generated people photos and richer live-call media remain mockup-only.
 - [x] macOS screens 1-20 in `mockups/macos/` inventoried against `DESIGN.md`: `MacPrototypeScreen` covers auth, Meet, Circles, Profile, Chat/Messages, Communities/detail/members/event, recap, Soulmate overview/discover/detail, notifications/activity, onboarding, and settings with the bottom floating dock model. Phase 8 audit evidence in `docs/references/macos-screen-audit.md` supersedes any parity claim: macOS backend connectivity now has pre-seeded validation DB evidence, while visual mockup mismatches remain before validation closeout.
 
+## Phase 7.B — Functional Gap Closure (Pre-Phase 8)
+
+Close the functional gap between DESIGN.md/product-direction and the shipped iOS + macOS apps so the seeded validation DB exercises real functionality, not static placeholders. Visual/mockup pixel-parity is deferred to a later phase.
+
+### Part A — Wire-up fixes on existing screens
+
+- [x] iOS Profile: replace hardcoded Big Five trait values and interest tags with real data from `appState.slice.signals.bigFive` and `appState.slice.profile.interests`. Map communication style to the read card copy.
+- [x] iOS Settings: bind Soulmate toggle to `appState.setSoulmateEnabled`; wire Privacy policy sheet from `docs/references/privacy-policy-testflight.md`; confirm Sign out; mark coming-soon rows visibly disabled.
+- [x] iOS Communities: working search field that filters the catalog by name/themes/summary.
+- [x] iOS Circle/Community detail: derive next meetup date + countdown from `appState.upcomingMeetings` instead of hardcoded strings.
+- [x] iOS Soulmate detail: verified `fetchSoulmateMatchDetail` + `ChatView` already wired (no change needed).
+- [x] Dead code cleanup: delete `TodayPrototypeView.swift`, legacy `ProfilePrototypeView` in `MVPProfileView.swift`, unused `VoiceOrbView.swift`, and the `SafetyPrototypeView` alias.
+- [x] macOS chat: wire composer send button to `appState.sendMessage` (was an empty `// send` stub) via a new `MacChatComposer` subview that owns the text state.
+- [x] macOS Soulmate detail: remove standalone Pass/Like stub buttons (no backend for swipe-like likes); keep intentional Message action.
+- [x] macOS Settings: wire Log out to `appState.signOut()` with a confirmation dialog (was a no-op label).
+
+### Part B — New / missing screens
+
+- [x] iOS Notifications + Activity screen (`NotificationsView.swift`): consumes `GET /v1/me/notifications`, grouped Notifications + Activity sections, filter pills (All/Meets/Matches/Messages), calm grouped cards. Entry point: bell icon in Meet header with unread badge.
+- [x] iOS post-meet recap: enhance `PastMeetDetailView` with host, group size, composition, private reflection note, and a "Select connections" action that opens `SoulmateSelectionDialog` when soulmate is enabled.
+- [x] Backend `GET /v1/communities/:id/members` route + `getCommunityMembers` in `mvp-store.js` (returns names + gender only; no hidden signals).
+- [x] macOS community members screen: replace hardcoded demo roster with real backend members via `MacAppState.fetchCommunityMembers`.
+- [x] macOS create event: replace the no-op static form with an honest "Coming soon" placeholder (community-created events are a deferred feature).
+- [x] macOS deep screens reachable in-app: add `navigate` closure to `MacScreenView` and wire entry points (past meetup → recap, community card → detail → members, soulmate match → detail → chat).
+
+### Part C — Validation + docs
+
+- [x] Extend `smoke_mvp.js` to cover `GET /v1/me/notifications` and `GET /v1/communities/:id/members`.
+- [x] Update `docs/references/macos-screen-audit.md` to reflect functional parity (visual parity deferred).
+- [x] Update `goal.json` + `goal.template.json` to the Phase 7.B goal.
+- [x] Run full grader suite.
+
 ## Phase 8 — Docs + Validation
 
 Update docs to match shipped product. Run all graders.
@@ -228,18 +260,20 @@ Update docs to match shipped product. Run all graders.
 - [x] Add deterministic validation database lifecycle: `npm run dev:api:validation` attaches `data/validation-db`; `npm run reset:validation-data` reseeds through the API; `npm run remove:validation-data` cleans seeded data.
 - [x] Add macOS screen capture validation with `npm run verify:macos-screens` and record screen-by-screen mockup evidence.
 - [x] Update `npm run smoke:mvp` (`script/smoke_mvp.js`) — add test coverage for: `GET /v1/me/circles`, `GET /v1/circles/:id`, `POST /v1/me/circles/concern`, `GET /v1/communities`, `POST /v1/communities/:id/join`, `GET /v1/me/communities`, `POST /v1/meetings/rsvp`, `GET /v1/meetings/upcoming`, `POST /v1/me/soulmate/enable`, `POST /v1/me/soulmate/select`, `GET /v1/me/soulmate/matches`, `GET /v1/me/soulmate/matches/:id`, `POST /v1/me/soulmate/matches/:id/messages`.
+- [x] Close remaining dead local controls: iOS Settings opens How it works, Help/FAQ, Privacy, and Contact support; Contact support persists through `/v1/feedback`; macOS welcome sign-in calls the backend auth path; macOS Conversations selects each backend match thread instead of always showing the first; macOS Notifications refreshes live backend notifications; iOS/macOS recap notes persist through `POST /v1/meetings/:id/recap-note` and seed data includes a saved recap note.
 - [x] `npm run verify:release-config` — add LiveKit env var checks (`LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`, `LIVEKIT_URL`) to `script/verify_release_config.js`.
 - [x] `npm run verify:goal` — passes with updated `goal.json`.
 - [x] `./script/build_and_run.sh --verify` — builds and launches with new tab structure, LiveKit dependency, new views.
 - [x] `npm run verify:macos-screens` — all 20 MacPrototypeScreens captured to `output/validation/macos-screens/`.
 - [x] All deterministic graders pass (node_syntax, mvp_backend_contract, release_static_config, goal_contract, repo_docs_lint, validation_data_lifecycle, macos_screen_capture).
-- [~] Manual proofs (device/simulator verification, not automatable):
-  - [ ] Onboarding wizard flows into voice interview.
-  - [ ] Profile shows voice orb + trait bars + interests.
-  - [ ] Circles shows your circle + available circles + concern button.
-  - [ ] Meet shows RSVP toggles + upcoming meets.
-  - [ ] Communities shows backend-driven catalog.
-  - [ ] Soulmate toggle shows/hides tab. Post-meet dialog works. Chat works.
+- [x] Manual proofs (device/simulator verification, not automatable):
+  - [x] Onboarding wizard flows into voice profile; runtime tap covers name, gender/default, date, city, pincode, and final Start voice profile.
+  - [x] Profile shows backend profile details, trait bars, interests, and a voice orb/status sheet with Stop/Done controls.
+  - [x] Circles shows your circle + available circles + concern button; runtime tap also opens circle detail and Back after the card-navigation fix.
+  - [x] Meet shows RSVP toggles + upcoming meets; runtime tap also opens history recap and saves a private recap note through the backend.
+  - [x] Communities shows backend-driven catalog; runtime tap covers search, joined/detail navigation, Back, join, and backend member-count update.
+  - [x] Soulmate toggle shows/hides tab. Post-meet dialog works. Chat works.
+  - [x] Settings support screens open at runtime; Contact support persists via `/v1/feedback`.
 
 ## Phase 9 — External TestFlight Readiness (after redesign complete)
 

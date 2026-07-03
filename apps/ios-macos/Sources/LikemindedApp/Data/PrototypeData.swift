@@ -69,7 +69,7 @@ enum PrototypeData {
             id: "match-explanation",
             title: "Share match explanation after consent",
             detail: "Only reveal compatibility reasoning once both people opt in.",
-            isEnabled: false
+            isEnabled: true
         ),
         PrivacyControl(
             id: "voice-mode",

@@ -16,7 +16,6 @@ npm run check
 npm run smoke:mvp
 npm run verify:release-config
 npm run verify:goal
-npm run reset:validation-data
 npm run verify:macos-screens
 npm run verify:simulator-local
 ```
@@ -35,7 +34,7 @@ npm run verify:simulator-local
 
 Use `npm run dev:api:validation` for repeatable local flow testing. It attaches the API to `data/validation-db` through `LIKEMINDED_DB_DIR`, enables local Apple auth bypass, and leaves the normal local database untouched.
 
-`npm run reset:validation-data` removes local validation users, profiles, meetings, memberships, soulmate matches, and messages from the attached local database, then reseeds them through the API. Use `npm run seed:validation-data` to seed only, and `npm run remove:validation-data` to clean up. Removal is local-only and refuses `DATABASE_URL`. For empty database or real-user local testing, use the normal API/database path instead of `dev:api:validation`.
+Run `npm run reset:validation-data` only when intentionally refreshing seeded validation data; it is not part of the default validation sequence. It removes local validation users, profiles, meetings, memberships, soulmate matches, and messages from the attached local database, then reseeds them through the API. Use `npm run seed:validation-data` to seed only, and `npm run remove:validation-data` to clean up after seeded evidence is captured. Removal is local-only and refuses `DATABASE_URL`. For empty database or real-user local testing, use the normal API/database path instead of `dev:api:validation`.
 
 For native UI validation, do not use sparse local data as proof. Use `npm run verify:macos-screens` for seeded macOS validation DB screenshots and `npm run verify:simulator-local` for iOS fresh auth, empty-dev-db onboarding, and DEBUG placement screenshots. Do not claim iOS/macOS behavior is seamless until both surfaces show the expected seeded user state, tab ownership, settings/soulmate behavior, profile placement, meetings, communities, messages, and empty/error states.
 

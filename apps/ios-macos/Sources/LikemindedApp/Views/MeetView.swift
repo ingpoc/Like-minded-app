@@ -3,6 +3,7 @@ import SwiftUI
 
 struct MeetView: View {
     @EnvironmentObject private var appState: PrototypeAppState
+    @State private var showingNotifications = false
 
     var body: some View {
         NavigationStack {
@@ -69,17 +70,35 @@ struct MeetView: View {
                 }
             }
             .overlay(alignment: .topTrailing) {
-                Image(systemName: "bell")
-                    .font(PrototypeTypography.bodyStrong)
-                    .foregroundStyle(PrototypePalette.ink)
-                    .frame(width: 42, height: 42)
-                    .background(PrototypePalette.surface)
-                    .clipShape(Circle())
-                    .shadow(color: Color.black.opacity(0.06), radius: 14, y: 8)
-                    .padding(.top, 42)
-                    .padding(.trailing, 20)
+                Button {
+                    showingNotifications = true
+                } label: {
+                    ZStack(alignment: .topTrailing) {
+                        Image(systemName: "bell")
+                            .font(PrototypeTypography.bodyStrong)
+                            .foregroundStyle(PrototypePalette.ink)
+                            .frame(width: 42, height: 42)
+                            .background(PrototypePalette.surface)
+                            .clipShape(Circle())
+                            .shadow(color: Color.black.opacity(0.06), radius: 14, y: 8)
+
+                        if !appState.notifications.isEmpty {
+                            Circle()
+                                .fill(PrototypePalette.coral)
+                                .frame(width: 9, height: 9)
+                                .offset(x: -4, y: 4)
+                        }
+                    }
+                }
+                .buttonStyle(.plain)
+                .padding(.top, 42)
+                .padding(.trailing, 20)
             }
             .toolbar(.hidden, for: .navigationBar)
+            .sheet(isPresented: $showingNotifications) {
+                NotificationsView()
+                    .environmentObject(appState)
+            }
             .task {
                 await appState.fetchMeetings()
             }
@@ -246,7 +265,7 @@ private struct UpcomingMeetCard: View {
     let meeting: Meeting
 
     private var canJoin: Bool {
-        Date() >= (ISO8601DateFormatter().date(from: meeting.scheduledAt) ?? .distantFuture)
+        Date() >= (LikemindedDate.parse(meeting.scheduledAt) ?? .distantFuture)
     }
 
     var body: some View {
@@ -289,14 +308,13 @@ private struct UpcomingMeetCard: View {
     }
 
     private var countdownText: String {
-        guard let date = ISO8601DateFormatter().date(from: meeting.scheduledAt) else { return "Soon" }
+        guard let date = LikemindedDate.parse(meeting.scheduledAt) else { return "Soon" }
         let seconds = max(0, Int(date.timeIntervalSinceNow))
         return "\(seconds / 86_400)d \((seconds % 86_400) / 3_600)h away"
     }
 
     private var formattedDate: String {
-        guard let date = ISO8601DateFormatter().date(from: meeting.scheduledAt) else { return meeting.scheduledAt }
-        return date.formatted(date: .abbreviated, time: .shortened)
+        LikemindedDate.full(meeting.scheduledAt)
     }
 }
 
@@ -316,7 +334,7 @@ private struct PastMeetRow: View {
                 Text(meeting.title)
                     .font(PrototypeTypography.bodyStrong)
                     .foregroundStyle(PrototypePalette.ink)
-                Text("\(meeting.scheduledAt.prefix(10)) • Host \(meeting.hostName)")
+                Text("\(LikemindedDate.short(meeting.scheduledAt)) • Host \(meeting.hostName)")
                     .font(PrototypeTypography.caption)
                     .foregroundStyle(PrototypePalette.subink)
             }
@@ -334,16 +352,116 @@ private struct PastMeetRow: View {
 }
 
 private struct PastMeetDetailView: View {
+    @EnvironmentObject private var appState: PrototypeAppState
     let meeting: Meeting
+    @State private var showingSoulmateSelection = false
+    @State private var reflectionNote = ""
+    @State private var noteStatus: String?
+    @State private var isSavingNote = false
 
     var body: some View {
-        ScreenContainer(title: "Past meet", subtitle: meeting.title) {
-            FeatureCard(title: "Meet info", eyebrow: "No transcript") {
-                Text("\(meeting.compositionSummary)\nHost: \(meeting.hostName)\nDate: \(meeting.scheduledAt.prefix(10))")
+        ScreenContainer(title: "Recap", subtitle: meeting.title) {
+            VStack(alignment: .leading, spacing: 16) {
+                Text(meeting.kind == "circle" ? "Your Sunday circle meet" : "Your Saturday community meet")
                     .font(PrototypeTypography.body)
-                    .foregroundStyle(PrototypePalette.subink)
+                    .foregroundStyle(.white.opacity(0.92))
+
+                Text(formattedDate)
+                    .font(PrototypeTypography.metadata)
+                    .foregroundStyle(.white.opacity(0.84))
+            }
+            .padding(22)
+            .background(PrototypePalette.roomGradient(meeting.kind == "circle" ? 0 : 2))
+            .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+
+            FeatureCard(title: "Group", eyebrow: "Who met") {
+                VStack(alignment: .leading, spacing: 14) {
+                    Label("Host: \(meeting.hostName)", systemImage: "person.crop.circle.badge.checkmark")
+                        .font(PrototypeTypography.caption)
+                        .foregroundStyle(PrototypePalette.ink)
+
+                    Label("Group size: \(meeting.groupSize)", systemImage: "person.2")
+                        .font(PrototypeTypography.caption)
+                        .foregroundStyle(PrototypePalette.ink)
+                        .contentTransition(.numericText())
+
+                    if !meeting.compositionSummary.isEmpty {
+                        Label(meeting.compositionSummary, systemImage: "sparkle")
+                            .font(PrototypeTypography.caption)
+                            .foregroundStyle(PrototypePalette.subink)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+            }
+
+            FeatureCard(title: "Private reflection", eyebrow: "Just for you") {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("How did this meet feel? Notes are private and help improve placement.")
+                        .font(PrototypeTypography.caption)
+                        .foregroundStyle(PrototypePalette.subink)
+
+                    TextField("Quiet, warm, fast-paced...", text: $reflectionNote, axis: .vertical)
+                        .font(PrototypeTypography.caption)
+                        .textFieldStyle(.roundedBorder)
+                        .lineLimit(3...6)
+
+                    HStack {
+                        Button {
+                            Task { await saveNote() }
+                        } label: {
+                            Label(isSavingNote ? "Saving" : "Save note", systemImage: "checkmark.circle.fill")
+                                .font(PrototypeTypography.button)
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(PrototypePalette.accent)
+                        .disabled(isSavingNote)
+
+                        if let noteStatus {
+                            Text(noteStatus)
+                                .font(PrototypeTypography.metadata)
+                                .foregroundStyle(PrototypePalette.subink)
+                        }
+                    }
+                }
+            }
+
+            if appState.soulmateEnabled {
+                FeatureCard(title: "Did you connect?", eyebrow: "Soulmate") {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Mutual selection only. They won't see your choice until they choose you too.")
+                            .font(PrototypeTypography.caption)
+                            .foregroundStyle(PrototypePalette.subink)
+
+                        Button {
+                            showingSoulmateSelection = true
+                        } label: {
+                            PrimaryActionButton(title: "Select connections", systemImage: "heart")
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
             }
         }
+        .navigationTitle("Recap")
+        .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showingSoulmateSelection) {
+            SoulmateSelectionDialog()
+                .environmentObject(appState)
+        }
+        .onAppear {
+            reflectionNote = meeting.recapNote ?? ""
+        }
+    }
+
+    private var formattedDate: String {
+        LikemindedDate.full(meeting.scheduledAt)
+    }
+
+    private func saveNote() async {
+        isSavingNote = true
+        await appState.saveMeetingRecapNote(meetingId: meeting.id, note: reflectionNote)
+        noteStatus = appState.meetingError == nil ? "Saved" : appState.meetingError
+        isSavingNote = false
     }
 }
 

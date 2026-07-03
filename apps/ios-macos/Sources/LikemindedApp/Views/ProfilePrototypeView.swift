@@ -2,6 +2,7 @@ import SwiftUI
 
 struct VoiceProfileView: View {
     @EnvironmentObject private var appState: PrototypeAppState
+    @State private var showingVoiceSession = false
 
     var body: some View {
         NavigationStack {
@@ -21,6 +22,10 @@ struct VoiceProfileView: View {
                 }
             }
             .toolbar(.hidden, for: .navigationBar)
+            .sheet(isPresented: $showingVoiceSession) {
+                VoiceProfileSessionSheet()
+                    .environmentObject(appState)
+            }
         }
     }
 
@@ -53,8 +58,59 @@ struct VoiceProfileView: View {
             .joined(separator: " · ")
     }
 
+    private var profileInterests: [Interest] {
+        appState.slice?.profile.interests ?? []
+    }
+
+    private var profileTraits: [ProfileTraitRowModel] {
+        let bigFive = appState.slice?.signals?.bigFive ?? ProfileSignals.BigFive()
+        let socialEnergy = appState.slice?.signals?.socialEnergy ?? "steady"
+        let trustPattern = appState.slice?.signals?.trustPattern ?? "slowTrust"
+
+        let energyValue: Double = {
+            switch socialEnergy.lowercased() {
+            case "high": return 0.78
+            case "low": return 0.32
+            default: return 0.50
+            }
+        }()
+
+        let trustValue: Double = trustPattern.lowercased() == "fasttrust" ? 0.74 : 0.36
+
+        return [
+            ProfileTraitRowModel(left: "Reserved", right: "Outgoing", value: bigFive.extraversion),
+            ProfileTraitRowModel(left: "Analytical", right: "Intuitive", value: bigFive.openness),
+            ProfileTraitRowModel(left: "Low Energy", right: "High Energy", value: energyValue),
+            ProfileTraitRowModel(left: "Steady", right: "Spontaneous", value: 1.0 - bigFive.conscientiousness),
+            ProfileTraitRowModel(left: "Slow Trust", right: "Fast Trust", value: trustValue)
+        ]
+    }
+
+    private var communicationReadTitle: String {
+        let primary = appState.slice?.signals?.communicationStyle?.primary?.lowercased() ?? ""
+        switch primary {
+        case "warm": return "Warm Communicator"
+        case "direct": return "Direct Communicator"
+        case "expressive": return "Expressive Communicator"
+        case "analytical": return "Thoughtful Communicator"
+        default: return "Honest Communicator"
+        }
+    }
+
+    private var communicationReadDetail: String {
+        let primary = appState.slice?.signals?.communicationStyle?.primary?.lowercased() ?? ""
+        switch primary {
+        case "warm": return "You lead with care and make people feel heard."
+        case "direct": return "You value clarity and get to the point with ease."
+        case "expressive": return "You bring energy and openness to conversations."
+        case "analytical": return "You think before you speak and notice what others miss."
+        default: return "You value clarity and depth in conversations."
+        }
+    }
+
     private var startVoiceButton: some View {
         Button {
+            showingVoiceSession = true
             Task { await appState.startVoiceSession() }
         } label: {
             PrimaryActionButton(
@@ -78,6 +134,7 @@ struct VoiceProfileView: View {
                 .foregroundStyle(PrototypePalette.ink)
 
             Button {
+                showingVoiceSession = true
                 Task { await appState.startReinterview() }
             } label: {
                 PrimaryActionButton(
@@ -110,6 +167,7 @@ struct VoiceProfileView: View {
                 Spacer()
 
                 Button("Update profile") {
+                    showingVoiceSession = true
                     Task { await appState.startVoiceSession() }
                 }
                 .font(PrototypeTypography.metadata)
@@ -136,10 +194,10 @@ struct VoiceProfileView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
 
                 VStack(alignment: .leading, spacing: 5) {
-                    Text("Honest Communicator")
+                    Text(communicationReadTitle)
                         .font(PrototypeTypography.bodyStrong)
                         .foregroundStyle(PrototypePalette.ink)
-                    Text("You value clarity and depth in conversations.")
+                    Text(communicationReadDetail)
                         .font(PrototypeTypography.caption)
                         .foregroundStyle(PrototypePalette.ink)
                 }
@@ -154,11 +212,9 @@ struct VoiceProfileView: View {
             .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
 
             VStack(spacing: 15) {
-                ProfileTraitRow(left: "Reserved", right: "Outgoing", value: 0.55)
-                ProfileTraitRow(left: "Analytical", right: "Intuitive", value: 0.66)
-                ProfileTraitRow(left: "Low Energy", right: "High Energy", value: 0.44)
-                ProfileTraitRow(left: "Steady", right: "Spontaneous", value: 0.58)
-                ProfileTraitRow(left: "Slow Trust", right: "Fast Trust", value: 0.50)
+                ForEach(profileTraits, id: \.left) { trait in
+                    ProfileTraitRow(left: trait.left, right: trait.right, value: trait.value)
+                }
             }
 
             Divider().overlay(PrototypePalette.rule)
@@ -171,7 +227,13 @@ struct VoiceProfileView: View {
                     .font(PrototypeTypography.sectionTitle)
                     .foregroundStyle(PrototypePalette.ink)
 
-                FlexibleTagLayout(items: ["Jazz", "Essays", "Psychology", "Design", "Cooking", "Movies", "Trekking"])
+                if profileInterests.isEmpty {
+                    Text("No interests detected yet. Update your voice profile to refine.")
+                        .font(PrototypeTypography.caption)
+                        .foregroundStyle(PrototypePalette.subink)
+                } else {
+                    FlexibleTagLayout(items: profileInterests.map { $0.label })
+                }
             }
         }
         .padding(18)
@@ -219,6 +281,61 @@ private struct ProfileVoiceEmptyCard: View {
     }
 }
 
+private struct VoiceProfileSessionSheet: View {
+    @EnvironmentObject private var appState: PrototypeAppState
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            ScreenContainer(title: "Voice profile", subtitle: "Speak naturally.") {
+                ProfileVoiceEmptyCard()
+
+                FeatureCard(title: "Realtime status", eyebrow: "Voice") {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Label(appState.realtimeStatus, systemImage: appState.isVoiceStreaming ? "waveform" : "waveform.circle")
+                            .font(PrototypeTypography.bodyStrong)
+                            .foregroundStyle(PrototypePalette.ink)
+
+                        if let error = appState.realtimeError, !error.isEmpty {
+                            Text(error)
+                                .font(PrototypeTypography.caption)
+                                .foregroundStyle(PrototypePalette.amber)
+                                .fixedSize(horizontal: false, vertical: true)
+                        } else {
+                            Text("The profile updates from the backend voice session when realtime is available.")
+                                .font(PrototypeTypography.caption)
+                                .foregroundStyle(PrototypePalette.subink)
+                        }
+
+                        if !appState.realtimeTranscript.isEmpty {
+                            Text(appState.realtimeTranscript)
+                                .font(PrototypeTypography.caption)
+                                .foregroundStyle(PrototypePalette.ink)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+                }
+
+                HStack(spacing: 12) {
+                    Button {
+                        Task { await appState.stopVoiceSession() }
+                    } label: {
+                        SecondaryActionButton(title: "Stop", systemImage: "stop.circle")
+                    }
+                    .buttonStyle(.plain)
+
+                    Button {
+                        dismiss()
+                    } label: {
+                        PrimaryActionButton(title: "Done", systemImage: "checkmark")
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+    }
+}
+
 private struct ProfileSignalPill: View {
     let title: String
     let selected: Bool
@@ -237,6 +354,12 @@ private struct ProfileSignalPill: View {
             .background(selected ? PrototypePalette.actionGradient : LinearGradient(colors: [Color.black.opacity(0.05)], startPoint: .top, endPoint: .bottom))
             .clipShape(Capsule(style: .continuous))
     }
+}
+
+private struct ProfileTraitRowModel {
+    let left: String
+    let right: String
+    let value: Double
 }
 
 private struct ProfileTraitRow: View {

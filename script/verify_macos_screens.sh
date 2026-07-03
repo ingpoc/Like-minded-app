@@ -85,6 +85,10 @@ PY
 }
 
 mkdir -p "$OUT_DIR"
+if lsof -ti :"${PORT:-8787}" >/dev/null 2>&1; then
+  kill "$(lsof -ti :"${PORT:-8787}")" >/dev/null 2>&1 || true
+  sleep 1
+fi
 "$ROOT_DIR/script/run_validation_api.sh" >"$API_LOG" 2>&1 &
 api_pid="$!"
 wait_for_api

@@ -211,6 +211,18 @@ struct LikemindedAPIClient {
         try await updateCommunityMembership(id: id, action: "leave")
     }
 
+    func fetchCommunityMembers(id: String) async throws -> [CommunityMember] {
+        let url = baseURL.appendingPathComponent("/v1/communities/\(id)/members")
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        applyCommonHeaders(&request, isJSON: false)
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+        return try JSONDecoder().decode(CommunityMembersResponse.self, from: data).members
+    }
+
     func updateMeetingRSVP(kind: String, available: Bool) async throws {
         let url = baseURL.appendingPathComponent("/v1/meetings/rsvp")
         var request = URLRequest(url: url)
@@ -232,6 +244,21 @@ struct LikemindedAPIClient {
             throw URLError(.badServerResponse)
         }
         return try JSONDecoder().decode(MeetingsResponse.self, from: data)
+    }
+
+    func saveMeetingRecapNote(meetingId: String, note: String) async throws {
+        let url = baseURL
+            .appendingPathComponent("/v1/meetings")
+            .appendingPathComponent(meetingId)
+            .appendingPathComponent("recap-note")
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        applyCommonHeaders(&request)
+        request.httpBody = try JSONEncoder().encode(MeetingRecapNoteRequest(note: note))
+        let (_, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
     }
 
     func fetchSoulmateStatus() async throws -> SoulmateStatus {

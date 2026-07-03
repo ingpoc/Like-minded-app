@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "status": "pending",
+  "status": "completed",
   "purpose": "Per-session execution goal. Copy this file to goal.json at session start, set the current goal, and keep graders/validation/agent routing current when files or commands change.",
-  "goal": "Complete Phase 8 local native/backend validation: keep iOS and macOS wired to the backend, prove seeded validation DB screens, prove empty-dev-db iOS onboarding, and keep validation routes explicit.",
+  "goal": "Complete Phase 8 seeded iOS/macOS parity and DB persistence validation: ensure both native apps expose consistent UI/UX and feature behavior, remove misleading static controls, persist functional controls through the connected backend/database, and use validation DB reset only when intentionally reseeding test data.",
   "ultimate_goal_source": "GOAL.md",
   "progress_source": "PROGRESS.md",
   "workflow_refs": [
@@ -87,7 +87,7 @@
       "name": "mvp_backend_contract",
       "command": "npm run smoke:mvp",
       "cost": "zero_token",
-      "proves": "Auth-gated discovery, persisted profile/placement, placement action, feedback, meetings RSVP/scheduling, LiveKit token generation, and cross-user isolation work locally."
+      "proves": "Auth-gated discovery, persisted profile/placement, placement action, feedback, meetings RSVP/scheduling, LiveKit token generation, notifications, community members, and cross-user isolation work locally."
     },
     {
       "name": "release_static_config",

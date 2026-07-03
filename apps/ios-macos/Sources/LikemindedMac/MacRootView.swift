@@ -14,7 +14,12 @@ struct MacRootView: View {
             VStack(spacing: 0) {
                 ScrollView(.vertical, showsIndicators: true) {
                     VStack(spacing: 18) {
-                        MacScreenView(screen: selectedScreen, appState: appState)
+                        MacScreenView(screen: selectedScreen, appState: appState) { destination in
+                            if destination == .messages {
+                                returnScreen = selectedScreen
+                            }
+                            selectedScreen = destination
+                        }
                     }
                     .padding(.horizontal, 28)
                     .padding(.top, 54)
