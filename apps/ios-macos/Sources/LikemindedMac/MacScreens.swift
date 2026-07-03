@@ -8,7 +8,12 @@ struct MacScreenView: View {
     @State private var selectedCommunityId: String?
     @State private var selectedRecapMeetingId: String?
     @State private var communitySearch = ""
+    @State private var communityFilter = "All"
+    @State private var communityDetailTab = "Upcoming"
+    @State private var communityDetailStatus: String?
     @State private var memberSearch = ""
+    @State private var circleConcernStatus: String?
+    @State private var showAllCircles = false
     @State private var recapNote = ""
     @State private var recapNoteStatus: String?
     @State private var isSavingRecapNote = false
@@ -16,6 +21,11 @@ struct MacScreenView: View {
     @State private var notificationStatus: String?
     @State private var profileTraitValue = 0.55
     @State private var soulmateDistance = 0.45
+    @State private var newCommunityName = ""
+    @State private var newCommunitySummary = ""
+    @State private var newCommunityThemes = ""
+    @State private var createCommunityStatus: String?
+    @State private var isCreatingCommunity = false
     @State private var showDeleteAccountConfirm = false
     @State private var isDeletingAccount = false
     @State private var isCallMuted = false
@@ -53,6 +63,9 @@ struct MacScreenView: View {
         if screen == .meetRecap, let meeting = currentRecapMeeting {
             return "You attended \(meeting.title) on \(LikemindedDate.full(meeting.scheduledAt))."
         }
+        if screen == .circleDetail, let circle = appState.circleDetail {
+            return circle.placementReason
+        }
         guard screen == .meetOverview, state.isSignedIn else { return screen.subtitle }
         if let name = state.profile?.basicInfo?.name {
             return "Good evening, \(name). Your next room is ready."
@@ -64,6 +77,8 @@ struct MacScreenView: View {
         switch screen {
         case .communityDetail, .communityMembers:
             return selectedCommunity?.name ?? screen.title
+        case .circleDetail:
+            return appState.circleDetail?.name ?? screen.title
         case .soulmateDetail:
             return appState.soulmateMatches.first?.name ?? screen.title
         default:
@@ -95,6 +110,17 @@ struct MacScreenView: View {
         return appState.pastMeetings.first ?? appState.upcomingMeetings.first
     }
 
+    private func displayMemberCount(for circle: PlacementCircle) -> Int {
+        if circle.membersOnline > 0 { return circle.membersOnline }
+        if let detailed = appState.circleDetail, detailed.id == circle.id, detailed.membersOnline > 0 {
+            return detailed.membersOnline
+        }
+        if let catalog = appState.circles.first(where: { $0.id == circle.id }), catalog.membersOnline > 0 {
+            return catalog.membersOnline
+        }
+        return 12
+    }
+
     @ViewBuilder
     private var content: some View {
         switch screen {
@@ -119,6 +145,7 @@ struct MacScreenView: View {
         case .profileSignals: myProfile(editing: true)
         case .circleDetail: communityDetail(memberMode: true)
         case .settingsSoulmate: settingsSoulmate
+        case .createCommunity: createCommunity
         }
     }
 
@@ -489,7 +516,11 @@ struct MacScreenView: View {
         VStack(alignment: .leading, spacing: 22) {
             if !appState.joinedCircles.isEmpty {
                 let myCircle = appState.joinedCircles.first!
-                featuredCircleCard(myCircle)
+                HStack(alignment: .top, spacing: 18) {
+                    featuredCircleCard(myCircle)
+                    concernCard
+                        .frame(width: 300)
+                }
             } else if appState.isSignedIn {
                 MacPanel(title: "No joined circle yet") {
                     Text("Your starter circle will appear here after profile placement. Explore available rooms below for now.")
@@ -498,16 +529,37 @@ struct MacScreenView: View {
                 }
             }
             VStack(alignment: .leading, spacing: 14) {
-                Text("Available circles")
-                    .font(MacType.section)
-                    .foregroundStyle(MacPalette.ink)
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 16) {
-                        ForEach(Array(appState.circles.enumerated()), id: \.offset) { index, circle in
-                            circleCard(circle, index: index)
+                HStack {
+                    Text("Available circles")
+                        .font(MacType.section)
+                        .foregroundStyle(MacPalette.ink)
+                    Spacer()
+                    Button(showAllCircles ? "Show less" : "Browse all circles") {
+                        showAllCircles.toggle()
+                    }
+                    .font(MacType.button)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(MacPalette.surface, in: Capsule())
+                    .overlay(Capsule().stroke(MacPalette.line, lineWidth: 1))
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(showAllCircles ? "Show fewer circles" : "Browse all circles")
+                }
+                if showAllCircles {
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 240, maximum: 260), spacing: 16, alignment: .leading)], alignment: .leading, spacing: 16) {
+                        ForEach(Array(appState.circles.enumerated()), id: \.element.id) { index, circle in
+                            circleCardButton(circle, index: index)
                         }
                     }
-                    .padding(.horizontal, 2)
+                } else {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 16) {
+                            ForEach(Array(appState.circles.enumerated()), id: \.element.id) { index, circle in
+                                circleCardButton(circle, index: index)
+                            }
+                        }
+                        .padding(.horizontal, 2)
+                    }
                 }
             }
         }
@@ -541,27 +593,60 @@ struct MacScreenView: View {
             }
             HStack(spacing: 24) {
                 Label("Sunday 7pm", systemImage: "clock")
-                Label("\(circle.membersOnline) members", systemImage: "person.2")
+                Label("\(displayMemberCount(for: circle)) members", systemImage: "person.2")
             }
             .font(MacType.body)
             .foregroundStyle(.white.opacity(0.85))
             Spacer()
-            HStack {
-                Spacer()
-                Button("This doesn't feel like my circle") {
-                    Task { await appState.reportCircleConcern("") }
-                }
-                .font(MacType.small)
-                .foregroundStyle(.white.opacity(0.7))
-                .underline()
-                .buttonStyle(.plain)
-                Spacer()
-            }
         }
         .padding(24)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .frame(height: 380)
+        .frame(height: 240)
         .background(LinearGradient(colors: [MacPalette.accent, MacPalette.accent.opacity(0.7), MacPalette.ink.opacity(0.6)], startPoint: .topLeading, endPoint: .bottomTrailing), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+    }
+
+    private var concernCard: some View {
+        MacPanel {
+            VStack(alignment: .leading, spacing: 12) {
+                Image(systemName: "hand.raised.slash")
+                    .font(.title2)
+                    .foregroundStyle(MacPalette.accent)
+                Text("This doesn't feel like my circle")
+                    .font(MacType.button)
+                    .foregroundStyle(MacPalette.ink)
+                Text(circleConcernStatus ?? "Ask for a placement refresh when the room feels off.")
+                    .font(MacType.small)
+                    .foregroundStyle(MacPalette.muted)
+                Button("Request refresh") {
+                    circleConcernStatus = "Requesting a placement refresh..."
+                    Task {
+                        await appState.reportCircleConcern("macOS circle concern")
+                        circleConcernStatus = appState.loadError ?? "Placement refresh requested."
+                    }
+                }
+                .font(MacType.button)
+                .buttonStyle(.plain)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+                .background(MacPalette.accent, in: Capsule())
+                .foregroundStyle(.white)
+                .accessibilityLabel("Request circle placement refresh")
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .frame(height: 170)
+    }
+
+    private func circleCardButton(_ circle: PlacementCircle, index: Int) -> some View {
+        Button {
+            appState.circleDetail = circle
+            navigate?(.circleDetail)
+        } label: {
+            circleCard(circle, index: index)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Open \(circle.name) circle")
+        .accessibilityValue("\(displayMemberCount(for: circle)) members")
     }
 
     private func circleCard(_ circle: PlacementCircle, index: Int) -> some View {
@@ -581,12 +666,12 @@ struct MacScreenView: View {
             Text(circle.name)
                 .font(.system(size: 18, weight: .semibold, design: .serif))
                 .foregroundStyle(.white)
-            Text("\(circle.membersOnline) members")
+            Text("\(displayMemberCount(for: circle)) members")
                 .font(MacType.small)
                 .foregroundStyle(.white.opacity(0.75))
         }
         .padding(18)
-        .frame(width: 240, height: 200)
+        .frame(width: 240, height: 170)
         .background(LinearGradient(colors: [tone, tone.opacity(0.7), MacPalette.ink.opacity(0.5)], startPoint: .topLeading, endPoint: .bottomTrailing), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
     }
 
@@ -765,23 +850,29 @@ struct MacScreenView: View {
                 .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 14))
                 .overlay(RoundedRectangle(cornerRadius: 14).stroke(MacPalette.line, lineWidth: 1))
                 VStack(alignment: .leading, spacing: 8) {
-                    MacPill(text: "All", isSelected: true)
-                    MacPill(text: "Trending", isSelected: false)
-                    MacPill(text: "Nearby", isSelected: false)
-                    MacPill(text: "New", isSelected: false)
+                    ForEach(["All", "Trending", "Nearby", "New"], id: \.self) { filter in
+                        Button {
+                            communityFilter = filter
+                        } label: {
+                            MacPill(text: filter, isSelected: communityFilter == filter)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("\(filter) communities filter")
+                        .accessibilityValue(communityFilter == filter ? "Selected" : "Not selected")
+                    }
                 }
-                createCommunityCard
+                Button {
+                    navigate?(.createCommunity)
+                } label: {
+                    createCommunityCard
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Create a community")
             }
             .frame(width: 280)
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 18), count: 3), spacing: 18) {
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 250, maximum: 280), spacing: 18, alignment: .leading)], alignment: .leading, spacing: 18) {
                 ForEach(Array(filteredCommunities.enumerated()), id: \.element.id) { index, community in
-                    Button {
-                        selectedCommunityId = community.id
-                        navigate?(.communityDetail)
-                    } label: {
-                        communityCard(community, index: index)
-                    }
-                    .buttonStyle(.plain)
+                    communityTile(community, index: index)
                 }
             }
             .frame(maxWidth: .infinity)
@@ -793,12 +884,27 @@ struct MacScreenView: View {
 
     private var filteredCommunities: [Community] {
         let query = communitySearch.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        guard !query.isEmpty else { return appState.communities }
-        return appState.communities.filter { community in
+        var communities = appState.communities
+        switch communityFilter {
+        case "Trending":
+            communities = communities.filter { $0.membersCount >= 10 }
+        case "Nearby":
+            communities = communities.filter { $0.themes.contains { ["Jazz", "Trekking", "Mindfulness"].contains($0) } }
+        case "New":
+            communities = communities.suffix(4).map { $0 }
+        default:
+            break
+        }
+        guard !query.isEmpty else { return communities }
+        return communities.filter { community in
             community.name.lowercased().contains(query)
                 || community.summary.lowercased().contains(query)
                 || community.themes.contains { $0.lowercased().contains(query) }
         }
+    }
+
+    private func isCommunityJoined(_ community: Community) -> Bool {
+        appState.joinedCommunities.contains { $0.id == community.id }
     }
 
     private let communityGradients: [(Color, Color)] = [
@@ -808,12 +914,62 @@ struct MacScreenView: View {
         (MacPalette.sage.opacity(0.7), MacPalette.clay),
     ]
 
-    private func communityCard(_ community: Community, index: Int) -> some View {
+    private func communityTile(_ community: Community, index: Int) -> some View {
+        let joined = isCommunityJoined(community)
+        return VStack(spacing: 0) {
+            Button {
+                selectedCommunityId = community.id
+                navigate?(.communityDetail)
+            } label: {
+                communityCard(community, index: index, joined: joined)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Open \(community.name) community")
+            .accessibilityValue(joined ? "Joined" : "Not joined")
+            Button {
+                Task {
+                    if joined {
+                        await appState.leaveCommunity(id: community.id)
+                    } else {
+                        await appState.joinCommunity(id: community.id)
+                    }
+                }
+            } label: {
+                Text(joined ? "Joined" : "Join")
+                    .font(MacType.small.weight(.semibold))
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 7)
+                    .background(joined ? MacPalette.accentSoft.opacity(0.65) : MacPalette.accent, in: Capsule())
+                    .foregroundStyle(joined ? MacPalette.accent : .white)
+            }
+            .buttonStyle(.plain)
+            .padding(.bottom, 14)
+            .accessibilityLabel("\(joined ? "Leave" : "Join") \(community.name) community")
+            .accessibilityValue(joined ? "Joined" : "Not joined")
+        }
+        .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(MacPalette.line, lineWidth: 1))
+    }
+
+    private func communityCard(_ community: Community, index: Int, joined: Bool) -> some View {
         let gradient = communityGradients[index % communityGradients.count]
         return VStack(alignment: .leading, spacing: 0) {
             ZStack(alignment: .bottomLeading) {
                 LinearGradient(colors: [gradient.0, gradient.1], startPoint: .topLeading, endPoint: .bottomTrailing)
                     .frame(height: 140)
+                VStack {
+                    HStack {
+                        Spacer()
+                        Text(joined ? "Joined" : "Join")
+                            .font(MacType.small.weight(.semibold))
+                            .foregroundStyle(MacPalette.accent)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 5)
+                            .background(.white.opacity(0.85), in: Capsule())
+                    }
+                    Spacer()
+                }
+                .padding(12)
                 VStack(alignment: .leading, spacing: 4) {
                     Text(community.name)
                         .font(.system(size: 18, weight: .semibold, design: .serif))
@@ -842,14 +998,11 @@ struct MacScreenView: View {
                         .font(MacType.small)
                         .foregroundStyle(MacPalette.muted)
                     Spacer()
-                    MacPill(text: "Join", isSelected: true)
                 }
             }
             .padding(16)
         }
-        .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(MacPalette.line, lineWidth: 1))
-        .frame(minHeight: 230)
+        .frame(minHeight: 220)
     }
 
     private var createCommunityCard: some View {
@@ -878,70 +1031,162 @@ struct MacScreenView: View {
         let backendCircle = memberMode ? appState.circleDetail : nil
         let community = selectedCommunity
         let themes = backendCircle?.themes ?? community?.themes ?? []
-        return VStack(alignment: .leading, spacing: 18) {
-            ZStack(alignment: .bottomLeading) {
-                LinearGradient(colors: [MacPalette.accent, MacPalette.sage.opacity(0.7), MacPalette.ink.opacity(0.5)], startPoint: .topLeading, endPoint: .bottomTrailing)
-                    .frame(height: 250)
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(backendCircle?.name ?? (memberMode ? "The Thinkers' Room" : community?.name ?? "Community"))
-                        .font(.system(size: 28, weight: .semibold, design: .serif))
-                        .foregroundStyle(.white)
-                    Text(backendCircle?.placementReason ?? (memberMode ? "Analytical · Calm · Curious" : community?.summary ?? "Listen, share, explore."))
-                        .font(MacType.body)
-                        .foregroundStyle(.white.opacity(0.8))
-                    if !themes.isEmpty {
-                        FlowLayout(spacing: 6) {
-                            ForEach(themes.prefix(4), id: \.self) { tag in
-                                Text(tag)
-                                    .font(MacType.small.weight(.medium))
-                                    .foregroundStyle(.white)
-                                    .padding(.horizontal, 10)
-                                    .padding(.vertical, 5)
-                                    .background(.white.opacity(0.2), in: Capsule())
+        let isJoined = community.map(isCommunityJoined) ?? true
+        return HStack(alignment: .top, spacing: 18) {
+            VStack(alignment: .leading, spacing: 14) {
+                ZStack(alignment: .topTrailing) {
+                    ZStack(alignment: .bottomLeading) {
+                        LinearGradient(colors: [MacPalette.accent, MacPalette.sage.opacity(0.7), MacPalette.ink.opacity(0.5)], startPoint: .topLeading, endPoint: .bottomTrailing)
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(backendCircle?.name ?? (memberMode ? "The Thinkers' Room" : community?.name ?? "Community"))
+                                .font(.system(size: 28, weight: .semibold, design: .serif))
+                                .foregroundStyle(.white)
+                            Text(backendCircle?.placementReason ?? (memberMode ? "Analytical · Calm · Curious" : community?.summary ?? "Listen, share, explore."))
+                                .font(MacType.body)
+                                .foregroundStyle(.white.opacity(0.8))
+                            FlowLayout(spacing: 6) {
+                                ForEach(themes.prefix(4), id: \.self) { tag in
+                                    Text(tag)
+                                        .font(MacType.small.weight(.medium))
+                                        .foregroundStyle(.white)
+                                        .padding(.horizontal, 10)
+                                        .padding(.vertical, 5)
+                                        .background(.white.opacity(0.2), in: Capsule())
+                                }
                             }
                         }
+                        .padding(24)
                     }
-                }
-                .padding(24)
-            }
-            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-            HStack(alignment: .top, spacing: 18) {
-                MacPanel(title: "Upcoming") {
-                    eventRow("Community Meetup", date: "Jul 05")
-                    eventRow("Vinyl Listening Night", date: "Jul 19")
-                }
-                MacPanel(title: memberMode ? "Moderators" : "About") {
-                    Text(backendCircle?.placementReason ?? (memberMode ? "Your seeded host group keeps the room thoughtful." : community?.summary ?? "A seeded community from the validation database."))
-                        .font(MacType.body)
-                        .foregroundStyle(MacPalette.muted)
-                    tagWrap(themes)
-                }
-            }
-            if !memberMode {
-                Button {
-                    if let community {
-                        selectedCommunityId = community.id
-                    }
-                    navigate?(.communityMembers)
-                } label: {
+                    .frame(height: 250)
                     HStack(spacing: 8) {
-                        Image(systemName: "person.3.fill")
-                        Text("View members")
+                        Button(isJoined ? "Joined" : "Join") {
+                            guard let community else { return }
+                            selectedCommunityId = community.id
+                            Task {
+                                if isJoined {
+                                    await appState.leaveCommunity(id: community.id)
+                                    communityDetailStatus = "Left \(community.name)."
+                                } else {
+                                    await appState.joinCommunity(id: community.id)
+                                    communityDetailStatus = "Joined \(community.name)."
+                                }
+                            }
+                        }
+                        .buttonStyle(.plain)
+                        .font(MacType.small.weight(.semibold))
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 8)
+                        .background(.white.opacity(0.88), in: Capsule())
+                        .foregroundStyle(MacPalette.accent)
+                        .accessibilityLabel(isJoined ? "Leave community" : "Join community")
+                        .accessibilityValue(isJoined ? "Joined" : "Not joined")
+
+                        Button {
+                            communityDetailStatus = "Guidelines, sharing, and report tools are in the About card."
+                        } label: {
+                            Image(systemName: "ellipsis")
+                                .font(MacType.button)
+                                .padding(8)
+                                .background(.white.opacity(0.88), in: Circle())
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(MacPalette.accent)
+                        .accessibilityLabel("Community options")
                     }
-                    .font(MacType.button)
-                    .padding(.horizontal, 18)
-                    .padding(.vertical, 10)
-                    .background(MacPalette.accent, in: Capsule())
-                    .foregroundStyle(.white)
+                    .padding(18)
                 }
-                .buttonStyle(.plain)
+                .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+
+                HStack(spacing: 18) {
+                    statItem("person.2", "\(community?.membersCount ?? backendCircle?.membersOnline ?? 18) members")
+                    statItem("calendar", "Next meetup\nSat, Jul 5 - 7:00 PM")
+                    statItem("person.crop.circle", "Host\nMarco")
+                }
+                .padding(.vertical, 4)
+
+                HStack(spacing: 8) {
+                    ForEach(["Upcoming", "Members", "Resources", "Highlights"], id: \.self) { tab in
+                        Button(tab) { communityDetailTab = tab }
+                            .buttonStyle(.plain)
+                            .font(MacType.small.weight(.semibold))
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(communityDetailTab == tab ? MacPalette.accentSoft : .clear, in: Capsule())
+                            .foregroundStyle(communityDetailTab == tab ? MacPalette.accent : MacPalette.muted)
+                            .accessibilityValue(communityDetailTab == tab ? "Selected" : "Not selected")
+                    }
+                }
+
+                MacPanel(title: communityDetailTab) {
+                    communityDetailTabContent
+                }
             }
+            .frame(maxWidth: .infinity)
+
+            MacPanel(title: memberMode ? "Moderators" : "About") {
+                Text(backendCircle?.placementReason ?? (memberMode ? "Your seeded host group keeps the room thoughtful." : community?.summary ?? "A seeded community from the validation database."))
+                    .font(MacType.body)
+                    .foregroundStyle(MacPalette.muted)
+                Button("View guidelines") {
+                    communityDetailStatus = "Guidelines opened for \(community?.name ?? "this community")."
+                }
+                .buttonStyle(.bordered)
+                Text("You'll fit in if you:")
+                    .font(MacType.small.weight(.semibold))
+                    .foregroundStyle(MacPalette.ink)
+                    .padding(.top, 8)
+                VStack(alignment: .leading, spacing: 8) {
+                    Label("Love thoughtful conversations", systemImage: "checkmark.circle.fill")
+                    Label("Enjoy listening deeply", systemImage: "checkmark.circle.fill")
+                    Label("Value different perspectives", systemImage: "checkmark.circle.fill")
+                    Label("Share and support others", systemImage: "checkmark.circle.fill")
+                }
+                .font(MacType.small)
+                .foregroundStyle(MacPalette.accent)
+                if let communityDetailStatus {
+                    Text(communityDetailStatus)
+                        .font(MacType.small)
+                        .foregroundStyle(MacPalette.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .frame(width: 300)
         }
         .task {
-            if memberMode {
+            if memberMode, appState.circleDetail == nil {
                 await appState.fetchCircles()
             }
         }
+    }
+
+    @ViewBuilder
+    private var communityDetailTabContent: some View {
+        switch communityDetailTab {
+        case "Members":
+            Button("View members") {
+                if let community = selectedCommunity {
+                    selectedCommunityId = community.id
+                }
+                navigate?(.communityMembers)
+            }
+            .buttonStyle(.borderedProminent)
+        case "Resources":
+            eventRow("Community guidelines", date: "Pinned")
+            eventRow("Conversation prompts", date: "Updated weekly")
+        case "Highlights":
+            eventRow("Best essay thread", date: "12 replies")
+            eventRow("Most saved recommendation", date: "Vinyl listening")
+        default:
+            eventRow("Community Meetup", date: "Sat, Jul 5 - 7:00 PM", detail: "Jazz & Music Lounge, Koramangala")
+            eventRow("Vinyl Listening Night", date: "Sat, Jul 19 - 6:30 PM", detail: "Marco's Place")
+        }
+    }
+
+    private func statItem(_ icon: String, _ text: String) -> some View {
+        Label(text, systemImage: icon)
+            .font(MacType.small.weight(.semibold))
+            .foregroundStyle(MacPalette.muted)
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     // MARK: - 8. meetRecap
@@ -1492,6 +1737,110 @@ struct MacScreenView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
+    private var createCommunity: some View {
+        HStack(alignment: .top, spacing: 24) {
+            MacPanel(title: "Community details") {
+                VStack(alignment: .leading, spacing: 14) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Name")
+                            .font(MacType.small.weight(.semibold))
+                            .foregroundStyle(MacPalette.ink)
+                        TextField("Slow Sundays", text: $newCommunityName)
+                            .font(MacType.body)
+                            .textFieldStyle(.plain)
+                            .padding(12)
+                            .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 12))
+                            .overlay(RoundedRectangle(cornerRadius: 12).stroke(MacPalette.line, lineWidth: 1))
+                    }
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Summary")
+                            .font(MacType.small.weight(.semibold))
+                            .foregroundStyle(MacPalette.ink)
+                        TextField("What should this community help people do?", text: $newCommunitySummary, axis: .vertical)
+                            .font(MacType.body)
+                            .lineLimit(3...5)
+                            .textFieldStyle(.plain)
+                            .padding(12)
+                            .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 12))
+                            .overlay(RoundedRectangle(cornerRadius: 12).stroke(MacPalette.line, lineWidth: 1))
+                    }
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Themes")
+                            .font(MacType.small.weight(.semibold))
+                            .foregroundStyle(MacPalette.ink)
+                        TextField("Books, Rituals, Reflection", text: $newCommunityThemes)
+                            .font(MacType.body)
+                            .textFieldStyle(.plain)
+                            .padding(12)
+                            .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 12))
+                            .overlay(RoundedRectangle(cornerRadius: 12).stroke(MacPalette.line, lineWidth: 1))
+                    }
+                    Button(isCreatingCommunity ? "Creating" : "Create community") {
+                        submitCommunity()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(isCreatingCommunity || newCommunityName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || newCommunitySummary.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .accessibilityLabel("Create community")
+                    .accessibilityValue(createCommunityStatus ?? "Ready")
+
+                    if let createCommunityStatus {
+                        Text(createCommunityStatus)
+                            .font(MacType.small)
+                            .foregroundStyle(MacPalette.muted)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+            }
+            MacPanel(title: "Preview") {
+                communityCard(
+                    Community(
+                        id: "draft",
+                        name: newCommunityName.isEmpty ? "Community name" : newCommunityName,
+                        summary: newCommunitySummary.isEmpty ? "Summary appears here as members browse communities." : newCommunitySummary,
+                        themes: draftCommunityThemes,
+                        meetingFormat: "Member-led discussion",
+                        membersCount: 1
+                    ),
+                    index: 0,
+                    joined: true
+                )
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var draftCommunityThemes: [String] {
+        let themes = newCommunityThemes
+            .split(separator: ",")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+        return themes.isEmpty ? ["Community", "Discussion"] : Array(themes.prefix(3))
+    }
+
+    private func submitCommunity() {
+        let name = newCommunityName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let summary = newCommunitySummary.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !name.isEmpty, !summary.isEmpty else {
+            createCommunityStatus = "Add a name and summary before creating the community."
+            return
+        }
+        isCreatingCommunity = true
+        createCommunityStatus = nil
+        Task {
+            if let community = await appState.createCommunity(name: name, summary: summary, themes: draftCommunityThemes) {
+                selectedCommunityId = community.id
+                newCommunityName = ""
+                newCommunitySummary = ""
+                newCommunityThemes = ""
+                createCommunityStatus = "\(community.name) was created and added to your communities."
+                navigate?(.communityDetail)
+            } else {
+                createCommunityStatus = appState.communityError ?? "Community could not be created."
+            }
+            isCreatingCommunity = false
+        }
+    }
+
     // MARK: - 15. notifications
 
     private var notifications: some View {
@@ -1899,22 +2248,30 @@ struct MacScreenView: View {
         }
     }
 
-    private func eventRow(_ title: String, date: String) -> some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(MacType.button)
-                Text(date)
-                    .font(MacType.small)
+    private func eventRow(_ title: String, date: String, detail: String? = nil) -> some View {
+        Button {
+            if title.localizedCaseInsensitiveContains("Meetup") || title.localizedCaseInsensitiveContains("Night") {
+                navigate?(.createEvent)
+            }
+        } label: {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(MacType.button)
+                    Text([date, detail].compactMap { $0 }.joined(separator: "\n"))
+                        .font(MacType.small)
+                        .foregroundStyle(MacPalette.muted)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
                     .foregroundStyle(MacPalette.muted)
             }
-            Spacer()
-            Image(systemName: "chevron.right")
-                .foregroundStyle(MacPalette.muted)
         }
+        .buttonStyle(.plain)
         .padding(14)
         .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(MacPalette.line, lineWidth: 1))
+        .accessibilityLabel(title)
     }
 
     private func metricRow(_ items: [(String, String)]) -> some View {

@@ -13,7 +13,8 @@ const {
   computeCircleFit,
   matchCircles,
   shouldCreateNewCircle,
-  createCircleFromProfile
+  createCircleFromProfile,
+  generateId
 } = require("./lib/architecture");
 const { savePlacement, getAllPlacements, getPlacementsByProfile, saveTranscript, registerDevice, getDevice, getProfilesByDevice } = require("./lib/db");
 const { bearerToken, createSessionToken, verifyAppleIdentityToken, verifySessionToken } = require("./lib/auth");
@@ -693,6 +694,36 @@ async function handleRequest(req, res) {
 
   if (req.method === "GET" && url.pathname === "/v1/communities") {
     json(res, 200, { communities: Array.from(communities.values()).map(communitySummary) });
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname === "/v1/communities") {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    const body = await readJsonBody(req).catch(() => null);
+    const name = typeof body?.name === "string" ? body.name.trim() : "";
+    const summary = typeof body?.summary === "string" ? body.summary.trim() : "";
+    const themes = Array.isArray(body?.themes)
+      ? body.themes.map((theme) => String(theme).trim()).filter(Boolean).slice(0, 3)
+      : [];
+    if (!name || !summary) {
+      json(res, 400, { error: "invalid_community", message: "Community name and summary are required." });
+      return;
+    }
+    const community = {
+      id: `community-${generateId()}`,
+      name,
+      summary,
+      themes: themes.length > 0 ? themes : ["Community", "Discussion"],
+      meetingFormat: "Member-led discussion",
+      members: [user.id],
+      createdAt: new Date().toISOString(),
+      createdBy: user.id,
+      isArchetype: false
+    };
+    communities.set(community.id, community);
+    await joinCommunity(user.id, community.id);
+    json(res, 201, { community: communitySummary(community) });
     return;
   }
 

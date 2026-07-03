@@ -60,6 +60,7 @@ enum MacPrototypeScreen: String, CaseIterable, Identifiable {
     case profileSignals
     case circleDetail
     case settingsSoulmate
+    case createCommunity
 
     var id: String { rawValue }
 
@@ -83,7 +84,7 @@ enum MacPrototypeScreen: String, CaseIterable, Identifiable {
         switch self {
         case .welcome, .meetOverview, .meetRecap, .meetVideoCall, .notifications: .meet
         case .circlesRoom, .circleDetail: .circles
-        case .communitiesBrowse, .communityDetail, .communityMembers, .createEvent: .communities
+        case .communitiesBrowse, .communityDetail, .communityMembers, .createEvent, .createCommunity: .communities
         case .profileEdit, .myProfile, .profileOnboarding, .profileSignals, .settingsSoulmate: .profile
         case .chat, .soulmateOverview, .soulmateDiscover, .soulmateDetail, .messages: .soulmate
         }
@@ -106,6 +107,7 @@ enum MacPrototypeScreen: String, CaseIterable, Identifiable {
         case .soulmateDetail: "Meera, 27"
         case .communityMembers: "Jazz & Music Community"
         case .createEvent: "Create a new event"
+        case .createCommunity: "Create a community"
         case .messages: "Messages"
         case .notifications: "Notifications"
         case .profileOnboarding: "Let us get to know you better"
@@ -141,6 +143,7 @@ enum MacPrototypeScreen: String, CaseIterable, Identifiable {
         case .soulmateDetail: "Writer - Bangalore - 5 km away."
         case .communityMembers: "18 members - private."
         case .createEvent: "Bring people together around what you love."
+        case .createCommunity: "Start a focused room for people who share your interests."
         case .messages: "Your conversations and community threads."
         case .notifications: "Activity from circles, communities, and matches."
         case .profileOnboarding: "A few thoughtful details help us understand your vibe."

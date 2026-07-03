@@ -258,6 +258,18 @@ final class MacAppState: ObservableObject {
         }
     }
 
+    func createCommunity(name: String, summary: String, themes: [String]) async -> Community? {
+        do {
+            let community = try await client.createCommunity(name: name, summary: summary, themes: themes)
+            await fetchCommunities()
+            communityError = nil
+            return community
+        } catch {
+            communityError = "Community could not be created."
+            return nil
+        }
+    }
+
     func fetchCommunityMembers(id: String) async {
         guard isSignedIn else { return }
         do {

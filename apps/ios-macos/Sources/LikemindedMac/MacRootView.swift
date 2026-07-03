@@ -28,6 +28,9 @@ struct MacRootView: View {
                     .padding(.bottom, 18)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .overlay(alignment: .bottom) {
                 if appState.isSignedIn {
                     MacBottomNav(selectedTab: activeTab, soulmateEnabled: appState.soulmateEnabled) { tab in
                         returnScreen = nil
@@ -36,7 +39,6 @@ struct MacRootView: View {
                     .padding(.bottom, 18)
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .overlay(alignment: .topTrailing) {
                 if titleActionAvailable {
                     Button {
