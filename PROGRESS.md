@@ -8,11 +8,11 @@ Global `/Users/gurusharan/.codex/AGENTS.md` owns instruction control. This file 
 
 - Product redesign complete; product behavior lives in `docs/product-direction.md` and design language lives in `DESIGN.md`.
 - Phases 0-2 complete (auth, MVP loop, deterministic validation).
-- Phases 3-8 are the redesign build-out. TestFlight is Phase 9.
+- Phases 3-8 are complete. TestFlight readiness is Phase 9.
 - Existing auth, backend, Realtime voice, and mvp-store infrastructure stays.
 - Design system stays: warm cream canvas, deep green accent, SF typography.
 - Design language owner: `DESIGN.md`. Visual references: `mockups/ios/` and `mockups/macos/`.
-- Phase 8 Docs + Validation is the active local route. First command: `npm run phase:preflight -- 8`; use its validation order before deciding whether to commit or continue visual parity polish.
+- Phase 9 External TestFlight Readiness is the active local route. First command: `npm run phase:preflight -- 9`; use its unchecked items before touching external release setup.
 
 ## Phase 0 — Session Control And Graders
 

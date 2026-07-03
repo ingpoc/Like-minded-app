@@ -55,15 +55,16 @@ const progress = read("PROGRESS.md");
 const nextPhase = phaseSections(progress).find((phase) => phase.unchecked > 0);
 const activeCommand = activeFirstCommand(progress);
 const dirtyFirst = dirty.length > 0;
+const routeCommand = goal.status !== "completed" && activeCommand
+  ? activeCommand
+  : nextPhase
+    ? `npm run phase:preflight -- ${nextPhase.number}`
+    : "npm run verify:goal";
 const firstCommand = dirtyFirst
   ? "git status --short"
-  : activeCommand
-    ? activeCommand
-    : goal.status !== "completed"
+  : goal.status !== "completed" && !activeCommand
     ? `./script/project_context.sh query --task ${JSON.stringify(goal.goal)}`
-    : nextPhase
-      ? `npm run phase:preflight -- ${nextPhase.number}`
-      : "npm run verify:goal";
+    : routeCommand;
 
 console.log(`# Goal Next
 current_status: ${goal.status}
@@ -75,5 +76,5 @@ next_phase_unchecked: ${nextPhase ? nextPhase.unchecked : 0}
 first_command: ${firstCommand}`);
 
 if (dirtyFirst) {
-  console.log(`after_dirty_resolved: ${activeCommand || (nextPhase ? `npm run phase:preflight -- ${nextPhase.number}` : "npm run verify:goal")}`);
+  console.log(`after_dirty_resolved: ${routeCommand}`);
 }
