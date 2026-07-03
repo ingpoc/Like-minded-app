@@ -40,6 +40,13 @@ For native UI validation, do not use sparse local data as proof. Use `npm run ve
 
 `npm run verify:macos-screens` starts the validation API against `data/validation-db`, resets seeded validation data, builds `LikemindedMac`, launches each `MacPrototypeScreen` deterministically with Priya validation auth and `--mac-screen`, captures the real `Likeminded` app window under `output/validation/macos-screens/`, removes seeded data, and stops the validation API. Do not trust region screenshots unless the capture target is confirmed to be the app window; region fallback can capture Codex or the desktop.
 
+If you continue with iOS simulator runtime tapping after `npm run verify:macos-screens`, restart `npm run dev:api:validation` first.
+
+Runtime tapping checklist for interaction-heavy native changes:
+- Refresh `snapshot_ui` after navigation, sheet presentation, keyboard focus, or scroll before reusing element refs.
+- Tap the smallest critical path: Profile voice, Circles detail/back, Communities search/detail/join, Meet recap save, and Soulmate chat send.
+- Treat static screenshots and SwiftUI build success as insufficient when a button, text field, sheet, or custom card changed.
+
 `npm run verify:simulator-local` builds and installs the iOS simulator app, captures `output/validation/fresh-auth-gate.png`, starts a temporary empty local dev DB, captures `output/validation/local-dev-empty-onboarding.png`, then launches the DEBUG placement path and captures `output/validation/local-dev-auth-tabs.png`.
 
 `npm run verify:release-config` verifies TestFlight-critical static configuration:

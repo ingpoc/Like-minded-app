@@ -65,4 +65,4 @@ Phase 7.B closed remaining functional gaps on top of the 2026-07-02 backend conn
 1. Use `npm run verify:macos-screens` for current seeded macOS evidence; do not trust screenshots unless they capture the real `Likeminded` app window.
 2. Continue highest-impact visual parity polish from the current captures: Community Detail, Circle Detail, Settings/Soulmate, member/activity density, and generated/backend image fields.
 3. Replace placeholder gradient/person cards with real generated or backend-provided image fields before claiming visual parity.
-4. Re-run `npm run seed:validation-data`, `npm run verify:macos-screens`, and compare the regenerated contact sheet before Phase 8 validation closeout.
+4. Re-run `npm run seed:validation-data`, `npm run verify:macos-screens`, and compare the regenerated contact sheet before the next macOS visual parity claim.

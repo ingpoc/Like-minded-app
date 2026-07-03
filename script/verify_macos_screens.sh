@@ -124,3 +124,4 @@ done
 
 (cd "$ROOT_DIR" && npm run remove:validation-data >/tmp/likeminded-validation-remove.log)
 echo "macOS screen captures written to $OUT_DIR"
+echo "validation API is stopped on exit; restart npm run dev:api:validation before more iOS simulator tapping"
