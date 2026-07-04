@@ -284,7 +284,7 @@ Update docs to match shipped product. Run all graders.
 - [ ] Configure Apple Developer bundle id `com.likeminded.app`.
 - [ ] Enable Sign in with Apple capability for the app id.
 - [ ] Configure App Store Connect/TestFlight metadata and privacy policy.
-- [ ] Add `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` to `Info.plist` — required for LiveKit video + OpenAI Realtime audio.
+- [x] Add `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` to `Info.plist` — required for LiveKit video + OpenAI Realtime audio.
 - [x] Add repo-side account deletion readiness before wider beta: Settings entry on iOS and macOS, `DELETE /v1/me/account`, session revocation through user deletion, removal/anonymization of user-owned profile/placement/transcript/feedback/chat/meeting data, and runtime proof in `npm run smoke:mvp`. App Store Connect metadata still ships under the TestFlight metadata checklist above.
 - [ ] Build signed TestFlight candidate.
 

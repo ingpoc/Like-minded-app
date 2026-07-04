@@ -20,14 +20,14 @@
     "remove:validation-data": "LIKEMINDED_DB_DIR=${LIKEMINDED_VALIDATION_DB_DIR:-data/validation-db} node script/seed_validation_data.js remove",
     "reset:validation-data": "LIKEMINDED_DB_DIR=${LIKEMINDED_VALIDATION_DB_DIR:-data/validation-db} node script/seed_validation_data.js reset",
     "dev:macos:validation": "./script/run_macos_manual_validation.sh",
+    "audit:macos:prepare": "./script/macos_audit_prepare.sh",
+    "audit:macos:window": "./script/macos_audit_window_matrix.sh",
+    "audit:macos:snapshot": "node script/macos_audit_snapshot.js",
     "phase:preflight": "node script/phase_preflight.js",
-    "verify:macos-backend": "./scripts/verify-macos-backend.sh",
-    "verify:macos-screens-backend": "./scripts/verify-macos-screens-backend.sh",
-    "validate:macos-screens": "./scripts/validate-macos-screens.sh",
     "verify:macos-screens": "./script/verify_macos_screens.sh",
     "verify:simulator-local": "./script/verify_simulator_local.sh",
     "verify:external-preflight": "node script/verify_external_preflight.js",
-    "check": "node --check services/api/src/server.js && node --check services/api/src/migrate.js && node --check services/api/src/lib/model-placement.js && node --check services/api/src/lib/scheduling.js && node --check services/api/src/lib/livekit.js && node --check services/ai-orchestrator/src/index.js && node --check script/smoke_mvp.js && node --check script/replay_latest_profile.js && node --check script/seed_test_profiles.js && node --check script/seed_validation_data.js && bash -n script/run_macos_manual_validation.sh && node --check script/verify_release_config.js && node --check script/verify_goal_contract.js && node --check script/phase_preflight.js && node --check script/goal_next.js"
+    "check": "node --check services/api/src/server.js && node --check services/api/src/migrate.js && node --check services/api/src/lib/model-placement.js && node --check services/api/src/lib/scheduling.js && node --check services/api/src/lib/livekit.js && node --check services/ai-orchestrator/src/index.js && node --check script/smoke_mvp.js && node --check script/replay_latest_profile.js && node --check script/seed_test_profiles.js && node --check script/seed_validation_data.js && bash -n script/run_macos_manual_validation.sh && bash -n script/macos_audit_prepare.sh && bash -n script/macos_audit_window_matrix.sh && node --check script/macos_audit_snapshot.js && node --check script/verify_release_config.js && node --check script/verify_goal_contract.js && node --check script/phase_preflight.js && node --check script/goal_next.js"
   },
   "engines": {
     "node": ">=20"

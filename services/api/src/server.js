@@ -832,6 +832,41 @@ async function handleRequest(req, res) {
     return;
   }
 
+  if (req.method === "POST" && url.pathname === "/v1/meetings") {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    const body = await readJsonBody(req).catch(() => null);
+    const kind = String(body?.kind || "community");
+    const title = String(body?.title || "").trim();
+    const scheduledAt = String(body?.scheduledAt || "").trim();
+    const location = String(body?.location || "").trim();
+    const details = String(body?.details || "").trim();
+    const targetId = String(body?.targetId || "").trim();
+    if (!["circle", "community"].includes(kind) || !title || Number.isNaN(Date.parse(scheduledAt))) {
+      json(res, 400, { error: "invalid_meeting", message: "kind, title, and a valid scheduledAt are required." });
+      return;
+    }
+    const meeting = {
+      id: `meeting-${generateId()}`,
+      kind,
+      targetId: targetId || kind,
+      title,
+      scheduledAt,
+      hostUserId: user.id,
+      hostName: user.fullName || "Community host",
+      participantIds: [user.id],
+      groupSize: 1,
+      status: "scheduled",
+      location,
+      compositionSummary: details || "Member-hosted event.",
+      recapNotes: {},
+      createdAt: new Date().toISOString()
+    };
+    await saveMeeting(meeting);
+    json(res, 201, { meeting: meetingSummary(meeting, user.id) });
+    return;
+  }
+
   if (req.method === "POST" && url.pathname.match(/^\/v1\/meetings\/[^/]+\/recap-note$/)) {
     const user = await requireUser(req, res);
     if (!user) return;

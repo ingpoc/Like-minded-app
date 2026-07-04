@@ -15,8 +15,9 @@ sleep 4
 xcrun simctl io booted screenshot "$OUT_DIR/fresh-auth-gate.png"
 
 if curl -fsS http://127.0.0.1:8787/health >/dev/null 2>&1; then
-  echo "Port 8787 is already serving /health; stop the existing API before simulator validation." >&2
-  exit 1
+  echo "Port 8787 occupied — killing existing API" >&2
+  kill "$(lsof -ti :8787)" >/dev/null 2>&1 || true
+  sleep 1
 fi
 
 (
@@ -31,7 +32,7 @@ trap cleanup EXIT
 
 for _ in {1..20}; do
   if ! kill -0 "$api_pid" >/dev/null 2>&1; then
-    echo "Local auth API exited before becoming healthy. See $API_LOG" >&2
+    echo "Local auth API exited early. See $API_LOG" >&2
     exit 1
   fi
   if curl -fsS http://127.0.0.1:8787/health >/dev/null 2>&1; then
@@ -48,7 +49,18 @@ xcrun simctl launch --terminate-running-process booted "$BUNDLE_ID" --likeminded
 sleep 4
 xcrun simctl io booted screenshot "$OUT_DIR/local-dev-auth-tabs.png"
 
-echo "Local simulator validation screenshots:"
+# Validate screenshots
+ok=0
+for f in "$OUT_DIR"/fresh-auth-gate.png "$OUT_DIR"/local-dev-empty-onboarding.png "$OUT_DIR"/local-dev-auth-tabs.png; do
+  size=$(stat -f%z "$f" 2>/dev/null || echo 0)
+  if (( size < 10000 )); then
+    echo "WARN: $f is ${size}B — likely blank" >&2
+  else
+    ok=$((ok + 1))
+  fi
+done
+
+echo "Simulator captures: $ok/3 valid"
 echo "  $OUT_DIR/fresh-auth-gate.png"
 echo "  $OUT_DIR/local-dev-empty-onboarding.png"
 echo "  $OUT_DIR/local-dev-auth-tabs.png"

@@ -59,23 +59,26 @@ capture_likeminded_window() {
   local window_id
   local deadline=$((SECONDS + 10))
   while (( SECONDS < deadline )); do
-    window_id="$(python3 - <<'PY'
+    window_id="$(python3 -c "
 import Quartz
-
-windows = Quartz.CGWindowListCopyWindowInfo(
+for w in Quartz.CGWindowListCopyWindowInfo(
     Quartz.kCGWindowListOptionOnScreenOnly | Quartz.kCGWindowListExcludeDesktopElements,
-    Quartz.kCGNullWindowID,
-)
-for window in windows:
-    owner = window.get("kCGWindowOwnerName") or ""
-    bounds = window.get("kCGWindowBounds", {})
-    if owner.startswith("Likeminded") and bounds.get("Width", 0) > 400 and bounds.get("Height", 0) > 300:
-        print(window["kCGWindowNumber"])
-        break
-PY
-)"
+    Quartz.kCGNullWindowID):
+    o = w.get('kCGWindowOwnerName') or ''
+    b = w.get('kCGWindowBounds', {})
+    if o.startswith('Likeminded') and b.get('Width',0) > 400 and b.get('Height',0) > 300:
+        print(w['kCGWindowNumber']); break
+" 2>/dev/null)"
     if [[ -n "$window_id" ]]; then
       screencapture -x -l "$window_id" "$output_path"
+      local size
+      size=$(stat -f%z "$output_path" 2>/dev/null || echo 0)
+      if (( size < 10000 )); then
+        echo "Screenshot too small (${size}B) for $output_path — retrying" >&2
+        rm -f "$output_path"
+        sleep 0.5
+        continue
+      fi
       return 0
     fi
     sleep 0.5
@@ -85,6 +88,9 @@ PY
 }
 
 mkdir -p "$OUT_DIR"
+captured=0
+failed=0
+failed_screens=""
 if lsof -ti :"${PORT:-8787}" >/dev/null 2>&1; then
   kill "$(lsof -ti :"${PORT:-8787}")" >/dev/null 2>&1 || true
   sleep 1
@@ -100,7 +106,11 @@ xcodebuild \
   -scheme LikemindedMac \
   -destination 'platform=macOS' \
   -derivedDataPath "$DERIVED_DATA" \
-  build >/tmp/likeminded-macos-build.log
+  build >/tmp/likeminded-macos-build.log 2>&1 || {
+  echo "BUILD FAILED — see /tmp/likeminded-macos-build.log" >&2
+  tail -20 /tmp/likeminded-macos-build.log >&2
+  exit 1
+}
 
 for screen in "${screens[@]}"; do
   pkill -x LikemindedMac >/dev/null 2>&1 || true
@@ -119,9 +129,18 @@ with timeout of 3 seconds
   end tell
 end timeout
 APPLESCRIPT
-  capture_likeminded_window "$OUT_DIR/$screen.png"
+  if capture_likeminded_window "$OUT_DIR/$screen.png"; then
+    captured=$((captured + 1))
+  else
+    failed=$((failed + 1))
+    failed_screens="$failed_screens $screen"
+  fi
 done
 
 (cd "$ROOT_DIR" && npm run remove:validation-data >/tmp/likeminded-validation-remove.log)
-echo "macOS screen captures written to $OUT_DIR"
-echo "validation API is stopped on exit; restart npm run dev:api:validation before more iOS simulator tapping"
+echo "macOS captures: $captured/${#screens[@]} succeeded, $failed failed"
+if (( failed > 0 )); then
+  echo "Failed screens:$failed_screens" >&2
+  exit 1
+fi
+echo "Screenshots: $OUT_DIR"

@@ -308,6 +308,18 @@ final class MacAppState: ObservableObject {
         }
     }
 
+    func createMeeting(kind: String, targetId: String, title: String, scheduledAt: String, location: String, details: String) async -> Meeting? {
+        do {
+            let meeting = try await client.createMeeting(kind: kind, targetId: targetId, title: title, scheduledAt: scheduledAt, location: location, details: details)
+            await fetchMeetings()
+            meetingError = nil
+            return meeting
+        } catch {
+            meetingError = "Event could not be created."
+            return nil
+        }
+    }
+
     func saveMeetingRecapNote(meetingId: String, note: String) async {
         do {
             try await client.saveMeetingRecapNote(meetingId: meetingId, note: note)

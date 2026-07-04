@@ -26,6 +26,16 @@ struct MacScreenView: View {
     @State private var newCommunityThemes = ""
     @State private var createCommunityStatus: String?
     @State private var isCreatingCommunity = false
+    @State private var eventType = "Meetup"
+    @State private var eventName = "Saturday Jazz Listening Session"
+    @State private var eventDate = "2026-07-05"
+    @State private var eventTime = "19:00"
+    @State private var eventLocation = "Blue Tokai Coffee Roasters, Koramangala"
+    @State private var eventDetails = "Let's dive into some classic Coltrane and modern jazz. Bring your favorite tracks to share."
+    @State private var eventCoverAdded = false
+    @State private var eventTagsAdded = false
+    @State private var createEventStatus: String?
+    @State private var isCreatingEvent = false
     @State private var showDeleteAccountConfirm = false
     @State private var isDeletingAccount = false
     @State private var isCallMuted = false
@@ -1723,18 +1733,171 @@ struct MacScreenView: View {
     // MARK: - 14. createEvent
 
     private var createEvent: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            Text("Community-created events are coming soon.")
-                .font(MacType.title)
-                .foregroundStyle(MacPalette.ink)
-            Text("Today, Likeminded schedules circle and community meetups for you. Member-hosted events are on the roadmap once the placement loop matures.")
-                .font(MacType.body)
-                .foregroundStyle(MacPalette.muted)
-                .frame(maxWidth: 520, alignment: .leading)
-                .fixedSize(horizontal: false, vertical: true)
+        HStack(alignment: .top, spacing: 22) {
+            MacPanel(title: "Event type") {
+                VStack(spacing: 10) {
+                    eventTypeButton("Meetup", icon: "calendar.badge.plus", detail: "In-person or online gatherings")
+                    eventTypeButton("Listening Session", icon: "headphones", detail: "Listen together and discuss")
+                    eventTypeButton("Jam Session", icon: "music.note", detail: "Collaborate and make music")
+                    Spacer(minLength: 0)
+                }
+            }
+            .frame(width: 230)
+            .frame(maxHeight: .infinity, alignment: .top)
+
+            MacPanel(title: "Event details") {
+                VStack(alignment: .leading, spacing: 12) {
+                    labeledTextField("Event name", text: $eventName, placeholder: "Saturday Jazz Listening Session")
+                    HStack(spacing: 12) {
+                        labeledTextField("Date", text: $eventDate, placeholder: "2026-07-05")
+                        labeledTextField("Time", text: $eventTime, placeholder: "19:00")
+                            .frame(width: 130)
+                    }
+                    labeledTextField("Location", text: $eventLocation, placeholder: "Location")
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Details")
+                            .font(MacType.small.weight(.semibold))
+                        TextField("What should people know?", text: $eventDetails, axis: .vertical)
+                            .lineLimit(4...6)
+                            .font(MacType.body)
+                            .textFieldStyle(.plain)
+                            .padding(12)
+                            .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 12))
+                            .overlay(RoundedRectangle(cornerRadius: 12).stroke(MacPalette.line, lineWidth: 1))
+                    }
+                    HStack {
+                        Button(eventCoverAdded ? "Cover added" : "Add cover") {
+                            eventCoverAdded = true
+                            createEventStatus = "Jazz listening cover added to preview."
+                        }
+                        Button(eventTagsAdded ? "Tags added" : "Add tags") {
+                            eventTagsAdded = true
+                            createEventStatus = "Tags added from event type."
+                        }
+                    }
+                    if let createEventStatus {
+                        Text(createEventStatus)
+                            .font(MacType.small)
+                            .foregroundStyle(MacPalette.muted)
+                    }
+                    Spacer(minLength: 0)
+                }
+            }
+            .frame(maxHeight: .infinity, alignment: .top)
+
+            MacPanel(title: "Preview") {
+                VStack(alignment: .leading, spacing: 12) {
+                    Group {
+                        if eventCoverAdded {
+                            Image("EventJazzListening")
+                                .resizable()
+                                .scaledToFill()
+                        } else {
+                            LinearGradient(colors: [MacPalette.accent, MacPalette.sage], startPoint: .topLeading, endPoint: .bottomTrailing)
+                        }
+                    }
+                    .frame(height: 120)
+                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    Text(eventName.isEmpty ? "Event name" : eventName)
+                        .font(MacType.title)
+                        .foregroundStyle(MacPalette.ink)
+                    if eventTagsAdded {
+                        HStack(spacing: 6) {
+                            tagPill(eventType)
+                            tagPill("Community hosted")
+                        }
+                    }
+                    Text("\(eventDate) - \(eventTime)")
+                        .font(MacType.small)
+                        .foregroundStyle(MacPalette.muted)
+                    Text(eventLocation)
+                        .font(MacType.small)
+                        .foregroundStyle(MacPalette.muted)
+                    Text("1 member going")
+                        .font(MacType.small.weight(.semibold))
+                    Button(isCreatingEvent ? "Creating" : "Create event") {
+                        submitEvent()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(isCreatingEvent || eventName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    Spacer(minLength: 0)
+                }
+            }
+            .frame(width: 280)
+            .frame(maxHeight: .infinity, alignment: .top)
         }
-        .padding(40)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+    }
+
+    private func eventTypeButton(_ title: String, icon: String, detail: String) -> some View {
+        Button { eventType = title } label: {
+            HStack(spacing: 10) {
+                Image(systemName: icon)
+                    .frame(width: 24)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(MacType.button)
+                    Text(detail)
+                        .font(MacType.small)
+                        .foregroundStyle(MacPalette.muted)
+                }
+                Spacer()
+            }
+            .padding(12)
+            .background(eventType == title ? MacPalette.accentSoft.opacity(0.7) : MacPalette.surface, in: RoundedRectangle(cornerRadius: 12))
+            .overlay(RoundedRectangle(cornerRadius: 12).stroke(eventType == title ? MacPalette.accent : MacPalette.line, lineWidth: 1))
+        }
+        .buttonStyle(.plain)
+        .accessibilityValue(eventType == title ? "Selected" : "Not selected")
+    }
+
+    private func tagPill(_ title: String) -> some View {
+        Text(title)
+            .font(MacType.small.weight(.semibold))
+            .foregroundStyle(MacPalette.accent)
+            .padding(.horizontal, 9)
+            .padding(.vertical, 5)
+            .background(MacPalette.accentSoft.opacity(0.55), in: Capsule())
+    }
+
+    private func labeledTextField(_ label: String, text: Binding<String>, placeholder: String) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(label)
+                .font(MacType.small.weight(.semibold))
+            TextField(placeholder, text: text)
+                .font(MacType.body)
+                .textFieldStyle(.plain)
+                .padding(12)
+                .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 12))
+                .overlay(RoundedRectangle(cornerRadius: 12).stroke(MacPalette.line, lineWidth: 1))
+        }
+    }
+
+    private func submitEvent() {
+        let title = eventName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !title.isEmpty else {
+            createEventStatus = "Add an event name before creating."
+            return
+        }
+        isCreatingEvent = true
+        createEventStatus = nil
+        let targetId = selectedCommunity?.id ?? appState.joinedCommunities.first?.id ?? "community"
+        Task {
+            if let meeting = await appState.createMeeting(
+                kind: "community",
+                targetId: targetId,
+                title: title,
+                scheduledAt: "\(eventDate)T\(eventTime):00+05:30",
+                location: eventLocation,
+                details: "\(eventType): \(eventDetails)"
+            ) {
+                selectedRecapMeetingId = meeting.id
+                createEventStatus = "\(meeting.title) was created."
+            } else {
+                createEventStatus = appState.meetingError ?? "Event could not be created."
+            }
+            isCreatingEvent = false
+        }
     }
 
     private var createCommunity: some View {

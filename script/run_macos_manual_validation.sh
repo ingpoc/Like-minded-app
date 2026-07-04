@@ -15,7 +15,7 @@ if ! curl -fsS "http://127.0.0.1:${PORT:-8787}/health" >/dev/null 2>&1; then
   exit 1
 fi
 
-(cd "$ROOT_DIR" && npm run reset:validation-data)
+(cd "$ROOT_DIR" && npm run reset:validation-data >/dev/null 2>&1)
 
 if [[ ! -d "$APP_PATH" ]]; then
   (cd "$IOS_DIR" && xcodegen generate)

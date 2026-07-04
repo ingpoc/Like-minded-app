@@ -12,22 +12,24 @@ struct MacRootView: View {
                 .ignoresSafeArea()
 
             VStack(spacing: 0) {
-                ScrollView(.vertical, showsIndicators: true) {
-                    VStack(spacing: 18) {
-                        MacScreenView(screen: selectedScreen, appState: appState) { destination in
-                            if destination == .messages {
-                                returnScreen = selectedScreen
+                GeometryReader { proxy in
+                    ScrollView(.vertical, showsIndicators: true) {
+                        VStack(spacing: 18) {
+                            MacScreenView(screen: selectedScreen, appState: appState) { destination in
+                                if destination == .messages {
+                                    returnScreen = selectedScreen
+                                }
+                                selectedScreen = destination
                             }
-                            selectedScreen = destination
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .frame(maxWidth: .infinity, minHeight: max(0, proxy.size.height - (appState.isSignedIn ? 170 : 72)), alignment: .top)
+                        .padding(.horizontal, 28)
+                        .padding(.top, 54)
+                        .padding(.bottom, appState.isSignedIn ? 116 : 18)
                     }
-                    .frame(maxWidth: .infinity, alignment: .top)
-                    .padding(.horizontal, 28)
-                    .padding(.top, 54)
-                    .padding(.bottom, 18)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .overlay(alignment: .bottom) {
