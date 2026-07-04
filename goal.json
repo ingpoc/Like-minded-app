@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "status": "active",
+  "status": "completed",
   "purpose": "Per-session execution goal. Copy this file to goal.json at session start, set the current goal, and keep graders/validation/agent routing current when files or commands change.",
-  "goal": "Track — macOS Visual Parity + Ledger Closeout: thematic covers and typography vs mockups/macos, drive remaining validation/macos/*.json controls to pass/fail with CUA on validation-priya, keep JSON as control-status owner. Phase 9 External TestFlight is the next numbered release route after this track's dirty work is committed — do not start Neon/Render/Apple setup while macOS ledger/doodle owners are dirty.",
+  "goal": "Track — iOS Ledger Honesty: close validation/ios/*.json fail/pending rows (6 fail, 21 pending) with simulator proof; JSON is control-status owner. Phase 9 External TestFlight remains the numbered release route after iOS ledger gaps are owned in PROGRESS.md.",
   "ultimate_goal_source": "GOAL.md",
   "progress_source": "PROGRESS.md",
   "workflow_refs": [

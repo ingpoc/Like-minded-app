@@ -15,4 +15,5 @@ __pycache__/
 codex.js
 .codex/proof/
 output/validation/
+output/doodle-art/
 release/testflight-evidence.json
