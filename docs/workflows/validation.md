@@ -1,164 +1,66 @@
 # Validation
 
-## Control Owner
+Global `AGENTS.md` owns instruction control. Commands and control owners only.
 
-Global `/Users/gurusharan/.codex/AGENTS.md` owns instruction control. This workflow describes validation commands only.
+## Lazy retrieval
 
-Validation contract for Like-minded-app.
+1. `npm run goal:next`
+2. `npm run ledger:open` — gap audits / pending work (`ledger:stale` after source edits)
+3. Touch **only** open ledger JSON files + active `PROGRESS.md` track section
 
-## Current State
+Do not load `GOAL.md`, `DESIGN.md`, full `PROGRESS.md`, mockup dirs, or source trees for status questions.
 
-Repo-local validation starts with Node syntax checks and the MVP smoke grader:
+## Control owners
 
-```sh
-npm run phase:preflight -- <phase-number>
-npm run check
-npm run smoke:mvp
-npm run verify:release-config
-npm run verify:goal
-npm run verify:macos-screens
-npm run verify:simulator-local
-```
+| What | Owner |
+|------|--------|
+| Control status, success criteria, evidence | `validation/{ios,macos}/*.json` |
+| Roadmap checkbox | `PROGRESS.md` active track |
+| Index (regenerate) | `node validation/_generate.js` → `validation/README.md` |
+| macOS routing / intentional variations | `docs/references/macos-screen-audit.md` — **no status table** |
 
-`npm run smoke:mvp` starts the API on a temporary localhost port with `APPLE_AUTH_BYPASS=1`, uses a temporary local JSON data directory, and verifies:
-- unauthenticated MVP write/read routes return `401`,
-- dev Apple auth returns a session token,
-- authenticated Realtime SDP reaches the backend and reports `openai_api_key_missing` when no local OpenAI key is configured,
-- macOS prototype screens build through the `LikemindedMac` scheme when `apps/ios-macos/project.yml` or `Sources/LikemindedMac` changes,
-- authenticated discovery creates a profile and placement,
-- authenticated Realtime `submit_profile_placement` payloads create and resume a persisted profile and placement,
-- resume endpoints return the signed-in user's data,
-- placement defer, swap, and accept persist,
-- feedback stores,
-- a second tester cannot read the first tester's placement.
+**Actionable** = `fail`, `pending`, empty `controls`, `stale_pass` (hash mismatch), or `blocked` with automation-unavailable wording (not LiveKit/Apple infra).
 
-Use `npm run dev:api:validation` for repeatable local flow testing. It attaches the API to `data/validation-db` through `LIKEMINDED_DB_DIR`, enables local Apple auth bypass, and leaves the normal local database untouched.
+`npm run verify:ledger-progress` — open controls need unchecked `PROGRESS.md` owners.
 
-Run `npm run reset:validation-data` only when intentionally refreshing seeded validation data; it is not part of the default validation sequence. It removes local validation users, profiles, meetings, memberships, soulmate matches, and messages from the attached local database, then reseeds them through the API. Use `npm run seed:validation-data` to seed only, and `npm run remove:validation-data` to clean up after seeded evidence is captured. Removal is local-only and refuses `DATABASE_URL`. For empty database or real-user local testing, use the normal API/database path instead of `dev:api:validation`.
+## Commands (by need)
 
-For native UI validation, do not use sparse local data as proof. Use `npm run verify:macos-screens` for seeded macOS validation DB screenshots and `npm run verify:simulator-local` for iOS fresh auth, empty-dev-db onboarding, and DEBUG placement screenshots. Do not claim iOS/macOS behavior is seamless until both surfaces show the expected seeded user state, tab ownership, settings/soulmate behavior, profile placement, meetings, communities, messages, and empty/error states.
+| Need | Command |
+|------|---------|
+| Route | `npm run goal:next` |
+| Open controls | `npm run ledger:open` / `ledger:stale` |
+| Syntax | `npm run check` |
+| API contract | `npm run smoke:mvp` |
+| Release static | `npm run verify:release-config` |
+| Goal contract | `npm run verify:goal` |
+| macOS captures | `npm run verify:macos-screens` |
+| iOS simulator | `npm run verify:simulator-local` |
+| Seeded API | `npm run dev:api:validation` |
+| Reset seed | `npm run reset:validation-data` |
+| macOS CUA | `./script/macos_audit_prepare.sh` → `./script/macos_cua_screen.sh <screen>` |
+| Phase checklist | `npm run phase:preflight -- <N>` |
+| External gate | `npm run verify:external-preflight` |
+| Hash refresh | `npm run ledger:refresh-hashes` |
+| Record CUA | `node script/ledger_record_control.js` / `ledger_stamp_screen.js` |
 
-`npm run verify:macos-screens` starts the validation API against `data/validation-db`, resets seeded validation data, builds `LikemindedMac`, launches each `MacPrototypeScreen` deterministically with Priya validation auth and `--mac-screen`, captures the real `Likeminded` app window under `output/validation/macos-screens/`, removes seeded data, and stops the validation API. Do not trust region screenshots unless the capture target is confirmed to be the app window; region fallback can capture Codex or the desktop.
+## Ledger fields
 
-If you continue with iOS simulator runtime tapping after `npm run verify:macos-screens`, restart `npm run dev:api:validation` first.
+- Screen `source_hash` — from `source_files`; refresh after Swift edits.
+- Control `expected` — success criteria; `result` — pass/fail/blocked/pending.
+- `last_tested_at`, `tested_source_hash`, `last_test_method` — set on proof; `pass` stale when hash differs.
 
-Runtime tapping checklist for interaction-heavy native changes:
-- Refresh `snapshot_ui` after navigation, sheet presentation, keyboard focus, or scroll before reusing element refs.
-- Tap the smallest critical path: Profile voice, Circles detail/back, Communities search/detail/join, Meet recap save, and Soulmate chat send.
-- Treat static screenshots and SwiftUI build success as insufficient when a button, text field, sheet, or custom card changed.
+## Rules
 
-`npm run verify:simulator-local` builds and installs the iOS simulator app, captures `output/validation/fresh-auth-gate.png`, starts a temporary empty local dev DB, captures `output/validation/local-dev-empty-onboarding.png`, then launches the DEBUG placement path and captures `output/validation/local-dev-auth-tabs.png`.
+1. Fail/stub → keep unchecked `PROGRESS` owner in same session.
+2. Never claim ledger-green while actionable rows exist (unless track owns them).
+3. Update JSON + PROGRESS; do not add narrative status tables elsewhere.
+4. While `macos_cua_screen.sh` exists, do not claim GUI automation unavailable in evidence.
+5. `README.md` defers Phase 9 until `goal:next` shows clean tracks.
 
-`npm run verify:release-config` verifies TestFlight-critical static configuration:
-- bundle id is `com.likeminded.app`, not the old prototype id,
-- Sign in with Apple entitlement exists,
-- microphone purpose and API base URL config exist,
-- Realtime calls use the authenticated API client path instead of hardcoded localhost,
-- Render env placeholders include database, session, OpenAI, and Apple settings with `APPLE_AUTH_BYPASS=0`,
-- the TestFlight privacy policy draft exists.
+## Delegated verification
 
-`npm run verify:external-preflight` verifies real external proof has been recorded in `release/testflight-evidence.json`. It should fail before Render, Neon, Apple Developer, App Store Connect, signed TestFlight, and real spoken-audio proof are complete.
+`validation-release` agent (`gpt-5.4-mini`, medium) for read-heavy simulator/screenshot runs only. Main thread owns product decisions and file edits.
 
-`npm run verify:goal` verifies the per-session goal contract:
-- `goal.json` and `goal.template.json` exist and point to `GOAL.md` plus `PROGRESS.md`,
-- deterministic grader commands are current,
-- simulator validation is assigned to `validation-release`,
-- validation-release is pinned to `gpt-5.4-mini` at `medium` effort,
-- completion requires setting `goal.json.status` to `completed` and committing that `goal.json` with the validated session changes,
-- rubric weights are valid.
+## Update this file when
 
-`npm run phase:preflight -- <phase-number>` is a pre-edit routing aid, not a completion grader. It prints unchecked items from the scoped `PROGRESS.md` phase, a phase-specific stale-name gate when one exists, the validation order with simulator validation last, the canonical XcodeGen command, and untracked Markdown docs under `docs/` that can break docs lint if they lack `## Control Owner`.
-
-The API health endpoint can be checked manually after setting a 24+ character `SESSION_SECRET` in `.env.local` and starting `npm run dev:api`. For local signed-in simulator validation without editing `.env.local`, use `npm run dev:api:local-auth`:
-
-```sh
-curl http://127.0.0.1:8787/health
-curl http://127.0.0.1:8787/v1/system/architecture
-curl http://127.0.0.1:8787/v1/recommendations/communities/mock
-curl -X POST http://127.0.0.1:8787/v1/realtime/session -H 'content-type: application/json' -H 'authorization: Bearer <session-token>' -d '{"safetyIdentifier":"dev-preview-user"}'
-curl -X POST http://127.0.0.1:8787/v1/profiles/synthesize -H 'content-type: application/json' -d '{"promptSummary":"User wants deep conversation and emotionally honest friendships."}'
-curl -X POST http://127.0.0.1:8787/v1/mvp/reflect-place-connect -H 'content-type: application/json' -d '{"reflectionAnswers":["I want warmer conversations","I prefer small honest circles"]}'
-```
-
-The realtime session check returns `401` without an app session and `openai_api_key_missing` until `OPENAI_API_KEY` is configured on the API server. With a valid session and key, it should return an OpenAI Realtime client secret. Production defaults to `gpt-realtime-2`; local cost-sensitive testing should start the API with `npm run dev:api:realtime-test`, which uses `gpt-realtime-1.5`.
-
-The standalone Swift typecheck does not resolve the `LiveKitWebRTC` Swift package. Use the XcodeGen build path for native validation:
-
-```sh
-./script/build_and_run.sh --verify
-```
-
-Expected first-run simulator evidence:
-- the app launches as bundle id `com.likeminded.app`,
-- the first screen is the Sign in with Apple gate,
-- prototype tabs are hidden before auth,
-- the Sign in with Apple entitlement is present,
-- the microphone purpose string is present.
-- the empty local dev DB path can reach Profile onboarding without seeded user data.
-
-After a real Apple sign-in and API configuration, validate the placement loop on simulator or device:
-- Profile starts Realtime voice,
-- stopping voice creates a persisted profile and circle placement,
-- relaunch restores the latest placement,
-- Circles accept/swap/defer updates through the backend,
-- Profile edits and feedback submit without mock fallback data.
-
-Simulator validation proves the app shell, entitlement, launch, and UI state path. Real spoken profile-signal quality still needs device or simulator audio-input testing with an audible utterance.
-
-## Before Claiming Readiness
-
-1. Re-inventory the repo with `rg --files`.
-2. For non-trivial work, confirm `./script/project_context.sh query --task "<current task>"` was run before acting and that applicable returned decisions were used.
-3. For phase-scoped work, run `npm run phase:preflight -- <phase-number>` before edits and use its unchecked items as the acceptance checklist.
-4. Run the stale-name gate from preflight before final validation.
-5. Regenerate the Xcode project only with `(cd apps/ios-macos && xcodegen generate)`.
-6. For macOS target or prototype-screen changes, run `npm run verify:macos-screens`.
-7. If a manifest exists, use the package manager or toolchain declared by the repo.
-8. If tests, lint, typecheck, or build scripts exist, run the narrowest command that proves the change.
-9. Run `npm run check` for JavaScript syntax validation.
-10. Run `npm run smoke:mvp` for the zero-token backend MVP contract.
-11. Run `npm run verify:release-config` for static TestFlight config invariants.
-12. Run `npm run verify:goal` after changing goal, progress, validation, grader, or agent-routing files.
-13. Run `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs lint` after docs or workflow changes.
-14. Use `npm run dev:api:validation` plus `npm run reset:validation-data` for manual repeatable backend flow validation; `npm run verify:macos-screens` owns this setup for macOS screenshots.
-15. If native SwiftUI files, project spec, entitlements, or simulator script changed, run `npm run verify:simulator-local` last.
-16. Capture or inspect a simulator screenshot when UI gating/navigation changed.
-17. For local signed-in simulator navigation without Apple account UI, run `npm run verify:simulator-local`; this proves local app/auth routing and deterministic transcript-to-placement persistence, not real Apple sign-in or spoken audio quality.
-18. After validation passes, set `goal.json.status` to `completed`, record the completion commit evidence, and commit the validated session changes including that session's `goal.json`.
-19. Before marking the full TestFlight goal complete, run `npm run verify:external-preflight`.
-20. If no deeper validation command exists for a touched surface, report that clearly and provide deterministic evidence such as file inventory, syntax checks, or generated artifact inspection.
-
-## Delegated Verification
-
-Use the project `validation-release` agent pinned to `gpt-5.4-mini` with `medium` effort when validation is read-heavy, repeatable, screenshot-based, or likely to produce long logs. Keep product and architecture decisions in the main thread.
-
-Allowed delegated work:
-- run `npm run check`, `npm run smoke:mvp`, `npm run verify:release-config`, `npm run verify:goal`, `npm run verify:simulator-local`, `npm run migrate:api`, and `workflow lint`;
-- inspect simulator screenshots for first-run gate, visible tabs, obvious blank screens, and launch state;
-- summarize failures with exact command, failing assertion, likely owner file, and the smallest suggested fix.
-
-Forbidden delegated work:
-- change product scope, API contracts, auth policy, persistence strategy, model choice, bundle id, deployment provider, or TestFlight criteria;
-- weaken or delete deterministic assertions to make a check pass;
-- enable `APPLE_AUTH_BYPASS=1` outside isolated local API smoke tests;
-- touch secrets, external accounts, Render, Neon, Apple Developer, App Store Connect, or production data;
-- edit files unless the main thread explicitly assigns a bounded fix.
-
-Default main-thread rule: first make the path work, then verify and validate, then remove stale confusing artifacts, then simplify, then automate. If the validation agent finds an issue, the main thread owns whether to fix it directly or delegate a bounded file-level patch.
-
-## Update Triggers
-
-Update this workflow when:
-- a package manager is selected
-- build, lint, typecheck, or test scripts are added
-- CI configuration appears
-- browser verification becomes required
-- the default simulator device or iOS project shape changes
-
-## Output Contract
-
-Report:
-- commands run
-- pass/fail result
-- relevant failure lines
-- any validation gaps that remain
+Commands, ledger schema, or control-owner paths change—not for per-screen status (that lives in JSON).

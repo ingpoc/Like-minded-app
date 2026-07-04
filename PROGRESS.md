@@ -8,11 +8,14 @@ Global `/Users/gurusharan/.codex/AGENTS.md` owns instruction control. This file 
 
 - Product redesign complete; product behavior lives in `docs/product-direction.md` and design language lives in `DESIGN.md`.
 - Phases 0-2 complete (auth, MVP loop, deterministic validation).
-- Phases 3-8 are complete. TestFlight readiness is Phase 9.
+- Phases 3-8 (numbered) are complete as phase checklists; open control work remains under the macOS and iOS ledger tracks below. Phase 9 is the next numbered release route only after those tracks are clean — do not start external Neon/Render/Apple setup while ledger owners are open or dirty (see root `README.md` Active route).
 - Existing auth, backend, Realtime voice, and mvp-store infrastructure stays.
 - Design system stays: warm cream canvas, deep green accent, SF typography.
 - Design language owner: `DESIGN.md`. Visual references: `mockups/ios/` and `mockups/macos/`.
-- Phase 9 External TestFlight Readiness is the active local route. First command: `npm run phase:preflight -- 9`; use its unchecked items before touching external release setup.
+- **Track — macOS Visual Parity + Ledger Closeout** is the active local route while ledger/doodle/visual owners are open or dirty. First command: `./script/macos_audit_prepare.sh`; control-status owner is `validation/macos/*.json` only (no sibling `.md` ledgers). Track owner doc: `docs/references/macos-screen-audit.md` (routing + evidence pointers, not a second status table).
+- **Track — iOS Ledger Honesty** owns open `validation/ios/*.json` fail/pending rows (Phase 8 manual-proof checkboxes are historical, not ledger-green).
+- Ledger ↔ PROGRESS gate: `npm run verify:ledger-progress` (also via `npm run verify:goal`); `npm run goal:next` prints `ledger_*` ownership lines. Do not check off tracks while actionable open controls lack unchecked owners.
+- Phase 9 External TestFlight Readiness is the next numbered release route after this track's session work is committed. First command when focusing Phase 9 only: `npm run phase:preflight -- 9`.
 
 ## Phase 0 — Session Control And Graders
 
@@ -217,7 +220,7 @@ Tab restructure, custom tab bar, animation system, material backgrounds.
 
 ## Phase 7.B — Functional Gap Closure (Pre-Phase 8)
 
-Close the functional gap between DESIGN.md/product-direction and the shipped iOS + macOS apps so the seeded validation DB exercises real functionality, not static placeholders. Visual/mockup pixel-parity is deferred to a later phase.
+Close the functional gap between DESIGN.md/product-direction and the shipped iOS + macOS apps so the seeded validation DB exercises real functionality, not static placeholders. Visual/mockup pixel-parity and remaining decorative stubs are owned by **Track — macOS Visual Parity + Ledger Closeout** and **Track — iOS Ledger Honesty** (not by this historical phase checkbox set).
 
 ### Part A — Wire-up fixes on existing screens
 
@@ -237,13 +240,13 @@ Close the functional gap between DESIGN.md/product-direction and the shipped iOS
 - [x] iOS post-meet recap: enhance `PastMeetDetailView` with host, group size, composition, private reflection note, and a "Select connections" action that opens `SoulmateSelectionDialog` when soulmate is enabled.
 - [x] Backend `GET /v1/communities/:id/members` route + `getCommunityMembers` in `mvp-store.js` (returns names + gender only; no hidden signals).
 - [x] macOS community members screen: replace hardcoded demo roster with real backend members via `MacAppState.fetchCommunityMembers`.
-- [x] macOS create event: replace the no-op static form with an honest "Coming soon" placeholder (community-created events are a deferred feature).
+- [x] macOS create event: functional community meet creation via `POST /v1/meetings` from `createEvent` (event type pills, live preview, optional cover/tags, create persists without navigation drift). Visual reference: `mockups/macos/22-create-event.png`. Evidence: `validation/macos/10-create-event.json` on seeded validation DB. Open: SwiftUI text-field typing proof where Computer Use cannot mutate focused fields.
 - [x] macOS deep screens reachable in-app: add `navigate` closure to `MacScreenView` and wire entry points (past meetup → recap, community card → detail → members, soulmate match → detail → chat).
 
 ### Part C — Validation + docs
 
 - [x] Extend `smoke_mvp.js` to cover `GET /v1/me/notifications` and `GET /v1/communities/:id/members`.
-- [x] Update `docs/references/macos-screen-audit.md` to reflect functional parity (visual parity deferred).
+- [x] Update `docs/references/macos-screen-audit.md` for backend wire-up evidence (visual parity and remaining stubs deferred to the macOS track; JSON ledgers are status owner).
 - [x] Update `goal.json` + `goal.template.json` to the Phase 7.B goal.
 - [x] Run full grader suite.
 
@@ -266,7 +269,7 @@ Update docs to match shipped product. Run all graders.
 - [x] `./script/build_and_run.sh --verify` — builds and launches with new tab structure, LiveKit dependency, new views.
 - [x] `npm run verify:macos-screens` — all 20 MacPrototypeScreens captured to `output/validation/macos-screens/`.
 - [x] All deterministic graders pass (node_syntax, mvp_backend_contract, release_static_config, goal_contract, repo_docs_lint, validation_data_lifecycle, macos_screen_capture).
-- [x] Manual proofs (device/simulator verification, not automatable):
+- [x] Manual proofs — **iOS** (historical Phase 8 session evidence only; not ledger-green): open fail/pending rows are owned by **Track — iOS Ledger Honesty** and `validation/ios/*.json`. Do not treat these checkboxes as current control coverage.
   - [x] Onboarding wizard flows into voice profile; runtime tap covers name, gender/default, date, city, pincode, and final Start voice profile.
   - [x] Profile shows backend profile details, trait bars, interests, and a voice orb/status sheet with Stop/Done controls.
   - [x] Circles shows your circle + available circles + concern button; runtime tap also opens circle detail and Back after the card-navigation fix.
@@ -305,6 +308,28 @@ Update docs to match shipped product. Run all graders.
 - [ ] macOS group video call parity: `mockups/macos/21-meet-video-call.png` is implemented, `Join meetup` calls `POST /v1/meetings/:id/join`, the app opens an in-app LiveKit room with camera on and mute/leave controls, and runtime proof records the seeded validation API path.
 - [x] macOS Settings rows are honest: Account/Soulmate controls are real, destructive account actions open confirmations, and Privacy & safety, Notifications, Voice profile, Connected apps, Appearance, Language, and Help & support are muted/static labels instead of selectable-looking no-op rows.
 - [ ] A second tester cannot access the first tester's profile, placement, or chat.
+
+## Track — macOS Visual Parity + Ledger Closeout
+
+Parallel to Phase 9; not a numbered phase. Owner: `docs/references/macos-screen-audit.md`. First command when focusing this track: `./script/macos_audit_prepare.sh` then `./script/run_macos_manual_validation.sh <screen>` or `./script/macos_cua_screen.sh`.
+
+- [x] Manual proofs — **macOS**: infra-only blockers remain (welcome Apple sign-in, meet video LiveKit join); all other `validation/macos/*.json` controls pass/fail/blocked with CUA on validation-priya.
+- [x] macOS validation ledgers: drive `validation/macos/*.json` controls to pass/fail/blocked with runtime evidence (JSON is the only status owner). Closed: chat/messages, soulmate discover/detail, profile surfaces, communities browse typing, create-event typing, meet recap note, create-community (`22-create-community.json`). Remaining infra: welcome Apple sign-in, meet video (Phase 10).
+- [x] macOS profile honesty: `profileEdit` / `profileOnboarding` / personality signal cards use backend profile data or honest static labels; CUA evidence in `validation/macos/05-profile-edit.json`, `12-my-profile.json`, `13-profile-onboarding.json`, `14-profile-signals.json`.
+- [x] macOS soulmate discover/detail honesty: fake distance/filter/compatibility chrome removed; match cards use API fields; CUA evidence in `validation/macos/15-soulmate-overview.json`, `16-soulmate-discover.json`, `17-soulmate-detail.json`.
+- [x] macOS community members honesty: sidebar/filter pills/member rows wired or demoted; search proven; CUA evidence in `validation/macos/09-community-members.json`.
+- [x] Re-CUA all macOS controls still `pending` for CUA (chat, messages, soulmate, share-profile, onboarding continue, members search, communities search, recap note, create-event fields) using `./script/macos_cua_screen.sh`.
+- [x] macOS create-community form ledger: `validation/macos/22-create-community.json` controls for name/summary/themes/submit driven to pass with CUA.
+- [x] macOS visual parity vs `mockups/macos/` and per-screen refs in `docs/references/macos-screen-audit.md`; regenerate `output/validation/macos-screens/` via `npm run verify:macos-screens` after UI polish.
+- [x] macOS create event layout parity vs `mockups/macos/22-create-event.png` at default, smaller, and maximized window sizes with traffic lights visible.
+
+## Track — iOS Ledger Honesty (post–Phase 8)
+
+Phase 8 marked iOS manual proofs complete, but `validation/ios/*.json` still has open fail/pending rows. Close these before claiming production-grade iOS control coverage.
+
+- [ ] iOS Leave circle: wire a real leave/placement action or remove/honestly disable the control; evidence in `validation/ios/11-circle-detail.json`.
+- [ ] iOS past-meet row navigation: fix Meet past-row → recap; evidence in `validation/ios/07-meet.json`.
+- [ ] iOS ledger closeout: drive all `validation/ios/*.json` pending controls to pass/fail/blocked (onboarding, Sunday RSVP, past-meet detail, soulmate selection, settings rows, profile concern); JSON is status owner.
 
 ## Deferred
 

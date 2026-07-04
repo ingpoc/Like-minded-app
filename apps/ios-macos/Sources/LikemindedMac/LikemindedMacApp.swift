@@ -28,13 +28,13 @@ struct LikemindedMacApp: App {
                 }
                 .keyboardShortcut("3", modifiers: .command)
 
-                Button("Profile") {
-                    NotificationCenter.default.post(name: .macPrototypeSelectProfile, object: nil)
+                Button("Soulmate") {
+                    NotificationCenter.default.post(name: .macPrototypeSelectSoulmate, object: nil)
                 }
                 .keyboardShortcut("4", modifiers: .command)
 
-                Button("Soulmate") {
-                    NotificationCenter.default.post(name: .macPrototypeSelectSoulmate, object: nil)
+                Button("Profile") {
+                    NotificationCenter.default.post(name: .macPrototypeSelectProfile, object: nil)
                 }
                 .keyboardShortcut("5", modifiers: .command)
             }

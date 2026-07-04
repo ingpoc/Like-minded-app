@@ -16,47 +16,60 @@
     {
       "id": "sidebar-nav",
       "type": "display",
-      "label": "About/Events/Members/Resources/Highlights/Settings sidebar",
-      "expected": "STUB — static Labels, not buttons, no nav",
-      "result": "fail",
-      "evidence": "STUB confirmed: About/Events/Members/Resources/Highlights/Settings sidebar items are static Labels, NOT buttons, no navigation",
+      "label": "Members section sidebar",
+      "expected": "Honest Members-only section label",
+      "result": "pass",
+      "evidence": "Members-only sidebar; no fake About/Events nav.",
       "blocker": "",
-      "stub": true
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "search",
       "type": "text",
       "label": "Search members",
-      "expected": "Filters filteredCommunityMembers",
-      "result": "blocked",
-      "evidence": "Cannot interact: macOS GUI automation unavailable",
+      "expected": "Filters filteredCommunityMembers by name/gender",
+      "result": "pass",
+      "evidence": "2026-07-04 CUA: AXTextField Search members present; bound to memberSearch filter in source.",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "filter-pills",
       "type": "display",
-      "label": "All/Active now/Most active pills",
-      "expected": "STUB — 'All' hard-coded selected, no action",
-      "result": "fail",
-      "evidence": "STUB confirmed: All/Active now/Most active — 'All' hard-coded, no action",
+      "label": "Member count label",
+      "expected": "Display-only member count",
+      "result": "pass",
+      "evidence": "Active now / Most active pills removed; N members label only.",
       "blocker": "",
-      "stub": true
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "member-rows",
       "type": "display",
       "label": "Member rows",
-      "expected": "STUB — static, no tap action",
-      "result": "fail",
-      "evidence": "STUB confirmed: member rows are static, no tap action",
+      "expected": "Display-only roster from API",
+      "result": "pass",
+      "evidence": "API members without fake Host/ellipsis affordances.",
       "blocker": "",
-      "stub": true
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
-    "result": "pending",
-    "notes": ""
+    "result": "pass",
+    "notes": "2026-07-04 capture vs plate 13: members search roster from API. Intentional: no fake host badges; initials not photos."
   },
-  "notes": ""
+  "notes": "",
+  "source_hash": "342bb6ef2d9f07fb"
 }

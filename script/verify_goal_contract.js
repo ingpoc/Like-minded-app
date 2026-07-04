@@ -27,6 +27,7 @@ function assertGoalShape(file, goal) {
     "npm run smoke:mvp",
     "npm run verify:release-config",
     "npm run verify:goal",
+    "npm run verify:ledger-progress",
     "workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs lint",
     "npm run verify:simulator-local"
   ]) {
@@ -76,6 +77,14 @@ function assertGoalShape(file, goal) {
   assert.ok(
     goal.agent_guardrails?.some((guardrail) => guardrail.includes("Reuse validation_inventory scripts")),
     `${file}: agent guardrails must require reusing validation inventory scripts`
+  );
+  assert.ok(
+    goal.agent_guardrails?.some((guardrail) => guardrail.includes("verify:ledger-progress")),
+    `${file}: agent guardrails must require ledger ↔ PROGRESS ownership via verify:ledger-progress`
+  );
+  assert.ok(
+    goal.done_criteria?.some((criterion) => criterion.includes("verify:ledger-progress")),
+    `${file}: done criteria must require npm run verify:ledger-progress`
   );
 
   assert.equal(goal.simulator_validation?.preferred_agent?.name, "validation-release", `${file}: simulator preferred agent must be validation-release`);

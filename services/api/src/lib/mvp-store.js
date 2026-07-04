@@ -290,9 +290,20 @@ async function updateLatestProfile(userId, updates) {
   if (!profile) return null;
   if (updates.signals) profile.signals = updates.signals;
   if (Object.prototype.hasOwnProperty.call(updates, "concernFlag")) profile.concernFlag = !!updates.concernFlag;
+  if (updates.basicInfo && typeof updates.basicInfo === "object") {
+    const current = profile.basicInfo && typeof profile.basicInfo === "object" ? profile.basicInfo : {};
+    const next = { ...current };
+    for (const key of ["name", "gender", "dateOfBirth", "city", "pincode"]) {
+      if (typeof updates.basicInfo[key] === "string" && updates.basicInfo[key].trim()) {
+        next[key] = updates.basicInfo[key].trim();
+      }
+    }
+    profile.basicInfo = next;
+  }
   if (updates.reflectionSummary) {
     if (profile.profile?.reflection) profile.profile.reflection.summary = updates.reflectionSummary;
     profile.reflection = { ...(profile.reflection || {}), summary: updates.reflectionSummary };
+    profile.profileSummary = updates.reflectionSummary;
   }
   const data = JSON.stringify(profile);
   if (isPostgres) {

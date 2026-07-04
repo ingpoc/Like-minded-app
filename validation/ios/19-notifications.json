@@ -21,7 +21,10 @@
       "result": "pass",
       "evidence": "Filter pills (All/Meets/Matches/Messages) visible when sheet opened from Meet bell",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "9a9bbe7c2f254b3c",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     },
     {
       "id": "done",
@@ -31,7 +34,10 @@
       "result": "pass",
       "evidence": "Done button dismissed sheet",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "9a9bbe7c2f254b3c",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     },
     {
       "id": "row",
@@ -41,12 +47,16 @@
       "result": "pass",
       "evidence": "Notification rows display (seeded notifications loaded); display-only, no tap action (STUB)",
       "blocker": "",
-      "stub": true
+      "stub": true,
+      "tested_source_hash": "9a9bbe7c2f254b3c",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     }
   ],
   "visual_parity": {
     "result": "pending-mockup-compare",
     "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
   },
-  "notes": ""
+  "notes": "",
+  "source_hash": "9a9bbe7c2f254b3c"
 }

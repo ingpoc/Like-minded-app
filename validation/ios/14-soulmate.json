@@ -16,13 +16,16 @@
   "controls": [
     {
       "id": "enable-toggle",
-      "type": "toggle",
-      "label": "Enable Soulmate",
-      "expected": "Shows/hides tab; POST /soulmate/enable",
+      "type": "display",
+      "label": "Soulmate status (when enabled)",
+      "expected": "No Enable Soulmate toggle when already on; status points to Settings as the only toggle owner",
       "result": "pass",
-      "evidence": "Soulmate tab visible; Enable Soulmate section + switch present (already enabled since tab is shown)",
+      "evidence": "2026-07-04: when soulmateEnabled, Soulmate tab shows \"On — change this in Settings\" only. Toggle remains in Settings.",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "1a270219616a3b7a",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     },
     {
       "id": "post-meet-select",
@@ -40,9 +43,12 @@
       "label": "Match row",
       "expected": "Pushes SoulmateMatchDetailView",
       "result": "pass",
-      "evidence": "Tapped match row \u2192 SoulmateMatchDetailView (Priya Shah)",
+      "evidence": "Tapped match row → SoulmateMatchDetailView (Priya Shah)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "1a270219616a3b7a",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     },
     {
       "id": "conversations-icon",
@@ -52,12 +58,16 @@
       "result": "pass",
       "evidence": "Conversations icon pushed ConversationListView",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "1a270219616a3b7a",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     }
   ],
   "visual_parity": {
     "result": "pending-mockup-compare",
     "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
   },
-  "notes": ""
+  "notes": "",
+  "source_hash": "1a270219616a3b7a"
 }

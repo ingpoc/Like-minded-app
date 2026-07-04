@@ -8,9 +8,21 @@ Likeminded is an AI-native iOS/macOS app for AI-guided self-discovery, meaningfu
 
 This repository is moving from prototype to a TestFlight MVP for the placement loop: Sign in with Apple → voice profile → persisted profile and circle placement → profile review → placement action → tester feedback.
 
+## Active route
+
+Do not start from this README alone. Always run:
+
+```sh
+npm run goal:next
+```
+
+Follow `first_command` / `after_dirty_resolved`, `open_tracks`, and `ledger_progress_ok`. While macOS or iOS ledger tracks are open or dirty, do **not** start Phase 9 external setup (Neon, Render, Apple Developer, TestFlight evidence).
+
+Owner docs: `PROGRESS.md` (active track only), `docs/workflows/validation.md`. Control status: `validation/{ios,macos}/*.json` only — run `npm run ledger:open` before loading other docs.
+
 ## Structure
 
-- `apps/ios-macos` - SwiftUI iOS app with Sign in with Apple gate and MVP tabs: Talk, Circles, Communities, Profile.
+- `apps/ios-macos` - SwiftUI iOS/macOS apps with Sign in with Apple gate and MVP tabs: Meet, Circles, Communities, Profile (+ Soulmate when enabled).
   - includes an `XcodeGen` iOS project spec, Sign in with Apple entitlement, and simulator run loop
 - `services/api` - Node API with authenticated MVP placement routes, Realtime broker routes, local JSON storage for development, and Postgres support for deployment.
 - `services/ai-orchestrator` - placeholder boundary for realtime session brokering, tool routing, and profile synthesis with an explicit service manifest.
@@ -36,15 +48,23 @@ curl http://127.0.0.1:8787/v1/system/architecture
 
 The default native run path generates the Xcode project, builds the `Likeminded` iOS app, boots an available `iPhone 17` simulator, installs the app, and launches bundle id `com.likeminded.app`.
 
-Run validation:
+Run validation (narrow route first):
 
 ```sh
+npm run goal:next
 npm run check
 npm run smoke:mvp
 npm run verify:release-config
 npm run verify:goal
+npm run verify:ledger-progress
+# macOS ledger/CUA when on that track:
+#   ./script/macos_audit_prepare.sh
+#   ./script/macos_cua_screen.sh <screen>
+npm run verify:macos-screens
 npm run verify:simulator-local
 ```
+
+Full contract: `docs/workflows/validation.md`.
 
 ## Current Assumptions
 
@@ -54,7 +74,9 @@ npm run verify:simulator-local
 - The SwiftUI app is launch-verified on the iOS simulator through `XcodeGen`, but the long-term native project strategy is still open.
 - Shared profile and Reflect -> Place -> Connect data start as JSON Schema so clients, backend, and AI orchestration can converge on one contract before code generation is introduced.
 
-## Next Decisions
+## Later (Phase 9 — only after ledger tracks are clean)
+
+Do not start these while `npm run goal:next` reports open macOS/iOS ledger tracks or dirty macOS owners:
 
 - Create Render service and Neon database, then set production env vars.
 - Configure Apple Developer/App Store Connect for bundle id `com.likeminded.app` and Sign in with Apple.

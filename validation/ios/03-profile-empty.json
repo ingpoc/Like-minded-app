@@ -1,5 +1,5 @@
 {
-  "screen": "Profile (empty \u2014 voice interview hero)",
+  "screen": "Profile (empty — voice interview hero)",
   "platform": "ios",
   "source_files": [
     "apps/ios-macos/Sources/LikemindedApp/Views/ProfilePrototypeView.swift (VoiceProfileView)"
@@ -16,12 +16,15 @@
     {
       "id": "pencil-settings",
       "type": "nav-link",
-      "label": "Pencil icon \u2192 Settings",
+      "label": "Pencil icon → Settings",
       "expected": "Pushes SettingsPrototypeView",
       "result": "pass",
       "evidence": "Edit pencil icon confirmed on populated Profile (same view hierarchy); pushes SettingsPrototypeView",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "2fd6a39713366c2e",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     },
     {
       "id": "start-voice",
@@ -38,5 +41,6 @@
     "result": "pending-mockup-compare",
     "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
   },
-  "notes": ""
+  "notes": "",
+  "source_hash": "2fd6a39713366c2e"
 }

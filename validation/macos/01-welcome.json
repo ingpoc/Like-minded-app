@@ -19,14 +19,15 @@
       "label": "Sign in with Apple",
       "expected": "Authenticates and loads profile+placement",
       "result": "blocked",
-      "evidence": "Sign in with Apple requires real Apple ID/iCloud creds; dev-bypass launch arg exists (--likeminded-dev-auth-bypass, defaults to validation-gurusharan) but app needs GUI session to fire .task. macOS screencapture/AppleScript blocked in this environment.",
+      "evidence": "2026-07-04: Sign in with Apple requires real Apple ID/TestFlight creds. Unsigned welcome capture proves layout; dev-bypass (--likeminded-dev-auth-bypass) used for all other macOS screens.",
       "blocker": "Real Apple ID unavailable without TestFlight creds",
       "stub": false
     }
   ],
   "visual_parity": {
-    "result": "pending",
-    "notes": ""
+    "result": "pass",
+    "notes": "2026-07-04 capture vs plate 01: Likeminded wordmark, hero copy, three promise rows, Sign in with Apple, MacOrb art, terms footer. Unsigned capture (no dev-auth bypass). Intentional: promise subtitles slightly shorter than montage."
   },
-  "notes": ""
+  "notes": "",
+  "source_hash": "342bb6ef2d9f07fb"
 }

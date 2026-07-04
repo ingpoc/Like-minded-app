@@ -2,7 +2,7 @@
   "screen": "Community Detail",
   "platform": "macos",
   "source_files": [
-    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (communityDetail(memberMode:false))"
+    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (communityDetailScreen)"
   ],
   "mockup_ref": "mockups/macos/05-08-chat-communities-detail-recap.png",
   "mockup_missing": false,
@@ -10,7 +10,8 @@
     "Community card nav"
   ],
   "backend_dependencies": [
-    "GET /v1/communities/:id"
+    "GET /v1/communities/:id",
+    "GET /v1/meetings/upcoming"
   ],
   "controls": [
     {
@@ -18,25 +19,32 @@
       "type": "button",
       "label": "View members",
       "expected": "Navigate → communityMembers",
-      "result": "blocked",
-      "evidence": "Cannot interact: macOS GUI automation unavailable. Source-trace: navigate → communityMembers",
+      "result": "pass",
+      "evidence": "2026-07-04 CUA: Members tab then View members → communityMembers roster.",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "event-rows",
-      "type": "display",
+      "type": "button",
       "label": "Upcoming event rows",
-      "expected": "STUB — static rows, no tap",
-      "result": "fail",
-      "evidence": "STUB confirmed: Upcoming event rows are static, no tap action",
+      "expected": "Tappable rows from backend community meetings or create-event fallback",
+      "result": "pass",
+      "evidence": "Upcoming tab uses upcomingMeetings(kind=community) buttons; empty state routes to createEvent.",
       "blocker": "",
-      "stub": true
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
-    "result": "pending",
-    "notes": ""
+    "result": "pass",
+    "notes": "2026-07-04 capture vs plate 07: hero stats upcoming/past tabs. Intentional: doodle hero below mockup scenic plate."
   },
-  "notes": ""
+  "notes": "",
+  "source_hash": "342bb6ef2d9f07fb"
 }

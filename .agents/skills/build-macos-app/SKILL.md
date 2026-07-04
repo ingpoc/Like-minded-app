@@ -25,6 +25,13 @@ Apply when working on the **macOS app** (`LikemindedMac`) for any of:
 changes, schema work, or non-visual infra changes — they don't need a Mac
 build or mockup comparison.
 
+## Context (lazy)
+
+1. `npm run goal:next` — if macOS track open, note screen from `ledger:open`.
+2. **One** `validation/macos/<screen>.json` + `source_files` for the touched screen.
+3. **One** mockup plate from ledger `mockup_ref` or `macos-screen-audit.md` table — not the whole `mockups/macos/` dir.
+4. Skip `GOAL.md`, full `PROGRESS.md`, and `project_context` unless boundary dispute.
+
 ## Project Layout (macOS-relevant)
 
 ```
@@ -47,6 +54,7 @@ mockups/macos/                        # montage references:
   13-16-community-members-event-messages-activity.png
   17-20-profile-onboarding-detail-settings.png
   21-meet-video-call.png
+  22-create-event.png
 ```
 
 Bundle id: `com.likeminded.mac`. Deployment target: **macOS 15.0**. No LiveKit
@@ -130,6 +138,14 @@ open -F -n .build/macos/Build/Products/Debug/LikemindedMac.app --args \
 
 ## Validation (against `mockups/macos/`)
 
+**Mockup compare before controls.** Capture the live app window, open the
+matching plate in `mockups/macos/`, and classify differences as **match**,
+**intentional variation**, or **gap** before CUA or ledger pass/fail. Mockups
+are montages and often diverge (seeded roster size, no photos, tab order
+Soulmate before Profile, planned call chrome, honest empty Groups). Record
+variations in `docs/references/macos-screen-audit.md` and ledger
+`visual_parity.notes` — do not fail controls solely for those.
+
 Per AGENTS.md: before claiming seamless behavior, point both apps at
 `data/validation-db` with the validation API and seeded data.
 
@@ -157,7 +173,8 @@ Then compare each capture against the matching montage in `mockups/macos/`:
 | welcome, meetOverview, circlesRoom, profileEdit | `01-04-auth-meet-circles-profile.png` |
 | chat, communitiesBrowse, communityDetail, meetRecap | `05-08-chat-communities-detail-recap.png` |
 | myProfile, soulmateOverview, soulmateDiscover, soulmateDetail | `09-12-profile-soulmate-discover-detail.png` |
-| communityMembers, createEvent, messages, notifications | `13-16-community-members-event-messages-activity.png` |
+| communityMembers, messages, notifications | `13-16-community-members-event-messages-activity.png` |
+| createEvent | `22-create-event.png` |
 | profileOnboarding, profileSignals, circleDetail, settingsSoulmate | `17-20-profile-onboarding-detail-settings.png` |
 | meet video call (extra) | `21-meet-video-call.png` |
 
@@ -194,6 +211,7 @@ screencapture -x -l "$(python3 -c 'import Quartz; \
 ## Common Pitfalls
 
 - Editing `Likeminded.xcodeproj` directly → always edit `project.yml` and run `xcodegen generate`.
+- Circle/community hero art uses `Sources/DoodleArt` + `Assets.xcassets` doodles — if `DoodleCover` fails to compile, confirm `project.yml` lists `Sources/DoodleArt` under the Mac target and rerun `xcodegen generate`.
 - Building for `platform=iOS Simulator` when you wanted the Mac → use `-destination 'platform=macOS'` and scheme `LikemindedMac`.
 - Leaving a prior `LikemindedMac` instance running → new `--mac-screen` args won't take effect. Always `pkill -x LikemindedMac` first.
 - Forgetting to start the validation API → blank/auth-gated screens. Always `curl /health` first.

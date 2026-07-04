@@ -24,6 +24,13 @@ Apply when working on the **iOS app** (`LikemindedApp`) for any of:
 (use `build-macos-app`), or non-visual infra changes — they don't need a
 simulator or mockup comparison.
 
+## Context (lazy)
+
+1. `npm run goal:next` + `npm run ledger:open --platform=ios` for open rows.
+2. **One** `validation/ios/<screen>.json` + `source_files` for the touched screen.
+3. One mockup from ledger `mockup_ref` — not full `mockups/ios/`.
+4. Skip `GOAL.md`, full `PROGRESS.md`, `project_context` unless boundary dispute.
+
 ## Project Layout (iOS-relevant)
 
 ```

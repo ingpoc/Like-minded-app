@@ -23,7 +23,10 @@
       "result": "pass",
       "evidence": "Opened NotificationsView sheet (Likeminded | Notifications | Done | All | Meets | Matches | Messages | NOTIFICATIONS)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "7cda113d757c797e",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     },
     {
       "id": "rsvp-sat-yes",
@@ -33,7 +36,10 @@
       "result": "pass",
       "evidence": "Tapped; backend GET /v1/meetings/upcoming confirms rsvps.community=true",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "7cda113d757c797e",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     },
     {
       "id": "rsvp-sat-no",
@@ -43,7 +49,10 @@
       "result": "pass",
       "evidence": "Tapped; backend rsvps.community now = False",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "7cda113d757c797e",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     },
     {
       "id": "rsvp-sun-yes",
@@ -90,5 +99,6 @@
     "result": "pending-mockup-compare",
     "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
   },
-  "notes": ""
+  "notes": "",
+  "source_hash": "7cda113d757c797e"
 }

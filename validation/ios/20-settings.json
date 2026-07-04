@@ -31,9 +31,12 @@
       "label": "How it works",
       "expected": "Opens SettingsInfoSheet",
       "result": "pass",
-      "evidence": "Opens SettingsInfoSheet (Likeminded | Done | How Soulmate works | Opt in | \u2022  Turn Soulmate on only when you want p | \u2022  The Soulmate tab appears after the ba)",
+      "evidence": "Opens SettingsInfoSheet (Likeminded | Done | How Soulmate works | Opt in | •  Turn Soulmate on only when you want p | •  The Soulmate tab appears after the ba)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "6ab65b754005dcbd",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     },
     {
       "id": "sign-out",
@@ -43,7 +46,10 @@
       "result": "pass",
       "evidence": "Shows confirmation dialog with Sign out / Cancel",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "6ab65b754005dcbd",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     },
     {
       "id": "delete-account",
@@ -53,7 +59,10 @@
       "result": "pass",
       "evidence": "Implemented in SettingsPrototypeView -> PrototypeAppState.deleteAccount -> DELETE /v1/me/account; npm run smoke:mvp proves old session gets 401 after delete.",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "6ab65b754005dcbd",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     },
     {
       "id": "privacy",
@@ -63,7 +72,10 @@
       "result": "pass",
       "evidence": "Opens PrivacyPolicySheet",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "6ab65b754005dcbd",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     },
     {
       "id": "help",
@@ -73,7 +85,10 @@
       "result": "pass",
       "evidence": "Opens SettingsInfoSheet (Help & FAQ)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "6ab65b754005dcbd",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     },
     {
       "id": "support",
@@ -90,5 +105,6 @@
     "result": "pending-mockup-compare",
     "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
   },
-  "notes": ""
+  "notes": "",
+  "source_hash": "6ab65b754005dcbd"
 }

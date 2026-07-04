@@ -15,12 +15,21 @@ enum MacPalette {
 }
 
 enum MacType {
-    static let eyebrow = Font.system(size: 11, weight: .semibold, design: .rounded)
+    /// Uppercase section labels — SF Pro, not serif.
+    static let eyebrow = Font.system(size: 11, weight: .semibold, design: .default)
+    /// Hero phrases ("Your room.") — editorial serif.
     static let title = Font.system(size: 34, weight: .semibold, design: .serif)
+    /// Panel / card titles on cream surfaces — editorial serif.
     static let section = Font.system(size: 20, weight: .semibold, design: .serif)
-    static let body = Font.system(size: 16, weight: .regular, design: .serif)
-    static let small = Font.system(size: 12, weight: .medium, design: .rounded)
-    static let button = Font.system(size: 13, weight: .semibold, design: .rounded)
+    /// Body copy and cover meta — SF Pro for readability (mockups use sans for body).
+    static let body = Font.system(size: 16, weight: .regular, design: .default)
+    static let small = Font.system(size: 12, weight: .medium, design: .default)
+    static let button = Font.system(size: 13, weight: .semibold, design: .default)
+    /// White titles on thematic covers.
+    static let coverTitle = Font.system(size: 26, weight: .semibold, design: .serif)
+    static let coverTitleSmall = Font.system(size: 18, weight: .semibold, design: .serif)
+    /// White meta on thematic covers (member counts, room energy).
+    static let coverMeta = Font.system(size: 14, weight: .regular, design: .default)
 }
 
 struct MacPanel<Content: View>: View {
@@ -168,8 +177,8 @@ struct MacGradientCard: View {
                     .offset(x: CGFloat(i * 20), y: CGFloat(i * 10))
             }
             VStack(alignment: .leading, spacing: 6) {
-                Text(title).font(MacType.section).foregroundStyle(.white)
-                if let subtitle { Text(subtitle).font(MacType.small).foregroundStyle(.white.opacity(0.8)) }
+                Text(title).font(MacType.coverTitleSmall).foregroundStyle(.white)
+                if let subtitle { Text(subtitle).font(MacType.coverMeta).foregroundStyle(.white.opacity(0.9)) }
                 if !tags.isEmpty {
                     HStack(spacing: 6) {
                         ForEach(tags.prefix(3), id: \.self) { tag in
@@ -180,6 +189,7 @@ struct MacGradientCard: View {
                     }
                 }
             }
+            .doodleOverlayText()
             .padding(18)
         }
         .frame(height: height)

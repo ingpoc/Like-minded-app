@@ -19,9 +19,12 @@
       "label": "Start chat",
       "expected": "Pushes ChatView(match:)",
       "result": "pass",
-      "evidence": "Start chat \u2192 ChatView pushed",
+      "evidence": "Start chat → ChatView pushed",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "1a270219616a3b7a",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     },
     {
       "id": "chat-icon",
@@ -29,9 +32,12 @@
       "label": "Chat icon (top-right)",
       "expected": "Pushes ChatView(match:)",
       "result": "pass",
-      "evidence": "Open chat icon (bubble.right) in toolbar \u2014 present on match detail",
+      "evidence": "Open chat icon (bubble.right) in toolbar — present on match detail",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "1a270219616a3b7a",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     },
     {
       "id": "interest-chips",
@@ -41,12 +47,16 @@
       "result": "pass",
       "evidence": "Interest chips render on match detail (PRIYA SHAH visible)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "1a270219616a3b7a",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     }
   ],
   "visual_parity": {
     "result": "pending-mockup-compare",
     "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
   },
-  "notes": ""
+  "notes": "",
+  "source_hash": "1a270219616a3b7a"
 }

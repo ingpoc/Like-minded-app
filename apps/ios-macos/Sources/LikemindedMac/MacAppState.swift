@@ -31,6 +31,7 @@ final class MacAppState: ObservableObject {
     @Published var soulmateError: String?
     @Published var isLoadingSoulmate = false
     @Published var chatMessages: [ChatMessage] = []
+    @Published var chatPreviews: [String: ChatMessage] = [:]
     @Published var messageError: String?
     @Published var notifications: [MacNotificationItem] = []
     @Published var activityItems: [MacNotificationItem] = []
@@ -149,6 +150,27 @@ final class MacAppState: ObservableObject {
         isLoading = false
     }
 
+    @discardableResult
+    func updateProfileBasics(name: String, city: String, gender: Gender?) async -> Bool {
+        guard isSignedIn else { return false }
+        let existing = profile?.basicInfo
+        let update = BasicInfoUpdate(
+            name: name.trimmingCharacters(in: .whitespacesAndNewlines),
+            gender: (gender ?? existing?.gender)?.rawValue,
+            dateOfBirth: existing?.dateOfBirth,
+            city: city.trimmingCharacters(in: .whitespacesAndNewlines),
+            pincode: existing?.pincode
+        )
+        do {
+            profile = try await client.updateProfile(basicInfo: update)
+            loadError = nil
+            return true
+        } catch {
+            loadError = "Profile could not be saved."
+            return false
+        }
+    }
+
     func loadCurrentPlacement() async {
         guard isSignedIn else { return }
         isLoading = true
@@ -217,12 +239,21 @@ final class MacAppState: ObservableObject {
             async let joined = isSignedIn ? client.fetchMyCircles() : []
             circles = try await catalog
             joinedCircles = try await joined
-            if let firstCircle = joinedCircles.first {
+            if let firstCircle = joinedCircles.first, circleDetail == nil {
                 circleDetail = try await client.fetchCircleDetail(id: firstCircle.id)
             }
             circleError = nil
         } catch {
             circleError = "Circles could not be loaded."
+        }
+    }
+
+    func loadCircleDetail(id: String) async {
+        do {
+            circleDetail = try await client.fetchCircleDetail(id: id)
+            circleError = nil
+        } catch {
+            circleError = "Circle detail could not be loaded."
         }
     }
 
@@ -338,6 +369,14 @@ final class MacAppState: ObservableObject {
             soulmateEnabled = status.enabled
             soulmatePendingSelections = status.pendingSelections
             soulmateMatches = try await client.fetchSoulmateMatches()
+            var previews: [String: ChatMessage] = [:]
+            for match in soulmateMatches {
+                let messages = try await client.fetchMessages(matchId: match.matchId)
+                if let last = messages.last {
+                    previews[match.matchId] = last
+                }
+            }
+            chatPreviews = previews
             if let firstMatch = soulmateMatches.first {
                 chatMessages = try await client.fetchMessages(matchId: firstMatch.matchId)
             }
@@ -371,6 +410,9 @@ final class MacAppState: ObservableObject {
         guard !matchId.isEmpty else { return }
         do {
             chatMessages = try await client.fetchMessages(matchId: matchId)
+            if let last = chatMessages.last {
+                chatPreviews[matchId] = last
+            }
             messageError = nil
         } catch {
             messageError = "Messages could not be loaded."
@@ -378,7 +420,9 @@ final class MacAppState: ObservableObject {
     }
 
     func sendMessage(matchId: String, text: String) async throws -> ChatMessage {
-        try await client.sendMessage(matchId: matchId, text: text)
+        let message = try await client.sendMessage(matchId: matchId, text: text)
+        chatPreviews[matchId] = message
+        return message
     }
 
     func fetchFirstMatchMessages() async {

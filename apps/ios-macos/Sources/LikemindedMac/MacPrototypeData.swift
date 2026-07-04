@@ -4,8 +4,8 @@ enum MacTab: String, CaseIterable, Identifiable {
     case meet = "Meet"
     case circles = "Circles"
     case communities = "Communities"
-    case profile = "Profile"
     case soulmate = "Soulmate"
+    case profile = "Profile"
 
     var id: String { rawValue }
 

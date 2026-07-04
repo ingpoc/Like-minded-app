@@ -22,7 +22,10 @@
       "result": "pass",
       "evidence": "Back to circles button present",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "0d78db3628d124d7",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     },
     {
       "id": "detail-rows",
@@ -38,7 +41,7 @@
       "id": "leave-circle",
       "type": "button",
       "label": "Leave circle",
-      "expected": "STUB \u2014 bare SecondaryActionButton label, no Button/action wired",
+      "expected": "STUB — bare SecondaryActionButton label, no Button/action wired",
       "result": "fail",
       "evidence": "Leave circle label renders but no Button/action wired (STUB confirmed)",
       "blocker": "",
@@ -49,5 +52,6 @@
     "result": "pending-mockup-compare",
     "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
   },
-  "notes": ""
+  "notes": "",
+  "source_hash": "0d78db3628d124d7"
 }

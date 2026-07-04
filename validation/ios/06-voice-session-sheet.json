@@ -22,7 +22,10 @@
       "result": "pass",
       "evidence": "Voice session connects to OpenAI Realtime API; logs show session.created, session.ready, output_audio_buffer.started, AI speaks ~9s, input speech detected. Orb animates with amplitude per VoiceProfileSessionSheet source.",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "2fd6a39713366c2e",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     },
     {
       "id": "stop",
@@ -32,7 +35,10 @@
       "result": "pass",
       "evidence": "Stop button visible in sheet (confirmed via earlier AX snapshot: 'Stop' button at y=610). Calls stopVoiceSession.",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "2fd6a39713366c2e",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     },
     {
       "id": "done",
@@ -42,12 +48,16 @@
       "result": "pass",
       "evidence": "Done button visible in sheet (confirmed via earlier AX snapshot: 'Done' button at y=610). Dismisses sheet.",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "2fd6a39713366c2e",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     }
   ],
   "visual_parity": {
     "result": "pending-mockup-compare",
     "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
   },
-  "notes": ""
+  "notes": "",
+  "source_hash": "2fd6a39713366c2e"
 }

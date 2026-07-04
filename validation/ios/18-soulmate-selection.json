@@ -30,7 +30,7 @@
       "label": "Submit",
       "expected": "POST selection; creates mutual matches; disabled when empty",
       "result": "untested",
-      "evidence": "Cannot reach dialog \u2014 past-meet nav blocked",
+      "evidence": "Cannot reach dialog — past-meet nav blocked",
       "blocker": "",
       "stub": false
     }
@@ -39,5 +39,6 @@
     "result": "pending-mockup-compare",
     "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
   },
-  "notes": ""
+  "notes": "",
+  "source_hash": "1a270219616a3b7a"
 }

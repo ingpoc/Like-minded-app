@@ -23,17 +23,23 @@
       "result": "pass",
       "evidence": "Source-trace: planned rows now render muted detail labels instead of selectable-looking no-op controls.",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "log-out",
       "type": "button",
       "label": "Log out",
       "expected": "Opens confirmation; Sign out → appState.signOut()",
-      "result": "blocked",
-      "evidence": "Cannot interact: macOS GUI automation unavailable. Source-trace: confirmationDialog → appState.signOut()",
+      "result": "pass",
+      "evidence": "CUA 2026-07-04: Log out opens confirmation with Sign out of Likeminded? and Sign out button.",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "delete-account",
@@ -43,17 +49,49 @@
       "result": "pass",
       "evidence": "Implemented in MacScreens -> MacAppState.deleteAccount -> DELETE /v1/me/account; npm run smoke:mvp proves old session gets 401 after delete.",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "soulmate-toggle",
       "type": "toggle",
       "label": "Enable Soulmate",
       "expected": "Toggles soulmate via backend",
-      "result": "blocked",
-      "evidence": "Cannot interact: macOS GUI automation unavailable",
+      "result": "pass",
+      "evidence": "CUA clicks AXCheckBox element 7 (Enable Soulmate switch); backend via setSoulmateEnabled on change.",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
+    },
+    {
+      "id": "view-profile",
+      "type": "button",
+      "label": "View profile",
+      "expected": "Navigate → myProfile",
+      "result": "pass",
+      "evidence": "2026-07-04: Settings sidebar View profile button navigates to myProfile.",
+      "blocker": "",
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
+    },
+    {
+      "id": "voice-profile",
+      "type": "button",
+      "label": "Voice profile",
+      "expected": "Navigate → profileOnboarding for basics edit",
+      "result": "pass",
+      "evidence": "2026-07-04: Settings Voice profile button navigates to profileOnboarding.",
+      "blocker": "",
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "age-range",
@@ -63,7 +101,10 @@
       "result": "pass",
       "evidence": "Source-trace: local-only Slider removed; row is now display-only formLine.",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "visibility",
@@ -73,12 +114,16 @@
       "result": "pass",
       "evidence": "Source-trace: local-only radio Button controls removed; row is now display-only formLine.",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
-    "result": "pending",
-    "notes": ""
+    "result": "pass",
+    "notes": "2026-07-04 capture vs plate 20: settings account soulmate panel. Intentional: static muted rows for unshipped prefs."
   },
-  "notes": ""
+  "notes": "",
+  "source_hash": "342bb6ef2d9f07fb"
 }

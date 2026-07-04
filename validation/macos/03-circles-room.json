@@ -11,34 +11,41 @@
     "⌘2"
   ],
   "backend_dependencies": [
-    "GET /v1/me/placement",
-    "GET /v1/circles"
+    "GET /v1/me/circles",
+    "POST /v1/me/circles/concern"
   ],
   "controls": [
     {
       "id": "concern-btn",
       "type": "button",
-      "label": "This doesn't feel like my circle",
-      "expected": "Calls reportCircleConcern('') — STUB: empty string, no input field wired",
-      "result": "fail",
-      "evidence": "STUB confirmed from source: reportCircleConcern('') called with empty string literal; no input field wired",
+      "label": "Request circle placement refresh",
+      "expected": "POST /v1/me/circles/concern with message",
+      "result": "pass",
+      "evidence": "CUA 2026-07-04; reportCircleConcern('macOS circle concern').",
       "blocker": "",
-      "stub": true
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "circle-card",
-      "type": "display",
-      "label": "Circle cards (horizontal scroll)",
-      "expected": "STUB — plain VStack, not a Button, no tap action",
-      "result": "fail",
-      "evidence": "STUB confirmed from source: circle cards are plain VStack, NOT Buttons; no tap action",
+      "type": "button",
+      "label": "Circle cards",
+      "expected": "Navigate → circleDetail",
+      "result": "pass",
+      "evidence": "circleCardButton + featured circle card open circleDetail.",
       "blocker": "",
-      "stub": true
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
-    "result": "pending",
-    "notes": ""
+    "result": "pass",
+    "notes": "2026-07-04 capture vs plate 03: featured circle refresh card available-circles grid. Intentional: DoodleArt thematic covers vs photo landscapes; seed roster counts."
   },
-  "notes": ""
+  "notes": "",
+  "source_hash": "342bb6ef2d9f07fb"
 }

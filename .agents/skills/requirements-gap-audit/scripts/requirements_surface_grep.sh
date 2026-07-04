@@ -1,39 +1,23 @@
 #!/usr/bin/env bash
+# Compact ledger-first summary for gap audits. Not a substitute for npm run ledger:open.
 set -eu
 
 ROOT="${1:-.}"
 
-# Structured summary, not raw dumps
-
-echo "# Requirements Surface Summary"
-
+echo "# Requirements gap — ledger first"
 echo
-echo "## Route"
-route=$(cd "$ROOT" && ./script/project_context.sh query --task "requirements gap audit" 2>/dev/null || true)
-if [[ -n "$route" ]]; then
-  echo "$route" | head -5
+
+if [[ -f "$ROOT/package.json" ]] && grep -q '"ledger:open"' "$ROOT/package.json" 2>/dev/null; then
+  echo "## Open controls"
+  (cd "$ROOT" && npm run -s ledger:open) || true
+  echo
+  echo "## Goal route"
+  (cd "$ROOT" && npm run -s goal:next 2>/dev/null | head -12) || true
 else
-  echo "(no active route)"
+  echo "## Open controls (no ledger:open script)"
+  rg '"result": "(fail|pending|blocked)"' "$ROOT/validation" -g'*.json' 2>/dev/null | head -40 || echo "(no validation tree)"
 fi
 
 echo
-echo "## Mockups"
-mockup_count=$(find "$ROOT/mockups" -maxdepth 2 -type f \( -name '*.png' -o -name '*.jpg' -o -name '*.jpeg' -o -name '*.webp' \) 2>/dev/null | wc -l | tr -d ' ')
-echo "Mockup files: $mockup_count"
-
-echo
-echo "## Dead control signals"
-dead_count=$(rg -c "coming soon|TODO|disabled|placeholder|stub|not implemented|fake|static|mock only|No .* yet|could not be loaded" "$ROOT" \
-  -g'*.md' -g'*.swift' -g'*.js' -g'*.sh' -g'*.json' \
-  -g'!node_modules' -g'!.build' -g'!output' 2>/dev/null | awk -F: '{s+=$NF} END {print s+0}')
-echo "Dead control hits: $dead_count"
-if (( dead_count > 0 )); then
-  rg -c "coming soon|TODO|disabled|placeholder|stub|not implemented|fake|static|mock only|No .* yet|could not be loaded" "$ROOT" \
-    -g'*.md' -g'*.swift' -g'*.js' -g'*.sh' -g'*.json' \
-    -g'!node_modules' -g'!.build' -g'!output' 2>/dev/null | grep -v ':0$' | sort -t: -k2 -rn | head -10
-fi
-
-echo
-echo "## Runtime proof"
-proof_count=$(rg -c "runtime tap|manual proof|simulator|verify:macos-screens|verify:simulator-local|smoke:mvp|phase:preflight" "$ROOT/PROGRESS.md" "$ROOT/docs" "$ROOT/script" 2>/dev/null | awk -F: '{s+=$NF} END {print s+0}')
-echo "Runtime proof hits: $proof_count"
+echo "## Mockup file count (paths live in ledger JSON)"
+find "$ROOT/mockups" -maxdepth 2 -type f \( -name '*.png' -o -name '*.jpg' \) 2>/dev/null | wc -l | awk '{print "files: " $1}'

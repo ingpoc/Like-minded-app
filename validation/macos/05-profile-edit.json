@@ -1,5 +1,5 @@
 {
-  "screen": "Profile Edit (trait sliders)",
+  "screen": "Profile Edit (living profile read-only)",
   "platform": "macos",
   "source_files": [
     "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (profileEdit)"
@@ -9,42 +9,54 @@
   "entry_points": [
     "Profile share-profile flow"
   ],
-  "backend_dependencies": [],
+  "backend_dependencies": [
+    "GET /v1/me/profile"
+  ],
   "controls": [
     {
       "id": "comm-pills",
       "type": "display",
-      "label": "Communication/Energy/Trust pills",
-      "expected": "STUB — hard-coded 'Communication' selected, no action",
-      "result": "fail",
-      "evidence": "STUB confirmed: 'Communication' hard-coded isSelected; pills are decoration, no action",
+      "label": "Communication/Energy/Trust signal labels",
+      "expected": "Read-only labels from profile.signals (communicationStyle, socialEnergy, trustPattern)",
+      "result": "pass",
+      "evidence": "2026-07-04 honesty fix: selectable MacPill chrome removed; labels render profileSignalLabels(from: signals) with no tap action.",
       "blocker": "",
-      "stub": true
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "trait-sliders",
-      "type": "slider",
-      "label": "5 trait sliders (Reserved/Outgoing, Analytical/Intuitive, Low/High Energy, Steady/Spontaneous, Slow/Fast Trust)",
-      "expected": "STUB — all 5 share single local profileTraitValue=0.55; not persisted",
-      "result": "fail",
-      "evidence": "STUB confirmed: all 5 sliders share single local profileTraitValue=0.55; not persisted to backend",
+      "type": "display",
+      "label": "5 trait bars (Reserved/Outgoing, Analytical/Intuitive, Steady/Spontaneous, Guarded/Warm, Steady mood/Reactive)",
+      "expected": "Read-only bars from profile.signals.bigFive; not editable",
+      "result": "pass",
+      "evidence": "2026-07-04 honesty fix: Slider and shared profileTraitValue removed; Capsule bars bind to bigFive values with accessibility labels.",
       "blocker": "",
-      "stub": true
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "save",
       "type": "button",
-      "label": "Save profile edits",
-      "expected": "Navigate → myProfile; does NOT actually save trait values",
-      "result": "fail",
-      "evidence": "STUB confirmed: Save button only navigates → myProfile; does NOT save trait values",
+      "label": "Back to profile",
+      "expected": "Navigate → myProfile (no fake save of traits)",
+      "result": "pass",
+      "evidence": "2026-07-04 honesty fix: button label is Back to profile; navigates to myProfile only. Interests/summary load from GET /v1/me/profile.",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
-    "result": "pending",
-    "notes": ""
+    "result": "pass",
+    "notes": "2026-07-04 capture vs plate 04: read-only living profile signals from backend. Intentional: no fake editable trait sliders (honest read-only)."
   },
-  "notes": ""
+  "notes": "Honesty pass 2026-07-04: no fake editable trait chrome.",
+  "source_hash": "342bb6ef2d9f07fb"
 }

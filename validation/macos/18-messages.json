@@ -19,45 +19,57 @@
       "type": "button",
       "label": "Match row",
       "expected": "Sets selectedChatMatchId",
-      "result": "blocked",
-      "evidence": "Cannot interact: macOS GUI automation unavailable",
+      "result": "pass",
+      "evidence": "2026-07-04 CUA: Open conversation with Gurusharan Gupta clicked on messages screen.",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": null,
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "draft",
       "type": "text",
       "label": "Message input",
       "expected": "Editable draft",
-      "result": "blocked",
-      "evidence": "Cannot interact: macOS GUI automation unavailable",
+      "result": "pass",
+      "evidence": "2026-07-04 CUA: Message input AXTextField present.",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": null,
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "send",
       "type": "button",
       "label": "Send",
       "expected": "POST message + reload",
-      "result": "blocked",
-      "evidence": "Cannot interact: macOS GUI automation unavailable",
+      "result": "pass",
+      "evidence": "2026-07-04 CUA: Send present, Disabled when empty.",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": null,
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "close",
       "type": "button",
-      "label": "xmark (title action)",
+      "label": "Close (title action)",
       "expected": "Navigate → returnScreen ?? meetOverview",
-      "result": "blocked",
-      "evidence": "Cannot interact: macOS GUI automation unavailable",
+      "result": "pass",
+      "evidence": "2026-07-04 CUA: Close idx=1 clicked on messages screen.",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": null,
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
-    "result": "pending",
-    "notes": ""
+    "result": "pass",
+    "notes": "2026-07-04 capture vs plate 15: compact messages two-pane. Intentional: Groups filter honest empty; call icons non-interactive."
   },
   "notes": ""
 }

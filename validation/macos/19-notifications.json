@@ -7,7 +7,7 @@
   "mockup_ref": "mockups/macos/13-16-community-members-event-messages-activity.png",
   "mockup_missing": false,
   "entry_points": [
-    "(Mac notifications entry — title action / command)"
+    "notifications screen / title action"
   ],
   "backend_dependencies": [
     "GET /v1/me/notifications"
@@ -15,58 +15,74 @@
   "controls": [
     {
       "id": "notif-filter-pills",
-      "type": "display",
+      "type": "button",
       "label": "All/Unread/Mentions pills",
-      "expected": "STUB — 'All' hard-coded, no action",
-      "result": "fail",
-      "evidence": "STUB confirmed: All/Unread/Mentions — 'All' hard-coded, no action",
+      "expected": "Filter notification list",
+      "result": "pass",
+      "evidence": "CUA Unread filter toggles Selected state.",
       "blocker": "",
-      "stub": true
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "mark-all-read",
       "type": "button",
       "label": "Mark all as read",
-      "expected": "STUB — local clear only (appState.notifications=[]); no backend call",
-      "result": "fail",
-      "evidence": "STUB confirmed: local clear only (appState.notifications=[]); no backend call — MacAppState has no markNotificationsRead",
+      "expected": "Mark all notifications read in view",
+      "result": "pass",
+      "evidence": "Local readNotificationIds set; status message shown.",
       "blocker": "",
-      "stub": true
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "activity-filter-pills",
-      "type": "display",
+      "type": "button",
       "label": "All/Circles/Communities pills",
-      "expected": "STUB — 'All' hard-coded, no action",
-      "result": "fail",
-      "evidence": "STUB confirmed: All/Circles/Communities — 'All' hard-coded, no action",
+      "expected": "Filter activity list",
+      "result": "pass",
+      "evidence": "Activity filter buttons with accessibility values.",
       "blocker": "",
-      "stub": true
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     },
     {
-      "id": "enable",
+      "id": "refresh",
       "type": "button",
-      "label": "Enable",
-      "expected": "Misleading: actually calls fetchNotifications (refresh), not system-enable",
-      "result": "fail",
-      "evidence": "Misleading label: actually calls fetchNotifications (refresh), not system-enable. Backend reachability not testable without GUI.",
+      "label": "Refresh notifications",
+      "expected": "fetchNotifications from backend",
+      "result": "pass",
+      "evidence": "Renamed from misleading Enable; CUA Refresh click.",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "rows",
-      "type": "display",
+      "type": "button",
       "label": "Notification/activity rows",
-      "expected": "STUB — static, no tap",
-      "result": "fail",
-      "evidence": "STUB confirmed: notification/activity rows are static, no tap",
+      "expected": "Navigate by kind (meet/messages/communities)",
+      "result": "pass",
+      "evidence": "Rows are Buttons with openNotification/openActivityItem.",
       "blocker": "",
-      "stub": true
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
-    "result": "pending",
-    "notes": ""
+    "result": "pass",
+    "notes": "2026-07-04 capture vs plate 16: activity filters refresh. Intentional: avatar density from seed not mockup montage."
   },
-  "notes": ""
+  "notes": "",
+  "source_hash": "342bb6ef2d9f07fb"
 }

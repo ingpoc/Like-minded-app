@@ -1,5 +1,5 @@
 {
-  "screen": "Onboarding Wizard (name \u2192 gender \u2192 DOB \u2192 city \u2192 pincode)",
+  "screen": "Onboarding Wizard (name → gender → DOB → city → pincode)",
   "platform": "ios",
   "source_files": [
     "apps/ios-macos/Sources/LikemindedApp/Views/OnboardingView.swift"
@@ -30,7 +30,7 @@
       "label": "Your name (step 0)",
       "expected": "Capture name, enables Continue when non-empty",
       "result": "untested",
-      "evidence": "Onboarding skipped \u2014 seeded user has profile",
+      "evidence": "Onboarding skipped — seeded user has profile",
       "blocker": "",
       "stub": false
     },
@@ -40,7 +40,7 @@
       "label": "Gender cards (step 1)",
       "expected": "Selects one of Male/Female/Non-binary/Prefer not to say",
       "result": "untested",
-      "evidence": "Onboarding skipped \u2014 seeded user has profile",
+      "evidence": "Onboarding skipped — seeded user has profile",
       "blocker": "",
       "stub": false
     },
@@ -50,7 +50,7 @@
       "label": "Date of birth wheel (step 2)",
       "expected": "Capture DOB",
       "result": "untested",
-      "evidence": "Onboarding skipped \u2014 seeded user has profile",
+      "evidence": "Onboarding skipped — seeded user has profile",
       "blocker": "",
       "stub": false
     },
@@ -60,7 +60,7 @@
       "label": "City (step 3)",
       "expected": "Capture city",
       "result": "untested",
-      "evidence": "Onboarding skipped \u2014 seeded user has profile",
+      "evidence": "Onboarding skipped — seeded user has profile",
       "blocker": "",
       "stub": false
     },
@@ -70,7 +70,7 @@
       "label": "Pincode numeric (step 4)",
       "expected": "Capture pincode (numeric)",
       "result": "untested",
-      "evidence": "Onboarding skipped \u2014 seeded user has profile",
+      "evidence": "Onboarding skipped — seeded user has profile",
       "blocker": "",
       "stub": false
     },
@@ -80,7 +80,7 @@
       "label": "Continue / Start voice profile",
       "expected": "Advances step; on last step saves profile and starts voice session",
       "result": "untested",
-      "evidence": "Onboarding skipped \u2014 seeded user has profile",
+      "evidence": "Onboarding skipped — seeded user has profile",
       "blocker": "",
       "stub": false
     }
@@ -89,5 +89,6 @@
     "result": "pending-mockup-compare",
     "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
   },
-  "notes": ""
+  "notes": "",
+  "source_hash": "f9f17658a46444c1"
 }

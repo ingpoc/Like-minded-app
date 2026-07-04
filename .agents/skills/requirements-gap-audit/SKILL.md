@@ -6,157 +6,136 @@ allowed-tools: Bash
 
 # requirements-gap-audit
 
+> **Self-validate after edits:** `./scripts/validate.sh`
 
+## Goal
 
-Find what is still missing before agents keep polishing the same known screens.
-When the operator asks for full coverage, this is an exhaustive runtime interaction audit, not a representative smoke test.
+Answer **what is still missing before claiming a surface is production-ready** — without re-discovering controls from source on every run.
+
+**Repo doctrine (`AGENTS.md`):** lazy retrieval, lazy authoring, proactive prune, single control chain (JSON → PROGRESS → code).
+
+**Control-status owner:** `validation/{ios,macos}/*.json` only.  
+**Roadmap owner:** unchecked items in `PROGRESS.md` tracks.  
+**Do not** rebuild a parallel backlog from `GOAL.md`, grep, or full app walks when ledgers already list pass/fail/pending/stale.
+
+---
 
 ## Modes
 
-- **scan** default: read-only. Produce gaps, proposed `PROGRESS.md` additions, missing mockup targets, and image prompts. Do not edit or generate.
-- **apply**: only after explicit user approval. Update `PROGRESS.md`; generate approved mockups through `imagegen`; save them under the repo mockup folders.
+- **scan** (default): read-only findings; propose `PROGRESS.md` additions; stop for approval.
+- **apply**: only after explicit approval — update `PROGRESS.md`, optional mockups, fix smallest blockers, re-test touched controls only.
 
-If the user says "create/update the backlog", "generate the missing mockups", "apply", or approves your scan proposal, switch to apply. Otherwise stay scan.
+---
 
-## Inputs
+## Query router (pick one tier; do not preload all tiers)
 
-Load the narrowest current route first:
+| Tier | When | First commands | CUA / build |
+|------|------|----------------|-------------|
+| **A — Ledger status** | “What’s pending?”, “what’s left on macOS/iOS?”, backlog scan | `npm run goal:next` → `npm run ledger:open` → read **only** matching `PROGRESS.md` track section | **No** |
+| **B — Single-screen proof** | Fix/verify one screen or one fail row | Tier A + **one** `validation/<platform>/*.json` + launch script for that screen | **Yes**, that screen only |
+| **C — Full production audit** | “Every control”, “production-grade”, “full CUA coverage” | Tier A + runtime contract below | **Yes**, all non-pass rows in scope |
 
-1. `npm run goal:next`
-2. `git status --short`
-3. `GOAL.md`, `goal.json`, `PROGRESS.md`
-4. `DESIGN.md`, `docs/product-direction.md`, `docs/workflows/validation.md`
-5. `mockups/ios/`, `mockups/macos/`
-6. native app source, API client/state, backend routes, seed scripts, validation scripts
+**Default to Tier A.** Escalate only when the user question or an open ledger row requires it.
 
-For Like-minded-style repos, also run the repo entrypoint if present:
+---
+
+## Tier A — minimum retrieval (high signal only)
+
+Run in order; stop when the question is answered:
 
 ```sh
-./script/project_context.sh query --task "requirements gap audit"
+npm run goal:next
+npm run ledger:open                    # open + stale-pass rows
+npm run ledger:stale                   # pass rows needing re-test after source change
+npm run verify:ledger-progress
 ```
 
-## Scan Flow
+After CUA/manual proof on a control:
 
-1. Build an expected surface map from `GOAL.md`, `DESIGN.md`, product docs, mockups, existing controls, and user request.
-2. Build an implemented surface map from app views, navigation, API clients, backend routes, seed data, and validation scripts.
-3. Build a control ledger for every discovered screen:
-   - screen/tab/sheet/detail route
-   - every visible button, row, card, toggle, menu, text field, picker, and gesture-like affordance
-   - expected result, backend/API/data expectation, seed-data dependency, validation evidence needed
-4. Runtime-test every ledger item when tools are available:
-   - open every tab/screen/sheet/detail reachable from visible navigation
-   - tap every visible button, card, row, toggle, menu item, and custom control
-   - type into every editable field with valid and one invalid/minimal input where relevant
-   - verify that state-changing controls persist through the backend/store/DB or classify them as unwired
-   - compare each observed result with explicit pass/fail criteria
-   - mark untestable controls as `untested` with the exact blocker; do not treat them as passed
-5. Classify every gap:
-   - missing screen
-   - missing mockup/reference
-   - present but static/fake
-   - present but broken at runtime
-   - visible control untested
-   - missing backend wiring
-   - missing seed data
-   - missing validation
-   - missing `PROGRESS.md` requirement
-6. Compare gaps against `PROGRESS.md`. If a required item is not tracked, propose the smallest phase/location and success criteria.
+```sh
+node script/ledger_record_control.js --platform macos --screen meetOverview --control join-meetup --result pass --evidence "..." --method CUA
+# or batch: node script/ledger_stamp_screen.js --platform macos --screen meetOverview --controls id1,id2
+```
 
-The scan is incomplete until each ledger item is `pass`, `fail`, or `untested-with-blocker`. For "fully production grade" requests, fail closed: any untested visible control is itself a finding and must be added to the proposed roadmap unless a narrower user-approved scope excludes it.
+When Swift/source changes: `npm run ledger:refresh-hashes` then `npm run ledger:stale`.
 
-Use exactly one `explorer` or project subagent per disjoint scan slice when useful:
-- native surface/runtime interactions
-- backend/data/seed wiring
-- validation/release coverage
+Then read **only**:
 
-Main agent owns judgment and any apply edits.
+- `goal.json` — active goal (not full `GOAL.md`)
+- `PROGRESS.md` — **active track section only** (macOS or iOS), not all phases
+- Individual `validation/*/*.json` files **for open rows only** (`ledger:open` lists them)
 
-## Mockup Policy
+### Tier A — do not load
 
-Missing mockups are requirements, not permission to invent product.
+- `GOAL.md`, `DESIGN.md`, `docs/product-direction.md`, `docs/workflows/validation.md` (unless Tier C visual dispute)
+- `./script/project_context.sh query` when `goal:next` + `ledger:open` already route the track
+- Full `PROGRESS.md` historical phases
+- Mockup images or `mockups/**` listing (paths are in ledger JSON `mockup_ref`)
+- Native source, API routes, seed scripts, `validation/README.md` (regenerate index only in apply)
+- iOS tree when auditing macOS only (and vice versa)
+- `Task`/`explore` subagents for status scans
+- Builds, simulators, or CUA for controls already `pass` in JSON
 
-In scan mode:
-- list missing mockups
-- propose target paths, for example `mockups/ios/21-privacy-settings.png`
-- propose concise `imagegen` prompts
-- stop for approval
+**Trust `result: pass` rows** unless the user changed files listed in that screen’s `source_files` or asks for re-proof.
 
-In apply mode:
-- use `imagegen` only for approved missing mockups
-- save outputs into `mockups/ios/` or `mockups/macos/`
-- never overwrite existing mockups; use the next numbered filename
-- never leave project-referenced assets only under `$CODEX_HOME/generated_images`
-- update `PROGRESS.md` with the mockup path and implementation success criteria
+---
 
-Before using `imagegen`, load the `imagegen` skill and follow its save-path rules.
+## Tier B — single-screen proof
 
-## PROGRESS.md Additions
+1. Complete Tier A; pick **one** open ledger file.
+2. Read **only** `source_files` from that JSON (not whole modules).
+3. Launch: `./script/run_macos_manual_validation.sh <screen>` or iOS equivalent from `build-ios-app` skill.
+4. CUA: `./script/macos_cua_screen.sh <screen>` (macOS).
+5. Update **only** that JSON’s control `result` / `evidence`; run `npm run verify:ledger-progress` if `PROGRESS.md` changed.
 
-Add only requirements grounded in at least one source:
-- `GOAL.md`
-- `DESIGN.md`
-- product docs
-- existing app controls
-- existing mockups
-- explicit user request
+---
 
-Each added item must include success criteria:
-- screen exists
-- key controls are tappable
-- backend/API/DB wiring exists when the feature persists or loads data
-- seed data exists when validation needs realistic state
-- validation command or manual runtime proof is named
-- mockup path is named when visual reference is required
+## Tier C — full runtime audit
 
-Do not add a giant backlog. Group adjacent tiny gaps under the smallest coherent phase/surface.
+Use only when Tier A shows open rows **and** the user wants exhaustive proof.
 
-## Output
+1. Seed: `npm run dev:api:validation` + `npm run reset:validation-data`
+2. For each **non-pass** control in scope (from `ledger:open`): CUA/manual test, persistence check when `backend_dependencies` exist
+3. Visual parity: open `mockup_ref` from ledger JSON; window sizes via `./script/macos_audit_window_matrix.sh` (macOS)
+4. Update JSON evidence; never mark `pass` without runtime proof
 
-Scan mode output:
+---
+
+## Ledger fields (success criteria already live here)
+
+Per control in `validation/*/*.json`:
+
+- `expected` — success criteria
+- `result` — `pass` | `fail` | `blocked` | `pending`
+- `evidence` — proof text (include date + method, e.g. `2026-07-04 CUA validation-priya`)
+- `blocker` — infra or untestable reason
+
+No separate control database. Do not re-inventory controls from Swift/JS when JSON exists.
+
+---
+
+## Output (scan)
 
 ```text
-findings:
-- severity: high|medium|low
-  type: missing screen|missing mockup|dead control|backend gap|seed gap|validation gap|progress gap|untested control
-  evidence: file/path/screen/runtime observation
-  requirement: one sentence
-  progress_target: phase/section
-  mockup_target: path or none
-  success_criteria: one sentence
-
-coverage:
-- platform/surface: name
-  screens_checked: count/list
-  controls_checked: count
-  passed: count
-  failed: count
-  untested: count with blockers
-
-approval_needed:
-- PROGRESS.md additions: yes/no
-- mockups to generate: list
-
-recommended_first_fix: one sentence
-validators: exact commands/runtime checks
+tier_used: A|B|C
+ledger_summary: <from ledger:open>
+findings: <only open rows + progress gaps>
+recommended_next: <one screen or one fix>
+re_test_required: <file paths or "none — ledger green for scope">
 ```
 
-Apply mode closeout:
-- files changed
-- mockups saved
-- validators run
-- remaining gaps
+---
 
-## Hard Rules
+## Hard rules
 
-1. Default to scan. Ask before editing `PROGRESS.md` or generating mockups.
-2. Do not invent scope. Ground every requirement in source evidence.
-3. Runtime evidence beats static screenshots for controls and flows.
-4. Static build success is insufficient for buttons, fields, sheets, custom cards, and backend state.
-5. Keep one roadmap owner: update `PROGRESS.md`; do not create a competing backlog doc.
-6. Stop at the smallest useful diff in apply mode.
-7. A full audit cannot close as complete while any discovered visible control lacks pass/fail/untested-with-blocker status.
+1. **Ledger before source.** `npm run ledger:open` before any grep or codebase walk.
+2. **Progressive disclosure.** Docs, mockups, source, backend — only for open rows or Tier C.
+3. **No repeat CUA on `pass`.** Re-test only after code changes or explicit user request.
+4. **One status owner.** JSON for control result; `PROGRESS.md` for roadmap checkboxes; `npm run verify:ledger-progress` binds them.
+5. Default scan; ask before `PROGRESS.md` / mockup edits.
+6. Subagents/explore only for Tier C disjoint slices (runtime vs backend), not Tier A.
 
 ## References
 
 - [references/surface-scan-prompt.md](references/surface-scan-prompt.md)
-- [scripts/requirements_surface_grep.sh](scripts/requirements_surface_grep.sh)
+- [scripts/requirements_surface_grep.sh](scripts/requirements_surface_grep.sh) — ledger summary helper, not a substitute for `ledger:open`

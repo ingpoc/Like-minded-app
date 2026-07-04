@@ -30,8 +30,9 @@ Do not add required HTML viewers, exports, project-specific miner agents, raw se
 
 | Situation | Action |
 |---|---|
-| Agent is already in a repo lane and needs precedent | Run `./script/project_context.sh query --task "<current task>"` |
-| Agent needs complete active corpus for audit | Run `./script/project_context.sh active` |
+| Normal repo lane | **Skip** — `goal:next` + lane workflow suffice |
+| Precedent for current task | `./script/project_context.sh query --task "…"` only if `decision_count > 0` |
+| Full audit (rare) | `./script/project_context.sh active` |
 | Agent needs precedence or override history | Run `./script/project_context.sh history --decision-key <key>` |
 | Agent needs the why behind a decision | Run `./script/project_context.sh trace --decision-key <key>` |
 | Agent needs explicit links around a decision | Run `./script/project_context.sh related --decision-key <key>` |

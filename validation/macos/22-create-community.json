@@ -1,0 +1,75 @@
+{
+  "screen": "Create Community",
+  "platform": "macos",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (createCommunity)"
+  ],
+  "mockup_ref": "mockups/macos/05-08-chat-communities-detail-recap.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "Communities browse Create a community card"
+  ],
+  "backend_dependencies": [
+    "POST /v1/communities"
+  ],
+  "controls": [
+    {
+      "id": "name",
+      "type": "text",
+      "label": "Community name",
+      "expected": "Editable name field bound to create payload",
+      "result": "pass",
+      "evidence": "2026-07-04: TextField Community name with accessibility label; required for Create community.",
+      "blocker": "",
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
+    },
+    {
+      "id": "summary",
+      "type": "text",
+      "label": "Community summary",
+      "expected": "Editable summary field bound to create payload",
+      "result": "pass",
+      "evidence": "2026-07-04: TextField Community summary; required for Create community.",
+      "blocker": "",
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
+    },
+    {
+      "id": "themes",
+      "type": "text",
+      "label": "Community themes",
+      "expected": "Comma-separated themes (max 3) in create payload",
+      "result": "pass",
+      "evidence": "2026-07-04: Themes field splits on commas into draftCommunityThemes for POST body.",
+      "blocker": "",
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
+    },
+    {
+      "id": "submit",
+      "type": "button",
+      "label": "Create community",
+      "expected": "POST /v1/communities then navigate → communityDetail",
+      "result": "pass",
+      "evidence": "2026-07-04: submitCommunity → appState.createCommunity → navigate communityDetail; disabled until name+summary non-empty.",
+      "blocker": "",
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
+    }
+  ],
+  "visual_parity": {
+    "result": "pass",
+    "notes": "2026-07-04 capture vs communities plate: name summary themes live preview submit. Intentional: no dedicated mockup plate; form parity with browse create tile path."
+  },
+  "notes": "Closes PROGRESS create-community form ledger owner.",
+  "source_hash": "342bb6ef2d9f07fb"
+}

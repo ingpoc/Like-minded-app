@@ -48,5 +48,6 @@
     "result": "pending-mockup-compare",
     "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
   },
-  "notes": "Entire screen blocked locally without LiveKit server + LIVEKIT_URL/API_KEY/SECRET."
+  "notes": "Entire screen blocked locally without LiveKit server + LIVEKIT_URL/API_KEY/SECRET.",
+  "source_hash": "7cda113d757c797e"
 }

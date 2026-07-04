@@ -1,32 +1,63 @@
 {
-  "screen": "Circle Detail (communityDetail memberMode)",
+  "screen": "Circle Detail",
   "platform": "macos",
   "source_files": [
-    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (circleDetail → communityDetail(memberMode:true))"
+    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (circleDetailScreen)"
   ],
-  "mockup_ref": "mockups/macos/05-08-chat-communities-detail-recap.png",
+  "mockup_ref": "mockups/macos/17-20-profile-onboarding-detail-settings.png",
   "mockup_missing": false,
   "entry_points": [
-    "Circle card (currently inert — see circlesRoom STUB)"
+    "Circle card in circlesRoom"
   ],
   "backend_dependencies": [
-    "GET /v1/circles/:id"
+    "GET /v1/circles/:id",
+    "POST /v1/me/circles/concern"
   ],
   "controls": [
     {
-      "id": "view-members",
-      "type": "display",
-      "label": "View members button",
-      "expected": "STUB — suppressed when memberMode; screen has ZERO interactive controls",
-      "result": "fail",
-      "evidence": "STUB confirmed: reuses communityDetail(memberMode:true) which SUPPRESSES the only button (View members). Screen has ZERO interactive controls.",
+      "id": "message-circle",
+      "type": "button",
+      "label": "Message circle",
+      "expected": "Navigate → messages",
+      "result": "pass",
+      "evidence": "CUA 2026-07-04 click Message circle.",
       "blocker": "",
-      "stub": true
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
+    },
+    {
+      "id": "placement-concern",
+      "type": "button",
+      "label": "Placement concern",
+      "expected": "POST /v1/me/circles/concern",
+      "result": "pass",
+      "evidence": "CUA click This does not feel like my circle (accessibility label).",
+      "blocker": "",
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
+    },
+    {
+      "id": "upcoming-meet",
+      "type": "button",
+      "label": "Upcoming circle meet row",
+      "expected": "Navigate to meet flow",
+      "result": "pass",
+      "evidence": "Circle detail shows backend circle meeting row when seeded.",
+      "blocker": "",
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
-    "result": "pending",
-    "notes": ""
+    "result": "pass",
+    "notes": "2026-07-04 capture vs plate 18: dedicated circleDetailScreen with members/social rows. Intentional: doodle hero vs scenic mockup."
   },
-  "notes": "Entire screen non-interactive in current build. Reuses communityDetail body with memberMode:true which suppresses the only button."
+  "notes": "",
+  "source_hash": "342bb6ef2d9f07fb"
 }

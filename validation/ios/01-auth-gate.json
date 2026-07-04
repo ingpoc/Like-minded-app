@@ -10,7 +10,7 @@
     "App launch when no signed-in session"
   ],
   "backend_dependencies": [
-    "Apple Sign In credential \u2192 AuthSessionStore.signIn"
+    "Apple Sign In credential → AuthSessionStore.signIn"
   ],
   "controls": [
     {
@@ -19,7 +19,7 @@
       "label": "Sign in with Apple",
       "expected": "Authenticates via Apple ID, creates session, advances to onboarding or app",
       "result": "blocked",
-      "evidence": "SignInWithAppleButton requires real Apple ID/iCloud account in simulator; none configured. Dev-bypass launch arg (--likeminded-dev-auth-bypass) used for testing instead. Bypass confirmed working: validation-gurusharan token \u2192 seeded primary user.",
+      "evidence": "SignInWithAppleButton requires real Apple ID/iCloud account in simulator; none configured. Dev-bypass launch arg (--likeminded-dev-auth-bypass) used for testing instead. Bypass confirmed working: validation-gurusharan token → seeded primary user.",
       "blocker": "Real Apple ID unavailable in simulator without TestFlight creds",
       "stub": false
     },
@@ -38,5 +38,6 @@
     "result": "pending-mockup-compare",
     "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
   },
-  "notes": ""
+  "notes": "",
+  "source_hash": "e3d06788b3e7aac0"
 }

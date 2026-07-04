@@ -27,6 +27,7 @@ targets:
     deploymentTarget: "18.0"
     sources:
       - path: Sources/LikemindedApp
+      - path: Sources/DoodleArt
       - path: Assets.xcassets
     dependencies:
       - package: LiveKit
@@ -61,6 +62,7 @@ targets:
     deploymentTarget: "15.0"
     sources:
       - path: Sources/LikemindedMac
+      - path: Sources/DoodleArt
       - path: Assets.xcassets
     settings:
       base:

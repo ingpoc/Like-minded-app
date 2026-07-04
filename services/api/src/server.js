@@ -614,7 +614,8 @@ async function handleRequest(req, res) {
       const body = await readJsonBody(req);
       const profile = await updateLatestProfile(user.id, {
         reflectionSummary: typeof body.reflectionSummary === "string" ? body.reflectionSummary.trim() : null,
-        signals: body.signals && typeof body.signals === "object" ? body.signals : null
+        signals: body.signals && typeof body.signals === "object" ? body.signals : null,
+        basicInfo: body.basicInfo && typeof body.basicInfo === "object" ? body.basicInfo : null
       });
       if (!profile) {
         json(res, 404, { error: "profile_not_found", message: "No profile has been created yet." });

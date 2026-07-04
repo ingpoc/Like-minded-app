@@ -2,6 +2,9 @@
 set -euo pipefail
 
 STATE="${1:-default}"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# shellcheck source=macos_canonical_app.sh
+source "$ROOT/script/macos_canonical_app.sh"
 
 usage() {
   echo "Usage: $0 [default|small|large|maximized|all]" >&2
@@ -9,39 +12,27 @@ usage() {
 
 apply_state() {
   local state="$1"
-  local x=80 y=80 width=1200 height=760
-
   case "$state" in
-    default) width=1200; height=760 ;;
-    small) width=1120; height=752 ;;
-    large) width=1440; height=900 ;;
+    default) export LIKEMINDED_MAC_WINDOW_WIDTH=1200 LIKEMINDED_MAC_WINDOW_HEIGHT=760 ;;
+    small) export LIKEMINDED_MAC_WINDOW_WIDTH=1120 LIKEMINDED_MAC_WINDOW_HEIGHT=752 ;;
+    large) export LIKEMINDED_MAC_WINDOW_WIDTH=1440 LIKEMINDED_MAC_WINDOW_HEIGHT=900 ;;
     maximized)
-      local bounds
+      local bounds x y width height
       bounds="$(osascript -e 'tell application "Finder" to get bounds of window of desktop')"
       IFS=',' read -r x y width height <<<"$bounds"
-      x="${x// /}"
-      y="${y// /}"
-      width="${width// /}"
-      height="${height// /}"
+      x="${x// /}"; y="${y// /}"; width="${width// /}"; height="${height// /}"
       y=$((y + 36))
       height=$((height - 72))
+      export LIKEMINDED_MAC_WINDOW_X="$x"
+      export LIKEMINDED_MAC_WINDOW_Y="$y"
+      export LIKEMINDED_MAC_WINDOW_WIDTH="$width"
+      export LIKEMINDED_MAC_WINDOW_HEIGHT="$height"
       ;;
     *) usage; exit 2 ;;
   esac
 
-  osascript <<APPLESCRIPT >/dev/null
-tell application "LikemindedMac" to activate
-tell application "System Events"
-  tell process "LikemindedMac"
-    set frontmost to true
-    if (count of windows) > 0 then
-      set position of window 1 to {$x, $y}
-      set size of window 1 to {$width, $height}
-    end if
-  end tell
-end tell
-APPLESCRIPT
-  echo "LikemindedMac window=$state ${width}x${height}+${x}+${y}"
+  "$ROOT/script/macos_cua_focus_window.sh" >/dev/null
+  echo "LikemindedMac window=$state ${LIKEMINDED_MAC_WINDOW_WIDTH}x${LIKEMINDED_MAC_WINDOW_HEIGHT}"
 }
 
 case "$STATE" in
@@ -63,4 +54,3 @@ case "$STATE" in
     exit 2
     ;;
 esac
-

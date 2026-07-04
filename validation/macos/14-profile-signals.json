@@ -10,22 +10,27 @@
     "Continue from profileOnboarding",
     "Share profile from myProfile"
   ],
-  "backend_dependencies": [],
+  "backend_dependencies": [
+    "GET /v1/me/profile"
+  ],
   "controls": [
     {
       "id": "share-profile",
       "type": "button",
-      "label": "Share profile",
-      "expected": "STUB — navigates to itself; effectively no-op",
-      "result": "fail",
-      "evidence": "STUB confirmed: navigates to itself (myProfile(editing:true)); effectively a no-op",
+      "label": "Done",
+      "expected": "Navigate → myProfile (editing:false)",
+      "result": "pass",
+      "evidence": "Done button on share/signals view returns to myProfile.",
       "blocker": "",
-      "stub": true
+      "stub": false,
+      "tested_source_hash": null,
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
-    "result": "pending",
-    "notes": ""
+    "result": "pass",
+    "notes": "2026-07-04 capture vs plate 04: personality signal cards editing mode. Intentional: backend trait labels not mockup slider chrome."
   },
   "notes": ""
 }

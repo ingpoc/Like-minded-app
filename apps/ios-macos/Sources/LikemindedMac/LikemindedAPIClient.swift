@@ -145,6 +145,25 @@ struct LikemindedAPIClient {
         return try JSONDecoder().decode(UserProfileResponse.self, from: data).profile
     }
 
+    func updateProfile(
+        reflectionSummary: String? = nil,
+        signals: ProfileSignals? = nil,
+        basicInfo: BasicInfoUpdate? = nil
+    ) async throws -> UserProfile {
+        let url = baseURL.appendingPathComponent("/v1/me/profile")
+        var request = URLRequest(url: url)
+        request.httpMethod = "PATCH"
+        applyCommonHeaders(&request)
+        request.httpBody = try JSONEncoder().encode(
+            ProfileUpdateRequest(reflectionSummary: reflectionSummary, signals: signals, basicInfo: basicInfo)
+        )
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+        return try JSONDecoder().decode(UserProfileResponse.self, from: data).profile
+    }
+
     func updatePlacement(action: String) async throws -> ProfileCircleMatchResult {
         let url = baseURL.appendingPathComponent("/v1/me/placement/actions")
         var request = URLRequest(url: url)

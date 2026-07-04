@@ -19,45 +19,58 @@
       "type": "text",
       "label": "Search communities",
       "expected": "Filters catalog by name/summary/themes",
-      "result": "blocked",
-      "evidence": "Cannot interact: macOS GUI automation unavailable. Source-trace: filters filteredCommunities by name/summary/themes",
+      "result": "pass",
+      "evidence": "2026-07-04 CUA validation-priya: type_text into Search communities idx=7; value=jazz filters grid via ./script/macos_cua_screen.sh communitiesBrowse.",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "filter-pills",
-      "type": "display",
+      "type": "button",
       "label": "All/Trending/Nearby/New pills",
-      "expected": "STUB — 'All' hard-coded selected, no action",
-      "result": "fail",
-      "evidence": "STUB confirmed: All/Trending/Nearby/New pills — 'All' hard-coded selected, no action",
+      "expected": "Filter communityFilter state",
+      "result": "pass",
+      "evidence": "CUA Trending filter Selected/Not selected.",
       "blocker": "",
-      "stub": true
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "create-card",
-      "type": "display",
+      "type": "button",
       "label": "Create a community card",
-      "expected": "STUB — plain VStack, not a Button, no tap action",
-      "result": "fail",
-      "evidence": "STUB confirmed: 'Create a community' is plain VStack, NOT a Button, no tap action",
+      "expected": "Navigate → createCommunity",
+      "result": "pass",
+      "evidence": "2026-07-04 CUA: Create a community grid tile idx=13; navigates to createCommunity.",
       "blocker": "",
-      "stub": true
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "community-card",
       "type": "button",
       "label": "Community card",
       "expected": "Navigate → communityDetail",
-      "result": "blocked",
-      "evidence": "Cannot interact: macOS GUI automation unavailable. Source-trace: navigate → communityDetail",
+      "result": "pass",
+      "evidence": "CUA Open Jazz Music community.",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
-    "result": "pending",
-    "notes": ""
+    "result": "pass",
+    "notes": "2026-07-04 capture vs plate 06: search pills Create tile grid. Intentional: doodle covers; seed roster size."
   },
-  "notes": ""
+  "notes": "",
+  "source_hash": "342bb6ef2d9f07fb"
 }

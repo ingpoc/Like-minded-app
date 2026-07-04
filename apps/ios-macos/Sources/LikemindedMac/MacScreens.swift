@@ -18,9 +18,21 @@ struct MacScreenView: View {
     @State private var recapNoteStatus: String?
     @State private var isSavingRecapNote = false
     @State private var selectedChatMatchId: String?
+    @State private var chatSearch = ""
+    @State private var chatFilter = "All"
+    @State private var readChatMatchIds: Set<String> = []
     @State private var notificationStatus: String?
-    @State private var profileTraitValue = 0.55
-    @State private var soulmateDistance = 0.45
+    @State private var notificationFilter = "All"
+    @State private var activityFilter = "All"
+    @State private var readNotificationIds: Set<String> = []
+    @State private var selectedSoulmateMatchId: String?
+    @State private var soulmateMatchDetail: SoulmateMatchDetail?
+    @State private var showAllInterests = false
+    @State private var draftProfileName = ""
+    @State private var draftProfileCity = ""
+    @State private var draftProfileGender: Gender = .preferNotToSay
+    @State private var isSavingProfileBasics = false
+    @State private var profileBasicsStatus: String?
     @State private var newCommunityName = ""
     @State private var newCommunitySummary = ""
     @State private var newCommunityThemes = ""
@@ -42,13 +54,22 @@ struct MacScreenView: View {
     @State private var callSidePanel = "Participants"
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 24) {
-            header
-            content
+        Group {
+            if screen == .welcome {
+                content
+            } else if screen == .chat || screen == .messages {
+                content
+            } else {
+                VStack(alignment: .leading, spacing: 24) {
+                    header
+                    content
+                }
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
+    @ViewBuilder
     private var header: some View {
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 8) {
@@ -78,7 +99,8 @@ struct MacScreenView: View {
         }
         guard screen == .meetOverview, state.isSignedIn else { return screen.subtitle }
         if let name = state.profile?.basicInfo?.name {
-            return "Good evening, \(name). Your next room is ready."
+            let first = name.split(separator: " ").first.map(String.init) ?? name
+            return "Good evening, \(first) 👋"
         }
         return screen.subtitle
     }
@@ -213,6 +235,7 @@ struct MacScreenView: View {
             MacOrb()
                 .frame(width: 430, height: 360)
         }
+        .frame(maxWidth: .infinity, minHeight: 560, alignment: .topLeading)
     }
 
     // MARK: - 2. meetOverview
@@ -272,41 +295,61 @@ struct MacScreenView: View {
     }
 
     private func heroCard(_ meeting: Meeting) -> some View {
-        VStack(alignment: .leading, spacing: 20) {
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Upcoming meetup")
-                    .font(MacType.small.weight(.semibold))
-                    .foregroundStyle(.white.opacity(0.8))
-                Text(LikemindedDate.full(meeting.scheduledAt))
-                    .font(MacType.eyebrow)
-                    .foregroundStyle(.white.opacity(0.75))
-                Text(meeting.title)
-                    .font(.system(size: 24, weight: .semibold, design: .serif))
-                    .foregroundStyle(.white)
+        VStack(alignment: .leading, spacing: 18) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Upcoming meetup")
+                        .font(MacType.small.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.85))
+                    Text(LikemindedDate.meetHeader(meeting.scheduledAt))
+                        .font(MacType.eyebrow)
+                        .foregroundStyle(.white.opacity(0.9))
+                }
+                Spacer(minLength: 12)
+                Text(LikemindedDate.countdownUntil(meeting.scheduledAt))
+                    .font(.system(size: 12, weight: .semibold, design: .rounded).monospacedDigit())
+                    .foregroundStyle(MacPalette.accent)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(.white.opacity(0.95), in: Capsule())
+                    .contentTransition(.numericText())
             }
-            HStack(spacing: 16) {
+            Text(meeting.title)
+                .font(.system(size: 26, weight: .semibold, design: .serif))
+                .foregroundStyle(.white)
+                .fixedSize(horizontal: false, vertical: true)
+            VStack(alignment: .leading, spacing: 8) {
                 Label("Host: \(meeting.hostName)", systemImage: "person.circle")
-                    .font(MacType.body)
                 Label("\(meeting.groupSize) participants", systemImage: "person.2")
-                    .font(MacType.body)
+                if !meeting.compositionSummary.isEmpty {
+                    Label(meeting.compositionSummary, systemImage: "person.3")
+                }
             }
-            .foregroundStyle(.white.opacity(0.85))
-            Spacer()
+            .font(MacType.body)
+            .foregroundStyle(.white.opacity(0.88))
+            Spacer(minLength: 4)
             Button("Join meetup") {
                 navigate?(.meetVideoCall)
             }
-                .font(MacType.button)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-                .background(.white.opacity(0.92), in: Capsule())
-                .foregroundStyle(MacPalette.accent)
-                .buttonStyle(.plain)
-                .accessibilityLabel("Join \(meeting.title) meetup")
+            .font(MacType.button)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .background(.white.opacity(0.92), in: Capsule())
+            .foregroundStyle(MacPalette.accent)
+            .buttonStyle(.plain)
+            .accessibilityLabel("Join \(meeting.title) meetup")
         }
         .padding(24)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(MacPalette.accent, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .frame(height: 250)
+        .frame(maxWidth: .infinity, minHeight: 280, alignment: .leading)
+        .background(
+            LinearGradient(
+                colors: [MacPalette.accent, Color(red: 0.04, green: 0.20, blue: 0.17)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            ),
+            in: RoundedRectangle(cornerRadius: 18, style: .continuous)
+        )
+        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(.white.opacity(0.12), lineWidth: 1))
     }
 
     // MARK: - 21. meetVideoCall
@@ -527,7 +570,14 @@ struct MacScreenView: View {
             if !appState.joinedCircles.isEmpty {
                 let myCircle = appState.joinedCircles.first!
                 HStack(alignment: .top, spacing: 18) {
-                    featuredCircleCard(myCircle)
+                    Button {
+                        appState.circleDetail = myCircle
+                        navigate?(.circleDetail)
+                    } label: {
+                        featuredCircleCard(myCircle)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Open your circle \(myCircle.name)")
                     concernCard
                         .frame(width: 300)
                 }
@@ -581,38 +631,40 @@ struct MacScreenView: View {
     private let gradientTones: [Color] = [MacPalette.accent, MacPalette.sage, MacPalette.clay, MacPalette.accent, MacPalette.sage]
 
     private func featuredCircleCard(_ circle: PlacementCircle) -> some View {
-        VStack(alignment: .leading, spacing: 20) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text(circle.name)
-                    .font(.system(size: 26, weight: .semibold, design: .serif))
-                    .foregroundStyle(.white)
-                Text("Thoughtful · Deep · Intentional")
-                    .font(MacType.body)
-                    .foregroundStyle(.white.opacity(0.8))
-            }
-            FlowLayout(spacing: 8) {
-                ForEach(circle.themes.prefix(4), id: \.self) { tag in
-                    Text(tag)
-                        .font(MacType.small.weight(.medium))
+        ZStack(alignment: .bottomLeading) {
+            DoodleCover(assetName: DoodleArt.circle(circle.id), height: 240, cornerRadius: 18, scrimStyle: .heroOverlay)
+            VStack(alignment: .leading, spacing: 14) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(circle.name)
+                        .font(MacType.coverTitle)
                         .foregroundStyle(.white)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .background(.white.opacity(0.18), in: Capsule())
-                        .overlay(Capsule().stroke(.white.opacity(0.25), lineWidth: 1))
+                    Text(circle.roomEnergy)
+                        .font(MacType.coverMeta)
+                        .foregroundStyle(.white.opacity(0.92))
                 }
+                FlowLayout(spacing: 8) {
+                    ForEach(circle.themes.prefix(4), id: \.self) { tag in
+                        Text(tag)
+                            .font(MacType.small.weight(.medium))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(.white.opacity(0.18), in: Capsule())
+                            .overlay(Capsule().stroke(.white.opacity(0.25), lineWidth: 1))
+                    }
+                }
+                HStack(spacing: 20) {
+                    Label("Sunday 7pm", systemImage: "clock")
+                    Label("\(displayMemberCount(for: circle)) members", systemImage: "person.2")
+                }
+                .font(MacType.coverMeta)
+                .foregroundStyle(.white.opacity(0.9))
             }
-            HStack(spacing: 24) {
-                Label("Sunday 7pm", systemImage: "clock")
-                Label("\(displayMemberCount(for: circle)) members", systemImage: "person.2")
-            }
-            .font(MacType.body)
-            .foregroundStyle(.white.opacity(0.85))
-            Spacer()
+            .doodleOverlayText()
+            .padding(24)
         }
-        .padding(24)
         .frame(maxWidth: .infinity, alignment: .leading)
         .frame(height: 240)
-        .background(LinearGradient(colors: [MacPalette.accent, MacPalette.accent.opacity(0.7), MacPalette.ink.opacity(0.6)], startPoint: .topLeading, endPoint: .bottomTrailing), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
     }
 
     private var concernCard: some View {
@@ -660,68 +712,101 @@ struct MacScreenView: View {
     }
 
     private func circleCard(_ circle: PlacementCircle, index: Int) -> some View {
-        let tone = gradientTones[index % gradientTones.count]
-        return VStack(alignment: .leading, spacing: 12) {
-            FlowLayout(spacing: 6) {
-                ForEach(circle.themes.prefix(3), id: \.self) { tag in
-                    Text(tag)
-                        .font(MacType.small.weight(.medium))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 5)
-                        .background(.white.opacity(0.2), in: Capsule())
-                }
+        ZStack(alignment: .bottomLeading) {
+            DoodleCover(assetName: DoodleArt.circle(circle.id), height: 170, cornerRadius: 18, scrimStyle: .bottomBand)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(circle.name)
+                    .font(MacType.coverTitleSmall)
+                    .foregroundStyle(.white)
+                Text("\(displayMemberCount(for: circle)) members")
+                    .font(MacType.coverMeta)
+                    .foregroundStyle(.white.opacity(0.9))
             }
-            Spacer()
-            Text(circle.name)
-                .font(.system(size: 18, weight: .semibold, design: .serif))
-                .foregroundStyle(.white)
-            Text("\(displayMemberCount(for: circle)) members")
-                .font(MacType.small)
-                .foregroundStyle(.white.opacity(0.75))
+            .doodleOverlayText()
+            .padding(18)
         }
-        .padding(18)
         .frame(width: 240, height: 170)
-        .background(LinearGradient(colors: [tone, tone.opacity(0.7), MacPalette.ink.opacity(0.5)], startPoint: .topLeading, endPoint: .bottomTrailing), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
     }
 
     // MARK: - 4. profileEdit
 
     private var profileEdit: some View {
-        HStack(alignment: .top, spacing: 24) {
+        let profile = appState.profile
+        let signals = profile?.signals
+        let traits = profileTraitRows(from: signals)
+        return HStack(alignment: .top, spacing: 24) {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Living profile")
                     .font(MacType.section)
                     .foregroundStyle(.white)
+                Text("Read-only signals from your voice profile")
+                    .font(MacType.small)
+                    .foregroundStyle(.white.opacity(0.75))
                 HStack(spacing: 10) {
-                    ForEach(["Communication", "Energy", "Trust"], id: \.self) { tab in
-                        MacPill(text: tab, isSelected: tab == "Communication")
+                    ForEach(profileSignalLabels(from: signals), id: \.title) { item in
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(item.title)
+                                .font(MacType.small)
+                                .foregroundStyle(.white.opacity(0.7))
+                            Text(item.value)
+                                .font(MacType.button)
+                                .foregroundStyle(.white)
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                     }
                 }
-                Label("Honest Communicator", systemImage: "message")
+                Label(signals?.communicationStyle?.primary.map { "\($0.capitalized) communicator" } ?? "Voice profile signals", systemImage: "message")
                     .font(.system(size: 18, weight: .semibold, design: .serif))
                     .foregroundStyle(.white)
-                profileSliders
+                VStack(spacing: 12) {
+                    ForEach(traits, id: \.label) { trait in
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack {
+                                Text(trait.left)
+                                    .font(MacType.small)
+                                    .foregroundStyle(.white.opacity(0.75))
+                                Spacer()
+                                Text(trait.right)
+                                    .font(MacType.small)
+                                    .foregroundStyle(.white.opacity(0.75))
+                            }
+                            GeometryReader { geo in
+                                ZStack(alignment: .leading) {
+                                    Capsule().fill(.white.opacity(0.2))
+                                    Capsule()
+                                        .fill(.white.opacity(0.85))
+                                        .frame(width: max(8, geo.size.width * trait.value))
+                                }
+                            }
+                            .frame(height: 8)
+                            .accessibilityLabel(trait.label)
+                            .accessibilityValue(String(format: "%.0f percent", trait.value * 100))
+                        }
+                    }
+                }
             }
             .padding(22)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(MacPalette.accent, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
             .frame(width: 480)
             MacPanel(title: "Interests") {
-                tagWrap(["Jazz", "Essays", "Psychology", "Design", "Cooking", "Movies", "Trekking"])
+                let interests = profile?.interests.map(\.label) ?? []
+                tagWrap(interests.isEmpty ? ["Interests appear after your voice profile"] : interests)
                 Divider()
                 Text("Reflection")
                     .font(MacType.section)
                 Text("Your read")
                     .font(.system(size: 13, weight: .semibold, design: .rounded))
                     .foregroundStyle(MacPalette.muted)
-                Text("You come alive in slow, emotionally honest conversations. You value meaning over noise.")
+                Text(profile?.profileSummary ?? "Complete your voice profile to see your private read.")
                     .font(MacType.body)
                     .foregroundStyle(MacPalette.muted)
                     .padding(14)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 12))
-                Button("Save profile edits") {
+                Button("Back to profile") {
                     navigate?(.myProfile)
                 }
                     .font(MacType.button)
@@ -730,147 +815,338 @@ struct MacScreenView: View {
                     .background(MacPalette.accent, in: Capsule())
                     .foregroundStyle(.white)
                     .buttonStyle(.plain)
+                    .accessibilityLabel("Back to profile")
+            }
+        }
+        .task {
+            if appState.isSignedIn {
+                await appState.loadCurrentProfile()
             }
         }
     }
 
-    private var profileSliders: some View {
-        VStack(spacing: 12) {
-            ForEach(["Reserved / Outgoing", "Analytical / Intuitive", "Low Energy / High Energy", "Steady / Spontaneous", "Slow Trust / Fast Trust"], id: \.self) { label in
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(label)
-                        .font(MacType.small)
-                        .foregroundStyle(.white.opacity(0.8))
-                    Slider(value: $profileTraitValue)
-                        .tint(.white.opacity(0.6))
-                }
-            }
+    // MARK: - 5. chat / messages (mockup 05 + 15)
+
+    private var filteredChatMatches: [SoulmateMatch] {
+        var matches = appState.soulmateMatches
+        if chatFilter == "Unread" {
+            matches = matches.filter { !readChatMatchIds.contains($0.matchId) }
+        } else if chatFilter == "Groups" {
+            matches = []
+        }
+        let query = chatSearch.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        guard !query.isEmpty else { return matches }
+        return matches.filter { match in
+            match.name.lowercased().contains(query)
+                || (appState.chatPreviews[match.matchId]?.text.lowercased().contains(query) ?? false)
         }
     }
-
-    // MARK: - 5. chat
 
     private func chat(title: String, compact: Bool) -> some View {
-        let selectedMatch = appState.soulmateMatches.first(where: { $0.matchId == selectedChatMatchId }) ?? appState.soulmateMatches.first
-        return HStack(spacing: 0) {
-            MacPanel(title: title) {
-                ForEach(appState.soulmateMatches) { match in
+        let selectedMatch = appState.soulmateMatches.first(where: { $0.matchId == selectedChatMatchId })
+            ?? filteredChatMatches.first
+            ?? appState.soulmateMatches.first
+        let listWidth: CGFloat = compact ? 340 : 360
+        return HStack(alignment: .top, spacing: 18) {
+            // Conversation list — mockup Messages sidebar
+            VStack(alignment: .leading, spacing: 14) {
+                HStack {
+                    Text(title)
+                        .font(MacType.section)
+                        .foregroundStyle(MacPalette.ink)
+                    Spacer()
                     Button {
-                        selectedChatMatchId = match.matchId
+                        navigate?(.soulmateDiscover)
                     } label: {
-                        chatListRow(match, selected: match.matchId == selectedMatch?.matchId)
+                        Image(systemName: "square.and.pencil")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(MacPalette.accent)
+                            .frame(width: 32, height: 32)
+                            .background(MacPalette.accentSoft.opacity(0.55), in: Circle())
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("Find matches")
+                    .help("Open Soulmate discover to find people to message")
+                }
+
+                HStack(spacing: 8) {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundStyle(MacPalette.muted)
+                    TextField(compact ? "Search messages" : "Search conversations", text: $chatSearch)
+                        .font(MacType.body)
+                        .textFieldStyle(.plain)
+                        .accessibilityLabel(compact ? "Search messages" : "Search conversations")
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 10)
+                .background(MacPalette.background, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(MacPalette.line, lineWidth: 1))
+
+                HStack(spacing: 8) {
+                    ForEach(["All", "Unread", "Groups"], id: \.self) { filter in
+                        Button(filter) { chatFilter = filter }
+                            .font(MacType.small.weight(.semibold))
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 7)
+                            .background(chatFilter == filter ? MacPalette.accent : MacPalette.background, in: Capsule())
+                            .foregroundStyle(chatFilter == filter ? .white : MacPalette.ink)
+                            .overlay(Capsule().stroke(chatFilter == filter ? Color.clear : MacPalette.line, lineWidth: 1))
+                            .buttonStyle(.plain)
+                            .accessibilityLabel(filter)
+                            .accessibilityValue(chatFilter == filter ? "Selected" : "Not selected")
+                    }
+                }
+
+                ScrollView {
+                    VStack(spacing: 6) {
+                        if chatFilter == "Groups" {
+                            Text("Group threads are not part of this MVP. Mutual match chats appear under All.")
+                                .font(MacType.body)
+                                .foregroundStyle(MacPalette.muted)
+                                .padding(.vertical, 12)
+                        } else if filteredChatMatches.isEmpty {
+                            Text(appState.soulmateMatches.isEmpty
+                                  ? "No conversations yet. Mutual matches appear here after meetups."
+                                  : chatFilter == "Unread"
+                                    ? "No unread conversations."
+                                    : "No conversations match “\(chatSearch)”.")
+                                .font(MacType.body)
+                                .foregroundStyle(MacPalette.muted)
+                                .padding(.vertical, 12)
+                        }
+
+                        ForEach(filteredChatMatches) { match in
+                            Button {
+                                selectedChatMatchId = match.matchId
+                                readChatMatchIds.insert(match.matchId)
+                            } label: {
+                                chatListRow(
+                                    match,
+                                    selected: match.matchId == selectedMatch?.matchId,
+                                    unread: !readChatMatchIds.contains(match.matchId)
+                                )
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("Open conversation with \(match.name)")
+                        }
+                    }
                 }
             }
-            .frame(width: compact ? 330 : 350)
-            VStack(alignment: .leading, spacing: 0) {
+            .padding(18)
+            .frame(width: listWidth, alignment: .topLeading)
+            .frame(maxHeight: .infinity, alignment: .top)
+            .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(MacPalette.line, lineWidth: 1))
+
+            // Active thread — mockup right pane
+            VStack(spacing: 0) {
                 if let selectedMatch {
-                    HStack {
-                        MacAvatar(initials: String(selectedMatch.name.prefix(1)))
+                    HStack(spacing: 12) {
+                        ZStack(alignment: .bottomTrailing) {
+                            MacAvatar(initials: String(selectedMatch.name.prefix(1)), color: MacPalette.accentSoft, size: 40)
+                            Circle()
+                                .fill(MacPalette.accent)
+                                .frame(width: 10, height: 10)
+                                .overlay(Circle().stroke(MacPalette.surface, lineWidth: 2))
+                                .offset(x: 1, y: 1)
+                        }
                         VStack(alignment: .leading, spacing: 2) {
                             Text(selectedMatch.name)
                                 .font(MacType.button)
+                                .foregroundStyle(MacPalette.ink)
                             Text("Online")
                                 .font(MacType.small)
                                 .foregroundStyle(MacPalette.accent)
                         }
                         Spacer()
+                        // Mockup shows call/info chrome; voice/video are not in MVP.
+                        chatHeaderIcon("phone", label: "Voice call planned")
+                        chatHeaderIcon("video", label: "Video call planned")
+                        chatHeaderIcon("info.circle", label: "Conversation info planned")
                     }
                     .padding(.horizontal, 20)
-                    .padding(.vertical, 14)
-                    Divider()
-                }
-                if appState.chatMessages.isEmpty {
-                    VStack {
+                    .padding(.vertical, 16)
+                    Divider().overlay(MacPalette.line)
+
+                    if appState.chatMessages.isEmpty {
+                        VStack(spacing: 8) {
+                            Spacer()
+                            Text(appState.messageError ?? "No messages yet. Say hello.")
+                                .font(MacType.body)
+                                .foregroundStyle(MacPalette.muted)
+                            Spacer()
+                        }
+                        .frame(maxWidth: .infinity)
+                    } else {
+                        ScrollViewReader { proxy in
+                            ScrollView {
+                                VStack(spacing: 14) {
+                                    Text("Today")
+                                        .font(MacType.small.weight(.semibold))
+                                        .foregroundStyle(MacPalette.muted)
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.top, 4)
+                                    ForEach(appState.chatMessages) { message in
+                                        messageBubble(
+                                            message,
+                                            mine: message.senderId == appState.authSession?.userId
+                                        )
+                                        .id(message.id)
+                                    }
+                                }
+                                .padding(20)
+                            }
+                            .onChange(of: appState.chatMessages.count) { _, _ in
+                                if let last = appState.chatMessages.last {
+                                    withAnimation { proxy.scrollTo(last.id, anchor: .bottom) }
+                                }
+                            }
+                        }
+                    }
+
+                    Divider().overlay(MacPalette.line)
+                    MacChatComposer(
+                        matchId: selectedMatch.matchId,
+                        appState: appState,
+                        placeholder: "Type a message..."
+                    )
+                } else {
+                    VStack(spacing: 10) {
                         Spacer()
-                        Text(appState.messageError ?? "No backend messages yet.")
+                        Image(systemName: "bubble.left.and.bubble.right")
+                            .font(.system(size: 36))
+                            .foregroundStyle(MacPalette.accentSoft)
+                        Text("Select a conversation")
+                            .font(MacType.section)
+                        Text("Mutual match threads from meetups show up here.")
                             .font(MacType.body)
                             .foregroundStyle(MacPalette.muted)
                         Spacer()
                     }
                     .frame(maxWidth: .infinity)
-                } else {
-                    ScrollView {
-                        VStack(spacing: 10) {
-                            ForEach(appState.chatMessages) { message in
-                                messageBubble(message.text, mine: message.senderId == appState.authSession?.userId)
-                            }
-                        }
-                        .padding(20)
-                    }
                 }
-                Divider()
-                MacChatComposer(matchId: selectedMatch?.matchId ?? "", appState: appState)
             }
-            .background(.ultraThinMaterial, in: UnevenRoundedRectangle(topLeadingRadius: 0, bottomLeadingRadius: 18, bottomTrailingRadius: 18, topTrailingRadius: 18, style: .continuous))
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(MacPalette.line, lineWidth: 1))
         }
+        .frame(maxWidth: .infinity, minHeight: 520, maxHeight: .infinity, alignment: .top)
         .task {
             if appState.isSignedIn {
                 await appState.fetchSoulmateStatus()
                 selectedChatMatchId = selectedChatMatchId ?? appState.soulmateMatches.first?.matchId
                 if let matchId = selectedChatMatchId {
+                    readChatMatchIds.insert(matchId)
                     await appState.loadMessages(matchId: matchId)
                 }
             }
         }
         .task(id: selectedChatMatchId) {
             if let matchId = selectedChatMatchId {
+                readChatMatchIds.insert(matchId)
                 await appState.loadMessages(matchId: matchId)
             }
         }
     }
 
-    private func chatListRow(_ match: SoulmateMatch, selected: Bool) -> some View {
-        HStack(spacing: 12) {
-            MacAvatar(initials: String(match.name.prefix(1)))
-                .frame(width: 32, height: 32)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(match.name)
-                    .font(MacType.button)
-                Text("Hey, how was your week?")
-                    .font(MacType.small)
-                    .foregroundStyle(MacPalette.muted)
-                    .lineLimit(1)
-            }
-            Spacer()
-            Text(match.createdAt.prefix(10))
-                .font(MacType.small)
-                .foregroundStyle(MacPalette.muted)
-        }
-        .padding(10)
-        .background(selected ? MacPalette.accentSoft.opacity(0.55) : MacPalette.surface, in: RoundedRectangle(cornerRadius: 12))
-        .overlay(RoundedRectangle(cornerRadius: 12).stroke(selected ? MacPalette.accent : MacPalette.line, lineWidth: 1))
+    private func chatHeaderIcon(_ systemName: String, label: String) -> some View {
+        Image(systemName: systemName)
+            .font(.system(size: 15, weight: .medium))
+            .foregroundStyle(MacPalette.muted.opacity(0.55))
+            .frame(width: 34, height: 34)
+            .background(MacPalette.background, in: Circle())
+            .overlay(Circle().stroke(MacPalette.line, lineWidth: 1))
+            .accessibilityLabel(label)
     }
 
-    // MARK: - 6. communitiesBrowse
+    private func chatListRow(_ match: SoulmateMatch, selected: Bool, unread: Bool) -> some View {
+        let preview = appState.chatPreviews[match.matchId]
+        let previewText = preview?.text ?? "No messages yet"
+        let stamp = preview.map { chatTimeLabel($0.createdAt) } ?? chatTimeLabel(match.createdAt)
+        return HStack(spacing: 12) {
+            ZStack(alignment: .bottomTrailing) {
+                MacAvatar(initials: String(match.name.prefix(1)), color: MacPalette.accentSoft, size: 44)
+                if unread {
+                    Circle()
+                        .fill(MacPalette.accent)
+                        .frame(width: 10, height: 10)
+                        .overlay(Circle().stroke(MacPalette.surface, lineWidth: 2))
+                }
+            }
+            VStack(alignment: .leading, spacing: 3) {
+                HStack {
+                    Text(match.name)
+                        .font(MacType.button)
+                        .foregroundStyle(MacPalette.ink)
+                    Spacer()
+                    Text(stamp)
+                        .font(MacType.small)
+                        .foregroundStyle(MacPalette.muted)
+                }
+                Text(previewText)
+                    .font(MacType.small)
+                    .foregroundStyle(unread ? MacPalette.ink : MacPalette.muted)
+                    .lineLimit(1)
+            }
+        }
+        .padding(12)
+        .background(selected ? MacPalette.accentSoft.opacity(0.45) : Color.clear, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+
+    private func chatTimeLabel(_ iso: String) -> String {
+        if let date = LikemindedDate.parse(iso) {
+            if Calendar.current.isDateInToday(date) {
+                let formatter = DateFormatter()
+                formatter.dateFormat = "h:mm a"
+                return formatter.string(from: date)
+            }
+            return LikemindedDate.short(iso)
+        }
+        return String(iso.prefix(10))
+    }
+
+    // MARK: - 6. communitiesBrowse (mockup plate 06: horizontal filters + create tile in grid)
 
     private var communitiesBrowse: some View {
-        HStack(alignment: .top, spacing: 24) {
-            VStack(alignment: .leading, spacing: 18) {
-                HStack(spacing: 8) {
-                    Image(systemName: "magnifyingglass")
-                        .foregroundStyle(MacPalette.muted)
-                        .font(MacType.body)
-                    TextField("Search communities...", text: $communitySearch)
-                        .font(MacType.body)
-                        .textFieldStyle(.plain)
-                }
-                .padding(12)
-                .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 14))
-                .overlay(RoundedRectangle(cornerRadius: 14).stroke(MacPalette.line, lineWidth: 1))
-                VStack(alignment: .leading, spacing: 8) {
-                    ForEach(["All", "Trending", "Nearby", "New"], id: \.self) { filter in
-                        Button {
-                            communityFilter = filter
-                        } label: {
-                            MacPill(text: filter, isSelected: communityFilter == filter)
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel("\(filter) communities filter")
-                        .accessibilityValue(communityFilter == filter ? "Selected" : "Not selected")
+        VStack(alignment: .leading, spacing: 18) {
+            HStack(spacing: 8) {
+                Image(systemName: "magnifyingglass")
+                    .foregroundStyle(MacPalette.muted)
+                    .font(MacType.body)
+                TextField("Search communities...", text: $communitySearch)
+                    .font(MacType.body)
+                    .textFieldStyle(.plain)
+                    .accessibilityLabel("Search communities")
+            }
+            .padding(12)
+            .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(MacPalette.line, lineWidth: 1))
+
+            HStack(spacing: 10) {
+                ForEach(["All", "Trending", "Nearby", "New"], id: \.self) { filter in
+                    Button {
+                        communityFilter = filter
+                    } label: {
+                        Text(filter)
+                            .font(MacType.small.weight(.semibold))
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 8)
+                            .background(communityFilter == filter ? MacPalette.accent : MacPalette.surface, in: Capsule())
+                            .foregroundStyle(communityFilter == filter ? .white : MacPalette.ink)
+                            .overlay(Capsule().stroke(communityFilter == filter ? Color.clear : MacPalette.line, lineWidth: 1))
                     }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("\(filter) communities filter")
+                    .accessibilityValue(communityFilter == filter ? "Selected" : "Not selected")
                 }
+                Spacer(minLength: 0)
+            }
+
+            LazyVGrid(
+                columns: [GridItem(.adaptive(minimum: 250, maximum: 300), spacing: 18, alignment: .top)],
+                alignment: .leading,
+                spacing: 18
+            ) {
                 Button {
                     navigate?(.createCommunity)
                 } label: {
@@ -878,14 +1154,12 @@ struct MacScreenView: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Create a community")
-            }
-            .frame(width: 280)
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 250, maximum: 280), spacing: 18, alignment: .leading)], alignment: .leading, spacing: 18) {
+
                 ForEach(Array(filteredCommunities.enumerated()), id: \.element.id) { index, community in
                     communityTile(community, index: index)
                 }
             }
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .task {
             await appState.fetchCommunities()
@@ -962,11 +1236,9 @@ struct MacScreenView: View {
     }
 
     private func communityCard(_ community: Community, index: Int, joined: Bool) -> some View {
-        let gradient = communityGradients[index % communityGradients.count]
         return VStack(alignment: .leading, spacing: 0) {
             ZStack(alignment: .bottomLeading) {
-                LinearGradient(colors: [gradient.0, gradient.1], startPoint: .topLeading, endPoint: .bottomTrailing)
-                    .frame(height: 140)
+                DoodleCover(assetName: DoodleArt.community(community.id), height: 140, cornerRadius: 0, scrimStyle: .bottomBand)
                 VStack {
                     HStack {
                         Spacer()
@@ -982,19 +1254,10 @@ struct MacScreenView: View {
                 .padding(12)
                 VStack(alignment: .leading, spacing: 4) {
                     Text(community.name)
-                        .font(.system(size: 18, weight: .semibold, design: .serif))
+                        .font(MacType.coverTitleSmall)
                         .foregroundStyle(.white)
-                    FlowLayout(spacing: 5) {
-                        ForEach(community.themes.prefix(3), id: \.self) { tag in
-                            Text(tag)
-                                .font(MacType.small.weight(.medium))
-                                .foregroundStyle(.white.opacity(0.85))
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 3)
-                                .background(.white.opacity(0.2), in: Capsule())
-                        }
-                    }
                 }
+                .doodleOverlayText()
                 .padding(16)
             }
             .clipShape(UnevenRoundedRectangle(topLeadingRadius: 18, topTrailingRadius: 18))
@@ -1016,44 +1279,197 @@ struct MacScreenView: View {
     }
 
     private var createCommunityCard: some View {
-        VStack(spacing: 14) {
-            Image(systemName: "plus.circle")
-                .font(.system(size: 36))
-                .foregroundStyle(MacPalette.accent)
-            Text("Create a community")
-                .font(MacType.button)
-                .foregroundStyle(MacPalette.accent)
-            Text("Start a space for people who vibe with your interests.")
-                .font(MacType.small)
-                .foregroundStyle(MacPalette.muted)
-                .multilineTextAlignment(.center)
+        VStack(spacing: 0) {
+            ZStack {
+                MacPalette.background
+                VStack(spacing: 12) {
+                    Image(systemName: "plus")
+                        .font(.system(size: 22, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .frame(width: 48, height: 48)
+                        .background(MacPalette.accent, in: Circle())
+                    Text("Create a community")
+                        .font(MacType.coverTitleSmall)
+                        .foregroundStyle(MacPalette.ink)
+                    Text("Start a space for people who vibe with your interests.")
+                        .font(MacType.small)
+                        .foregroundStyle(MacPalette.muted)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 16)
+                }
+                .padding(20)
+            }
+            .frame(height: 140)
+            .clipShape(UnevenRoundedRectangle(topLeadingRadius: 18, topTrailingRadius: 18))
+
+            VStack(spacing: 12) {
+                Text("Member-led rooms around shared interests.")
+                    .font(MacType.small)
+                    .foregroundStyle(MacPalette.muted)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                Text("+ Create")
+                    .font(MacType.small.weight(.semibold))
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 7)
+                    .background(MacPalette.accent, in: Capsule())
+                    .foregroundStyle(.white)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(16)
+            .padding(.bottom, 14)
         }
-        .frame(maxWidth: .infinity)
-        .padding(32)
+        .frame(maxWidth: .infinity, minHeight: 280, alignment: .top)
         .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(MacPalette.accent.opacity(0.3), style: StrokeStyle(lineWidth: 1.5, dash: [6, 4])))
-        .frame(minHeight: 230)
+        .overlay(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .stroke(MacPalette.accent.opacity(0.35), style: StrokeStyle(lineWidth: 1.5, dash: [7, 5]))
+        )
     }
 
     // MARK: - 7. communityDetail / circleDetail
 
+    @ViewBuilder
     private func communityDetail(memberMode: Bool) -> some View {
-        let backendCircle = memberMode ? appState.circleDetail : nil
+        if memberMode {
+            circleDetailScreen
+        } else {
+            communityDetailScreen
+        }
+    }
+
+    private var circleDetailScreen: some View {
+        let circle = appState.circleDetail ?? appState.joinedCircles.first
+        let themes = circle?.themes ?? []
+        let nextMeeting = appState.upcomingMeetings.first(where: { $0.kind == "circle" && $0.targetId == circle?.id })
+        return HStack(alignment: .top, spacing: 18) {
+            VStack(alignment: .leading, spacing: 14) {
+                ZStack(alignment: .bottomLeading) {
+                    DoodleCover(
+                        assetName: DoodleArt.circle(circle?.id ?? "reflective-builders"),
+                        height: 220,
+                        cornerRadius: 18,
+                        scrimStyle: .heroOverlay
+                    )
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(circle?.name ?? "Your circle")
+                            .font(MacType.coverTitle)
+                            .foregroundStyle(.white)
+                        Text(circle?.placementReason ?? circle?.roomEnergy ?? "Personality-fit room")
+                            .font(MacType.coverMeta)
+                            .foregroundStyle(.white.opacity(0.9))
+                        FlowLayout(spacing: 6) {
+                            ForEach(themes.prefix(4), id: \.self) { tag in
+                                Text(tag)
+                                    .font(MacType.small.weight(.medium))
+                                    .foregroundStyle(.white)
+                                    .padding(.horizontal, 10)
+                                    .padding(.vertical, 5)
+                                    .background(.white.opacity(0.2), in: Capsule())
+                            }
+                        }
+                    }
+                    .doodleOverlayText()
+                    .padding(24)
+                }
+                .frame(height: 220)
+                .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+
+                HStack(spacing: 12) {
+                    Button("Message circle") { navigate?(.messages) }
+                        .buttonStyle(.borderedProminent)
+                        .tint(MacPalette.accent)
+                        .accessibilityLabel("Message circle")
+                    Button("Placement concern") {
+                        Task {
+                            await appState.reportCircleConcern("macOS circle detail concern")
+                            circleConcernStatus = appState.loadError ?? "Concern registered. Check Profile for re-interview."
+                        }
+                    }
+                    .buttonStyle(.bordered)
+                    .accessibilityLabel("This does not feel like my circle")
+                }
+
+                HStack(spacing: 18) {
+                    statItem("person.2", "\(circle?.membersOnline ?? 12) members")
+                    if let nextMeeting {
+                        statItem("calendar", "Next meetup\n\(LikemindedDate.meetHeader(nextMeeting.scheduledAt))")
+                        statItem("person.crop.circle", "Host\n\(nextMeeting.hostName)")
+                    } else {
+                        statItem("calendar", "Next meetup\nSunday 7:00 PM")
+                    }
+                }
+
+                MacPanel(title: "Upcoming") {
+                    if let nextMeeting {
+                        Button {
+                            selectedRecapMeetingId = nextMeeting.id
+                            navigate?(.meetOverview)
+                        } label: {
+                            pastMeetRow(nextMeeting)
+                        }
+                        .buttonStyle(.plain)
+                    } else {
+                        Text("RSVP on Meet to get scheduled for the next Sunday circle meetup.")
+                            .font(MacType.body)
+                            .foregroundStyle(MacPalette.muted)
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity)
+
+            MacPanel(title: "Circle fit") {
+                Text(circle?.shortPromise ?? "A room shaped around how you connect.")
+                    .font(MacType.body)
+                    .foregroundStyle(MacPalette.muted)
+                if let circle {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Label(circle.roomEnergy, systemImage: "sparkle")
+                        Label(circle.easiestFirstAction, systemImage: "hand.wave")
+                        Label(circle.fitLabel, systemImage: "checkmark.seal")
+                    }
+                    .font(MacType.small)
+                    .foregroundStyle(MacPalette.accent)
+                }
+                if let circleConcernStatus {
+                    Text(circleConcernStatus)
+                        .font(MacType.small)
+                        .foregroundStyle(MacPalette.muted)
+                }
+            }
+            .frame(width: 300)
+        }
+        .task {
+            if let id = appState.circleDetail?.id ?? appState.joinedCircles.first?.id {
+                await appState.loadCircleDetail(id: id)
+            } else {
+                await appState.fetchCircles()
+            }
+        }
+    }
+
+    private var communityDetailScreen: some View {
         let community = selectedCommunity
-        let themes = backendCircle?.themes ?? community?.themes ?? []
-        let isJoined = community.map(isCommunityJoined) ?? true
+        let themes = community?.themes ?? []
+        let isJoined = community.map(isCommunityJoined) ?? false
+        let nextMeeting = appState.upcomingMeetings.first(where: { $0.kind == "community" && $0.targetId == community?.id })
         return HStack(alignment: .top, spacing: 18) {
             VStack(alignment: .leading, spacing: 14) {
                 ZStack(alignment: .topTrailing) {
                     ZStack(alignment: .bottomLeading) {
-                        LinearGradient(colors: [MacPalette.accent, MacPalette.sage.opacity(0.7), MacPalette.ink.opacity(0.5)], startPoint: .topLeading, endPoint: .bottomTrailing)
+                        DoodleCover(
+                            assetName: DoodleArt.community(community?.id ?? "design-craft"),
+                            height: 250,
+                            cornerRadius: 18,
+                            scrimStyle: .heroOverlay
+                        )
                         VStack(alignment: .leading, spacing: 8) {
-                            Text(backendCircle?.name ?? (memberMode ? "The Thinkers' Room" : community?.name ?? "Community"))
-                                .font(.system(size: 28, weight: .semibold, design: .serif))
+                            Text(community?.name ?? "Community")
+                                .font(MacType.coverTitle)
                                 .foregroundStyle(.white)
-                            Text(backendCircle?.placementReason ?? (memberMode ? "Analytical · Calm · Curious" : community?.summary ?? "Listen, share, explore."))
-                                .font(MacType.body)
-                                .foregroundStyle(.white.opacity(0.8))
+                            Text(community?.summary ?? "Listen, share, explore.")
+                                .font(MacType.coverMeta)
+                                .foregroundStyle(.white.opacity(0.9))
                             FlowLayout(spacing: 6) {
                                 ForEach(themes.prefix(4), id: \.self) { tag in
                                     Text(tag)
@@ -1065,6 +1481,7 @@ struct MacScreenView: View {
                                 }
                             }
                         }
+                        .doodleOverlayText()
                         .padding(24)
                     }
                     .frame(height: 250)
@@ -1108,9 +1525,14 @@ struct MacScreenView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
 
                 HStack(spacing: 18) {
-                    statItem("person.2", "\(community?.membersCount ?? backendCircle?.membersOnline ?? 18) members")
-                    statItem("calendar", "Next meetup\nSat, Jul 5 - 7:00 PM")
-                    statItem("person.crop.circle", "Host\nMarco")
+                    statItem("person.2", "\(community?.membersCount ?? 18) members")
+                    if let nextMeeting {
+                        statItem("calendar", "Next meetup\n\(LikemindedDate.short(nextMeeting.scheduledAt))")
+                        statItem("person.crop.circle", "Host\n\(nextMeeting.hostName)")
+                    } else {
+                        statItem("calendar", "Next meetup\nSaturday 7:00 PM")
+                        statItem("person.crop.circle", "Host\nTBD")
+                    }
                 }
                 .padding(.vertical, 4)
 
@@ -1133,8 +1555,8 @@ struct MacScreenView: View {
             }
             .frame(maxWidth: .infinity)
 
-            MacPanel(title: memberMode ? "Moderators" : "About") {
-                Text(backendCircle?.placementReason ?? (memberMode ? "Your seeded host group keeps the room thoughtful." : community?.summary ?? "A seeded community from the validation database."))
+            MacPanel(title: "About") {
+                Text(community?.summary ?? "A seeded community from the validation database.")
                     .font(MacType.body)
                     .foregroundStyle(MacPalette.muted)
                 Button("View guidelines") {
@@ -1162,11 +1584,6 @@ struct MacScreenView: View {
             }
             .frame(width: 300)
         }
-        .task {
-            if memberMode, appState.circleDetail == nil {
-                await appState.fetchCircles()
-            }
-        }
     }
 
     @ViewBuilder
@@ -1187,8 +1604,31 @@ struct MacScreenView: View {
             eventRow("Best essay thread", date: "12 replies")
             eventRow("Most saved recommendation", date: "Vinyl listening")
         default:
-            eventRow("Community Meetup", date: "Sat, Jul 5 - 7:00 PM", detail: "Jazz & Music Lounge, Koramangala")
-            eventRow("Vinyl Listening Night", date: "Sat, Jul 19 - 6:30 PM", detail: "Marco's Place")
+            let communityId = selectedCommunity?.id
+            let communityMeetings = appState.upcomingMeetings.filter {
+                $0.kind == "community" && $0.targetId == communityId
+            }
+            if communityMeetings.isEmpty {
+                Button {
+                    navigate?(.createEvent)
+                } label: {
+                    detailEventRow(title: "Community Meetup", subtitle: "Plan an event · Create a listening session")
+                }
+                .buttonStyle(.plain)
+            } else {
+                ForEach(communityMeetings) { meeting in
+                    Button {
+                        selectedRecapMeetingId = meeting.id
+                        navigate?(.meetOverview)
+                    } label: {
+                        detailEventRow(
+                            title: meeting.title,
+                            subtitle: "\(LikemindedDate.meetHeader(meeting.scheduledAt)) · Host \(meeting.hostName)"
+                        )
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
         }
     }
 
@@ -1225,6 +1665,7 @@ struct MacScreenView: View {
                             .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 12))
                             .overlay(RoundedRectangle(cornerRadius: 12).stroke(MacPalette.line, lineWidth: 1))
                             .frame(minHeight: 100)
+                            .accessibilityLabel("Add a private note")
 
                         HStack {
                             Button(isSavingRecapNote ? "Saving" : "Save note") {
@@ -1267,7 +1708,8 @@ struct MacScreenView: View {
                         }
                         Spacer()
                         Button("Message") {
-                            navigate?(.messages)
+                            selectedChatMatchId = match.matchId
+                            navigate?(.chat)
                         }
                             .font(MacType.small.weight(.semibold))
                             .padding(.horizontal, 12)
@@ -1275,6 +1717,7 @@ struct MacScreenView: View {
                             .background(MacPalette.accent, in: Capsule())
                             .foregroundStyle(.white)
                             .buttonStyle(.plain)
+                            .accessibilityLabel("Message \(match.name)")
                     }
                     .padding(8)
                     .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 12))
@@ -1300,19 +1743,58 @@ struct MacScreenView: View {
                 let name = profile.basicInfo?.name ?? "You"
                 let initials = String(name.prefix(1))
                 let location = profile.basicInfo?.city ?? "Your location"
-                profileCard(name: name, initials: initials, location: location, profile: profile)
+                profileCard(name: name, initials: initials, location: location, profile: profile, editing: editing)
                 VStack(spacing: 18) {
-                    MacPanel(title: editing ? "Your personality signals" : "Personality signals") {
+                    MacPanel {
+                        HStack(alignment: .firstTextBaseline) {
+                            Text(editing ? "Your personality signals" : "Personality signals")
+                                .font(MacType.section)
+                                .foregroundStyle(MacPalette.ink)
+                            Spacer()
+                            Button("Retake voice profile") {
+                                navigate?(.profileOnboarding)
+                            }
+                            .font(MacType.small.weight(.semibold))
+                            .foregroundStyle(MacPalette.accent)
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("Retake voice profile")
+                        }
                         HStack(spacing: 10) {
-                            ForEach(["Communication", "Energy", "Trust", "Mindset", "Creativity"], id: \.self) { signalCard($0) }
+                            ForEach(profileSignalCards(from: profile.signals), id: \.title) { item in
+                                signalCard(item.title, detail: item.value)
+                            }
                         }
                     }
-                    MacPanel(title: "Top interests") {
-                        let interests = profile.interests.map { $0.label }
-                        tagWrap(Array(interests.prefix(5)) + (interests.count > 5 ? ["+\(interests.count - 5)"] : []))
+                    MacPanel {
+                        HStack(alignment: .firstTextBaseline) {
+                            Text("Top interests")
+                                .font(MacType.section)
+                                .foregroundStyle(MacPalette.ink)
+                            Spacer()
+                            let interests = profile.interests.map(\.label)
+                            if interests.count > 5 {
+                                Button(showAllInterests ? "Show less" : "View all") {
+                                    showAllInterests.toggle()
+                                }
+                                .font(MacType.small.weight(.semibold))
+                                .foregroundStyle(MacPalette.accent)
+                                .buttonStyle(.plain)
+                                .accessibilityLabel(showAllInterests ? "Show less" : "View all")
+                            }
+                        }
+                        let interests = profile.interests.map(\.label)
+                        if interests.isEmpty {
+                            Text("Interests appear after your voice profile.")
+                                .font(MacType.body)
+                                .foregroundStyle(MacPalette.muted)
+                        } else if showAllInterests {
+                            tagWrap(interests)
+                        } else {
+                            tagWrap(Array(interests.prefix(5)) + (interests.count > 5 ? ["+\(interests.count - 5)"] : []))
+                        }
                     }
                     MacPanel(title: "My vibe") {
-                        Text(profile.profileSummary ?? "")
+                        Text(profile.profileSummary?.isEmpty == false ? profile.profileSummary! : "Your private read appears after the voice interview.")
                             .font(MacType.body)
                             .foregroundStyle(MacPalette.muted)
                     }
@@ -1322,6 +1804,16 @@ struct MacScreenView: View {
                     Text(appState.loadError ?? "Complete your voice profile to see your placement, interests, and private signals here.")
                         .font(MacType.body)
                         .foregroundStyle(MacPalette.muted)
+                    Button("Start profile setup") {
+                        navigate?(.profileOnboarding)
+                    }
+                    .font(MacType.button)
+                    .padding(.horizontal, 18)
+                    .padding(.vertical, 10)
+                    .background(MacPalette.accent, in: Capsule())
+                    .foregroundStyle(.white)
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Start profile setup")
                 }
             } else {
                 Text("Sign in to view your profile")
@@ -1333,39 +1825,105 @@ struct MacScreenView: View {
             if appState.isSignedIn {
                 await appState.loadCurrentProfile()
                 await appState.loadCurrentPlacement()
+                await appState.fetchCircles()
+                await appState.fetchMeetings()
+                await appState.fetchSoulmateStatus()
             }
         }
     }
 
-    private func profileCard(name: String, initials: String, location: String, profile: UserProfile) -> some View {
-        MacPanel(dark: true) {
+    private func profileCard(name: String, initials: String, location: String, profile: UserProfile, editing: Bool) -> some View {
+        let circleCount = max(appState.joinedCircles.count, appState.placement == nil ? 0 : 1)
+        let connectionCount = appState.soulmateMatches.count
+        let eventCount = appState.upcomingMeetings.count + appState.pastMeetings.count
+        return MacPanel(dark: true) {
             VStack(spacing: 15) {
                 MacAvatar(initials: initials, color: MacPalette.accentSoft)
                     .scaleEffect(2.1)
                     .padding(.top, 20)
-                Text(name)
-                    .font(MacType.title)
+                HStack(spacing: 8) {
+                    Text(name)
+                        .font(MacType.title)
+                    if !editing {
+                        Button {
+                            navigate?(.profileEdit)
+                        } label: {
+                            Image(systemName: "pencil")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundStyle(.white.opacity(0.9))
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Edit profile")
+                    }
+                }
                 Label(location, systemImage: "mappin")
                     .font(MacType.body)
-                    .foregroundStyle(MacPalette.muted)
-                MacPill(text: "Voice profile active", isSelected: true)
+                    .foregroundStyle(.white.opacity(0.8))
+                Text("Voice profile active")
+                    .font(MacType.small.weight(.semibold))
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(.white.opacity(0.18), in: Capsule())
+                HStack(spacing: 0) {
+                    profileStat(value: "\(circleCount)", label: "Circles")
+                    profileStat(value: "\(connectionCount)", label: "Connections")
+                    profileStat(value: "\(eventCount)", label: "Events")
+                }
+                .padding(.vertical, 4)
                 Text(profile.profileSummary ?? "")
                     .font(MacType.body)
                     .multilineTextAlignment(.center)
-                    .foregroundStyle(MacPalette.muted)
-                Button("Share profile") {
-                    navigate?(.profileSignals)
-                }
+                    .foregroundStyle(.white.opacity(0.85))
+                if editing {
+                    Button("Done") {
+                        navigate?(.myProfile)
+                    }
                     .font(MacType.button)
                     .padding(.horizontal, 20)
                     .padding(.vertical, 10)
-                    .background(MacPalette.accent, in: Capsule())
+                    .background(.white, in: Capsule())
+                    .foregroundStyle(MacPalette.accent)
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Done")
+                } else {
+                    Button("Share profile") {
+                        navigate?(.profileSignals)
+                    }
+                    .font(MacType.button)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 10)
+                    .background(.white.opacity(0.16), in: Capsule())
+                    .overlay(Capsule().stroke(.white.opacity(0.55), lineWidth: 1))
                     .foregroundStyle(.white)
                     .buttonStyle(.plain)
+                    .accessibilityLabel("Share profile")
+                    Button("Edit profile") {
+                        navigate?(.profileEdit)
+                    }
+                    .font(MacType.small.weight(.semibold))
+                    .foregroundStyle(.white.opacity(0.9))
+                    .buttonStyle(.plain)
+                    .underline()
+                    .accessibilityLabel("Edit profile")
+                }
             }
             .frame(maxWidth: .infinity)
         }
         .frame(width: 310)
+    }
+
+    private func profileStat(value: String, label: String) -> some View {
+        VStack(spacing: 2) {
+            Text(value)
+                .font(MacType.button)
+                .foregroundStyle(.white)
+            Text(label)
+                .font(MacType.small)
+                .foregroundStyle(.white.opacity(0.75))
+        }
+        .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(value) \(label)")
     }
 
     // MARK: - 10. soulmateOverview
@@ -1386,14 +1944,24 @@ struct MacScreenView: View {
                         .font(MacType.body)
                 }
                 .padding(.vertical, 4)
-                Toggle("Enable Soulmate", isOn: Binding(
-                    get: { appState.soulmateEnabled },
-                    set: { enabled in
-                        Task { await appState.setSoulmateEnabled(enabled) }
-                    }
-                ))
-                .toggleStyle(.switch)
-                .tint(MacPalette.sage)
+                if appState.soulmateEnabled {
+                    // Toggle lives only in Settings once enabled — avoid a second enable control here.
+                    Label("On — change this in Settings", systemImage: "checkmark.circle.fill")
+                        .font(MacType.body)
+                        .foregroundStyle(MacPalette.sage)
+                        .accessibilityLabel("Soulmate is on. Change this in Settings.")
+                } else {
+                    Toggle("Enable Soulmate", isOn: Binding(
+                        get: { appState.soulmateEnabled },
+                        set: { enabled in
+                            Task { await appState.setSoulmateEnabled(enabled) }
+                        }
+                    ))
+                    .toggleStyle(.switch)
+                    .tint(MacPalette.sage)
+                    .accessibilityLabel("Enable Soulmate")
+                    .accessibilityValue("Off")
+                }
                 Button("How it works") {
                     navigate?(.soulmateDiscover)
                 }
@@ -1427,24 +1995,24 @@ struct MacScreenView: View {
 
     private var soulmateDiscover: some View {
         HStack(alignment: .top, spacing: 24) {
-            MacPanel(title: "Filters") {
+            MacPanel(title: "How matches work") {
                 VStack(alignment: .leading, spacing: 14) {
-                    formLine("Age range", value: "24 to 32")
-                    Slider(value: $soulmateDistance)
-                        .tint(MacPalette.accent)
-                    formLine("Distance", value: "25 km")
-                    tagWrap(["Jazz", "Books", "Design"])
-                    MacPill(text: "Active this week")
+                    Text("Matches appear only after mutual selection from a meetup. Distance and interest filters are not part of this MVP.")
+                        .font(MacType.body)
+                        .foregroundStyle(MacPalette.muted)
+                    formLine("Source", value: "Mutual meetup selection")
+                    formLine("Visible when", value: appState.soulmateEnabled ? "Soulmate enabled" : "Soulmate off")
+                    formLine("Matches", value: "\(appState.soulmateMatches.count)")
                 }
             }
             .frame(width: 250)
 
             VStack(alignment: .leading, spacing: 18) {
                 HStack(spacing: 12) {
-                MacPill(text: "All", isSelected: true)
-                MacPill(text: "Nearby")
-                MacPill(text: "Interests")
-                Spacer()
+                    Text("Mutual matches")
+                        .font(MacType.section)
+                        .foregroundStyle(MacPalette.ink)
+                    Spacer()
                     Button("New matches") {
                         Task { await appState.fetchSoulmateStatus() }
                     }
@@ -1454,15 +2022,18 @@ struct MacScreenView: View {
                         .background(MacPalette.surface, in: Capsule())
                         .overlay(Capsule().stroke(MacPalette.line, lineWidth: 1))
                         .buttonStyle(.plain)
+                        .accessibilityLabel("New matches")
                 }
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 18), count: 3), spacing: 18) {
                     ForEach(appState.soulmateMatches) { match in
                         Button {
+                            selectedSoulmateMatchId = match.matchId
                             navigate?(.soulmateDetail)
                         } label: {
                             matchCard(match)
                         }
                         .buttonStyle(.plain)
+                        .accessibilityLabel("Open \(match.name)")
                     }
                 }
 
@@ -1477,14 +2048,15 @@ struct MacScreenView: View {
             .frame(maxWidth: .infinity)
         }
         .task {
-            if appState.isSignedIn && appState.soulmateEnabled {
+            if appState.isSignedIn {
                 await appState.fetchSoulmateStatus()
             }
         }
     }
 
     private func matchCard(_ match: SoulmateMatch) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
+        let meetingLabel = match.meetingDate.map { "Met \(LikemindedDate.short($0))" } ?? "Mutual match"
+        return VStack(alignment: .leading, spacing: 0) {
             ZStack(alignment: .center) {
                 LinearGradient(colors: [MacPalette.accent, MacPalette.sage.opacity(0.7), MacPalette.ink.opacity(0.4)], startPoint: .topLeading, endPoint: .bottomTrailing)
                 VStack(spacing: 8) {
@@ -1496,24 +2068,14 @@ struct MacScreenView: View {
             .frame(height: 160)
             .clipShape(UnevenRoundedRectangle(topLeadingRadius: 18, topTrailingRadius: 18))
             VStack(alignment: .leading, spacing: 8) {
-                Text("\(match.name), \(match.userId.prefix(2))")
+                Text(match.name)
                     .font(MacType.button)
-                Text("Designer · Bangalore")
+                Text(meetingLabel)
                     .font(MacType.small)
                     .foregroundStyle(MacPalette.muted)
-                Label("5 km away", systemImage: "location")
+                Text("Open for interests and chat")
                     .font(MacType.small)
                     .foregroundStyle(MacPalette.muted)
-                FlowLayout(spacing: 5) {
-                    ForEach(["Jazz", "Books", "Film"], id: \.self) { tag in
-                        Text(tag)
-                            .font(MacType.small.weight(.medium))
-                            .foregroundStyle(MacPalette.accent)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 3)
-                            .background(MacPalette.accentSoft, in: Capsule())
-                    }
-                }
                 HStack {
                     Spacer()
                     Image(systemName: "heart")
@@ -1526,7 +2088,7 @@ struct MacScreenView: View {
             .padding(14)
         }
         .frame(maxWidth: .infinity)
-        .frame(minHeight: 330)
+        .frame(minHeight: 280)
         .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(MacPalette.line, lineWidth: 1))
     }
@@ -1534,9 +2096,14 @@ struct MacScreenView: View {
     // MARK: - 12. soulmateDetail
 
     private var soulmateDetail: some View {
-        let match = appState.soulmateMatches.first
-        let name = match?.name ?? "Soulmate match"
-        let meetingLabel = match?.meetingDate.map { "Met \(LikemindedDate.short($0))" } ?? "Matched from a seeded meetup"
+        let match = appState.soulmateMatches.first(where: { $0.matchId == selectedSoulmateMatchId })
+            ?? appState.soulmateMatches.first
+        let detail = soulmateMatchDetail
+        let name = detail?.name ?? match?.name ?? "Soulmate match"
+        let meetingLabel = (detail?.meetingDate ?? match?.meetingDate).map { "Met \(LikemindedDate.short($0))" }
+            ?? "Matched from a meetup"
+        let gender = detail?.basicInfo.gender?.capitalized
+        let interestLabels = detail?.interests.map(\.label) ?? []
         return HStack(alignment: .top, spacing: 24) {
             ZStack(alignment: .center) {
                 LinearGradient(colors: [MacPalette.clay.opacity(0.8), MacPalette.accent.opacity(0.7), MacPalette.ink.opacity(0.5)], startPoint: .topLeading, endPoint: .bottomTrailing)
@@ -1561,10 +2128,15 @@ struct MacScreenView: View {
                     .font(MacType.body)
                     .foregroundStyle(MacPalette.muted)
                 MacPanel(title: "About") {
-                    Text("Seeded match from the validation database. Open messages to continue the conversation.")
+                    Text(gender.map { "\($0). Interests are shared only after a mutual match." }
+                         ?? "Interests are shared only after a mutual match.")
                         .font(MacType.body)
                         .foregroundStyle(MacPalette.muted)
-                    tagWrap(match.map { match in [match.name, match.meetingDate.map { LikemindedDate.short($0) }].compactMap { $0 } } ?? [])
+                    if let gender {
+                        tagWrap([name, gender])
+                    } else {
+                        tagWrap([name])
+                    }
                 }
                 HStack(spacing: 12) {
                     Text("Matches are mutual — chosen after a meetup.")
@@ -1572,6 +2144,9 @@ struct MacScreenView: View {
                         .foregroundStyle(MacPalette.muted)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     Button {
+                        if let match {
+                            selectedChatMatchId = match.matchId
+                        }
                         navigate?(.chat)
                     } label: {
                         HStack(spacing: 8) {
@@ -1585,19 +2160,26 @@ struct MacScreenView: View {
                         .foregroundStyle(.white)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("Message")
                 }
             }
             .frame(maxWidth: .infinity)
             VStack(alignment: .leading, spacing: 18) {
                 MacPanel(title: "You both like") {
-                    tagWrap(match.map { match in [match.name, match.meetingDate.map { LikemindedDate.short($0) }, "Mutual selection"].compactMap { $0 } } ?? [])
+                    if interestLabels.isEmpty {
+                        Text("Interest tags load from the match profile.")
+                            .font(MacType.body)
+                            .foregroundStyle(MacPalette.muted)
+                    } else {
+                        tagWrap(interestLabels)
+                    }
                 }
-                MacPanel(title: "Compatibility") {
+                MacPanel(title: "Match status") {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("92%")
-                            .font(.system(size: 38, weight: .bold, design: .rounded))
+                        Text("Mutual")
+                            .font(.system(size: 28, weight: .bold, design: .rounded))
                             .foregroundStyle(MacPalette.accent)
-                        Text("Your vibes align in energy, values and communication.")
+                        Text("You both selected each other after a meetup. No compatibility score is shown.")
                             .font(MacType.body)
                             .foregroundStyle(MacPalette.muted)
                     }
@@ -1605,24 +2187,49 @@ struct MacScreenView: View {
             }
             .frame(width: 280)
         }
+        .task(id: match?.matchId ?? "") {
+            guard appState.isSignedIn else { return }
+            if appState.soulmateMatches.isEmpty {
+                await appState.fetchSoulmateStatus()
+            }
+            let matchId = selectedSoulmateMatchId
+                ?? appState.soulmateMatches.first?.matchId
+            guard let matchId else { return }
+            selectedSoulmateMatchId = matchId
+            do {
+                soulmateMatchDetail = try await appState.fetchSoulmateMatchDetail(id: matchId)
+            } catch {
+                soulmateMatchDetail = nil
+            }
+        }
     }
 
     // MARK: - 13. communityMembers
 
     private var communityMembers: some View {
         let community = selectedCommunity
+        let memberCount = filteredCommunityMembers.count
         return HStack(alignment: .top, spacing: 22) {
             MacPanel(title: community?.name ?? "Community") {
-                VStack(alignment: .leading, spacing: 4) {
-                    navItem("About", icon: "info.circle")
-                    navItem("Events", icon: "calendar")
-                    navItem("Members", icon: "person.3.fill", selected: true)
-                    navItem("Resources", icon: "book")
-                    navItem("Highlights", icon: "star")
-                    navItem("Settings", icon: "gearshape")
+                VStack(alignment: .leading, spacing: 10) {
+                    Label("Members", systemImage: "person.3.fill")
+                        .font(MacType.button)
+                        .foregroundStyle(MacPalette.accent)
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 6)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(MacPalette.accentSoft.opacity(0.5), in: RoundedRectangle(cornerRadius: 10))
+                    Text("This screen lists members only. About, events, and settings open from community detail.")
+                        .font(MacType.small)
+                        .foregroundStyle(MacPalette.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Text(community?.summary ?? "")
+                        .font(MacType.body)
+                        .foregroundStyle(MacPalette.muted)
                 }
             }
             .frame(width: 280)
+            .accessibilityLabel("Members section")
             VStack(alignment: .leading, spacing: 14) {
                 MacPanel(title: "Members") {
                     HStack(spacing: 12) {
@@ -1632,15 +2239,19 @@ struct MacScreenView: View {
                             TextField("Search members...", text: $memberSearch)
                                 .font(MacType.body)
                                 .textFieldStyle(.plain)
+                                .accessibilityLabel("Search members")
                         }
                         .padding(10)
                         .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 10))
                         .overlay(RoundedRectangle(cornerRadius: 10).stroke(MacPalette.line, lineWidth: 1))
-                        HStack(spacing: 6) {
-                            MacPill(text: "All", isSelected: true)
-                            MacPill(text: "Active now", isSelected: false)
-                            MacPill(text: "Most active", isSelected: false)
-                        }
+                        Text("\(memberCount) member\(memberCount == 1 ? "" : "s")")
+                            .font(MacType.small.weight(.semibold))
+                            .foregroundStyle(MacPalette.muted)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(MacPalette.surface, in: Capsule())
+                            .overlay(Capsule().stroke(MacPalette.line, lineWidth: 1))
+                            .accessibilityLabel("All members")
                     }
                     VStack(spacing: 8) {
                         if appState.communityMembers.isEmpty {
@@ -1648,33 +2259,26 @@ struct MacScreenView: View {
                                 .font(MacType.body)
                                 .foregroundStyle(MacPalette.muted)
                                 .padding(.vertical, 12)
+                        } else if filteredCommunityMembers.isEmpty {
+                            Text("No members match “\(memberSearch)”.")
+                                .font(MacType.body)
+                                .foregroundStyle(MacPalette.muted)
+                                .padding(.vertical, 12)
                         } else {
-                            ForEach(Array(filteredCommunityMembers.enumerated()), id: \.element.userId) { index, member in
+                            ForEach(filteredCommunityMembers, id: \.userId) { member in
                                 memberRow(
                                     member.name,
-                                    role: "Member" + (member.gender.map { " · \($0.capitalized)" } ?? ""),
-                                    active: false,
-                                    isHost: index == 0
+                                    role: "Member" + (member.gender.map { " · \($0.capitalized)" } ?? "")
                                 )
                             }
                         }
                     }
                 }
             }
-            .task {
-                if appState.isSignedIn, let community {
-                    await appState.fetchCommunityMembers(id: community.id)
-                }
-            }
             .task(id: community?.id ?? "") {
                 if appState.isSignedIn, let community {
                     await appState.fetchCommunityMembers(id: community.id)
                 }
-            }
-        }
-        .task {
-            if appState.isSignedIn {
-                await appState.fetchSoulmateStatus()
             }
         }
     }
@@ -1688,145 +2292,137 @@ struct MacScreenView: View {
         }
     }
 
-    private func navItem(_ title: String, icon: String, selected: Bool = false) -> some View {
-        Label(title, systemImage: icon)
-            .font(MacType.button)
-            .foregroundStyle(selected ? MacPalette.accent : MacPalette.ink)
-            .padding(.vertical, 8)
-            .padding(.horizontal, 6)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(selected ? MacPalette.accentSoft.opacity(0.5) : .clear, in: RoundedRectangle(cornerRadius: 10))
-    }
-
-    private func memberRow(_ name: String, role: String, active: Bool, isHost: Bool) -> some View {
+    private func memberRow(_ name: String, role: String) -> some View {
         HStack(spacing: 12) {
             MacAvatar(initials: String(name.prefix(1)))
                 .frame(width: 32, height: 32)
             VStack(alignment: .leading, spacing: 2) {
-                HStack(spacing: 6) {
-                    Text(name)
-                        .font(MacType.button)
-                    if active {
-                        Circle()
-                            .fill(MacPalette.accent)
-                            .frame(width: 7, height: 7)
-                    }
-                }
+                Text(name)
+                    .font(MacType.button)
                 Text(role)
                     .font(MacType.small)
                     .foregroundStyle(MacPalette.muted)
             }
             Spacer()
-            if isHost {
-                MacPill(text: "Host", isSelected: true)
-            } else {
-                Text("...")
-                    .font(MacType.button)
-                    .foregroundStyle(MacPalette.muted)
-            }
         }
         .padding(8)
         .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 12))
         .overlay(RoundedRectangle(cornerRadius: 12).stroke(MacPalette.line, lineWidth: 1))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(name), \(role)")
     }
 
     // MARK: - 14. createEvent
 
     private var createEvent: some View {
-        HStack(alignment: .top, spacing: 22) {
-            MacPanel(title: "Event type") {
-                VStack(spacing: 10) {
-                    eventTypeButton("Meetup", icon: "calendar.badge.plus", detail: "In-person or online gatherings")
-                    eventTypeButton("Listening Session", icon: "headphones", detail: "Listen together and discuss")
-                    eventTypeButton("Jam Session", icon: "music.note", detail: "Collaborate and make music")
-                    Spacer(minLength: 0)
+        HStack(alignment: .top, spacing: 24) {
+            VStack(alignment: .leading, spacing: 16) {
+                HStack(spacing: 10) {
+                    compactEventTypePill("Meetup", icon: "person.3")
+                    compactEventTypePill("Listening Session", icon: "waveform")
+                    compactEventTypePill("Jam Session", icon: "music.note")
                 }
-            }
-            .frame(width: 230)
-            .frame(maxHeight: .infinity, alignment: .top)
-
-            MacPanel(title: "Event details") {
-                VStack(alignment: .leading, spacing: 12) {
-                    labeledTextField("Event name", text: $eventName, placeholder: "Saturday Jazz Listening Session")
-                    HStack(spacing: 12) {
-                        labeledTextField("Date", text: $eventDate, placeholder: "2026-07-05")
-                        labeledTextField("Time", text: $eventTime, placeholder: "19:00")
-                            .frame(width: 130)
-                    }
-                    labeledTextField("Location", text: $eventLocation, placeholder: "Location")
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Details")
-                            .font(MacType.small.weight(.semibold))
-                        TextField("What should people know?", text: $eventDetails, axis: .vertical)
-                            .lineLimit(4...6)
-                            .font(MacType.body)
-                            .textFieldStyle(.plain)
-                            .padding(12)
-                            .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 12))
-                            .overlay(RoundedRectangle(cornerRadius: 12).stroke(MacPalette.line, lineWidth: 1))
-                    }
-                    HStack {
-                        Button(eventCoverAdded ? "Cover added" : "Add cover") {
-                            eventCoverAdded = true
-                            createEventStatus = "Jazz listening cover added to preview."
+                MacPanel(title: "Event details") {
+                    VStack(alignment: .leading, spacing: 12) {
+                        labeledTextField("Event name", text: $eventName, placeholder: "Saturday Jazz Listening Session")
+                        HStack(spacing: 12) {
+                            labeledTextField("Date", text: $eventDate, placeholder: "2026-07-05")
+                            labeledTextField("Time", text: $eventTime, placeholder: "19:00")
+                                .frame(width: 130)
                         }
-                        Button(eventTagsAdded ? "Tags added" : "Add tags") {
-                            eventTagsAdded = true
-                            createEventStatus = "Tags added from event type."
+                        labeledTextField("Location", text: $eventLocation, placeholder: "Location")
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Details")
+                                .font(MacType.small.weight(.semibold))
+                            TextField("What should people know?", text: $eventDetails, axis: .vertical)
+                                .lineLimit(4...6)
+                                .font(MacType.body)
+                                .textFieldStyle(.plain)
+                                .padding(12)
+                                .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 12))
+                                .overlay(RoundedRectangle(cornerRadius: 12).stroke(MacPalette.line, lineWidth: 1))
+                                .accessibilityLabel("Event details")
+                        }
+                        HStack(spacing: 12) {
+                            Button(eventCoverAdded ? "Cover added" : "Add cover") {
+                                eventCoverAdded = true
+                                createEventStatus = "Jazz listening cover added to preview."
+                            }
+                            .buttonStyle(.bordered)
+                            Button(eventTagsAdded ? "Tags added" : "Add tags") {
+                                eventTagsAdded = true
+                                createEventStatus = "Tags added from event type."
+                            }
+                            .buttonStyle(.bordered)
+                        }
+                        if let createEventStatus {
+                            Text(createEventStatus)
+                                .font(MacType.small)
+                                .foregroundStyle(MacPalette.muted)
                         }
                     }
-                    if let createEventStatus {
-                        Text(createEventStatus)
-                            .font(MacType.small)
-                            .foregroundStyle(MacPalette.muted)
-                    }
-                    Spacer(minLength: 0)
                 }
+                Button(isCreatingEvent ? "Creating…" : "Create event") {
+                    submitEvent()
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(MacPalette.accent)
+                .controlSize(.large)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .disabled(isCreatingEvent || eventName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                .accessibilityLabel("Create event")
             }
-            .frame(maxHeight: .infinity, alignment: .top)
+            .frame(maxWidth: .infinity, alignment: .topLeading)
 
-            MacPanel(title: "Preview") {
+            MacPanel(title: "Live preview") {
                 VStack(alignment: .leading, spacing: 12) {
-                    Group {
-                        if eventCoverAdded {
-                            Image("EventJazzListening")
-                                .resizable()
-                                .scaledToFill()
-                        } else {
-                            LinearGradient(colors: [MacPalette.accent, MacPalette.sage], startPoint: .topLeading, endPoint: .bottomTrailing)
-                        }
+                    if eventCoverAdded {
+                        DoodleCover(assetName: DoodleArt.eventCover(eventType: eventType), height: 140, cornerRadius: 14, scrim: false)
+                    } else {
+                        DoodleCover(assetName: DoodleArt.eventMeetup, height: 140, cornerRadius: 14, scrim: true)
                     }
-                    .frame(height: 120)
-                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                     Text(eventName.isEmpty ? "Event name" : eventName)
-                        .font(MacType.title)
+                        .font(MacType.section)
                         .foregroundStyle(MacPalette.ink)
+                    Label("\(eventDate) · \(eventTime)", systemImage: "calendar")
+                        .font(MacType.small)
+                        .foregroundStyle(MacPalette.muted)
+                    Label(eventLocation.isEmpty ? "Location" : eventLocation, systemImage: "mappin.and.ellipse")
+                        .font(MacType.small)
+                        .foregroundStyle(MacPalette.muted)
+                    if !eventDetails.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                        Text(eventDetails)
+                            .font(MacType.body)
+                            .foregroundStyle(MacPalette.muted)
+                            .lineLimit(4)
+                    }
                     if eventTagsAdded {
                         HStack(spacing: 6) {
                             tagPill(eventType)
                             tagPill("Community hosted")
                         }
                     }
-                    Text("\(eventDate) - \(eventTime)")
-                        .font(MacType.small)
-                        .foregroundStyle(MacPalette.muted)
-                    Text(eventLocation)
-                        .font(MacType.small)
-                        .foregroundStyle(MacPalette.muted)
-                    Text("1 member going")
-                        .font(MacType.small.weight(.semibold))
-                    Button(isCreatingEvent ? "Creating" : "Create event") {
-                        submitEvent()
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(isCreatingEvent || eventName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                     Spacer(minLength: 0)
                 }
             }
-            .frame(width: 280)
+            .frame(width: 360)
             .frame(maxHeight: .infinity, alignment: .top)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+    }
+
+    private func compactEventTypePill(_ title: String, icon: String) -> some View {
+        Button { eventType = title } label: {
+            Label(title, systemImage: icon)
+                .font(MacType.button)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 10)
+                .foregroundStyle(eventType == title ? .white : MacPalette.ink)
+                .background(eventType == title ? MacPalette.accent : MacPalette.surface, in: Capsule())
+                .overlay(Capsule().stroke(eventType == title ? MacPalette.accent : MacPalette.line, lineWidth: 1))
+        }
+        .buttonStyle(.plain)
+        .accessibilityValue(eventType == title ? "Selected" : "Not selected")
     }
 
     private func eventTypeButton(_ title: String, icon: String, detail: String) -> some View {
@@ -1870,6 +2466,7 @@ struct MacScreenView: View {
                 .padding(12)
                 .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 12))
                 .overlay(RoundedRectangle(cornerRadius: 12).stroke(MacPalette.line, lineWidth: 1))
+                .accessibilityLabel(label)
         }
     }
 
@@ -1914,6 +2511,7 @@ struct MacScreenView: View {
                             .padding(12)
                             .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 12))
                             .overlay(RoundedRectangle(cornerRadius: 12).stroke(MacPalette.line, lineWidth: 1))
+                            .accessibilityLabel("Community name")
                     }
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Summary")
@@ -1926,6 +2524,7 @@ struct MacScreenView: View {
                             .padding(12)
                             .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 12))
                             .overlay(RoundedRectangle(cornerRadius: 12).stroke(MacPalette.line, lineWidth: 1))
+                            .accessibilityLabel("Community summary")
                     }
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Themes")
@@ -1937,6 +2536,7 @@ struct MacScreenView: View {
                             .padding(12)
                             .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 12))
                             .overlay(RoundedRectangle(cornerRadius: 12).stroke(MacPalette.line, lineWidth: 1))
+                            .accessibilityLabel("Community themes")
                     }
                     Button(isCreatingCommunity ? "Creating" : "Create community") {
                         submitCommunity()
@@ -2010,42 +2610,66 @@ struct MacScreenView: View {
         HStack(alignment: .top, spacing: 22) {
             MacPanel(title: "Notifications") {
                 HStack(spacing: 8) {
-                    MacPill(text: "All", isSelected: true)
-                    MacPill(text: "Unread", isSelected: false)
-                    MacPill(text: "Mentions", isSelected: false)
+                    ForEach(["All", "Unread", "Mentions"], id: \.self) { filter in
+                        Button { notificationFilter = filter } label: {
+                            MacPill(text: filter, isSelected: notificationFilter == filter)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("\(filter) notifications filter")
+                        .accessibilityValue(notificationFilter == filter ? "Selected" : "Not selected")
+                    }
                     Spacer()
                 }
-                if appState.notifications.isEmpty {
-                    Text(appState.notificationError ?? "No backend notifications yet.")
+                if filteredNotifications.isEmpty {
+                    Text(appState.notificationError ?? "No notifications in this filter.")
                         .font(MacType.body)
                         .foregroundStyle(MacPalette.muted)
                         .padding(.vertical, 20)
                 } else {
                     VStack(spacing: 8) {
-                        ForEach(appState.notifications) { item in
-                            notificationRow(item)
+                        ForEach(filteredNotifications) { item in
+                            Button {
+                                openNotification(item)
+                            } label: {
+                                notificationRow(item)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel(item.title)
                         }
                     }
                 }
                 Button("Mark all as read") {
-                    appState.notifications = []
+                    readNotificationIds = Set(appState.notifications.map(\.id))
+                    notificationStatus = "All notifications marked read in this view."
                 }
                     .font(MacType.small.weight(.semibold))
                     .foregroundStyle(MacPalette.accent)
                     .buttonStyle(.plain)
                     .underline()
                     .padding(.top, 8)
+                    .accessibilityLabel("Mark all notifications as read")
             }
             MacPanel(title: "Activity") {
                 HStack(spacing: 8) {
-                    MacPill(text: "All", isSelected: true)
-                    MacPill(text: "Circles", isSelected: false)
-                    MacPill(text: "Communities", isSelected: false)
+                    ForEach(["All", "Circles", "Communities"], id: \.self) { filter in
+                        Button { activityFilter = filter } label: {
+                            MacPill(text: filter, isSelected: activityFilter == filter)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("\(filter) activity filter")
+                        .accessibilityValue(activityFilter == filter ? "Selected" : "Not selected")
+                    }
                     Spacer()
                 }
                 VStack(spacing: 8) {
-                    ForEach(appState.activityItems) { item in
-                        activityRow(item)
+                    ForEach(filteredActivityItems) { item in
+                        Button {
+                            openActivityItem(item)
+                        } label: {
+                            activityRow(item)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel(item.title)
                     }
                 }
                 Spacer()
@@ -2057,15 +2681,15 @@ struct MacScreenView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Stay in the loop")
                             .font(MacType.button)
-                        Text("Enable notifications to never miss a vibe.")
+                        Text("Refresh pulls the latest backend notifications and activity.")
                             .font(MacType.small)
                             .foregroundStyle(MacPalette.muted)
                     }
                     Spacer()
-                    Button("Enable") {
+                    Button("Refresh") {
                         Task {
                             await appState.fetchNotifications()
-                            notificationStatus = "Notifications refreshed"
+                            notificationStatus = "Notifications refreshed from backend."
                         }
                     }
                         .font(MacType.small.weight(.semibold))
@@ -2074,6 +2698,7 @@ struct MacScreenView: View {
                         .background(MacPalette.accent, in: Capsule())
                         .foregroundStyle(.white)
                         .buttonStyle(.plain)
+                        .accessibilityLabel("Refresh notifications")
                 }
                 .padding(.top, 8)
                 if let notificationStatus {
@@ -2085,6 +2710,55 @@ struct MacScreenView: View {
         }
         .task {
             await appState.fetchNotifications()
+        }
+    }
+
+    private var filteredNotifications: [MacNotificationItem] {
+        appState.notifications.filter { item in
+            switch notificationFilter {
+            case "Unread":
+                return !readNotificationIds.contains(item.id)
+            case "Mentions":
+                return item.kind == "mention"
+            default:
+                return true
+            }
+        }
+    }
+
+    private var filteredActivityItems: [MacNotificationItem] {
+        appState.activityItems.filter { item in
+            switch activityFilter {
+            case "Circles":
+                return item.kind == "meeting" || item.title.localizedCaseInsensitiveContains("circle")
+            case "Communities":
+                return item.kind == "community"
+            default:
+                return true
+            }
+        }
+    }
+
+    private func openNotification(_ item: MacNotificationItem) {
+        readNotificationIds.insert(item.id)
+        switch item.kind {
+        case "meeting":
+            navigate?(.meetOverview)
+        case "soulmate", "message":
+            navigate?(.messages)
+        default:
+            break
+        }
+    }
+
+    private func openActivityItem(_ item: MacNotificationItem) {
+        switch item.kind {
+        case "meeting":
+            navigate?(.meetOverview)
+        case "community":
+            navigate?(.communitiesBrowse)
+        default:
+            break
         }
     }
 
@@ -2146,23 +2820,58 @@ struct MacScreenView: View {
                     stepRow(number: "2", title: "Voice profile", selected: false)
                     stepRow(number: "3", title: "Join first circle", selected: false)
                 }
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Progress: About you, then voice profile, then join first circle")
                 Divider()
                     .padding(.vertical, 6)
                 Label("Your privacy, always — we never share your data without permission.", systemImage: "shield")
                     .font(MacType.small)
                     .foregroundStyle(MacPalette.muted)
                     .fixedSize(horizontal: false, vertical: true)
+                Text("Voice interview retakes run on iOS. Here you can update name, city, and gender.")
+                    .font(MacType.small)
+                    .foregroundStyle(MacPalette.muted)
             }
             .frame(width: 300)
             MacPanel(title: "About you") {
-                formLine("What should we call you?", value: profileInfo?.name ?? "Your name")
-                formLine("Where are you based?", value: profileInfo?.city ?? "Not set")
-                formLine("Gender", value: profileInfo?.gender.label ?? "Not set")
-                Text("Pick your interests")
+                Text("Share a bit about yourself.")
+                    .font(MacType.small)
+                    .foregroundStyle(MacPalette.muted)
+                profileField(label: "What should we call you?", text: $draftProfileName, prompt: "Your name")
+                profileField(label: "Where are you based?", text: $draftProfileCity, prompt: "City")
+                VStack(alignment: .leading, spacing: 7) {
+                    Text("Gender")
+                        .font(MacType.small.weight(.semibold))
+                    HStack(spacing: 8) {
+                        ForEach(Gender.allCases) { gender in
+                            Button(gender.label) {
+                                draftProfileGender = gender
+                            }
+                            .font(MacType.small.weight(.semibold))
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(
+                                draftProfileGender == gender ? MacPalette.accent : MacPalette.surface,
+                                in: Capsule()
+                            )
+                            .foregroundStyle(draftProfileGender == gender ? .white : MacPalette.ink)
+                            .overlay(Capsule().stroke(MacPalette.line, lineWidth: draftProfileGender == gender ? 0 : 1))
+                            .buttonStyle(.plain)
+                            .accessibilityLabel(gender.label)
+                            .accessibilityValue(draftProfileGender == gender ? "Selected" : "Not selected")
+                        }
+                    }
+                }
+                Text("Interests from voice profile")
                     .font(MacType.small.weight(.semibold))
-                tagWrap(profileInterests.isEmpty ? ["Add interests in your profile"] : profileInterests.map(\.label))
-                Button("Continue") {
-                    navigate?(.profileSignals)
+                tagWrap(profileInterests.isEmpty ? ["Interests appear after voice profile"] : profileInterests.map(\.label))
+                if let profileBasicsStatus {
+                    Text(profileBasicsStatus)
+                        .font(MacType.small)
+                        .foregroundStyle(MacPalette.muted)
+                }
+                Button(isSavingProfileBasics ? "Saving…" : "Continue") {
+                    Task { await saveProfileBasicsAndContinue() }
                 }
                     .font(MacType.button)
                     .frame(maxWidth: .infinity)
@@ -2170,10 +2879,56 @@ struct MacScreenView: View {
                     .background(MacPalette.accent, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                     .foregroundStyle(.white)
                     .buttonStyle(.plain)
+                    .disabled(isSavingProfileBasics || draftProfileName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .accessibilityLabel("Continue")
             }
             .frame(width: 450)
             MacOrb()
                 .frame(width: 290, height: 310)
+        }
+        .task {
+            if appState.isSignedIn {
+                await appState.loadCurrentProfile()
+                seedProfileDraftsFromAppState()
+            }
+        }
+    }
+
+    private func profileField(label: String, text: Binding<String>, prompt: String) -> some View {
+        VStack(alignment: .leading, spacing: 7) {
+            Text(label)
+                .font(MacType.small.weight(.semibold))
+            TextField(prompt, text: text)
+                .font(MacType.body)
+                .textFieldStyle(.plain)
+                .padding(12)
+                .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous).stroke(MacPalette.line, lineWidth: 1))
+                .accessibilityLabel(label)
+        }
+    }
+
+    private func seedProfileDraftsFromAppState() {
+        draftProfileName = profileInfo?.name ?? ""
+        draftProfileCity = profileInfo?.city ?? ""
+        draftProfileGender = profileInfo?.gender ?? .preferNotToSay
+        profileBasicsStatus = nil
+    }
+
+    private func saveProfileBasicsAndContinue() async {
+        isSavingProfileBasics = true
+        profileBasicsStatus = nil
+        let saved = await appState.updateProfileBasics(
+            name: draftProfileName,
+            city: draftProfileCity,
+            gender: draftProfileGender
+        )
+        isSavingProfileBasics = false
+        if saved {
+            profileBasicsStatus = "Saved"
+            navigate?(.profileSignals)
+        } else {
+            profileBasicsStatus = appState.loadError ?? "Profile could not be saved."
         }
     }
 
@@ -2199,11 +2954,24 @@ struct MacScreenView: View {
         HStack(alignment: .top, spacing: 22) {
             MacPanel(title: "Settings") {
                 VStack(alignment: .leading, spacing: 4) {
-                    settingsItem("Account", icon: "person.circle", detail: "Current")
+                    settingsItem("Account", icon: "person.circle", detail: appState.profile?.basicInfo?.name ?? "Current")
                     settingsItem("Privacy & safety", icon: "shield", detail: "Planned")
                     settingsItem("Notifications", icon: "bell", detail: "Planned")
                     settingsItem("Soulmate", icon: "heart.fill", selected: true)
-                    settingsItem("Voice profile", icon: "waveform", detail: "Profile tab")
+                    Button {
+                        navigate?(.myProfile)
+                    } label: {
+                        settingsItem("View profile", icon: "person.crop.circle", detail: "Profile tab", interactive: true)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("View profile")
+                    Button {
+                        navigate?(.profileOnboarding)
+                    } label: {
+                        settingsItem("Voice profile", icon: "waveform", detail: "Edit basics", interactive: true)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Voice profile")
                     settingsItem("Connected apps", icon: "square.grid.2x2", detail: "Planned")
                     settingsItem("Appearance", icon: "sun.max", detail: "Planned")
                     settingsItem("Language", icon: "globe", detail: "Planned")
@@ -2238,6 +3006,13 @@ struct MacScreenView: View {
                     .toggleStyle(.switch)
                     .tint(MacPalette.accent)
                     .font(MacType.button)
+                    .accessibilityLabel("Enable Soulmate")
+                    .accessibilityValue(appState.soulmateEnabled ? "On" : "Off")
+                    Text(appState.soulmateEnabled
+                         ? "Soulmate is on. The Soulmate tab shows matches only — turn this off here to hide it."
+                         : "Turn on Soulmate to show the Soulmate tab and mutual matches after meetups.")
+                        .font(MacType.small)
+                        .foregroundStyle(MacPalette.muted)
                     HStack(spacing: 12) {
                         featureCard(icon: "sparkle", title: "Intentional matches", detail: "Curated for real connection")
                         featureCard(icon: "shield.checkered", title: "Your comfort first", detail: "You set the pace")
@@ -2296,7 +3071,13 @@ struct MacScreenView: View {
         }
     }
 
-    private func settingsItem(_ title: String, icon: String, selected: Bool = false, detail: String? = nil) -> some View {
+    private func settingsItem(
+        _ title: String,
+        icon: String,
+        selected: Bool = false,
+        detail: String? = nil,
+        interactive: Bool = false
+    ) -> some View {
         HStack(spacing: 10) {
             Image(systemName: icon)
             Text(title)
@@ -2308,7 +3089,7 @@ struct MacScreenView: View {
             }
         }
         .font(MacType.button)
-        .foregroundStyle(selected ? MacPalette.accent : (detail == nil ? MacPalette.ink : MacPalette.muted))
+        .foregroundStyle(selected ? MacPalette.accent : (interactive || detail == nil ? MacPalette.ink : MacPalette.muted))
         .padding(.vertical, 8)
         .padding(.horizontal, 6)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -2363,7 +3144,7 @@ struct MacScreenView: View {
                         selectedRecapMeetingId = meeting.id
                         navigate?(.meetRecap)
                     } label: {
-                        eventRow(meeting.title, date: meeting.hostName)
+                        pastMeetRow(meeting)
                     }
                     .buttonStyle(.plain)
                 }
@@ -2373,18 +3154,18 @@ struct MacScreenView: View {
 
     private func tagWrap(_ tags: [String]) -> some View {
         FlowLayout(spacing: 8) {
-            ForEach(tags, id: \.self) { MacPill(text: $0, isSelected: ["Jazz", "Essays", "Psychology"].contains($0)) }
+            ForEach(tags, id: \.self) { MacPill(text: $0, isSelected: false) }
         }
     }
 
-    private func signalCard(_ title: String) -> some View {
+    private func signalCard(_ title: String, detail: String) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Image(systemName: "sparkle")
                 .font(.title3)
                 .foregroundStyle(MacPalette.accent)
             Text(title)
                 .font(MacType.button)
-            Text("Calm & steady")
+            Text(detail)
                 .font(MacType.small)
                 .foregroundStyle(MacPalette.muted)
         }
@@ -2392,23 +3173,133 @@ struct MacScreenView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(MacPalette.line, lineWidth: 1))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title): \(detail)")
     }
 
-    private func messageBubble(_ text: String, mine: Bool) -> some View {
-        HStack {
-            if mine { Spacer() }
-            Text(text)
-                .font(MacType.body)
-                .foregroundStyle(mine ? .white : MacPalette.ink)
-                .padding(14)
-                .background(mine ? MacPalette.accent : MacPalette.surface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                .frame(maxWidth: 360, alignment: mine ? .trailing : .leading)
-                .overlay(
-                    !mine ? RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .stroke(MacPalette.line, lineWidth: 1) : nil
-                )
-            if !mine { Spacer() }
+    private struct ProfileSignalLabel: Hashable {
+        let title: String
+        let value: String
+    }
+
+    private struct ProfileTraitRow: Hashable {
+        let label: String
+        let left: String
+        let right: String
+        let value: Double
+    }
+
+    private func profileSignalLabels(from signals: ProfileSignals?) -> [ProfileSignalLabel] {
+        [
+            ProfileSignalLabel(title: "Communication", value: displaySignal(signals?.communicationStyle?.primary)),
+            ProfileSignalLabel(title: "Energy", value: displaySignal(signals?.socialEnergy)),
+            ProfileSignalLabel(title: "Trust", value: displaySignal(signals?.trustPattern))
+        ]
+    }
+
+    private func profileSignalCards(from signals: ProfileSignals) -> [ProfileSignalLabel] {
+        [
+            ProfileSignalLabel(title: "Communication", value: displaySignal(signals.communicationStyle?.primary)),
+            ProfileSignalLabel(title: "Energy", value: displaySignal(signals.socialEnergy)),
+            ProfileSignalLabel(title: "Trust", value: displaySignal(signals.trustPattern)),
+            ProfileSignalLabel(title: "Mindset", value: displaySignal(signals.attachment)),
+            ProfileSignalLabel(title: "Humor", value: displaySignal(signals.humorStyle))
+        ]
+    }
+
+    private func profileTraitRows(from signals: ProfileSignals?) -> [ProfileTraitRow] {
+        let bigFive = signals?.bigFive ?? ProfileSignals.BigFive()
+        return [
+            ProfileTraitRow(label: "Reserved / Outgoing", left: "Reserved", right: "Outgoing", value: bigFive.extraversion),
+            ProfileTraitRow(label: "Analytical / Intuitive", left: "Analytical", right: "Intuitive", value: bigFive.openness),
+            ProfileTraitRow(label: "Steady / Spontaneous", left: "Steady", right: "Spontaneous", value: 1 - bigFive.conscientiousness),
+            ProfileTraitRow(label: "Guarded / Warm", left: "Guarded", right: "Warm", value: bigFive.agreeableness),
+            ProfileTraitRow(label: "Steady mood / Reactive", left: "Steady mood", right: "Reactive", value: bigFive.neuroticism)
+        ]
+    }
+
+    private func displaySignal(_ value: String?) -> String {
+        guard let value, !value.isEmpty else { return "From voice profile" }
+        return value
+            .replacingOccurrences(of: "([a-z])([A-Z])", with: "$1 $2", options: .regularExpression)
+            .capitalized
+    }
+
+    private func messageBubble(_ message: ChatMessage, mine: Bool) -> some View {
+        HStack(alignment: .bottom, spacing: 8) {
+            if mine { Spacer(minLength: 48) }
+            VStack(alignment: mine ? .trailing : .leading, spacing: 4) {
+                Text(message.text)
+                    .font(MacType.body)
+                    .foregroundStyle(mine ? .white : MacPalette.ink)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 12)
+                    .background(
+                        mine ? MacPalette.accent : MacPalette.background,
+                        in: RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    )
+                    .overlay(
+                        !mine
+                            ? RoundedRectangle(cornerRadius: 18, style: .continuous)
+                                .stroke(MacPalette.line, lineWidth: 1)
+                            : nil
+                    )
+                HStack(spacing: 4) {
+                    Text(chatTimeLabel(message.createdAt))
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(MacPalette.muted)
+                    if mine {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 11))
+                            .foregroundStyle(MacPalette.accent.opacity(0.7))
+                    }
+                }
+                .padding(.horizontal, 4)
+            }
+            .frame(maxWidth: 420, alignment: mine ? .trailing : .leading)
+            if !mine { Spacer(minLength: 48) }
         }
+    }
+
+    private func detailEventRow(title: String, subtitle: String) -> some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(MacType.button)
+                    .foregroundStyle(MacPalette.ink)
+                Text(subtitle)
+                    .font(MacType.small)
+                    .foregroundStyle(MacPalette.muted)
+            }
+            Spacer()
+            Image(systemName: "chevron.right")
+                .foregroundStyle(MacPalette.muted)
+        }
+        .padding(14)
+        .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(MacPalette.line, lineWidth: 1))
+        .accessibilityLabel(title)
+    }
+
+    private func pastMeetRow(_ meeting: Meeting) -> some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(meeting.title)
+                    .font(MacType.button)
+                    .foregroundStyle(MacPalette.ink)
+                Text("\(LikemindedDate.short(meeting.scheduledAt)) · Host \(meeting.hostName)")
+                    .font(MacType.small)
+                    .foregroundStyle(MacPalette.muted)
+            }
+            Spacer()
+            Image(systemName: "chevron.right")
+                .foregroundStyle(MacPalette.muted)
+        }
+        .padding(14)
+        .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(MacPalette.line, lineWidth: 1))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(meeting.title), \(LikemindedDate.short(meeting.scheduledAt)), host \(meeting.hostName)")
     }
 
     private func eventRow(_ title: String, date: String, detail: String? = nil) -> some View {
@@ -2514,27 +3405,36 @@ struct FlowLayout: Layout {
 private struct MacChatComposer: View {
     let matchId: String
     @ObservedObject var appState: MacAppState
+    var placeholder: String = "Type a message..."
     @State private var text = ""
     @State private var isSending = false
 
     var body: some View {
         HStack(spacing: 12) {
-            TextField("Message...", text: $text, axis: .vertical)
+            TextField(placeholder, text: $text, axis: .vertical)
                 .font(MacType.body)
                 .textFieldStyle(.plain)
                 .lineLimit(1...4)
-                .padding(12)
-                .background(MacPalette.surface, in: Capsule())
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+                .background(MacPalette.background, in: Capsule())
+                .overlay(Capsule().stroke(MacPalette.line, lineWidth: 1))
+                .accessibilityLabel("Message input")
                 .onSubmit(send)
             Button(action: send) {
-                Image(systemName: "arrow.up.circle.fill")
-                    .font(.title2)
-                    .foregroundStyle(canSend ? MacPalette.accent : MacPalette.muted)
+                Image(systemName: "arrow.up")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 40, height: 40)
+                    .background(canSend ? MacPalette.accent : MacPalette.muted.opacity(0.45), in: Circle())
             }
             .buttonStyle(.plain)
             .disabled(!canSend)
+            .accessibilityLabel("Send")
+            .accessibilityValue(canSend ? "Ready" : "Disabled")
         }
-        .padding(16)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
     }
 
     private var canSend: Bool {

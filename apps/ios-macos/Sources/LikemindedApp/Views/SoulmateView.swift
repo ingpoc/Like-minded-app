@@ -9,17 +9,30 @@ struct SoulmatePrototypeView: View {
             ScreenContainer(title: "Soulmate", subtitle: "Who you connected with.") {
                 SoulmateHeroCard()
 
-                FeatureCard(title: "Enable Soulmate", eyebrow: "Private") {
-                    Toggle("Enable Soulmate", isOn: Binding(
-                        get: { appState.soulmateEnabled },
-                        set: { enabled in Task { await appState.setSoulmateEnabled(enabled) } }
-                    ))
-                    .font(PrototypeTypography.bodyStrong)
-                    .tint(PrototypePalette.accent)
+                if appState.soulmateEnabled {
+                    FeatureCard(title: "Soulmate is on", eyebrow: "Private") {
+                        Label("On — change this in Settings", systemImage: "checkmark.circle.fill")
+                            .font(PrototypeTypography.bodyStrong)
+                            .foregroundStyle(PrototypePalette.accent)
+                            .accessibilityLabel("Soulmate is on. Change this in Settings.")
 
-                    Text("Shows only when enabled. Matches need mutual post-meet selection.")
-                        .font(PrototypeTypography.body)
-                        .foregroundStyle(PrototypePalette.subink)
+                        Text("Matches need mutual post-meet selection. Turn Soulmate off in Settings to hide this tab.")
+                            .font(PrototypeTypography.body)
+                            .foregroundStyle(PrototypePalette.subink)
+                    }
+                } else {
+                    FeatureCard(title: "Enable Soulmate", eyebrow: "Private") {
+                        Toggle("Enable Soulmate", isOn: Binding(
+                            get: { appState.soulmateEnabled },
+                            set: { enabled in Task { await appState.setSoulmateEnabled(enabled) } }
+                        ))
+                        .font(PrototypeTypography.bodyStrong)
+                        .tint(PrototypePalette.accent)
+
+                        Text("Shows only when enabled. Matches need mutual post-meet selection.")
+                            .font(PrototypeTypography.body)
+                            .foregroundStyle(PrototypePalette.subink)
+                    }
                 }
 
                 if let error = appState.soulmateError {
@@ -40,7 +53,7 @@ struct SoulmatePrototypeView: View {
                         ProgressView("Loading matches")
                             .font(PrototypeTypography.metadata)
                     } else if appState.soulmateMatches.isEmpty {
-                        Text("No matches yet. Enable Soulmate and join meetups.")
+                        Text("No matches yet. Join meetups and select connections.")
                             .font(PrototypeTypography.body)
                             .foregroundStyle(PrototypePalette.subink)
                     } else {

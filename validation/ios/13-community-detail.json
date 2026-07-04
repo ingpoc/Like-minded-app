@@ -23,13 +23,16 @@
       "result": "pass",
       "evidence": "Back button present (top-left)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "0d78db3628d124d7",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     },
     {
       "id": "ellipsis",
       "type": "display",
       "label": "Ellipsis icon",
-      "expected": "STUB \u2014 Image only, no Button/action",
+      "expected": "STUB — Image only, no Button/action",
       "result": "fail",
       "evidence": "'More' renders as Image (ellipsis); not a Button, no action (STUB confirmed)",
       "blocker": "",
@@ -43,12 +46,16 @@
       "result": "pass",
       "evidence": "Join/Leave button found after scroll (['Leave community'])",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "0d78db3628d124d7",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     }
   ],
   "visual_parity": {
     "result": "pending-mockup-compare",
     "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
   },
-  "notes": ""
+  "notes": "",
+  "source_hash": "0d78db3628d124d7"
 }

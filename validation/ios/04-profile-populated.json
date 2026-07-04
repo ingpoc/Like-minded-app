@@ -1,5 +1,5 @@
 {
-  "screen": "Profile (populated \u2014 signals + interests + update)",
+  "screen": "Profile (populated — signals + interests + update)",
   "platform": "ios",
   "source_files": [
     "apps/ios-macos/Sources/LikemindedApp/Views/ProfilePrototypeView.swift (VoiceProfileView)"
@@ -21,7 +21,10 @@
       "result": "pass",
       "evidence": "Tapping Update profile starts Realtime voice session (WebRTC ICE connected, session.ready in logs). Sheet presents with Stop/Done controls.",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "2fd6a39713366c2e",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     },
     {
       "id": "signal-pills",
@@ -31,7 +34,10 @@
       "result": "pass",
       "evidence": "Communication/Energy/Trust pills render with real data (Thoughtful Communicator, Reserved-Outgoing trait bars visible)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "2fd6a39713366c2e",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     },
     {
       "id": "comm-read-card",
@@ -51,7 +57,10 @@
       "result": "pass",
       "evidence": "Big Five TraitBars render with real values from slice.signals.bigFive",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "2fd6a39713366c2e",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     },
     {
       "id": "interest-chips",
@@ -61,12 +70,16 @@
       "result": "pass",
       "evidence": "Interest chips render (visible in scroll)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "2fd6a39713366c2e",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     }
   ],
   "visual_parity": {
     "result": "pending-mockup-compare",
     "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
   },
-  "notes": ""
+  "notes": "",
+  "source_hash": "2fd6a39713366c2e"
 }

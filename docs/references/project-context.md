@@ -1,6 +1,6 @@
 # Project Context
 
-Reference for stable Like-minded-app repo facts. This doc owns current repo evidence, boundaries, and command reminders. It does not own context-graph workflow or beta-trust procedure.
+Reference for stable repo facts. **Lazy load:** use only when `project_context query` returns decisions or boundary work — not for gap audits (`ledger:open`) or single-screen fixes (ledger JSON + `source_files`).
 
 ## Current Evidence
 
@@ -20,7 +20,7 @@ Reference for stable Like-minded-app repo facts. This doc owns current repo evid
 - The iOS native run surface is `./script/build_and_run.sh`, which generates the Xcode project, builds the `Likeminded` iOS target, and launches it in the simulator
 - The macOS native validation surface is `npm run verify:macos-screens`, which starts the validation API on `data/validation-db`, resets seeded data, builds `LikemindedMac`, launches each `MacPrototypeScreen`, writes screenshots under `output/validation/macos-screens/`, then removes seeded data.
 - `GOAL.md` owns the ultimate product goal; `goal.json` owns the current per-session goal, deterministic graders, simulator validation, rubric, and subagent model/effort routing.
-- Deterministic MVP validation is `npm run phase:preflight -- <phase-number>` before phase edits, then `npm run check`, `npm run smoke:mvp`, `npm run verify:release-config`, `npm run verify:goal`, `npm run dev:api:validation` plus `npm run reset:validation-data` when seeded local backend state is needed, `npm run verify:macos-screens` for macOS UI, `npm run verify:simulator-local`, `npm run migrate:api`, and `workflow --docs-dir ... lint`.
+- Deterministic validation commands: `docs/workflows/validation.md` (table). Ledger gate: `npm run verify:ledger-progress`; route: `npm run goal:next`.
 - External TestFlight completion proof is `npm run verify:external-preflight` after filling ignored `release/testflight-evidence.json` from the template.
 
 ## Boundaries

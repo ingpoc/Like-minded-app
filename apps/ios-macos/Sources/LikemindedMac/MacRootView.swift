@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 struct MacRootView: View {
@@ -23,17 +24,17 @@ struct MacRootView: View {
                             }
                             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
                         }
-                        .frame(maxWidth: .infinity, minHeight: max(0, proxy.size.height - (appState.isSignedIn ? 170 : 72)), alignment: .top)
+                        .frame(maxWidth: .infinity, minHeight: max(0, proxy.size.height - (appState.isSignedIn && selectedScreen != .welcome ? 170 : 72)), alignment: .top)
                         .padding(.horizontal, 28)
                         .padding(.top, 54)
-                        .padding(.bottom, appState.isSignedIn ? 116 : 18)
+                        .padding(.bottom, appState.isSignedIn && selectedScreen != .welcome ? 116 : 18)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .overlay(alignment: .bottom) {
-                if appState.isSignedIn {
+                if appState.isSignedIn, selectedScreen != .welcome {
                     MacBottomNav(selectedTab: activeTab, soulmateEnabled: appState.soulmateEnabled) { tab in
                         returnScreen = nil
                         selectedScreen = tab.primaryScreen
@@ -55,6 +56,7 @@ struct MacRootView: View {
                     }
                     .buttonStyle(.plain)
                     .focusable(false)
+                    .accessibilityLabel(titleActionAccessibilityLabel)
                     .padding(.top, 18)
                     .padding(.trailing, 28)
                 }
@@ -63,6 +65,9 @@ struct MacRootView: View {
         .foregroundStyle(MacPalette.ink)
         .task {
             await appState.signInForLocalValidationIfNeeded()
+            if ProcessInfo.processInfo.arguments.contains("--likeminded-validation-welcome") {
+                selectedScreen = .welcome
+            }
             if appState.isSignedIn {
                 await appState.fetchMeetings()
                 await appState.fetchCircles()
@@ -76,8 +81,14 @@ struct MacRootView: View {
         .onReceive(NotificationCenter.default.publisher(for: .macPrototypeSelectCommunities)) { _ in selectedScreen = .communitiesBrowse }
         .onReceive(NotificationCenter.default.publisher(for: .macPrototypeSelectProfile)) { _ in selectedScreen = .myProfile }
         .onReceive(NotificationCenter.default.publisher(for: .macPrototypeSelectSoulmate)) { _ in selectedScreen = .soulmateOverview }
+        .onAppear {
+            NSApplication.shared.activate(ignoringOtherApps: true)
+        }
         .onChange(of: appState.isSignedIn) { _, isSignedIn in
             if isSignedIn, selectedScreen == .welcome {
+                if ProcessInfo.processInfo.arguments.contains("--likeminded-validation-welcome") {
+                    return
+                }
                 selectedScreen = .meetOverview
             }
         }
@@ -95,6 +106,13 @@ struct MacRootView: View {
             return "xmark"
         }
         return selectedScreen == .myProfile ? "gearshape" : "bubble.left.and.bubble.right"
+    }
+
+    private var titleActionAccessibilityLabel: String {
+        if selectedScreen == .settingsSoulmate || selectedScreen == .messages {
+            return "Close"
+        }
+        return selectedScreen == .myProfile ? "Settings" : "Messages"
     }
 
     private var titleActionAvailable: Bool {

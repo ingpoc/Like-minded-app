@@ -21,12 +21,16 @@
       "result": "pass",
       "evidence": "Conversation rows visible (Priya)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "1a270219616a3b7a",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     }
   ],
   "visual_parity": {
     "result": "pending-mockup-compare",
     "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
   },
-  "notes": ""
+  "notes": "",
+  "source_hash": "1a270219616a3b7a"
 }

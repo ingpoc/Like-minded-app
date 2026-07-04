@@ -17,26 +17,33 @@
       "id": "message",
       "type": "button",
       "label": "Message",
-      "expected": "Navigate → chat",
-      "result": "blocked",
-      "evidence": "Cannot interact: macOS GUI automation unavailable",
+      "expected": "Navigate → chat with selected match thread",
+      "result": "pass",
+      "evidence": "2026-07-04 CUA: Message idx=7 clicked (exact label match, not Messages tab).",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "about-panels",
       "type": "display",
-      "label": "About / You both like / Compatibility (92% hard-coded)",
-      "expected": "STUB — static panels, no controls",
-      "result": "fail",
-      "evidence": "STUB confirmed: About/You both like/Compatibility (92% hard-coded) are static, no controls",
+      "label": "About / You both like / Match status",
+      "expected": "About + interests from GET match detail; Mutual status (no 92% score)",
+      "result": "pass",
+      "evidence": "Loads SoulmateMatchDetail; Compatibility 92% replaced with Mutual panel.",
       "blocker": "",
-      "stub": true
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
-    "result": "pending",
-    "notes": ""
+    "result": "pass",
+    "notes": "2026-07-04 capture vs plate 11: match detail shared interests. Intentional: no fake compatibility %; Pass/Like omitted (honest MVP)."
   },
-  "notes": ""
+  "notes": "",
+  "source_hash": "342bb6ef2d9f07fb"
 }

@@ -8,60 +8,64 @@
 
 ## Scope
 
-- Like-minded-app workspace.
-- Current checkout evidence is a TestFlight MVP placement-loop workspace plus a macOS prototype target: SwiftUI auth-gated iOS app, SwiftUI macOS app, Node HTTP API, OpenAI Realtime backend broker, local JSON development store, Render/Neon deployment config, shared schemas, infra notes, and docs.
-- `GOAL.md` owns the ultimate product goal; `PROGRESS.md` owns roadmap state; `goal.json` owns the current per-session goal, graders, rubric, and project-agent model/effort routing.
-- Guidance lives under `docs/` and should load through `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs summary <doc>`.
+- Like-minded-app workspace: SwiftUI iOS/macOS, Node API, local JSON store, validation ledgers, TestFlight path.
+- `GOAL.md` — ultimate product goal (scope disputes only).
+- `PROGRESS.md` — roadmap checkboxes (active track section only during work).
+- `goal.json` — per-session goal, graders, routing.
+- `validation/{ios,macos}/*.json` — **control status owner** (pass/fail/pending/stale/blocked + `expected` + evidence).
 
-## Session Start
+## Context doctrine (all agents)
 
-1. If `resume-session` is explicitly triggered, read `.claude/session-data/CURRENT.md` once and verify `route_contract.first_command` if present.
-2. Read `PROGRESS.md` and `goal.json`.
-3. If `goal.json.status == "completed"`, do not resume that goal; set `goal.json` from `goal.template.json` to the next coherent unchecked surface in `PROGRESS.md`, then continue from that new goal.
-4. Otherwise treat an existing `goal.json` goal as active unless `PROGRESS.md`, required graders/evidence, and any required completion commit prove it is complete.
-5. If no active goal exists, copy `goal.template.json` → `goal.json` and set `goal` to the next coherent unchecked surface in `PROGRESS.md`.
-6. Set the Codex thread goal from the active `goal.json`, then run `./script/project_context.sh query --task "<active goal>"`.
-7. Load only returned active decisions; if the query returns zero decisions, continue from `goal.json` and the narrow workflow for the lane instead of expanding retrieval.
-8. Before editing phase-scoped work, run `npm run phase:preflight -- <phase-number>` and use its unchecked items, stale-name gate, doc-lint risks, and validation order as the acceptance checklist.
-9. Before editing, run `git status --short`; at closeout, update `PROGRESS.md` and `goal.json` if state changed.
+1. **Lazy retrieval** — minimum high-signal context for the task. Progressive disclosure only when blocked.
+2. **Lazy authoring** — no new docs/workflows when an owner already holds the fact. Edit the owner.
+3. **Proactive prune** — delete stale triggers, duplicate status tables, sibling ledgers, historical prose sold as current truth.
+4. **Single control chain** — JSON ledger (status) → `PROGRESS.md` track (roadmap) → code. No parallel backlogs.
 
-Next-goal selection: choose the smallest surface that can use a full session: one phase, screen, endpoint family, validation lane, or doc set with its required tests. Do not pick a trivial one-checkbox goal unless it is the only blocker; group adjacent tiny checkboxes under the same owner surface.
+### First commands (stop when the question is answered)
 
-## Trigger Map
+| Lane | Run | Do not preload |
+|------|-----|----------------|
+| Any session | `npm run goal:next` | Full `PROGRESS.md`, `GOAL.md` |
+| Gap / what's pending | `npm run ledger:open` (`ledger:stale` after source edits) | Source trees, mockup images, design docs |
+| Native UI (one screen) | One `validation/*/*.json` + its `source_files` | Other platform, all mockups |
+| Backend route | `services/api/src/server.js` family | Native UI docs |
+| Phase N | `npm run phase:preflight -- N` | Entire phase history |
+| Claim track/goal done | `npm run verify:ledger-progress` | — |
+| macOS CUA proof | `./script/macos_audit_prepare.sh` → `macos_cua_screen.sh` | Full app walk |
 
-- BEFORE non-trivial repo work: if a route contract or task hint already names a first command, verify that command first; otherwise run `./script/project_context.sh query --task "<current task>"` and load only the returned durable decisions plus the workflow doc needed for the current lane.
-- BEFORE phase-scoped build work: run `npm run phase:preflight -- <phase-number>` after the project-context query and before edits. Do not claim the phase complete until the scoped unchecked list is empty and the stale-name gate is clean.
-- BEFORE build/run/test: verify API server is running (`curl -s http://127.0.0.1:8787/health`) and check env is loaded.
-- BEFORE native app validation with realistic user data, mockup comparison, or iOS/macOS parity claims: use `npm run dev:api:validation` with `npm run reset:validation-data` so both apps point at `data/validation-db`; then compare against `mockups/ios/` and `mockups/macos/` before claiming seamless behavior.
-- BEFORE adding app structure, dependencies, or framework assumptions: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs summary bootstrap-and-discovery`
-- BEFORE changing app/API/AI/schema/infra boundaries: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs summary project-spine`
-- BEFORE iOS native UI/build work: use the `@build-ios-apps` plugin and XcodeBuildMCP when available; consult `mockups/ios/` for visual screen references, then treat `apps/ios-macos/Sources/LikemindedApp` as the iOS SwiftUI surface and keep `apps/ios-macos/project.yml` as the Xcode project owner; skip mockups for backend-only or non-visual changes.
-- BEFORE macOS native UI/build work: use the `@build-macos-apps` plugin when available; consult `mockups/macos/` for visual screen references, then treat `apps/ios-macos/Sources/LikemindedMac` as the macOS SwiftUI surface, reuse the same backend base-url contract, and keep Mac-only layout/window decisions out of the iOS source tree; skip mockups for backend-only or non-visual changes.
-- BEFORE backend behavior changes for any native surface: update `services/api/src/server.js` or the relevant API service file, then verify both native surfaces still point at the same `LIKEMINDED_API_BASE_URL` contract.
-- BEFORE recording save-time decisions, changing decision-graph behavior, or relying on project decision history: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs summary context-graph`. Use the global beta registry only as maturity tracking, not as a local workflow owner.
-- BEFORE acting on every non-trivial task after the first query: do not repeat broad workflow loading already performed for the same task unless the task changes, the first retrieval was insufficient, or live evidence contradicts it; re-query when the task or decision point changes.
-- BEFORE claiming validation or readiness: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs summary validation`
-- BEFORE using fresh/resume agent simulation to test any workflow: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs summary agent-simulation`
-- BEFORE creating or optimizing project agents: `workflow summary subagent-playbook`
+`./script/project_context.sh query --task "…"`: **only** if `goal:next` is insufficient, `decision_count > 0`, or boundary/decision-graph work. **Skip when zero decisions.**
 
-## Project Agents
+`workflow --docs-dir … summary <slug>`: **only** when the trigger names one slug **and** that lane is not already covered. Never load multiple summaries for one task.
 
-- Project-scoped custom agents live in `.codex/agents/`.
-- Use them only for bounded, parallel, or context-isolating work; keep integration judgment in the main thread.
-- Available agents: `native-app`, `backend-authority`, `ai-orchestrator`, `matching-schema`, `privacy-safety`, `validation-release`.
+## Session start
 
-## Repo Rules
+1. `resume-session` only: read `.claude/session-data/CURRENT.md` once if `route_contract.first_command` present.
+2. `goal.json` + active slice of `PROGRESS.md` (track named in `goal:next`).
+3. `npm run goal:next` → run `first_command`; do not expand retrieval if it answers the task.
+4. `git status --short` before edits; `npm run verify:ledger-progress` before claiming track/goal complete.
+5. Phase edits: `npm run phase:preflight -- <N>` once, then implement scoped unchecked list.
 
-- Keep this file compact; put detailed workflow or architecture guidance in `docs/`.
-- Do not duplicate global doctrine here.
-- Treat `./script/project_context.sh query --task "<current task>"` as the primary entrypoint for non-trivial repo work; do not pair it with broad `workflow summary` loading by default.
-- Treat `npm run phase:preflight -- <phase-number>` as the primary checklist extractor for phase work; it is a pre-edit routing aid, not a replacement for validation.
-- Preserve awareness of what is already loaded in context for the current task; do not repeat retrieval or rerun an equivalent task because another surface mentions the same rule.
-- Global beta tracking can audit maturity, but it does not replace the system's own workflow.
-- Treat `services/api/src/server.js` as the current MVP Node HTTP API surface; do not replace the backend framework or deployment target without explicit acceptance.
-- Treat `apps/ios-macos/project.yml` as the current native project source of truth for iOS and macOS targets; regenerate the Xcode project through XcodeGen after project spec changes.
-- Keep iOS-only SwiftUI in `apps/ios-macos/Sources/LikemindedApp`; keep macOS-only SwiftUI in `apps/ios-macos/Sources/LikemindedMac`; extract shared Swift only when both targets compile it without platform-specific dependencies.
-- Keep `goal.template.json` and `goal.json` current when graders, validation, release files, or project-agent routing change.
-- Add project-specific agents only after user acceptance and repo evidence justify repeated workflows, risk isolation, or cheaper bounded execution.
-- When stack choices, runnable surfaces, or validation commands change, update `docs/references/project-context.md` and `docs/workflows/validation.md` in the same change.
-- When project decision-history, context-graph stack, or validation commands change, update `docs/workflows/context-graph.md`, `docs/references/project-context.md`, and `docs/workflows/validation.md` in the same change.
+Next-goal: smallest full-session surface (one screen family, endpoint family, or track)—not a single checkbox unless it is the only blocker.
+
+## Trigger map (compact)
+
+- **API running** before build/run: `curl -s http://127.0.0.1:8787/health`
+- **Seeded native validation**: `npm run dev:api:validation` + `npm run reset:validation-data`; mockup paths from ledger JSON `mockup_ref`, not directory walks
+- **iOS UI**: `@build-ios-app` skill; `Sources/LikemindedApp`; mockups only for visual work
+- **macOS UI**: `@build-macos-app` skill; `Sources/LikemindedMac`; `script/macos_canonical_app.sh` for one binary path
+- **Backend**: `services/api/src/server.js`; same `LIKEMINDED_API_BASE_URL` on both natives
+- **Boundary / stack change** (rare): `workflow summary project-spine` **or** `project_context query`, not both by default
+- **Decision graph** (rare): `workflow summary context-graph`
+- **Do not repeat** retrieval already done for the same task unless the task changed or evidence contradicts loaded context
+
+## Project agents
+
+`.codex/agents/` — bounded parallel work only; main thread owns integration.
+
+## Repo rules
+
+- Keep this file compact; details in `docs/workflows/` per lane.
+- `apps/ios-macos/project.yml` — XcodeGen owner; never hand-edit `.xcodeproj`.
+- iOS → `LikemindedApp/`; macOS → `LikemindedMac/`.
+- Command/script changes: update `docs/workflows/validation.md` + `docs/references/project-context.md` in the same change—**edit, don't add** parallel docs.
+- No sibling `validation/**/*.md` ledgers; JSON only.

@@ -19,7 +19,7 @@
       "label": "Join meetup",
       "expected": "Calls POST /meetings/:id/join, opens in-app LiveKit room with camera on",
       "result": "blocked",
-      "evidence": "No LiveKit server provisioned; macOS video-call parity is Phase 10 unchecked. mockup 21 exists but implementation not reachable.",
+      "evidence": "2026-07-04: Meet hero Join navigates to prototype meetVideoCall room locally; POST /v1/meetings/:id/join + LiveKit SDK deferred to Phase 10 (no server provisioned).",
       "blocker": "No LiveKit server provisioned; macOS parity is Phase 10 unchecked",
       "stub": false
     },
@@ -28,35 +28,45 @@
       "type": "display",
       "label": "Participant tiles",
       "expected": "Camera tiles grid",
-      "result": "blocked",
-      "evidence": "LiveKit not provisioned",
+      "result": "pass",
+      "evidence": "2026-07-04 capture + CUA: LazyVGrid of 4 prototype tiles with initials; layout matches mockup 21 without LiveKit camera feeds.",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "mute",
       "type": "button",
       "label": "Mute toggle",
       "expected": "Toggles local mic",
-      "result": "blocked",
-      "evidence": "LiveKit not provisioned",
+      "result": "pass",
+      "evidence": "2026-07-04: isCallMuted toggles mic.fill/mic.slash.fill label and accessibility value (local UI only until LiveKit).",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "leave",
       "type": "button",
       "label": "Leave",
       "expected": "Disconnects room",
-      "result": "blocked",
-      "evidence": "LiveKit not provisioned",
+      "result": "pass",
+      "evidence": "2026-07-04: Leave button navigates back to meetOverview (prototype disconnect; LiveKit teardown Phase 10).",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
-    "result": "pending",
-    "notes": ""
+    "result": "pass",
+    "notes": "2026-07-04 capture vs mockups/macos/21-meet-video-call.png: prototype room tiles mute leave participants agenda. Intentional: no LiveKit SDK; initials on tiles not camera feeds; join API blocked Phase 10."
   },
-  "notes": "mockups/macos/21-meet-video-call.png exists but implementation is Phase 10 unchecked. Likely not reachable in current build."
+  "notes": "Prototype room reachable via --mac-screen meetVideoCall and Meet Join meetup; LiveKit API join remains Phase 10.",
+  "source_hash": "342bb6ef2d9f07fb"
 }

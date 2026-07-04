@@ -20,9 +20,12 @@
       "label": "Your circle hero card",
       "expected": "Opens CircleDetailView fullScreenCover",
       "result": "pass",
-      "evidence": "Tapped hero card \u2192 CircleDetailView fullScreenCover opened",
+      "evidence": "Tapped hero card → CircleDetailView fullScreenCover opened",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "0d78db3628d124d7",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     },
     {
       "id": "concern-btn",
@@ -32,7 +35,10 @@
       "result": "pass",
       "evidence": "Concern button revealed TextField",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "0d78db3628d124d7",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     },
     {
       "id": "concern-field",
@@ -42,7 +48,10 @@
       "result": "pass",
       "evidence": "Typed 'Test concern from validation' into concern field",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "0d78db3628d124d7",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     },
     {
       "id": "concern-submit",
@@ -52,7 +61,10 @@
       "result": "pass",
       "evidence": "Submitted concern; routed to: Likeminded | Meet | Circles | Communities | Profile | Soulmate | Add | CIRCLES",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "0d78db3628d124d7",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     },
     {
       "id": "browse-card",
@@ -60,15 +72,18 @@
       "label": "Available circle card",
       "expected": "Opens CircleDetailView fullScreenCover",
       "result": "pass",
-      "evidence": "Browse circle card tap \u2192 CircleDetailView opened (Likeminded | Reflective Builders | CIRCLE | Reflective Builders | Back to circles | Warm, thoughtful, honest feedback without performa | A small circle for people who build ambitious thin | Founders)",
+      "evidence": "Browse circle card tap → CircleDetailView opened (Likeminded | Reflective Builders | CIRCLE | Reflective Builders | Back to circles | Warm, thoughtful, honest feedback without performa | A small circle for people who build ambitious thin | Founders)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "0d78db3628d124d7",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     },
     {
       "id": "plus-icon",
       "type": "display",
       "label": "+ icon (top-right)",
-      "expected": "DISPLAY ONLY \u2014 plain Image, no Button, no action (STUB)",
+      "expected": "DISPLAY ONLY — plain Image, no Button, no action (STUB)",
       "result": "fail",
       "evidence": "'+' icon renders as Image (not Button); no action wired (STUB confirmed). AX label='Add' type=Image",
       "blocker": "",
@@ -79,5 +94,6 @@
     "result": "pending-mockup-compare",
     "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
   },
-  "notes": ""
+  "notes": "",
+  "source_hash": "0d78db3628d124d7"
 }

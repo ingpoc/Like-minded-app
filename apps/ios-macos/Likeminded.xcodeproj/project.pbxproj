@@ -12,6 +12,7 @@
 		132444A82981B36C69EF5C56 /* LikemindedAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14190A43716DF2A52AB8F7DD /* LikemindedAPIClient.swift */; };
 		1434DA300C4A5A2400A859A3 /* PrototypeModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8C121E18E6BF523CE92D82 /* PrototypeModels.swift */; };
 		1C099E485B7A23A87435717E /* DeviceIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D8F9C153E1CAAA2E1D4B53 /* DeviceIdentity.swift */; };
+		2DD8ACBCA63AB12436A173EC /* DoodleArt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 296DEAB93269CB0949442024 /* DoodleArt.swift */; };
 		31D1987C09EEBD76447D0DF7 /* MacPrototypeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 181BFC9B2D93330133F5C993 /* MacPrototypeData.swift */; };
 		3790F3067C86B1DF4F11FF86 /* NotificationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F51BCAB677E4C2BEAE840EE /* NotificationsView.swift */; };
 		379D8BA56E5821E1680248E7 /* CircleCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4895BAF5408C8A7CEDEB5EC3 /* CircleCard.swift */; };
@@ -20,6 +21,7 @@
 		3D96591126672068AD6125E9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E4A27335D18C85FF61CE549E /* Assets.xcassets */; };
 		3FC6508C115AA08A823B19CB /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71F1782CC0FAAD3C06C76E5C /* RootView.swift */; };
 		4319E06107624A793DB13545 /* AuthSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDF2490A9727FEEB417EED9F /* AuthSessionStore.swift */; };
+		4662D50BD9BFCB596D1B3824 /* DoodleArt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 296DEAB93269CB0949442024 /* DoodleArt.swift */; };
 		5BF328C460E5D74DB230A51F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E4A27335D18C85FF61CE549E /* Assets.xcassets */; };
 		5F0E79024B1B152EBBD80D88 /* LiveKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9109FD768D670024E68556DC /* LiveKit */; };
 		638037123B69B011D78BF5A7 /* LikemindedApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 704749A39D4B879E03561B1B /* LikemindedApp.swift */; };
@@ -46,6 +48,7 @@
 		12C36748D06319EACF593DE7 /* LikemindedMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LikemindedMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		14190A43716DF2A52AB8F7DD /* LikemindedAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikemindedAPIClient.swift; sourceTree = "<group>"; };
 		181BFC9B2D93330133F5C993 /* MacPrototypeData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacPrototypeData.swift; sourceTree = "<group>"; };
+		296DEAB93269CB0949442024 /* DoodleArt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoodleArt.swift; sourceTree = "<group>"; };
 		2B0C51AF9D64677B65F8D49A /* AuthGateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthGateView.swift; sourceTree = "<group>"; };
 		2E4CC542091C9D3F04D1DE21 /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
 		40664BF795D4C75998E0D941 /* MacRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacRootView.swift; sourceTree = "<group>"; };
@@ -167,10 +170,19 @@
 		9DF60F32DDF0F8B7C3C61E6E /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				EAA771AC3901E4377849EA9E /* DoodleArt */,
 				2AF6FB985DD25FA903FB6549 /* LikemindedApp */,
 				6E51BDA68770073E19BBE3B1 /* LikemindedMac */,
 			);
 			path = Sources;
+			sourceTree = "<group>";
+		};
+		EAA771AC3901E4377849EA9E /* DoodleArt */ = {
+			isa = PBXGroup;
+			children = (
+				296DEAB93269CB0949442024 /* DoodleArt.swift */,
+			);
+			path = DoodleArt;
 			sourceTree = "<group>";
 		};
 		F36F7D893B50517CB495A8F7 /* Views */ = {
@@ -305,6 +317,7 @@
 				8D27A1FA539B87B3019798C6 /* CommunitiesPrototypeView.swift in Sources */,
 				B6865DD6F294D8C495E0F118 /* CustomTabBar.swift in Sources */,
 				1C099E485B7A23A87435717E /* DeviceIdentity.swift in Sources */,
+				4662D50BD9BFCB596D1B3824 /* DoodleArt.swift in Sources */,
 				9991EE71916006E89457B6E5 /* LikemindedAPIClient.swift in Sources */,
 				638037123B69B011D78BF5A7 /* LikemindedApp.swift in Sources */,
 				0F0F08547C69AA374756B919 /* LiveKitTokenProvider.swift in Sources */,
@@ -327,6 +340,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2DD8ACBCA63AB12436A173EC /* DoodleArt.swift in Sources */,
 				132444A82981B36C69EF5C56 /* LikemindedAPIClient.swift in Sources */,
 				00C5C47C4D3A69486DC493D3 /* LikemindedMacApp.swift in Sources */,
 				EA5E724579022F5894D30BCE /* MacAppState.swift in Sources */,

@@ -20,9 +20,12 @@
       "label": "Search communities",
       "expected": "Filters catalog by name/summary/themes",
       "result": "pass",
-      "evidence": "Typed 'design' \u2192 Design Craft appeared in filtered results",
+      "evidence": "Typed 'design' → Design Craft appeared in filtered results",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "0d78db3628d124d7",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     },
     {
       "id": "joined-card",
@@ -40,14 +43,18 @@
       "label": "Browse community card",
       "expected": "Pushes CommunityDetailView",
       "result": "pass",
-      "evidence": "Community card tap \u2192 CommunityDetailView (AI Builders) pushed. Detail shows summary, themes, members, upcoming meetup, fit info",
+      "evidence": "Community card tap → CommunityDetailView (AI Builders) pushed. Detail shows summary, themes, members, upcoming meetup, fit info",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "0d78db3628d124d7",
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "backfill"
     }
   ],
   "visual_parity": {
     "result": "pending-mockup-compare",
     "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
   },
-  "notes": ""
+  "notes": "",
+  "source_hash": "0d78db3628d124d7"
 }

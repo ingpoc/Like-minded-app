@@ -1,11 +1,12 @@
 {
   "schema_version": 1,
-  "status": "in_progress",
+  "status": "active",
   "purpose": "Per-session execution goal. Copy this file to goal.json at session start, set the current goal, and keep graders/validation/agent routing current when files or commands change.",
-  "goal": "Phase 9 External TestFlight Readiness: add camera/microphone plist entries for both targets, verify all external infrastructure is configured, and build signed TestFlight candidate.",
+  "goal": "Track — macOS Visual Parity + Ledger Closeout: thematic covers and typography vs mockups/macos, drive remaining validation/macos/*.json controls to pass/fail with CUA on validation-priya, keep JSON as control-status owner. Phase 9 External TestFlight is the next numbered release route after this track's dirty work is committed — do not start Neon/Render/Apple setup while macOS ledger/doodle owners are dirty.",
   "ultimate_goal_source": "GOAL.md",
   "progress_source": "PROGRESS.md",
   "workflow_refs": [
+    "docs/references/macos-screen-audit.md",
     "docs/workflows/validation.md",
     "docs/product-direction.md"
   ],
@@ -70,11 +71,15 @@
     "external_preflight": "Run npm run verify:external-preflight only after Render, Neon, Apple Developer, App Store Connect/TestFlight, and manual device proof are ready."
   },
   "agent_guardrails": [
-    "If goal.json status is completed, select the next coherent unchecked surface from PROGRESS.md before querying context.",
+    "Lazy context: goal:next + narrowest lane command first; stop when answered. Do not preload GOAL.md, full PROGRESS, mockups, or source trees for status questions.",
+    "Lazy authoring: edit control owners (validation JSON, PROGRESS track, workflow command table) — do not add parallel docs or status tables.",
+    "Proactive prune: delete stale triggers, sibling ledgers, duplicate routing, historical prose posing as current truth in the same pass as fixes.",
+    "If goal.json status is completed, select the next coherent unchecked surface from PROGRESS.md before expanding retrieval.",
     "Avoid tiny one-checkbox goals unless they are the only blocker; group adjacent small items under the same owner surface.",
-    "Check validation_state before rerunning completed proof.",
-    "Reuse validation_inventory scripts before creating validation scripts.",
-    "Do not add docs or workflows for validation already covered by workflow_refs and validation_inventory."
+    "Check validation_state / ledger:open before rerunning completed proof; re-test stale_pass rows only.",
+    "Reuse ledger and validation scripts before creating new ones.",
+    "Before claiming phase/track/goal complete, run npm run verify:ledger-progress. Actionable fail/pending/stale_pass/stale-blocked controls need unchecked PROGRESS owners; JSON is sole control-status owner.",
+    "When a control is fail or stub, add or keep an unchecked PROGRESS item in the same session."
   ],
   "deterministic_graders": [
     {
@@ -100,6 +105,12 @@
       "command": "npm run verify:goal",
       "cost": "zero_token",
       "proves": "goal.json and goal.template.json contain the current grader, validation, rubric, and agent routing contract."
+    },
+    {
+      "name": "ledger_progress_ownership",
+      "command": "npm run verify:ledger-progress",
+      "cost": "zero_token",
+      "proves": "Every actionable fail/pending/stale-blocked control in validation/{ios,macos}/*.json has an unchecked PROGRESS.md owner track item."
     },
     {
       "name": "repo_docs_lint",
@@ -235,11 +246,12 @@
     "commit_message_template": "Validate <short session goal>"
   },
   "done_criteria": [
-    "All deterministic graders pass.",
-    "Local simulator build and launch pass when local validation inputs changed.",
-    "Repo-owned MVP loop surfaces are ready for later external Render, Neon, Apple, and TestFlight proof.",
-    "No stale docs or config describe prototype tabs, prototype bundle id, no auth, or SQLite as the production path.",
-    "Validated session changes are committed with the session's goal.json before the goal is marked completed."
+    "Active macOS ledger JSON controls for the session surface are pass/fail/blocked with evidence (not pending STUB prose).",
+    "npm run verify:ledger-progress passes (open fail/pending/stale-blocked controls retain unchecked PROGRESS owners).",
+    "Control status lives only in validation/macos/*.json (no sibling .md ledgers).",
+    "docs/references/macos-screen-audit.md routes to JSON ledgers and does not host a competing status table.",
+    "npm run goal:next routes to the macOS track first command while this goal is active and prints ledger_* ownership lines.",
+    "Validated session changes are committed with the session's goal.json before the goal is marked completed; Phase 9 remains the next numbered release route."
   ],
   "max_iterations": 10
 }

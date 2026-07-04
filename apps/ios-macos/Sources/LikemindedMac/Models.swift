@@ -4,8 +4,8 @@ enum AppTab: String, CaseIterable, Identifiable {
     case meet = "Meet"
     case circles = "Circles"
     case communities = "Communities"
-    case profile = "Profile"
     case soulmate = "Soulmate"
+    case profile = "Profile"
 
     var id: String { rawValue }
 
@@ -98,6 +98,21 @@ enum LikemindedDate {
     static func full(_ value: String) -> String {
         guard let date = parse(value) else { return value }
         return date.formatted(date: .abbreviated, time: .shortened)
+    }
+
+    static func meetHeader(_ value: String) -> String {
+        guard let date = parse(value) else { return value }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE, MMM d · h:mm a"
+        return formatter.string(from: date)
+    }
+
+    static func countdownUntil(_ value: String) -> String {
+        guard let date = parse(value) else { return "Soon" }
+        let seconds = max(0, Int(date.timeIntervalSinceNow))
+        let days = seconds / 86_400
+        let hours = (seconds % 86_400) / 3_600
+        return "\(days)d \(hours)h away"
     }
 }
 
@@ -276,6 +291,21 @@ struct APIUser: Decodable {
 struct ProfileUpdateRequest: Encodable {
     let reflectionSummary: String?
     let signals: ProfileSignals?
+    let basicInfo: BasicInfoUpdate?
+
+    init(reflectionSummary: String? = nil, signals: ProfileSignals? = nil, basicInfo: BasicInfoUpdate? = nil) {
+        self.reflectionSummary = reflectionSummary
+        self.signals = signals
+        self.basicInfo = basicInfo
+    }
+}
+
+struct BasicInfoUpdate: Encodable, Equatable {
+    var name: String?
+    var gender: String?
+    var dateOfBirth: String?
+    var city: String?
+    var pincode: String?
 }
 
 struct BasicInfo: Codable, Equatable {

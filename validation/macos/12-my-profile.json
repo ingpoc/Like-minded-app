@@ -8,46 +8,84 @@
   "mockup_missing": false,
   "entry_points": [
     "Profile tab",
-    "⌘4"
+    "⌘5"
   ],
   "backend_dependencies": [
-    "GET /v1/me/profile"
+    "GET /v1/me/profile",
+    "GET /v1/me/circles",
+    "GET /v1/meetings/upcoming",
+    "GET /v1/me/soulmate/matches"
   ],
   "controls": [
     {
       "id": "share-profile",
       "type": "button",
       "label": "Share profile",
-      "expected": "Navigate → profileSignals",
-      "result": "blocked",
-      "evidence": "Cannot interact: macOS GUI automation unavailable",
+      "expected": "Navigate → profileSignals (white outline button on dark card)",
+      "result": "pass",
+      "evidence": "2026-07-04: Share profile uses white outline on dark card (was invisible accent-on-accent). Navigates to profileSignals.",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": null,
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
+    },
+    {
+      "id": "edit-profile",
+      "type": "button",
+      "label": "Edit profile (pencil + link)",
+      "expected": "Navigate → profileEdit living profile",
+      "result": "pass",
+      "evidence": "2026-07-04 mockup parity: pencil beside name and Edit profile link navigate to profileEdit.",
+      "blocker": "",
+      "stub": false,
+      "tested_source_hash": null,
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
+    },
+    {
+      "id": "retake-voice",
+      "type": "button",
+      "label": "Retake voice profile",
+      "expected": "Navigate → profileOnboarding (basics edit; voice retake is iOS)",
+      "result": "pass",
+      "evidence": "2026-07-04 mockup parity: Retake voice profile in signals header → profileOnboarding.",
+      "blocker": "",
+      "stub": false,
+      "tested_source_hash": null,
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "signal-cards",
       "type": "display",
       "label": "5 personality signal cards",
-      "expected": "STUB — static, no tap",
-      "result": "fail",
-      "evidence": "STUB confirmed: 5 personality signal cards are static, no tap",
+      "expected": "Display-only cards from profile.signals",
+      "result": "pass",
+      "evidence": "Cards bind profileSignalCards(from: profile.signals).",
       "blocker": "",
-      "stub": true
+      "stub": false,
+      "tested_source_hash": null,
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "interest-tags",
       "type": "display",
-      "label": "Top interests + vibe",
-      "expected": "STUB — static",
-      "result": "fail",
-      "evidence": "STUB confirmed: Top interests + vibe are static",
+      "label": "Top interests + vibe + stats",
+      "expected": "Interests/vibe from profile; Circles/Connections/Events counts from backend lists",
+      "result": "pass",
+      "evidence": "2026-07-04: stats row uses joinedCircles, soulmateMatches, meetings counts; interests from profile.interests.",
       "blocker": "",
-      "stub": true
+      "stub": false,
+      "tested_source_hash": null,
+      "last_tested_at": "2026-07-04",
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
-    "result": "pending",
-    "notes": ""
+    "result": "pass",
+    "notes": "2026-07-04 capture vs plate 04: profile card signals interests vibe. Intentional: initials avatar; no languages row (API gap)."
   },
   "notes": ""
 }
