@@ -25,7 +25,7 @@ enum MacTab: String, CaseIterable, Identifiable {
         case .circles: .circlesRoom
         case .communities: .communitiesBrowse
         case .profile: .myProfile
-        case .soulmate: .soulmateOverview
+        case .soulmate: .soulmateDiscover
         }
     }
 

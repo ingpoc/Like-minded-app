@@ -146,7 +146,6 @@ case "$SCREEN" in
     click_label "Soulmate" optional
     click_label "Help & support" optional
     click_label "Save preferences"
-    click_label "Voice profile" optional
     ;;
   circlesRoom)
     click_label "Request circle placement refresh"

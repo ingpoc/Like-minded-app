@@ -1908,9 +1908,8 @@ struct MacScreenView: View {
         HStack(alignment: .top, spacing: 24) {
             if let profile = appState.profile {
                 let name = profile.basicInfo?.name ?? "You"
-                let initials = String(name.prefix(1))
                 let location = profile.basicInfo?.city ?? "Your location"
-                profileCard(name: name, initials: initials, location: location, profile: profile, editing: editing)
+                profileCard(name: name, location: location, profile: profile, editing: editing)
                 VStack(spacing: 18) {
                     MacPanel {
                         HStack(alignment: .firstTextBaseline) {
@@ -1927,7 +1926,10 @@ struct MacScreenView: View {
                             .buttonStyle(.plain)
                             .accessibilityLabel("Retake voice profile")
                         }
-                        HStack(spacing: 10) {
+                        LazyVGrid(
+                            columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 5),
+                            spacing: 10
+                        ) {
                             ForEach(profileSignalCards(from: profile.signals), id: \.title) { item in
                                 signalCard(item.title, detail: item.value)
                             }
@@ -1962,9 +1964,27 @@ struct MacScreenView: View {
                         }
                     }
                     MacPanel(title: "My vibe") {
-                        Text(profile.profileSummary?.isEmpty == false ? profile.profileSummary! : "Your private read appears after the voice interview.")
-                            .font(MacType.body)
-                            .foregroundStyle(MacPalette.muted)
+                        HStack(alignment: .top, spacing: 20) {
+                            Text(profile.profileSummary?.isEmpty == false ? profile.profileSummary! : "Your private read appears after the voice interview.")
+                                .font(MacType.body)
+                                .foregroundStyle(MacPalette.muted)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            MacOrb()
+                                .scaleEffect(0.55)
+                                .frame(width: 120, height: 120)
+                        }
+                    }
+                    HStack(alignment: .top, spacing: 18) {
+                        MacPanel(title: "About me") {
+                            Text(profile.profileSummary?.isEmpty == false
+                                 ? profile.profileSummary!
+                                 : "Your voice profile summary appears here after the interview.")
+                                .font(MacType.body)
+                                .foregroundStyle(MacPalette.muted)
+                        }
+                        MacPanel(title: "Languages") {
+                            tagWrap(profileLanguages(for: profile))
+                        }
                     }
                 }
             } else if appState.isSignedIn {
@@ -2000,15 +2020,15 @@ struct MacScreenView: View {
         }
     }
 
-    private func profileCard(name: String, initials: String, location: String, profile: UserProfile, editing: Bool) -> some View {
+    private func profileCard(name: String, location: String, profile: UserProfile, editing: Bool) -> some View {
         let circleCount = max(appState.joinedCircles.count, appState.placement == nil ? 0 : 1)
         let connectionCount = appState.soulmateMatches.count
         let eventCount = appState.upcomingMeetings.count + appState.pastMeetings.count
+        let gender = profile.basicInfo?.gender
         return MacPanel(dark: true) {
-            VStack(spacing: 15) {
-                MacAvatar(initials: initials, color: MacPalette.accentSoft)
-                    .scaleEffect(2.1)
-                    .padding(.top, 20)
+            VStack(spacing: 14) {
+                DoodlePortrait(assetName: DoodleArt.portrait(for: gender), size: 92)
+                    .padding(.top, 6)
                 HStack(spacing: 8) {
                     Text(name)
                         .font(MacType.title)
@@ -2027,7 +2047,7 @@ struct MacScreenView: View {
                 Label(location, systemImage: "mappin")
                     .font(MacType.body)
                     .foregroundStyle(.white.opacity(0.8))
-                Text("Voice profile active")
+                Label("Voice profile active", systemImage: "waveform")
                     .font(MacType.small.weight(.semibold))
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
@@ -2038,10 +2058,13 @@ struct MacScreenView: View {
                     profileStat(value: "\(eventCount)", label: "Events")
                 }
                 .padding(.vertical, 4)
-                Text(profile.profileSummary ?? "")
-                    .font(MacType.body)
-                    .multilineTextAlignment(.center)
-                    .foregroundStyle(.white.opacity(0.85))
+                if let summary = profile.profileSummary, !summary.isEmpty {
+                    Text(summary)
+                        .font(MacType.body)
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(.white.opacity(0.85))
+                        .lineLimit(3)
+                }
                 if editing {
                     Button("Done") {
                         navigate?(.myProfile)
@@ -2077,7 +2100,14 @@ struct MacScreenView: View {
             }
             .frame(maxWidth: .infinity)
         }
-        .frame(width: 310)
+        .frame(width: 300)
+    }
+
+    private func profileLanguages(for profile: UserProfile) -> [String] {
+        if profile.basicInfo?.city.localizedCaseInsensitiveContains("bangalore") == true {
+            return ["English", "Hindi"]
+        }
+        return ["English"]
     }
 
     private func profileStat(value: String, label: String) -> some View {
@@ -2273,24 +2303,19 @@ struct MacScreenView: View {
         let meetingLabel = (detail?.meetingDate ?? match?.meetingDate).map { "Met \(LikemindedDate.short($0))" }
             ?? "Matched from a meetup"
         let gender = detail?.basicInfo.gender?.capitalized
+        let genderRaw = detail?.basicInfo.gender
         let interestLabels = detail?.interests.map(\.label) ?? []
         return HStack(alignment: .top, spacing: 24) {
-            ZStack(alignment: .center) {
-                LinearGradient(colors: [MacPalette.clay.opacity(0.8), MacPalette.accent.opacity(0.7), MacPalette.ink.opacity(0.5)], startPoint: .topLeading, endPoint: .bottomTrailing)
-                VStack(spacing: 12) {
-                    Text(String(name.prefix(1)))
-                        .font(.system(size: 64, weight: .semibold, design: .serif))
-                        .foregroundStyle(.white)
-                    Text(name)
-                        .font(.system(size: 22, weight: .semibold, design: .serif))
-                        .foregroundStyle(.white)
-                    Text(meetingLabel)
-                        .font(MacType.body)
-                        .foregroundStyle(.white.opacity(0.8))
-                }
+            VStack(spacing: 16) {
+                DoodlePortrait(assetName: DoodleArt.portrait(forGenderString: genderRaw), size: 220)
+                Text(name)
+                    .font(.system(size: 22, weight: .semibold, design: .serif))
+                    .foregroundStyle(MacPalette.ink)
+                Text(meetingLabel)
+                    .font(MacType.body)
+                    .foregroundStyle(MacPalette.muted)
             }
-            .frame(width: 360, height: 410)
-            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .frame(width: 260)
             VStack(alignment: .leading, spacing: 18) {
                 Text(name)
                     .font(.system(size: 28, weight: .semibold, design: .serif))
@@ -2438,6 +2463,7 @@ struct MacScreenView: View {
                             ForEach(filteredCommunityMembers, id: \.userId) { member in
                                 memberRow(
                                     member.name,
+                                    gender: member.gender,
                                     role: "Member" + (member.gender.map { " · \($0.capitalized)" } ?? "")
                                 )
                             }
@@ -2462,10 +2488,9 @@ struct MacScreenView: View {
         }
     }
 
-    private func memberRow(_ name: String, role: String) -> some View {
+    private func memberRow(_ name: String, gender: String?, role: String) -> some View {
         HStack(spacing: 12) {
-            MacAvatar(initials: String(name.prefix(1)))
-                .frame(width: 32, height: 32)
+            DoodlePortrait(assetName: DoodleArt.portrait(forGenderString: gender), size: 32)
             VStack(alignment: .leading, spacing: 2) {
                 Text(name)
                     .font(MacType.button)
@@ -3261,21 +3286,6 @@ struct MacScreenView: View {
                     settingsNavButton(.privacy)
                     settingsNavButton(.notifications)
                     settingsNavButton(.soulmate)
-                    Button {
-                        navigate?(.myProfile)
-                    } label: {
-                        settingsItem("View profile", icon: "person.crop.circle", detail: "Profile tab", interactive: true)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("View profile")
-                    Button {
-                        profileOnboardingStep = 2
-                        navigate?(.profileOnboarding)
-                    } label: {
-                        settingsItem("Voice profile", icon: "waveform", detail: "Refresh signals", interactive: true)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("Voice profile")
                     settingsNavButton(.connectedApps)
                     settingsNavButton(.appearance)
                     settingsNavButton(.language)
@@ -3371,20 +3381,18 @@ struct MacScreenView: View {
             MacPanel(title: "Account") {
                 formLine("Name", value: appState.profile?.basicInfo?.name ?? "Not set")
                 formLine("City", value: appState.profile?.basicInfo?.city ?? "Not set")
-                formLine("Session", value: appState.isSignedIn ? "Signed in" : "Signed out")
-                Button("Edit basics") {
-                    profileOnboardingStep = 1
-                    navigate?(.profileOnboarding)
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(MacPalette.accent)
+                formLine("Gender", value: appState.profile?.basicInfo?.gender.label ?? "Not set")
+                Text("Edit name, city, and gender from Profile → Edit profile.")
+                    .font(MacType.small)
+                    .foregroundStyle(MacPalette.muted)
+                    .padding(.top, 8)
             }
         case .privacy:
             MacPanel(title: "Privacy & safety") {
                 Text("Likeminded uses voice conversation to build private profile signals. Signals are never shown to other testers.")
                     .font(MacType.body)
                     .foregroundStyle(MacPalette.muted)
-                Label("Re-take your voice profile from Profile or Settings.", systemImage: "waveform")
+                Label("Re-take your voice profile from the Profile tab.", systemImage: "waveform")
                 Label("Delete account removes backend tester data and clears this session.", systemImage: "trash")
                 Label("Soulmate is opt-in and mutual.", systemImage: "heart.fill")
             }
@@ -3481,8 +3489,10 @@ struct MacScreenView: View {
                 .toggleStyle(.switch)
                 .tint(MacPalette.accent)
                 .font(MacType.button)
+                .accessibilityLabel("Enable Soulmate")
+                .accessibilityValue(appState.soulmateEnabled ? "On" : "Off")
                 Text(appState.soulmateEnabled
-                     ? "Soulmate is on. Mutual matches appear after meetups."
+                     ? "Soulmate is on. The Soulmate tab opens Discover directly — turn this off here to hide the tab."
                      : "Turn on Soulmate to show the Soulmate tab and mutual matches after meetups.")
                     .font(MacType.small)
                     .foregroundStyle(MacPalette.muted)

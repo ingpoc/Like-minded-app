@@ -7,7 +7,8 @@
   "mockup_ref": "mockups/macos/09-12-profile-soulmate-discover-detail.png",
   "mockup_missing": false,
   "entry_points": [
-    "Soulmate Overview How it works"
+    "Soulmate tab (when enabled)",
+    "Soulmate Overview How it works (deep-link only)"
   ],
   "backend_dependencies": [
     "GET /v1/me/soulmate/status",

@@ -20,11 +20,11 @@
       "label": "Soulmate status (when enabled)",
       "expected": "No Enable Soulmate toggle when already on; status points to Settings as the only toggle owner",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (enable-toggle)",
+      "evidence": "2026-07-04: when soulmateEnabled, overview shows Label \"On — change this in Settings\" only. Toggle remains solely on settingsSoulmate.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
-      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
       "last_test_method": "screen-capture"
     },
     {
@@ -33,11 +33,11 @@
       "label": "How it works (underlined)",
       "expected": "Navigate → soulmateDiscover",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (how-it-works)",
+      "evidence": "2026-07-04 CUA validation-priya: How it works AXButton clicked via ./script/macos_cua_screen.sh soulmateOverview.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
-      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "342bb6ef2d9f07fb",
+      "last_tested_at": "2026-07-04",
       "last_test_method": "screen-capture"
     }
   ],
@@ -45,6 +45,6 @@
     "result": "pass",
     "notes": "2026-07-04 capture vs plate 09: matches overview when soulmate enabled. Intentional: enable toggle lives in Settings only."
   },
-  "notes": "Soulmate tab is only visible when enabled, so the normal overview path never shows a second enable toggle.",
-  "source_hash": "3f8988b2bae470b2"
+  "notes": "Soulmate tab opens Discover directly when enabled; overview remains for --mac-screen deep-link only.",
+  "source_hash": "342bb6ef2d9f07fb"
 }
