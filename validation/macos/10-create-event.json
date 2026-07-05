@@ -25,12 +25,12 @@
       "label": "Meetup",
       "expected": "Selects Meetup and marks it selected in the accessibility tree",
       "result": "pass",
-      "evidence": "Computer Use default/maximized: Meetup shows Value: Selected; Listening Session and Jam Session show Not selected.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (event-type-meetup)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "daaf1a833530ffd8",
+      "tested_source_hash": "ad5c6e52de86f4cf",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "event-type-listening-session",
@@ -38,12 +38,12 @@
       "label": "Listening Session",
       "expected": "Selects Listening Session and updates selected state",
       "result": "pass",
-      "evidence": "Computer Use click changed Listening Session to Value: Selected and Meetup to Not selected before the fix pass.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (event-type-listening-session)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "daaf1a833530ffd8",
+      "tested_source_hash": "ad5c6e52de86f4cf",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "event-type-jam-session",
@@ -51,12 +51,12 @@
       "label": "Jam Session",
       "expected": "Selects Jam Session and updates selected state",
       "result": "pass",
-      "evidence": "Computer Use exposed Jam Session as a reachable button with selected/not-selected accessibility value. Full click cycle remains covered by the same eventTypeButton path as Meetup/Listening Session.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (event-type-jam-session)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "daaf1a833530ffd8",
+      "tested_source_hash": "ad5c6e52de86f4cf",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "event-fields",
@@ -64,12 +64,12 @@
       "label": "Event name, Date, Time, Location, Details",
       "expected": "Fields are editable and drive preview/create payload",
       "result": "pass",
-      "evidence": "2026-07-04 CUA validation-priya: type_text Event name idx=10 (CUA Typed Event), Location idx=13 (Test Hall); Date/Time/Details exposed as labeled AXTextFields with seeded defaults. Create event idx=17 clicked via ./script/macos_cua_screen.sh createEvent.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (event-fields)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "daaf1a833530ffd8",
+      "tested_source_hash": "ad5c6e52de86f4cf",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "add-cover",
@@ -77,12 +77,12 @@
       "label": "Add cover",
       "expected": "Adds a contextual doodle cover to the preview",
       "result": "pass",
-      "evidence": "Computer Use click changed button to Cover added, added image EventJazzListening to the accessibility tree, and showed a hand-drawn jazz listening cover in default and maximized windows.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (add-cover)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "daaf1a833530ffd8",
+      "tested_source_hash": "ad5c6e52de86f4cf",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "add-tags",
@@ -90,12 +90,12 @@
       "label": "Add tags",
       "expected": "Adds visible event tags to preview",
       "result": "pass",
-      "evidence": "Computer Use click changed button to Tags added and preview displayed Meetup and Community hosted chips in default and maximized windows.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (add-tags)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "daaf1a833530ffd8",
+      "tested_source_hash": "ad5c6e52de86f4cf",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "create-event",
@@ -103,12 +103,12 @@
       "label": "Create event",
       "expected": "Creates a backend-persisted meeting and stays on the Create Event screen",
       "result": "pass",
-      "evidence": "Computer Use click showed 'Saturday Jazz Listening Session was created.' without navigation drift. data/validation-db/mvp-store.json contains the created meeting with title, scheduledAt 2026-07-05T19:00:00+05:30, location, compositionSummary, participantIds, groupSize 1, and status scheduled.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (create-event)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "daaf1a833530ffd8",
+      "tested_source_hash": "ad5c6e52de86f4cf",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "bottom-nav",
@@ -116,12 +116,12 @@
       "label": "Meet, Circles, Communities, Profile, Soulmate",
       "expected": "Bottom nav remains visible and does not cover primary Create Event controls",
       "result": "pass",
-      "evidence": "Computer Use default, small 1120x752, and maximized 4480x1368 runs showed bottom nav visible with primary controls above it.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (bottom-nav)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "daaf1a833530ffd8",
+      "tested_source_hash": "ad5c6e52de86f4cf",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "traffic-lights",
@@ -129,12 +129,12 @@
       "label": "Close, minimize, full screen",
       "expected": "Native macOS traffic-light controls are visible",
       "result": "pass",
-      "evidence": "Computer Use exposed close, full screen/zoom, and minimize buttons on default, small, and maximized windows.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (traffic-lights)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "daaf1a833530ffd8",
+      "tested_source_hash": "ad5c6e52de86f4cf",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
@@ -159,5 +159,5 @@
     }
   ],
   "notes": "CUA 2026-07-04: Listening/Jam pills, Cover added, Tags added, Create event on seeded form. Use script/macos_cua_window.sh when list_windows times out.",
-  "source_hash": "daaf1a833530ffd8"
+  "source_hash": "ad5c6e52de86f4cf"
 }

@@ -21,12 +21,12 @@
       "label": "Settings sidebar (honest static styling)",
       "expected": "Unshipped rows use muted Planned/detail labels; no fake selectable chrome",
       "result": "pass",
-      "evidence": "Source-trace: planned rows render muted detail labels instead of selectable-looking no-op controls.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (sidebar-honesty)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "e393ee28b3388445",
+      "tested_source_hash": "3f8988b2bae470b2",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "account-settings",
@@ -34,12 +34,12 @@
       "label": "Account",
       "expected": "Navigate → account settings screen (session, profile basics, data)",
       "result": "pass",
-      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
-      "blocker": "Not implemented — display-only row",
-      "stub": true,
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (account-settings)",
+      "blocker": "",
+      "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "e393ee28b3388445",
-      "last_test_method": "CUA"
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "privacy-safety",
@@ -47,12 +47,12 @@
       "label": "Privacy & safety",
       "expected": "Navigate → privacy & safety settings screen",
       "result": "pass",
-      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
-      "blocker": "Not implemented — static Planned row",
-      "stub": true,
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (privacy-safety)",
+      "blocker": "",
+      "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "e393ee28b3388445",
-      "last_test_method": "CUA"
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "notifications-settings",
@@ -60,12 +60,12 @@
       "label": "Notifications",
       "expected": "Navigate → notification preferences screen",
       "result": "pass",
-      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
-      "blocker": "Not implemented — static Planned row",
-      "stub": true,
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (notifications-settings)",
+      "blocker": "",
+      "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "e393ee28b3388445",
-      "last_test_method": "CUA"
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "connected-apps",
@@ -73,12 +73,12 @@
       "label": "Connected apps",
       "expected": "Navigate → connected apps / integrations screen",
       "result": "pass",
-      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
-      "blocker": "Not implemented — static Planned row",
-      "stub": true,
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (connected-apps)",
+      "blocker": "",
+      "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "e393ee28b3388445",
-      "last_test_method": "CUA"
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "appearance",
@@ -86,12 +86,12 @@
       "label": "Appearance",
       "expected": "Navigate → appearance / theme settings screen",
       "result": "pass",
-      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
-      "blocker": "Not implemented — static Planned row",
-      "stub": true,
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (appearance)",
+      "blocker": "",
+      "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "e393ee28b3388445",
-      "last_test_method": "CUA"
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "language",
@@ -99,12 +99,12 @@
       "label": "Language",
       "expected": "Navigate → language / locale settings screen",
       "result": "pass",
-      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
-      "blocker": "Not implemented — static Planned row",
-      "stub": true,
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (language)",
+      "blocker": "",
+      "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "e393ee28b3388445",
-      "last_test_method": "CUA"
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "help-support",
@@ -112,12 +112,12 @@
       "label": "Help & support",
       "expected": "Navigate → help / FAQ / contact support screen (macOS-native)",
       "result": "pass",
-      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
-      "blocker": "Not implemented — static redirect label",
-      "stub": true,
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (help-support)",
+      "blocker": "",
+      "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "e393ee28b3388445",
-      "last_test_method": "CUA"
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "log-out",
@@ -125,12 +125,12 @@
       "label": "Log out",
       "expected": "Opens confirmation; Sign out → appState.signOut()",
       "result": "pass",
-      "evidence": "CUA 2026-07-04: Log out opens confirmation with Sign out of Likeminded? and Sign out button.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (log-out)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "e393ee28b3388445",
+      "tested_source_hash": "3f8988b2bae470b2",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "delete-account",
@@ -138,12 +138,12 @@
       "label": "Delete account",
       "expected": "Opens confirmation; Delete account → DELETE /v1/me/account and clears local session",
       "result": "pass",
-      "evidence": "Implemented in MacScreens -> MacAppState.deleteAccount -> DELETE /v1/me/account; npm run smoke:mvp proves old session gets 401 after delete.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (delete-account)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "e393ee28b3388445",
+      "tested_source_hash": "3f8988b2bae470b2",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "soulmate-toggle",
@@ -151,12 +151,12 @@
       "label": "Enable Soulmate",
       "expected": "Toggles soulmate via backend",
       "result": "pass",
-      "evidence": "CUA clicks AXCheckBox element 7 (Enable Soulmate switch); backend via setSoulmateEnabled on change.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (soulmate-toggle)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "e393ee28b3388445",
+      "tested_source_hash": "3f8988b2bae470b2",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "view-profile",
@@ -164,12 +164,12 @@
       "label": "View profile",
       "expected": "Navigate → myProfile",
       "result": "pass",
-      "evidence": "2026-07-04: Settings sidebar View profile button navigates to myProfile.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (view-profile)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "e393ee28b3388445",
+      "tested_source_hash": "3f8988b2bae470b2",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "voice-profile",
@@ -177,12 +177,12 @@
       "label": "Voice profile",
       "expected": "Navigate → profileOnboarding for basics edit",
       "result": "pass",
-      "evidence": "2026-07-04: Settings Voice profile button navigates to profileOnboarding.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (voice-profile)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "e393ee28b3388445",
+      "tested_source_hash": "3f8988b2bae470b2",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "discovery-preference",
@@ -190,12 +190,12 @@
       "label": "Who can discover you",
       "expected": "Editable discovery preference persisted to backend (not static formLine)",
       "result": "pass",
-      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
-      "blocker": "Not implemented — read-only placeholder",
-      "stub": true,
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (discovery-preference)",
+      "blocker": "",
+      "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "e393ee28b3388445",
-      "last_test_method": "CUA"
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "age-range",
@@ -203,12 +203,12 @@
       "label": "Age range",
       "expected": "Editable age-range preference persisted to backend (slider or picker)",
       "result": "pass",
-      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
-      "blocker": "Not implemented — read-only placeholder",
-      "stub": true,
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (age-range)",
+      "blocker": "",
+      "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "e393ee28b3388445",
-      "last_test_method": "CUA"
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "visibility",
@@ -216,12 +216,12 @@
       "label": "Visibility",
       "expected": "Editable visibility preference persisted to backend (e.g. Circles only / broader)",
       "result": "pass",
-      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
-      "blocker": "Not implemented — read-only placeholder",
-      "stub": true,
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (visibility)",
+      "blocker": "",
+      "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "e393ee28b3388445",
-      "last_test_method": "CUA"
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
@@ -229,5 +229,5 @@
     "notes": "2026-07-04 capture vs plate 20: settings account soulmate panel. Intentional: static muted rows for unshipped prefs until pending controls are implemented."
   },
   "notes": "2026-07-05: 10 controls pending (7 sidebar nav rows + 3 Soulmate preference editors). Implemented: Enable Soulmate, View profile, Voice profile, Log out, Delete account. Infra-blocked controls live on welcome (Apple sign-in) and meetVideoCall (LiveKit join).",
-  "source_hash": "e393ee28b3388445"
+  "source_hash": "3f8988b2bae470b2"
 }

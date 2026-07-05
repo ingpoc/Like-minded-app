@@ -1195,6 +1195,7 @@ struct MacScreenView: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(label)
+        .accessibilityAddTraits(.isButton)
     }
 
     private func chatHeaderIcon(_ systemName: String, label: String) -> some View {
@@ -1693,6 +1694,8 @@ struct MacScreenView: View {
                             .padding(.vertical, 8)
                             .background(communityDetailTab == tab ? MacPalette.accentSoft : .clear, in: Capsule())
                             .foregroundStyle(communityDetailTab == tab ? MacPalette.accent : MacPalette.muted)
+                            .accessibilityLabel(tab)
+                            .accessibilityAddTraits(.isButton)
                             .accessibilityValue(communityDetailTab == tab ? "Selected" : "Not selected")
                     }
                 }
@@ -1839,6 +1842,8 @@ struct MacScreenView: View {
                             .background(MacPalette.accent, in: Capsule())
                             .foregroundStyle(.white)
                             .buttonStyle(.plain)
+                            .accessibilityLabel("Save note")
+                            .accessibilityAddTraits(.isButton)
                             .disabled(meeting == nil || isSavingRecapNote)
 
                             if let recapNoteStatus {
@@ -2131,6 +2136,8 @@ struct MacScreenView: View {
                     .font(MacType.small)
                     .foregroundStyle(MacPalette.sage)
                     .buttonStyle(.plain)
+                    .accessibilityLabel("How it works")
+                    .accessibilityAddTraits(.isButton)
                     .underline()
             }
             .frame(width: 420)
@@ -2985,21 +2992,25 @@ struct MacScreenView: View {
                         stepRow(number: "1", title: "About you", selected: profileOnboardingStep == 1)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("About you step")
+                    .accessibilityAddTraits(.isButton)
                     Button {
                         profileOnboardingStep = 2
                     } label: {
                         stepRow(number: "2", title: "Voice profile", selected: profileOnboardingStep == 2)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("Voice profile step")
+                    .accessibilityAddTraits(.isButton)
                     Button {
                         profileOnboardingStep = 3
                     } label: {
                         stepRow(number: "3", title: "Join first circle", selected: profileOnboardingStep == 3)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("Join first circle step")
+                    .accessibilityAddTraits(.isButton)
                 }
-                .accessibilityElement(children: .combine)
-                .accessibilityLabel("Progress: About you, then voice profile, then join first circle")
                 Divider()
                     .padding(.vertical, 6)
                 Label("Your privacy, always — we never share your data without permission.", systemImage: "shield")
@@ -3339,6 +3350,7 @@ struct MacScreenView: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(pane.title)
+        .accessibilityAddTraits(.isButton)
     }
 
     private func settingsPaneDetail(_ pane: MacSettingsPane) -> String? {
@@ -3514,6 +3526,8 @@ struct MacScreenView: View {
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(MacPalette.accent)
+                    .accessibilityLabel("Save preferences")
+                    .accessibilityAddTraits(.isButton)
                     if let soulmatePrefsStatus {
                         Text(soulmatePrefsStatus)
                             .font(MacType.small)

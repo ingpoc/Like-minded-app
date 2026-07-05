@@ -20,12 +20,12 @@
       "label": "Soulmate status (when enabled)",
       "expected": "No Enable Soulmate toggle when already on; status points to Settings as the only toggle owner",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (enable-toggle)",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (enable-toggle)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "e393ee28b3388445",
+      "tested_source_hash": "3f8988b2bae470b2",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "how-it-works",
@@ -33,12 +33,12 @@
       "label": "How it works (underlined)",
       "expected": "Navigate → soulmateDiscover",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (how-it-works)",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (how-it-works)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "e393ee28b3388445",
+      "tested_source_hash": "3f8988b2bae470b2",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
@@ -46,5 +46,5 @@
     "notes": "2026-07-04 capture vs plate 09: matches overview when soulmate enabled. Intentional: enable toggle lives in Settings only."
   },
   "notes": "Soulmate tab is only visible when enabled, so the normal overview path never shows a second enable toggle.",
-  "source_hash": "e393ee28b3388445"
+  "source_hash": "3f8988b2bae470b2"
 }

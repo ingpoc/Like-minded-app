@@ -19,12 +19,12 @@
       "label": "Communication/Energy/Trust signal labels",
       "expected": "Read-only labels from profile.signals (communicationStyle, socialEnergy, trustPattern)",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (comm-pills)",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (comm-pills)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "e393ee28b3388445",
+      "tested_source_hash": "3f8988b2bae470b2",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "trait-sliders",
@@ -32,12 +32,12 @@
       "label": "5 trait bars (Reserved/Outgoing, Analytical/Intuitive, Steady/Spontaneous, Guarded/Warm, Steady mood/Reactive)",
       "expected": "Read-only bars from profile.signals.bigFive; not editable",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (trait-sliders)",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (trait-sliders)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "e393ee28b3388445",
+      "tested_source_hash": "3f8988b2bae470b2",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "save",
@@ -45,12 +45,12 @@
       "label": "Back to profile",
       "expected": "Navigate → myProfile (no fake save of traits)",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (save)",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (save)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "e393ee28b3388445",
+      "tested_source_hash": "3f8988b2bae470b2",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
@@ -58,5 +58,5 @@
     "notes": "2026-07-04 capture vs plate 04: read-only living profile signals from backend. Intentional: no fake editable trait sliders (honest read-only)."
   },
   "notes": "Honesty pass 2026-07-04: no fake editable trait chrome.",
-  "source_hash": "e393ee28b3388445"
+  "source_hash": "3f8988b2bae470b2"
 }

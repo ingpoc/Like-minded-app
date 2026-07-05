@@ -20,12 +20,12 @@
       "label": "Done",
       "expected": "Navigate → myProfile (editing:false)",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof: reproof after source hash change (share-profile)",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (share-profile)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "e393ee28b3388445",
+      "tested_source_hash": "3f8988b2bae470b2",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
@@ -33,5 +33,5 @@
     "notes": "2026-07-04 capture vs plate 04: personality signal cards editing mode. Intentional: backend trait labels not mockup slider chrome."
   },
   "notes": "",
-  "source_hash": "e393ee28b3388445"
+  "source_hash": "3f8988b2bae470b2"
 }

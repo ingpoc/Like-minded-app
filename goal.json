@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "status": "completed",
-  "purpose": "Per-session execution goal. Copy this file to goal.json at session start, set the current goal, and keep graders/validation/agent routing current when files or commands change.",
-  "goal": "Track — macOS Unimplemented Controls: wire Settings nav + Soulmate prefs, Chat/Messages header actions, Community detail rows, and Profile voice/onboarding steps 2–3; close 24 pending validation/macos/*.json stub rows. Infra-blocked Apple sign-in and LiveKit join remain Phase 9/10.",
+  "purpose": "Per-session execution goal. Copy this file to goal.template.json at session start, set the current goal, and keep graders/validation/agent routing current when files or commands change.",
+  "goal": "Track — macOS CUA needle alignment: align macos_cua_screen.sh click needles with MacScreens.swift accessibilityLabel strings, expose step/tab/button AX traits, and gate ledger stamps on CUA-click success (no launch-only false-green).",
   "ultimate_goal_source": "GOAL.md",
   "progress_source": "PROGRESS.md",
   "workflow_refs": [
@@ -79,7 +79,8 @@
     "Check validation_state / ledger:open before rerunning completed proof; re-test stale_pass rows only.",
     "Reuse validation_inventory scripts and ledger scripts before creating new ones.",
     "Before claiming phase/track/goal complete, run npm run verify:ledger-progress. Actionable fail/pending/stale_pass/stale-blocked controls need unchecked PROGRESS owners; JSON is sole control-status owner.",
-    "When a control is fail or stub, add or keep an unchecked PROGRESS item in the same session."
+    "When a control is fail or stub, add or keep an unchecked PROGRESS item in the same session.",
+    "Do not stamp macOS ledger pass from CUA launch-only; require CUA-click success via macos_cua_screen.sh."
   ],
   "deterministic_graders": [
     {
@@ -104,7 +105,7 @@
       "name": "goal_contract",
       "command": "npm run verify:goal",
       "cost": "zero_token",
-      "proves": "goal.json and goal.template.json contain the current grader, validation, rubric, and agent routing contract."
+      "proves": "goal.json and goal.template.json contain the current grader, validation, validation, rubric, and agent routing contract."
     },
     {
       "name": "ledger_progress_ownership",
@@ -246,10 +247,10 @@
     "commit_message_template": "Validate <short session goal>"
   },
   "done_criteria": [
-    "All 24 macOS static stub controls in validation/macos/*.json are pass with evidence (not pending).",
-    "POST /v1/me/soulmate/preferences persists discovery, age range, and visibility.",
-    "npm run verify:ledger-progress passes for macOS unimplemented-controls track owners.",
-    "npm run smoke:mvp and LikemindedMac build pass.",
+    "macos_cua_screen.sh needles match MacScreens.swift accessibilityLabel strings for settings, meet, chat, community, and onboarding flows.",
+    "Ledger stamp from macos_cua_screen.sh requires CUA-click success (method CUA-click); launch-only false-green blocked.",
+    "Profile onboarding step rows expose individual AX button labels (steps 2–3 clickable).",
+    "LikemindedMac build, npm run check, and npm run verify:ledger-progress pass.",
     "Validated session changes committed with goal.json before marking completed."
   ],
   "max_iterations": 10

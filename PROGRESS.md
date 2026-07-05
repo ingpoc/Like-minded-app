@@ -323,6 +323,7 @@ Parallel to Phase 9; not a numbered phase. Owner: `docs/references/macos-screen-
 - [x] macOS create-community form ledger: `validation/macos/22-create-community.json` controls for name/summary/themes/submit driven to pass with CUA.
 - [x] macOS visual parity vs `mockups/macos/` and per-screen refs in `docs/references/macos-screen-audit.md`; regenerate `output/validation/macos-screens/` via `npm run verify:macos-screens` after UI polish.
 - [x] macOS create event layout parity vs `mockups/macos/22-create-event.png` at default, smaller, and maximized window sizes with traffic lights visible.
+- [x] macOS CUA needle alignment: `script/macos_cua_screen.sh` click labels match `MacScreens.swift` accessibilityLabel strings; stamp gated on `CUA-click` success (no launch-only false-green); onboarding step rows expose individual AX labels.
 
 ## Track — macOS Unimplemented Controls (static UI)
 

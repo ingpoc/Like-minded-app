@@ -23,12 +23,12 @@
       "label": "Share profile",
       "expected": "Navigate → profileSignals (white outline button on dark card)",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof: reproof after source hash change (share-profile)",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (share-profile)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "e393ee28b3388445",
+      "tested_source_hash": "3f8988b2bae470b2",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "edit-profile",
@@ -36,12 +36,12 @@
       "label": "Edit profile (pencil + link)",
       "expected": "Navigate → profileEdit living profile",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof: reproof after source hash change (edit-profile)",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (edit-profile)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "e393ee28b3388445",
+      "tested_source_hash": "3f8988b2bae470b2",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "retake-voice",
@@ -49,12 +49,12 @@
       "label": "Retake voice profile",
       "expected": "Start macOS voice interview session or open dedicated voice retake flow",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof: reproof after source hash change (retake-voice)",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (retake-voice)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA",
-      "tested_source_hash": "e393ee28b3388445"
+      "last_test_method": "screen-capture",
+      "tested_source_hash": "3f8988b2bae470b2"
     },
     {
       "id": "signal-cards",
@@ -62,12 +62,12 @@
       "label": "5 personality signal cards",
       "expected": "Display-only cards from profile.signals",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof: reproof after source hash change (signal-cards)",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (signal-cards)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "e393ee28b3388445",
+      "tested_source_hash": "3f8988b2bae470b2",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "interest-tags",
@@ -75,12 +75,12 @@
       "label": "Top interests + vibe + stats",
       "expected": "Interests/vibe from profile; Circles/Connections/Events counts from backend lists",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof: reproof after source hash change (interest-tags)",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (interest-tags)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "e393ee28b3388445",
+      "tested_source_hash": "3f8988b2bae470b2",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
@@ -88,5 +88,5 @@
     "notes": "2026-07-04 capture vs plate 04: profile card signals interests vibe. Intentional: initials avatar; no languages row (API gap)."
   },
   "notes": "2026-07-05: retake-voice pending — label promises voice profile but macOS only opens basics onboarding.",
-  "source_hash": "e393ee28b3388445"
+  "source_hash": "3f8988b2bae470b2"
 }
