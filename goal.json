@@ -3,6 +3,16 @@
   "status": "pending",
   "purpose": "Per-session execution goal. Copy this file to goal.json at session start, set the current goal, and keep graders/validation/agent routing current when files or commands change.",
   "goal": "Wave 2 reproof: sequentially re-stamp stale iOS/macOS ledger controls (119 stale_pass) via validate:screen and macos:validation-batch — no parallel build/capture.",
+  "route_contract": {
+    "lane": "wave2-reproof-sequential",
+    "first_command": "npm run validation:wave2-reproof",
+    "execute": "Run first_command end-to-end in this session. Do not ask the user for a prompt. Do not stop after read-only commands (ledger:stale alone is not done).",
+    "forbid": [
+      "parallel build/capture/seed across agents",
+      "one subagent per screen for proof",
+      "multitask proof wave"
+    ]
+  },
   "ultimate_goal_source": "GOAL.md",
   "progress_source": "PROGRESS.md",
   "workflow_refs": [

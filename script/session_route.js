@@ -15,6 +15,9 @@ const ROUTE_KEYS = new Set([
   "active_track:",
   "ledger_progress_ok:",
   "first_command:",
+  "session_lane:",
+  "route_execute:",
+  "route_forbid:",
   "after_dirty_resolved:",
   "open_tracks:",
   "ledger_ios:",
@@ -38,7 +41,7 @@ function sessionBrief() {
 function hookPayload() {
   const brief = sessionBrief();
   const context = [
-    "Likeminded session route (auto). Obey before loading docs.",
+    "Likeminded session route (auto). Execute first_command end-to-end — no user prompt required.",
     brief,
     "Owners: validation JSON only. One screen → npm run ledger:screen. Lazy authoring: AGENTS.md § Context doctrine."
   ].join("\n");
