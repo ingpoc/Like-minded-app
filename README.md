@@ -18,7 +18,7 @@ npm run goal:next
 
 Follow `first_command` / `after_dirty_resolved`, `open_tracks`, and `ledger_progress_ok`. While macOS or iOS ledger tracks are open or dirty, do **not** start Phase 9 external setup (Neon, Render, Apple Developer, TestFlight evidence).
 
-Owner docs: `PROGRESS.md` (active track only), `docs/workflows/validation.md`. Control status: `validation/{ios,macos}/*.json` only — run `npm run ledger:open` before loading other docs.
+Owner docs: `PROGRESS.md` (active track only), `docs/workflows/validation.md`. Control status: `validation/{ios,macos}/*.json` — one screen: `npm run ledger:screen`; gap audit: `npm run ledger:open`.
 
 ## Structure
 

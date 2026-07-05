@@ -19,10 +19,10 @@
       "label": "Members section sidebar",
       "expected": "Honest Members-only section label",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (sidebar-nav)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (sidebar-nav) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "012ec3dd1410b363",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA"
     },
@@ -32,10 +32,10 @@
       "label": "Search members",
       "expected": "Filters filteredCommunityMembers by name/gender",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (search)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (search) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "012ec3dd1410b363",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA"
     },
@@ -45,10 +45,10 @@
       "label": "Member count label",
       "expected": "Display-only member count",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (filter-pills)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (filter-pills) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "012ec3dd1410b363",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA"
     },
@@ -58,18 +58,41 @@
       "label": "Member rows",
       "expected": "Display-only roster from API",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (member-rows)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (member-rows) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "012ec3dd1410b363",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-04 capture vs plate 13: members search roster from API. Intentional: no fake host badges; initials not photos."
+    "notes": "2026-07-05 capture vs plate 13: full community nav sidebar + members search/filters/roster from API. Intentional: doodle portraits not photos; no fake host badges."
   },
   "notes": "",
-  "source_hash": "c85b147b28b0e423"
+  "source_hash": "012ec3dd1410b363",
+  "recent_screenshot_ref": "output/validation/macos-screens/communityMembers.png",
+  "ui_validation": {
+    "result": "pass",
+    "reference_mockup_ref": "mockups/macos/13-16-community-members-event-messages-activity.png",
+    "recent_screenshot_ref": "output/validation/macos-screens/communityMembers.png",
+    "design_ref": "DESIGN.md",
+    "last_compared_at": "2026-07-05",
+    "validated": [
+      "latest screenshot exists and was compared with reference mockup",
+      "DESIGN.md design language checked: warm canvas, calm editorial hierarchy, card system, green accents, bottom glass navigation",
+      "visible text and components reviewed for clear purpose",
+      "control behavior tracked separately in controls[]"
+    ],
+    "pending_validation": [],
+    "requires_implementation": [],
+    "requires_fixing": [],
+    "intentional_differences": [
+      "Doodle portrait initials instead of photo avatars",
+      "No fake host badges; activity labels are display-only roster hints",
+      "Seeded roster count 12 vs mockup montage 18"
+    ],
+    "notes": "2026-07-05 capture vs plate 13: full community nav sidebar + members search/filters/roster from API. Intentional: doodle portraits not photos; no fake host badges."
+  }
 }

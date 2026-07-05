@@ -4,8 +4,8 @@
   "source_files": [
     "apps/ios-macos/Sources/LikemindedApp/Views/SettingsPrototypeView.swift (PrivacyPolicySheet)"
   ],
-  "mockup_ref": null,
-  "mockup_missing": true,
+  "mockup_ref": "mockups/ios/32-settings-privacy.png",
+  "mockup_missing": false,
   "entry_points": [
     "Settings Privacy policy row"
   ],

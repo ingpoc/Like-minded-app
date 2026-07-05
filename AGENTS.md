@@ -26,12 +26,13 @@
 | Lane | Run | Do not preload |
 |------|-----|----------------|
 | Any session | `npm run goal:next` | Full `PROGRESS.md`, `GOAL.md` |
-| Gap / what's pending | `npm run ledger:open` (`ledger:stale` after source edits) | Source trees, mockup images, design docs |
-| Native UI (one screen) | One `validation/*/*.json` + its `source_files` | Other platform, all mockups |
+| Native UI (one screen) | `npm run ledger:screen -- --platform ios\|macos --screen <id>` + `source_files` | All validation JSON, mockup dirs |
+| Gap / all open controls | `npm run ledger:open` (`ledger:stale` after source edits) | Source trees, mockup images |
 | Backend route | `services/api/src/server.js` family | Native UI docs |
 | Phase N | `npm run phase:preflight -- N` | Entire phase history |
 | Claim track/goal done | `npm run verify:ledger-progress` | — |
-| macOS CUA proof | `./script/macos_audit_prepare.sh` → `macos_cua_screen.sh` | Full app walk |
+| macOS CUA (one screen) | `./script/macos_audit_prepare.sh` → `./script/macos_cua_screen.sh <screen>` |
+| macOS post-parallel / stale | `npm run macos:validation-batch` |
 
 `./script/project_context.sh query --task "…"`: **only** if `goal:next` is insufficient, `decision_count > 0`, or boundary/decision-graph work. **Skip when zero decisions.**
 
@@ -57,6 +58,79 @@ Next-goal: smallest full-session surface (one screen family, endpoint family, or
 - **Boundary / stack change** (rare): `workflow summary project-spine` **or** `project_context query`, not both by default
 - **Decision graph** (rare): `workflow summary context-graph`
 - **Do not repeat** retrieval already done for the same task unless the task changed or evidence contradicts loaded context
+
+## Harness routing (autopilot — agent classifies, user does not)
+
+Cursor Auto is the always-on orchestrator. **Classify every turn internally**; never wait for the user to name a harness, subagent, or Codex profile.
+
+### Decision order (first match wins)
+
+1. **Session boundary** — fresh/resume turn, "what's next", gap audit → `npm run goal:next` or resume checkpoint; **no LLM sidecar**
+2. **Deterministic proof** — ledger, build, verify script exists → run it; **no LLM sidecar**
+3. **Build lane** — implementing, fixing, iterating, build failing, task incomplete → **Cursor main thread** (Read → edit → build loop)
+4. **Merge gate** — signals below → **`codex-review` subagent** before commit/PR/push; integrate findings; fix P0/P1; then proceed
+5. **Parallel disjoint read** — large unrelated map while main thread has local work → `explore` subagent only
+6. **Context-efficiency audit** — stale routing / competing owners / goal-vs-dirty mismatch → `cost_scan` subagent (read-only)
+
+### Merge-gate signals (auto-invoke `codex-review`)
+
+Invoke when **any** is true and implementation for this slice is done:
+
+- Your next planned action is `git commit`, `gh pr create`, or push
+- Build/verify for the changed surface passed and diff is non-trivial (3+ files, or auth/API/schema/validation JSON)
+- User intent is ship/merge/PR (including informal: "commit", "open a PR", "ready to merge") — **do not require** the phrase "code review"
+
+Skip `codex-review` when:
+
+- Still editing, debugging, or build/verify failing
+- Trivial diff (single typo, comment-only) unless it touches security/auth
+- Already ran `codex-review` on the same diff since the last source edit
+
+After `codex-review`: fix blocking P0/P1 yourself or report blockers; do not commit with open P0/P1.
+
+### Lane → harness map
+
+| Lane | Harness | Model |
+|------|---------|-------|
+| Session start / gap | Deterministic scripts | — |
+| **Trivial UI fix** (single file, &lt;~30 lines, user screenshot, no ledger proof) | **Cursor main thread** — no subagent | Auto |
+| Build (Swift, API, UI) | Cursor Auto main | Auto |
+| Runtime proof | Cursor Auto + `macos_cua_screen.sh`, `npm run verify:*` | — |
+| **macOS multi-screen closeout** | Parallel **implement** workers per ledger JSON; **sequential** `./script/macos_validation_batch.sh` for capture+CUA | Auto |
+| Operator UI audit | Cursor Auto + `requirements-gap-audit` | Auto |
+| Merge gate review | `codex-review` → Codex `scan_fast` then `verify_review` | mini → gpt-5.4 |
+| Architecture ambiguity in review | `codex-review` escalates to `deep_reason` / `gpt55_escalation` | per policy |
+| Stale routing audit | `cost_scan` | gpt-5.4-mini |
+| 1–2 tool calls | Cursor Auto direct | Auto |
+
+### Trivial-fix lane (no subagent)
+
+Use the **main thread** when **all** are true:
+
+- One localized bug (clip, padding, alignment, copy) with a clear screenshot or repro
+- Touch ≤1–2 files and ≲30 lines; no new controls or API contracts
+- Build compile check is enough; no ledger/CUA stamp required before shipping the fix
+
+Do **not** spawn a background worker for these. If a subagent stalls &gt;5 minutes on such a task, interrupt it and fix on the main thread.
+
+### macOS validation parallelism
+
+| Phase | Parallel? | Tool |
+|-------|-----------|------|
+| UI implementation per screen | Yes — disjoint `validation/macos/*.json` + `MacScreens.swift` MARK slices | Subagents or main thread |
+| Screenshot capture | **No** — one `LikemindedMac` instance | `npm run verify:macos-screens` or batch script |
+| CUA control proof | **No** — sole owner of `:8787` | `./script/macos_validation_batch.sh` |
+| API contract after `server.js` edit | No | `npm run smoke:mvp` |
+
+After parallel UI workers finish: `./script/macos_validation_batch.sh` (capture + sequential CUA). Do not run `macos_cua_screen.sh` in parallel across agents.
+
+Scripts own proof. Subagents own bounded sidecars. Main thread owns integration and final judgment.
+
+## Session alignment (project hooks)
+
+- `.cursor/hooks.json` → `sessionStart` runs `npm run goal:next` compact route via `script/session_route.js`.
+- `.cursor/rules/context-alignment.mdc` → 4-line always-on entry (backup when hook injection is dropped).
+- `npm run verify:ledger-progress` / `verify:goal` → fail if duplicate context surfaces return (status tables, phase graveyard, sibling ledgers).
 
 ## Project agents
 

@@ -19,10 +19,10 @@
       "label": "Communication/Energy/Trust signal labels",
       "expected": "Read-only labels from profile.signals (communicationStyle, socialEnergy, trustPattern)",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (comm-pills)",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (comm-pills) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "bfa0f05606daea73",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     },
@@ -32,10 +32,10 @@
       "label": "5 trait bars (Reserved/Outgoing, Analytical/Intuitive, Steady/Spontaneous, Guarded/Warm, Steady mood/Reactive)",
       "expected": "Read-only bars from profile.signals.bigFive; not editable",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (trait-sliders)",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (trait-sliders) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "bfa0f05606daea73",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     },
@@ -45,10 +45,10 @@
       "label": "Back to profile",
       "expected": "Navigate → myProfile (no fake save of traits)",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (save)",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (save) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "bfa0f05606daea73",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     }
@@ -58,5 +58,24 @@
     "notes": "2026-07-04 capture vs plate 04: read-only living profile signals from backend. Intentional: no fake editable trait sliders (honest read-only)."
   },
   "notes": "Honesty pass 2026-07-04: no fake editable trait chrome.",
-  "source_hash": "c85b147b28b0e423"
+  "source_hash": "bfa0f05606daea73",
+  "recent_screenshot_ref": "output/validation/macos-screens/profileEdit.png",
+  "ui_validation": {
+    "result": "pass",
+    "reference_mockup_ref": "mockups/macos/09-12-profile-soulmate-discover-detail.png",
+    "recent_screenshot_ref": "output/validation/macos-screens/profileEdit.png",
+    "design_ref": "DESIGN.md",
+    "last_compared_at": "2026-07-04",
+    "validated": [
+      "latest screenshot exists and was compared with reference mockup",
+      "DESIGN.md design language checked: warm canvas, calm editorial hierarchy, card system, green accents, bottom glass navigation",
+      "visible text and components reviewed for clear purpose",
+      "control behavior tracked separately in controls[]"
+    ],
+    "pending_validation": [],
+    "requires_implementation": [],
+    "requires_fixing": [],
+    "intentional_differences": [],
+    "notes": "2026-07-04 capture vs plate 04: read-only living profile signals from backend. Intentional: no fake editable trait sliders (honest read-only)."
+  }
 }

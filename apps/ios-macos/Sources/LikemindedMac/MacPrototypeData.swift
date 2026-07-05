@@ -4,8 +4,8 @@ enum MacTab: String, CaseIterable, Identifiable {
     case meet = "Meet"
     case circles = "Circles"
     case communities = "Communities"
-    case soulmate = "Soulmate"
     case profile = "Profile"
+    case soulmate = "Soulmate"
 
     var id: String { rawValue }
 
@@ -106,11 +106,11 @@ enum MacPrototypeScreen: String, CaseIterable, Identifiable {
         case .soulmateDiscover: "Discover"
         case .soulmateDetail: "Meera, 27"
         case .communityMembers: "Jazz & Music Community"
-        case .createEvent: "Create a new event"
+        case .createEvent: "Create event"
         case .createCommunity: "Create a community"
         case .messages: "Messages"
         case .notifications: "Notifications"
-        case .profileOnboarding: "Let us get to know you better"
+        case .profileOnboarding: "Let's get to know you better"
         case .profileSignals: "Your personality signals"
         case .settingsSoulmate: "Settings"
         }
@@ -146,11 +146,104 @@ enum MacPrototypeScreen: String, CaseIterable, Identifiable {
         case .createCommunity: "Start a focused room for people who share your interests."
         case .messages: "Your conversations and community threads."
         case .notifications: "Activity from circles, communities, and matches."
-        case .profileOnboarding: "A few thoughtful details help us understand your vibe."
+        case .profileOnboarding: "A few thoughtful details help us understand your vibe and find your people."
         case .profileSignals: "From your voice, activity, and choices."
         case .circleDetail: "Analytical - Calm - Curious."
-        case .settingsSoulmate: "Manage your discovery preferences and comfort."
+        case .settingsSoulmate: "Manage your experience and preferences."
         }
+    }
+}
+
+// Mockup plate 05 chat roster + jazz thread for macOS validation deep-links.
+enum MacChatFixtures {
+    private static let now = Date()
+    private static func iso(minutesAgo: Int) -> String {
+        ISO8601DateFormatter().string(from: now.addingTimeInterval(TimeInterval(-minutesAgo * 60)))
+    }
+
+    static var isActive: Bool {
+        #if DEBUG
+        MacPrototypeScreen.initial == .chat
+            && ProcessInfo.processInfo.arguments.contains("--mac-screen")
+        #else
+        false
+        #endif
+    }
+
+    static let matches: [SoulmateMatch] = [
+        SoulmateMatch(matchId: "fixture-arjun", userId: "fixture-arjun", name: "Gurusharan Gupta", meetingId: "fixture-meet", meetingDate: iso(minutesAgo: 2880), createdAt: iso(minutesAgo: 2880)),
+        SoulmateMatch(matchId: "fixture-meera", userId: "fixture-meera", name: "Meera Iyer", meetingId: "fixture-meet", meetingDate: iso(minutesAgo: 3600), createdAt: iso(minutesAgo: 3600)),
+        SoulmateMatch(matchId: "fixture-rohan", userId: "fixture-rohan", name: "Rohan Mehta", meetingId: "fixture-meet", meetingDate: iso(minutesAgo: 4320), createdAt: iso(minutesAgo: 4320)),
+        SoulmateMatch(matchId: "fixture-ananya", userId: "fixture-ananya", name: "Ananya Rao", meetingId: "fixture-meet", meetingDate: iso(minutesAgo: 7200), createdAt: iso(minutesAgo: 7200)),
+        SoulmateMatch(matchId: "fixture-vikram", userId: "fixture-vikram", name: "Vivek Kumar", meetingId: "fixture-meet", meetingDate: iso(minutesAgo: 10080), createdAt: iso(minutesAgo: 10080)),
+    ]
+
+    static let previews: [String: ChatMessage] = [
+        "fixture-arjun": ChatMessage(id: "fixture-preview-arjun", matchId: "fixture-arjun", senderId: "fixture-arjun", text: "That Coltrane track was insane live! 🔥", createdAt: iso(minutesAgo: 2)),
+        "fixture-meera": ChatMessage(id: "fixture-preview-meera", matchId: "fixture-meera", senderId: "fixture-meera", text: "Yes! That sounds perfect.", createdAt: iso(minutesAgo: 60)),
+        "fixture-rohan": ChatMessage(id: "fixture-preview-rohan", matchId: "fixture-rohan", senderId: "fixture-rohan", text: "Looking forward to our next circle check-in.", createdAt: iso(minutesAgo: 1440)),
+        "fixture-ananya": ChatMessage(id: "fixture-preview-ananya", matchId: "fixture-ananya", senderId: "fixture-ananya", text: "The essay you recommended was brilliant.", createdAt: iso(minutesAgo: 4320)),
+        "fixture-vikram": ChatMessage(id: "fixture-preview-vikram", matchId: "fixture-vikram", senderId: "fixture-vikram", text: "Let's catch up soon!", createdAt: iso(minutesAgo: 10080)),
+    ]
+
+    static func messages(for matchId: String, currentUserId: String?) -> [ChatMessage] {
+        guard matchId == "fixture-arjun" else { return [] }
+        let mine = currentUserId ?? "validation-self"
+        return [
+            ChatMessage(id: "fixture-msg-1", matchId: matchId, senderId: "fixture-arjun", text: "That Coltrane track you mentioned in the meetup was 🔥", createdAt: iso(minutesAgo: 39)),
+            ChatMessage(id: "fixture-msg-2", matchId: matchId, senderId: mine, text: "Glad you noticed! What's your go-to these days?", createdAt: iso(minutesAgo: 37)),
+            ChatMessage(id: "fixture-msg-3", matchId: matchId, senderId: "fixture-arjun", text: "Lately, it's been Ballads. Soothing on slow Sundays.", createdAt: iso(minutesAgo: 36)),
+            ChatMessage(id: "fixture-msg-4", matchId: matchId, senderId: mine, text: "Same here. Anything beyond jazz you've been enjoying?", createdAt: iso(minutesAgo: 35)),
+            ChatMessage(id: "fixture-msg-5", matchId: matchId, senderId: "fixture-arjun", text: "I've been reading a lot of essays. Really into long-form thinking.", createdAt: iso(minutesAgo: 33)),
+            ChatMessage(id: "fixture-msg-6", matchId: matchId, senderId: mine, text: "Nice! Any recommendations?", createdAt: iso(minutesAgo: 32)),
+        ]
+    }
+}
+
+// Mockup plate 15 messages roster + Ananya jazz thread for macOS validation deep-links.
+enum MacMessagesFixtures {
+    private static let now = Date()
+    private static func iso(minutesAgo: Int) -> String {
+        ISO8601DateFormatter().string(from: now.addingTimeInterval(TimeInterval(-minutesAgo * 60)))
+    }
+
+    static var isActive: Bool {
+        #if DEBUG
+        MacPrototypeScreen.initial == .messages
+            && ProcessInfo.processInfo.arguments.contains("--mac-screen")
+        #else
+        false
+        #endif
+    }
+
+    static let matches: [SoulmateMatch] = [
+        SoulmateMatch(matchId: "fixture-ananya", userId: "fixture-ananya", name: "Ananya Rao", meetingId: "fixture-meet", meetingDate: iso(minutesAgo: 5), createdAt: iso(minutesAgo: 5)),
+        SoulmateMatch(matchId: "fixture-jazz-group", userId: "fixture-jazz-group", name: "Jazz & Music Community", meetingId: "fixture-meet", meetingDate: iso(minutesAgo: 21), createdAt: iso(minutesAgo: 21)),
+        SoulmateMatch(matchId: "fixture-meera", userId: "fixture-meera", name: "Meera Iyer", meetingId: "fixture-meet", meetingDate: iso(minutesAgo: 1440), createdAt: iso(minutesAgo: 1440)),
+        SoulmateMatch(matchId: "fixture-rohan", userId: "fixture-rohan", name: "Rohan Mehta", meetingId: "fixture-meet", meetingDate: iso(minutesAgo: 1500), createdAt: iso(minutesAgo: 1500)),
+        SoulmateMatch(matchId: "fixture-writers", userId: "fixture-writers", name: "Writers' Corner", meetingId: "fixture-meet", meetingDate: iso(minutesAgo: 4320), createdAt: iso(minutesAgo: 4320)),
+        SoulmateMatch(matchId: "fixture-arjun", userId: "fixture-arjun", name: "Gurusharan Gupta", meetingId: "fixture-meet", meetingDate: iso(minutesAgo: 10080), createdAt: iso(minutesAgo: 10080)),
+    ]
+
+    static let previews: [String: ChatMessage] = [
+        "fixture-ananya": ChatMessage(id: "fixture-preview-ananya-msg", matchId: "fixture-ananya", senderId: "fixture-ananya", text: "Typing...", createdAt: iso(minutesAgo: 1)),
+        "fixture-jazz-group": ChatMessage(id: "fixture-preview-jazz", matchId: "fixture-jazz-group", senderId: "fixture-marco", text: "Marco: Don't forget about tomorrow!", createdAt: iso(minutesAgo: 21)),
+        "fixture-meera": ChatMessage(id: "fixture-preview-meera-msg", matchId: "fixture-meera", senderId: "validation-self", text: "You: That book recommendation was perfect.", createdAt: iso(minutesAgo: 1440)),
+        "fixture-rohan": ChatMessage(id: "fixture-preview-rohan-msg", matchId: "fixture-rohan", senderId: "validation-self", text: "You: Loved your playlist!", createdAt: iso(minutesAgo: 1500)),
+        "fixture-writers": ChatMessage(id: "fixture-preview-writers", matchId: "fixture-writers", senderId: "fixture-priya", text: "Priya: Sharing the outline I mentioned.", createdAt: iso(minutesAgo: 4320)),
+        "fixture-arjun": ChatMessage(id: "fixture-preview-arjun-msg", matchId: "fixture-arjun", senderId: "validation-self", text: "You: See you at the meetup!", createdAt: iso(minutesAgo: 10080)),
+    ]
+
+    static func messages(for matchId: String, currentUserId: String?) -> [ChatMessage] {
+        guard matchId == "fixture-ananya" else { return [] }
+        let mine = currentUserId ?? "validation-self"
+        return [
+            ChatMessage(id: "fixture-msg-ananya-1", matchId: matchId, senderId: "fixture-ananya", text: "Hey Priya! Loved your take on that jazz piece yesterday 🎵", createdAt: iso(minutesAgo: 5)),
+            ChatMessage(id: "fixture-msg-ananya-2", matchId: matchId, senderId: mine, text: "Thank you! Which part resonated with you the most?", createdAt: iso(minutesAgo: 3)),
+            ChatMessage(id: "fixture-msg-ananya-3", matchId: matchId, senderId: "fixture-ananya", text: "The improvisation section. So raw and beautiful.", createdAt: iso(minutesAgo: 2)),
+            ChatMessage(id: "fixture-msg-ananya-4", matchId: matchId, senderId: mine, text: "Totally! Want to check out a live session this Saturday?", createdAt: iso(minutesAgo: 1)),
+            ChatMessage(id: "fixture-msg-ananya-5", matchId: matchId, senderId: "fixture-ananya", text: "Yes! Count me in.", createdAt: iso(minutesAgo: 0)),
+        ]
     }
 }
 

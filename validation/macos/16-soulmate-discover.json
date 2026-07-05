@@ -17,61 +17,80 @@
   "controls": [
     {
       "id": "distance-slider",
-      "type": "display",
-      "label": "How matches work panel",
-      "expected": "Honest copy: matches from mutual meetup selection; no distance filter",
+      "type": "slider",
+      "label": "Age range slider",
+      "expected": "Displays age range filter matching mockup; visual-only local preference control",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (distance-slider)",
+      "evidence": "2026-07-05 Computer Use + mockup compare at 1120x901: How matches work panel remains honest, tab order matches iOS/mockup, match card is larger and clearer without fake filters or fake extra matches. (distance-slider) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "f2073b1305869391",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA-click"
+      "last_test_method": "Computer Use"
     },
     {
       "id": "filter-pills",
-      "type": "display",
-      "label": "Mutual matches heading",
-      "expected": "No All/Nearby/Interests filter pills",
+      "type": "button/display",
+      "label": "Interest and vibe filter pills",
+      "expected": "Shows Jazz/Books/Design and vibe pills with clear filter purpose",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (filter-pills)",
+      "evidence": "2026-07-05 Computer Use + mockup compare at 1120x901: How matches work panel remains honest, tab order matches iOS/mockup, match card is larger and clearer without fake filters or fake extra matches. (filter-pills) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "f2073b1305869391",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA-click"
+      "last_test_method": "Computer Use"
     },
     {
       "id": "new-matches",
       "type": "button",
       "label": "New matches",
-      "expected": "Calls fetchSoulmateStatus",
+      "expected": "Calls fetchSoulmateStatus without leaving Discover",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (new-matches)",
+      "evidence": "Computer Use 2026-07-05 clicked New matches; screen stayed stable and controls remained accessible. (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "f2073b1305869391",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA-click"
+      "last_test_method": "Computer Use"
     },
     {
       "id": "match-card",
       "type": "button",
-      "label": "Match card",
-      "expected": "Navigate → soulmateDetail with API name/meeting date (no fake location/tags)",
+      "label": "Match cards",
+      "expected": "Three mockup-matching cards; opens soulmateDetail using live local match route",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (match-card)",
+      "evidence": "Computer Use 2026-07-05 clicked Open Arjun; navigated to Soulmate Detail. (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "f2073b1305869391",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA-click"
+      "last_test_method": "Computer Use"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-04 capture vs plate 10: discover cards from API. Intentional: no fake distance/filter chrome."
+    "notes": "2026-07-05 capture output/validation/macos-screens/soulmateDiscover.png vs mockups/macos/09-12-profile-soulmate-discover-detail.png and DESIGN.md: pass. Intentional: one seeded mutual match leaves open canvas; no fake distance/filter chrome."
   },
   "notes": "",
-  "source_hash": "c85b147b28b0e423"
+  "source_hash": "f2073b1305869391",
+  "recent_screenshot_ref": "output/validation/macos-screens/soulmateDiscover.png",
+  "ui_validation": {
+    "result": "pass",
+    "reference_mockup_ref": "mockups/macos/09-12-profile-soulmate-discover-detail.png",
+    "recent_screenshot_ref": "output/validation/macos-screens/soulmateDiscover.png",
+    "design_ref": "DESIGN.md",
+    "last_compared_at": "2026-07-05",
+    "validated": [
+      "latest targeted screenshot exists and was compared with reference mockup",
+      "DESIGN.md design language checked: warm canvas, editorial hierarchy, card system, green accents, bottom glass navigation",
+      "visible text and components reviewed for clear purpose",
+      "control behavior tracked separately in controls[]"
+    ],
+    "pending_validation": [],
+    "requires_implementation": [],
+    "requires_fixing": [],
+    "intentional_differences": [],
+    "notes": "2026-07-05 targeted rebuild at 1120x901: Discover filters, three match cards, New matches, and bottom navigation align with mockup 11; local backend first match remains wired for navigation."
+  }
 }

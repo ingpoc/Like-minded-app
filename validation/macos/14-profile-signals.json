@@ -4,7 +4,7 @@
   "source_files": [
     "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift"
   ],
-  "mockup_ref": "mockups/macos/09-12-profile-soulmate-discover-detail.png",
+  "mockup_ref": "mockups/macos/17-20-profile-onboarding-detail-settings.png",
   "mockup_missing": false,
   "entry_points": [
     "Continue from profileOnboarding",
@@ -20,18 +20,43 @@
       "label": "Done",
       "expected": "Navigate → myProfile (editing:false)",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (share-profile)",
+      "evidence": "CUA-click validation-priya mockup-18 plate: Done navigates to myProfile (share-profile)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "8a5c654ec5831e9b",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-04 capture vs plate 04: personality signal cards editing mode. Intentional: backend trait labels not mockup slider chrome."
+    "notes": "2026-07-05 capture vs plate 18: photo-led sidebar with Circles/Connections/Events metrics, 5 icon signal cards (Communication/Energy/Trust/Mindset/Creativity), Your vibe + About me + Languages rows, Done CTA."
   },
   "notes": "",
-  "source_hash": "c85b147b28b0e423"
+  "source_hash": "8a5c654ec5831e9b",
+  "recent_screenshot_ref": "output/validation/macos-screens/profileSignals.png",
+  "ui_validation": {
+    "result": "pass",
+    "reference_mockup_ref": "mockups/macos/17-20-profile-onboarding-detail-settings.png",
+    "recent_screenshot_ref": "output/validation/macos-screens/profileSignals.png",
+    "design_ref": "DESIGN.md",
+    "last_compared_at": "2026-07-05",
+    "validated": [
+      "latest screenshot exists and was compared with reference mockup plate 18",
+      "DESIGN.md design language checked: warm canvas, calm editorial hierarchy, card system, green accents, bottom glass navigation",
+      "photo-led profile sidebar with voice-active pill and Circles/Connections/Events metrics",
+      "5-column personality signal cards with category icons and Creativity fifth card",
+      "Your vibe orb panel, About me, Languages, and Done share-flow CTA",
+      "control behavior tracked separately in controls[]"
+    ],
+    "pending_validation": [],
+    "requires_implementation": [],
+    "requires_fixing": [],
+    "intentional_differences": [
+      "Doodle portrait art vs photographic avatar in mockup",
+      "Backend-seeded stats and interest tags vs mockup placeholder counts/copy",
+      "Signal trait labels from validation profile.signals vs mockup sample values"
+    ],
+    "notes": "2026-07-05 dedicated profileSignals surface matches mockup 18 layout; capture at output/validation/macos-screens/profileSignals.png."
+  }
 }

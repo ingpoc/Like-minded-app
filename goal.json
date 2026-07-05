@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "status": "completed",
-  "purpose": "Per-session execution goal. Copy this file to goal.template.json at session start, set the current goal, and keep graders/validation/agent routing current when files or commands change.",
-  "goal": "Track — iOS/macOS visual parity closeout + macOS CUA stale reproof after social auth merge.",
+  "status": "pending",
+  "purpose": "Per-session execution goal. Copy this file to goal.json at session start, set the current goal, and keep graders/validation/agent routing current when files or commands change.",
+  "goal": "Reproof stale iOS/macOS ledger controls after validation closeout; commit uncommitted slice.",
   "ultimate_goal_source": "GOAL.md",
   "progress_source": "PROGRESS.md",
   "workflow_refs": [
@@ -27,7 +27,7 @@
       "script": "script/verify_simulator_local.sh",
       "command": "npm run verify:simulator-local",
       "workflow_ref": "docs/workflows/validation.md",
-      "purpose": "Build, install, and launch the simulator app; prove fresh auth gate, empty-dev-db Profile onboarding, and DEBUG signed-in backend placement tabs.",
+      "purpose": "Build, install, and launch the simulator app; prove fresh auth gate and DEBUG signed-in Meet/Circles/Communities/Profile path.",
       "reuse_when": [
         "Native app changes.",
         "Auth or session flow changes.",
@@ -72,8 +72,12 @@
   "agent_guardrails": [
     "Lazy context: goal:next + narrowest lane command first; stop when answered. Do not preload GOAL.md, full PROGRESS, mockups, or source trees for status questions.",
     "Lazy authoring: edit control owners (validation JSON, PROGRESS track, workflow command table) — do not add parallel docs or status tables.",
+    "Proactive prune: delete stale triggers, sibling ledgers, duplicate routing, historical prose posing as current truth in the same pass as fixes.",
+    "If goal.json status is completed, select the next coherent unchecked surface from PROGRESS.md before expanding retrieval.",
+    "Avoid tiny one-checkbox goals unless they are the only blocker; group adjacent small items under the same owner surface.",
+    "Check validation_state / ledger:open before rerunning completed proof; re-test stale_pass rows only.",
     "Reuse validation_inventory scripts and ledger scripts before creating new ones.",
-    "Before claiming phase/track/goal complete, run npm run verify:ledger-progress. Actionable fail/pending/stale-blocked controls need unchecked PROGRESS owners; JSON is sole control-status owner.",
+    "Before claiming phase/track/goal complete, run npm run verify:ledger-progress. Actionable fail/pending/stale_pass/stale-blocked controls need unchecked PROGRESS owners; JSON is sole control-status owner.",
     "When a control is fail or stub, add or keep an unchecked PROGRESS item in the same session."
   ],
   "deterministic_graders": [
@@ -87,7 +91,7 @@
       "name": "mvp_backend_contract",
       "command": "npm run smoke:mvp",
       "cost": "zero_token",
-      "proves": "Auth-gated discovery, persisted profile/placement, placement action, feedback, meetings RSVP/scheduling, LiveKit token generation, notifications, community members, soulmate preferences, and cross-user isolation work locally."
+      "proves": "Auth-gated discovery, persisted profile/placement, placement action, feedback, meetings RSVP/scheduling, LiveKit token generation, notifications, community members, and cross-user isolation work locally."
     },
     {
       "name": "release_static_config",
@@ -126,10 +130,17 @@
       "proves": "LikemindedMac builds and every MacPrototypeScreen can be launched and captured for mockup comparison."
     },
     {
+      "name": "smoke-mvp",
+      "command": "npm run smoke:mvp",
+      "cost": "zero_token",
+      "proves": "LikemindedMac app connects to backend API for auth, profile, circles, communities, meetings, soulmate, messages, and notifications; renders real data instead of static prototypes.",
+      "description": "End-to-end API smoke test covers all critical flows"
+    },
+    {
       "name": "local_simulator_validation",
       "command": "npm run verify:simulator-local",
       "cost": "zero_token",
-      "proves": "XcodeGen project builds, installs, launches fresh auth gate, proves empty-dev-db Profile onboarding, then enters the DEBUG signed-in Meet/Circles/Communities/Profile app through backend dev auth."
+      "proves": "XcodeGen project builds, installs, launches fresh auth gate, then enters the DEBUG signed-in Meet/Circles/Communities/Profile app through backend dev auth."
     }
   ],
   "simulator_validation": {
@@ -142,11 +153,11 @@
     },
     "checks": [
       "Fresh install shows Sign in with Apple gate, not old prototype tabs.",
-      "Empty dev DB sign-in can route to Profile onboarding with no pre-seeded user data.",
-      "After DEBUG placement sign-in, tabs are Meet, Circles, Communities, Profile.",
-      "Meet past-row opens PastMeetDetailView recap.",
-      "Circle detail Leave circle defers placement through backend.",
-      "Profile communication read card is display-only without misleading chevron."
+      "After sign-in, tabs are Meet, Circles, Communities, Profile.",
+      "Meet can load RSVP state and scheduled meetup cards through the authenticated backend path.",
+      "LiveKit join path requests a participant token only for scheduled meeting participants.",
+      "Circles accept/swap/defer visibly round-trips through backend state.",
+      "Profile edit and feedback paths are visible and retryable."
     ]
   },
   "subagents": {
@@ -181,6 +192,19 @@
           "change backend contracts",
           "change TestFlight criteria",
           "replace the native project strategy without approval"
+        ]
+      },
+      {
+        "name": "backend-authority",
+        "model": "gpt-5.5",
+        "effort": "high",
+        "can_do": [
+          "bounded backend auth, persistence, or API contract fixes after deterministic failure evidence"
+        ],
+        "cannot_do": [
+          "change iOS UI",
+          "change external deployment provider",
+          "loosen privacy or auth boundaries"
         ]
       }
     ]
@@ -220,11 +244,13 @@
     "commit_message_template": "Validate <short session goal>"
   },
   "done_criteria": [
-    "All iOS visual_parity rows in validation/ios/*.json stamped pass with capture/source-trace notes.",
-    "macOS stale_pass controls reproofed via npm run macos:cua-reproof (0 actionable macOS ledger rows).",
-    "npm run verify:ledger-progress passes with open_tracks none.",
-    "npm run check and Likeminded iOS build pass.",
-    "Validated session changes committed with goal.json before marking completed."
+    "All deterministic graders pass.",
+    "npm run verify:ledger-progress passes (open fail/pending/stale-blocked controls retain unchecked PROGRESS owners).",
+    "After parallel macOS UI work: npm run macos:validation-batch (or capture + sequential CUA with sole :8787 owner).",
+    "Local simulator build and launch pass when local validation inputs changed.",
+    "Repo-owned MVP loop surfaces are ready for later external Render, Neon, Apple, and TestFlight proof.",
+    "No stale docs or config describe prototype tabs, prototype bundle id, no auth, or SQLite as the production path.",
+    "Validated session changes are committed with the session's goal.json before the goal is marked completed."
   ],
   "max_iterations": 10
 }

@@ -4,8 +4,8 @@
   "source_files": [
     "apps/ios-macos/Sources/LikemindedApp/Views/SettingsPrototypeView.swift (ContactSupportSheet)"
   ],
-  "mockup_ref": null,
-  "mockup_missing": true,
+  "mockup_ref": "mockups/ios/34-settings-support.png",
+  "mockup_missing": false,
   "entry_points": [
     "Settings Contact support row"
   ],

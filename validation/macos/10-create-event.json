@@ -25,10 +25,10 @@
       "label": "Meetup",
       "expected": "Selects Meetup and marks it selected in the accessibility tree",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-type-meetup)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-type-meetup) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c846a1873b032b68",
+      "tested_source_hash": "670925994252f00e",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA"
     },
@@ -38,10 +38,10 @@
       "label": "Listening Session",
       "expected": "Selects Listening Session and updates selected state",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-type-listening-session)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-type-listening-session) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c846a1873b032b68",
+      "tested_source_hash": "670925994252f00e",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA"
     },
@@ -51,10 +51,10 @@
       "label": "Jam Session",
       "expected": "Selects Jam Session and updates selected state",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-type-jam-session)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-type-jam-session) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c846a1873b032b68",
+      "tested_source_hash": "670925994252f00e",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA"
     },
@@ -64,10 +64,10 @@
       "label": "Event name, Date, Time, Location, Details",
       "expected": "Fields are editable and drive preview/create payload",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-fields)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-fields) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c846a1873b032b68",
+      "tested_source_hash": "670925994252f00e",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA"
     },
@@ -77,10 +77,10 @@
       "label": "Add cover",
       "expected": "Adds a contextual doodle cover to the preview",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (add-cover)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (add-cover) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c846a1873b032b68",
+      "tested_source_hash": "670925994252f00e",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA"
     },
@@ -90,10 +90,10 @@
       "label": "Add tags",
       "expected": "Adds visible event tags to preview",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (add-tags)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (add-tags) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c846a1873b032b68",
+      "tested_source_hash": "670925994252f00e",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA"
     },
@@ -103,10 +103,10 @@
       "label": "Create event",
       "expected": "Creates a backend-persisted meeting and stays on the Create Event screen",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (create-event)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (create-event) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c846a1873b032b68",
+      "tested_source_hash": "670925994252f00e",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA"
     },
@@ -116,10 +116,10 @@
       "label": "Meet, Circles, Communities, Profile, Soulmate",
       "expected": "Bottom nav remains visible and does not cover primary Create Event controls",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (bottom-nav)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (bottom-nav) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c846a1873b032b68",
+      "tested_source_hash": "670925994252f00e",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA"
     },
@@ -129,17 +129,17 @@
       "label": "Close, minimize, full screen",
       "expected": "Native macOS traffic-light controls are visible",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (traffic-lights)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (traffic-lights) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c846a1873b032b68",
+      "tested_source_hash": "670925994252f00e",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-04 capture vs mockups/macos/22-create-event.png: type pills form live preview Create event. Intentional: COMMUNITIES eyebrow vs centered Likeminded mockup chrome; preview cover uses seeded photo when added."
+    "notes": "2026-07-05 capture output/validation/macos-screens/createEvent.png vs mockups/macos/22-create-event.png: Create event title, horizontal type pills, form fields, jazz doodle live preview with tags, Create event CTA. Intentional: bottom nav includes Soulmate tab (5 items) vs mockup 4-item plate."
   },
   "window_sizes": [
     {
@@ -158,6 +158,27 @@
       "evidence": "Computer Use: maximized layout stretches panels through the available content area instead of leaving only a thin top strip; traffic lights and bottom nav remain visible."
     }
   ],
-  "notes": "CUA 2026-07-04: Listening/Jam pills, Cover added, Tags added, Create event on seeded form. Use script/macos_cua_window.sh when list_windows times out.",
-  "source_hash": "c846a1873b032b68"
+  "notes": "CUA 2026-07-05: type pills, fields, Add cover/tags, Create event on seeded jazz form at 1200x760.",
+  "source_hash": "670925994252f00e",
+  "recent_screenshot_ref": "output/validation/macos-screens/createEvent.png",
+  "ui_validation": {
+    "result": "pass",
+    "reference_mockup_ref": "mockups/macos/22-create-event.png",
+    "recent_screenshot_ref": "output/validation/macos-screens/createEvent.png",
+    "design_ref": "DESIGN.md",
+    "last_compared_at": "2026-07-05",
+    "validated": [
+      "latest screenshot exists and was compared with reference mockup",
+      "DESIGN.md design language checked: warm canvas, calm editorial hierarchy, card system, green accents, bottom glass navigation",
+      "visible text and components reviewed for clear purpose",
+      "control behavior tracked separately in controls[]"
+    ],
+    "pending_validation": [],
+    "requires_implementation": [],
+    "requires_fixing": [],
+    "intentional_differences": [
+      "Bottom nav includes Soulmate tab (5 items) vs mockup 22 four-item plate."
+    ],
+    "notes": "2026-07-05 capture output/validation/macos-screens/createEvent.png vs mockups/macos/22-create-event.png and DESIGN.md: pass. Integrated Create event header, horizontal type pills, open form layout, jazz doodle preview card with date/time/location rows, divider, description, and Meetup/Community hosted tags."
+  }
 }

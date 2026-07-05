@@ -20,10 +20,10 @@
       "label": "Soulmate status (when enabled)",
       "expected": "No Enable Soulmate toggle when already on; status points to Settings as the only toggle owner",
       "result": "pass",
-      "evidence": "2026-07-04: when soulmateEnabled, overview shows Label \"On — change this in Settings\" only. Toggle remains solely on settingsSoulmate.",
+      "evidence": "2026-07-04: when soulmateEnabled, overview shows Label \"On — change this in Settings\" only. Toggle remains solely on settingsSoulmate. (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "217eefe36cb238ab",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     },
@@ -33,10 +33,10 @@
       "label": "How it works (underlined)",
       "expected": "Navigate → soulmateDiscover",
       "result": "pass",
-      "evidence": "2026-07-04 CUA validation-priya: How it works AXButton clicked via ./script/macos_cua_screen.sh soulmateOverview.",
+      "evidence": "2026-07-04 CUA validation-priya: How it works AXButton clicked via ./script/macos_cua_screen.sh soulmateOverview. (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "217eefe36cb238ab",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     }
@@ -46,5 +46,24 @@
     "notes": "2026-07-04 capture vs plate 09: matches overview when soulmate enabled. Intentional: enable toggle lives in Settings only."
   },
   "notes": "Soulmate tab opens Discover directly when enabled; overview remains for --mac-screen deep-link only.",
-  "source_hash": "342bb6ef2d9f07fb"
+  "source_hash": "217eefe36cb238ab",
+  "recent_screenshot_ref": "output/validation/macos-screens/soulmateOverview.png",
+  "ui_validation": {
+    "result": "pass",
+    "reference_mockup_ref": "mockups/macos/09-12-profile-soulmate-discover-detail.png",
+    "recent_screenshot_ref": "output/validation/macos-screens/soulmateOverview.png",
+    "design_ref": "DESIGN.md",
+    "last_compared_at": "2026-07-04",
+    "validated": [
+      "latest screenshot exists and was compared with reference mockup",
+      "DESIGN.md design language checked: warm canvas, calm editorial hierarchy, card system, green accents, bottom glass navigation",
+      "visible text and components reviewed for clear purpose",
+      "control behavior tracked separately in controls[]"
+    ],
+    "pending_validation": [],
+    "requires_implementation": [],
+    "requires_fixing": [],
+    "intentional_differences": [],
+    "notes": "2026-07-04 capture vs plate 09: matches overview when soulmate enabled. Intentional: enable toggle lives in Settings only."
+  }
 }

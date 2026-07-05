@@ -27,9 +27,9 @@ build or mockup comparison.
 
 ## Context (lazy)
 
-1. `npm run goal:next` — if macOS track open, note screen from `ledger:open`.
-2. **One** `validation/macos/<screen>.json` + `source_files` for the touched screen.
-3. **One** mockup plate from ledger `mockup_ref` or `macos-screen-audit.md` table — not the whole `mockups/macos/` dir.
+1. `npm run goal:next` — if macOS track open, note screen from output or `ledger:stale`.
+2. **One** `validation/macos/<screen>.json` via `npm run ledger:screen` + `source_files` for the touched screen.
+3. **One** mockup from ledger `mockup_ref` — not the whole `mockups/macos/` dir.
 4. Skip `GOAL.md`, full `PROGRESS.md`, and `project_context` unless boundary dispute.
 
 ## Project Layout (macOS-relevant)
@@ -143,8 +143,7 @@ matching plate in `mockups/macos/`, and classify differences as **match**,
 **intentional variation**, or **gap** before CUA or ledger pass/fail. Mockups
 are montages and often diverge (seeded roster size, no photos, tab order
 Soulmate before Profile, planned call chrome, honest empty Groups). Record
-variations in `docs/references/macos-screen-audit.md` and ledger
-`visual_parity.notes` — do not fail controls solely for those.
+variations in ledger `visual_parity.notes` — do not fail controls solely for those.
 
 Per AGENTS.md: before claiming seamless behavior, point both apps at
 `data/validation-db` with the validation API and seeded data.
@@ -187,6 +186,58 @@ screencapture -x -l "$(python3 -c 'import Quartz; \
   output/validation/macos-screens/soulmateDiscover.png
 ```
 
+## Post-parallel validation batch
+
+After **parallel** UI work across multiple ledger screens, do **not** run CUA or
+capture from multiple agents at once (port `:8787` and `LikemindedMac` instance
+fights produce empty AX trees and wrong screenshots).
+
+Use one orchestrated pass:
+```
+./script/macos_validation_batch.sh
+```
+Or: `npm run macos:validation-batch`
+
+What it does:
+1. Sole owner of validation API on `:8787` (frees port if needed)
+2. `npm run reset:validation-data` once
+3. `./script/verify_macos_screens.sh` — all captures at 1200×760
+4. Sequential `./script/macos_cua_screen.sh <screen>` per prototype screen
+5. `npm run ledger:stale` summary
+
+Flags: `--capture-only`, `--cua-only`, optional screen list, `--keep-api`.
+
+**Parallel OK:** disjoint `MacScreens.swift` MARK slices per `validation/macos/*.json`.  
+**Parallel NOT OK:** capture, CUA, `reset:validation-data` mid-flight.
+
+## Validation fixtures contract (`--mac-screen` deep links)
+
+When a screen must match a mockup plate but API rows are unstable (parallel
+seeding, empty chat threads, roster order), add a **fixture layer** in
+`MacPrototypeData.swift` (or screen-local plate map) used when `--mac-screen`
+is set and API data is empty or validation needs plate copy.
+
+| Screen | Fixture | Mockup plate | Rule |
+|--------|---------|--------------|------|
+| `chat` | `MacChatFixtures` | 05 | API matches first; fixtures for plate-05 roster + jazz thread |
+| `messages` | `MacMessagesFixtures` | 15 | Fixtures preferred on `messages` deep-link |
+| `communitiesBrowse` | `communityBrowsePlate` in `MacScreens.swift` | 06 | Maps API ids → mockup names/order/join badges |
+
+When adding a new deep-link screen to validation:
+1. Add fixture block if plate copy ≠ seeded API shape
+2. Document in ledger `intentional_differences`
+3. Wire `macos_cua_screen.sh` click labels to `accessibilityLabel` strings
+
+## Per-screen validation checklist
+
+1. One `validation/macos/NN-*.json` + `mockup_ref` + `requires_fixing`
+2. One `MacScreens.swift` MARK section (or `MacDesignSystem` helper)
+3. `xcodebuild … LikemindedMac` — compile
+4. Capture at **1200×760** → `output/validation/macos-screens/<screen>.png`
+5. Compare plate; gaps → fix or `intentional_differences`
+6. `./script/macos_cua_screen.sh <screen>` — stamp controls + `tested_source_hash`
+7. `ui_validation.result=pass` only when layout matches `DESIGN.md` + plate
+
 ## Conventions Specific to This App
 
 - **Backend contract is `LIKEMINDED_API_BASE_URL`.** Both iOS and macOS read
@@ -217,6 +268,8 @@ screencapture -x -l "$(python3 -c 'import Quartz; \
 - Forgetting to start the validation API → blank/auth-gated screens. Always `curl /health` first.
 - `screencapture` without `-l <window_id>` → grabs the whole screen, breaking mockup parity.
 - Port 8787 already in use → `verify_macos_screens.sh` will kill the existing listener, but be aware it does so unconditionally.
+- **Parallel agents + CUA/capture** → empty AX tree, wrong window in PNG; use `npm run macos:validation-batch` after parallel UI work.
+- **Community browse card white line at hero top** → apply `MacPalette.surface` only on the text footer, not the full card; hero uses `DoodleCover` with top-aligned `scaledToFill` (see `communityCard` in `MacScreens.swift`).
 - Treating macOS as Catalyst → this project is **native macOS**, not Catalyst (`SUPPORTS_MACCATALYST: NO` on the iOS target). Don't switch to a Catalyst destination.
 
 ## Related

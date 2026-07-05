@@ -79,7 +79,7 @@ const iosScreens = [
     id: "05-profile-concern",
     name: "Profile (re-interview prompt when concernFlag set)",
     source: ["apps/ios-macos/Sources/LikemindedApp/Views/ProfilePrototypeView.swift"],
-    mockup: null,
+    mockup: "mockups/ios/29-profile-concern.png",
     entry: ["Auto-routed here from Circles concern button"],
     backend: ["GET /v1/me/profile (concernFlag)"],
     controls: [
@@ -253,7 +253,7 @@ const iosScreens = [
     id: "18-soulmate-selection",
     name: "Soulmate Selection Dialog (post-meet)",
     source: ["apps/ios-macos/Sources/LikemindedApp/Views/SoulmateView.swift (SoulmateSelectionDialog)"],
-    mockup: null,
+    mockup: "mockups/ios/30-soulmate-selection.png",
     entry: ["Past meet detail Select connections", "Soulmate Post-meet selection"],
     backend: ["POST /v1/me/soulmate/select"],
     controls: [
@@ -265,7 +265,7 @@ const iosScreens = [
     id: "19-notifications",
     name: "Notifications + Activity",
     source: ["apps/ios-macos/Sources/LikemindedApp/Views/NotificationsView.swift"],
-    mockup: null,
+    mockup: "mockups/ios/31-notifications.png",
     entry: ["Bell icon on Meet tab"],
     backend: ["GET /v1/me/notifications"],
     controls: [
@@ -295,7 +295,7 @@ const iosScreens = [
     id: "21-settings-privacy",
     name: "Privacy Policy Sheet",
     source: ["apps/ios-macos/Sources/LikemindedApp/Views/SettingsPrototypeView.swift (PrivacyPolicySheet)"],
-    mockup: null,
+    mockup: "mockups/ios/32-settings-privacy.png",
     entry: ["Settings Privacy policy row"],
     backend: [],
     controls: [
@@ -306,7 +306,7 @@ const iosScreens = [
     id: "22-settings-info",
     name: "Settings Info Sheet (How it works / Help & FAQ)",
     source: ["apps/ios-macos/Sources/LikemindedApp/Views/SettingsPrototypeView.swift (SettingsInfoSheet)"],
-    mockup: null,
+    mockup: "mockups/ios/33-settings-info.png",
     entry: ["Settings How it works / Help & FAQ rows"],
     backend: [],
     controls: [
@@ -317,7 +317,7 @@ const iosScreens = [
     id: "23-settings-support",
     name: "Contact Support Sheet",
     source: ["apps/ios-macos/Sources/LikemindedApp/Views/SettingsPrototypeView.swift (ContactSupportSheet)"],
-    mockup: null,
+    mockup: "mockups/ios/34-settings-support.png",
     entry: ["Settings Contact support row"],
     backend: ["POST /v1/feedback"],
     controls: [
@@ -675,85 +675,40 @@ function loadLedgers(dir) {
     });
 }
 
-function screenStatus(data) {
-  const results = (data.controls || []).map((c) => c.result);
-  if (results.length === 0) return data.visual_parity?.result || "pending";
-  if (results.every((r) => r === "pass")) return "pass";
-  if (results.some((r) => r === "fail")) return "fail";
-  if (results.some((r) => r === "pass") || results.some((r) => r === "blocked")) return "partial";
-  return "pending";
-}
-
-function countResults(ledgers) {
-  let pass = 0, fail = 0, blocked = 0, pending = 0, stubs = 0;
-  ledgers.forEach(({ data }) => {
-    (data.controls || []).forEach((c) => {
-      if (c.result === "pass") pass += 1;
-      else if (c.result === "fail") fail += 1;
-      else if (c.result === "blocked") blocked += 1;
-      else pending += 1;
-      if (c.stub) stubs += 1;
-    });
-  });
-  return { pass, fail, blocked, pending, stubs };
-}
-
-function tableRows(ledgers, platform) {
+function linkRows(ledgers, platform) {
   return ledgers
-    .map((row, i) => {
-      const mockup = row.data.mockup_ref ? `\`${row.data.mockup_ref}\`` : "_(none)_";
-      const n = (row.data.controls || []).length;
-      return `| ${i + 1} | [${row.data.screen || row.id}](${platform}/${row.file}) | ${mockup} | ${n} | ${screenStatus(row.data)} |`;
+    .map((row) => {
+      const name = row.data.screen || row.id;
+      return `- [${name}](${platform}/${row.file})`;
     })
     .join("\n");
 }
 
 const iosLedgers = loadLedgers(IOS);
 const macLedgers = loadLedgers(MAC);
-const iosCounts = countResults(iosLedgers);
-const macCounts = countResults(macLedgers);
 
-const readme = `# Validation — Likeminded Native Screen Audit
+const readme = `# Validation index
 
-> Per-screen runtime evidence ledger for the iOS and macOS apps.
-> **Control-status owner: \`validation/<platform>/*.json\` only.** Do not add sibling \`.md\` ledgers.
-> Regenerate this index with \`node validation/_generate.js\` (never overwrites existing JSON evidence).
+**Not a status owner.** Pass/fail/stale live in \`validation/<platform>/*.json\` only.
 
-## Status summary
+| Need | Command |
+|------|---------|
+| Route | \`npm run goal:next\` |
+| One screen | \`npm run ledger:screen -- --platform ios\\|macos --screen <id> --section ui\\|controls\\|all\` |
+| Gap audit (all open) | \`npm run ledger:open\` |
+| Stale after edits | \`npm run ledger:stale\` |
 
-| Platform | Screens | Controls | Pass | Fail | Blocked | Pending | Flagged stubs |
-|---|---|---|---|---|---|---|---|
-| iOS  | ${iosLedgers.length} | ${iosLedgers.reduce((n, s) => n + (s.data.controls || []).length, 0)} | ${iosCounts.pass} | ${iosCounts.fail} | ${iosCounts.blocked} | ${iosCounts.pending} | ${iosCounts.stubs} |
-| macOS | ${macLedgers.length} | ${macLedgers.reduce((n, s) => n + (s.data.controls || []).length, 0)} | ${macCounts.pass} | ${macCounts.fail} | ${macCounts.blocked} | ${macCounts.pending} | ${macCounts.stubs} |
+Regenerate this link list: \`node validation/_generate.js\` (never overwrites JSON evidence).
 
-_Index regenerated from on-disk JSON._
+## iOS (${iosLedgers.length})
 
-## iOS screens
+${linkRows(iosLedgers, "ios")}
 
-| # | Screen | Mockup | Controls | Status |
-|---|---|---|---|---|
-${tableRows(iosLedgers, "ios")}
+## macOS (${macLedgers.length})
 
-## macOS screens
+${linkRows(macLedgers, "macos")}
 
-| # | Screen | Mockup | Controls | Status |
-|---|---|---|---|---|
-${tableRows(macLedgers, "macos")}
-
-## Blocked locally (infrastructure-dependent)
-
-- **Sign in with Apple** (iOS auth gate, macOS welcome) — needs real Apple ID / TestFlight creds
-- **LiveKit group video call** (iOS GroupVideoCallView, macOS meet video call mockup 21) — needs LIVEKIT_URL/API_KEY/SECRET + provisioned server
-
-## Conventions
-
-- Each screen has one ledger: \`<platform>/<id>.json\`.
-- Control \`result\` ∈ {\`pass\`, \`fail\`, \`blocked\`, \`pending\`}.
-- Screen \`source_hash\`: sha256 prefix of \`source_files\` (refresh: \`npm run ledger:refresh-hashes\`).
-- Per control: \`last_tested_at\`, \`tested_source_hash\`, \`last_test_method\` — set by CUA/manual via \`ledger_record_control.js\` / \`ledger_stamp_screen.js\`.
-- \`pass\` is **stale** when \`tested_source_hash\` ≠ current \`source_hash\`; list with \`npm run ledger:stale\`.
-- Screens with no mockup reference set \`mockup_missing: true\`.
-- Screenshots land in \`<platform>/screenshots/<NN>-<name>.png\` or \`output/validation/macos-screens/\`.
+Conventions: \`docs/workflows/validation.md\`.
 `;
 
 fs.writeFileSync(path.join(ROOT, "README.md"), readme);

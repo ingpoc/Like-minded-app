@@ -4,8 +4,8 @@
   "source_files": [
     "apps/ios-macos/Sources/LikemindedApp/Views/NotificationsView.swift"
   ],
-  "mockup_ref": null,
-  "mockup_missing": true,
+  "mockup_ref": "mockups/ios/31-notifications.png",
+  "mockup_missing": false,
   "entry_points": [
     "Bell icon on Meet tab"
   ],

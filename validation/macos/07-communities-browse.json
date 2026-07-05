@@ -20,12 +20,12 @@
       "label": "Search communities",
       "expected": "Filters catalog by name/summary/themes",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (search)",
+      "evidence": "CUA-click validation-priya 2026-07-05 reproof: search, filter-pills, create-card, community-card after plate-06 parity rebuild (search)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "2a617a4402a76a00",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "filter-pills",
@@ -33,12 +33,12 @@
       "label": "All/Trending/Nearby/New pills",
       "expected": "Filter communityFilter state",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (filter-pills)",
+      "evidence": "CUA-click validation-priya 2026-07-05 reproof: search, filter-pills, create-card, community-card after plate-06 parity rebuild (filter-pills)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "2a617a4402a76a00",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "create-card",
@@ -46,12 +46,12 @@
       "label": "Create a community card",
       "expected": "Navigate → createCommunity",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (create-card)",
+      "evidence": "CUA-click validation-priya 2026-07-05 reproof: search, filter-pills, create-card, community-card after plate-06 parity rebuild (create-card)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "2a617a4402a76a00",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "community-card",
@@ -59,18 +59,41 @@
       "label": "Community card",
       "expected": "Navigate → communityDetail",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (community-card)",
+      "evidence": "CUA-click validation-priya 2026-07-05 reproof: search, filter-pills, create-card, community-card after plate-06 parity rebuild (community-card)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "2a617a4402a76a00",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "CUA-click"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-04 capture vs plate 06: search pills Create tile grid. Intentional: doodle covers; seed roster size."
+    "notes": "2026-07-05 capture vs plate 06: search pills create tile six-card grid with mockup names/order. Intentional: DoodleCover heroes vs photo montage."
   },
   "notes": "",
-  "source_hash": "c85b147b28b0e423"
+  "source_hash": "2a617a4402a76a00",
+  "recent_screenshot_ref": "output/validation/macos-screens/communitiesBrowse.png",
+  "ui_validation": {
+    "result": "pass",
+    "reference_mockup_ref": "mockups/macos/05-08-chat-communities-detail-recap.png",
+    "recent_screenshot_ref": "output/validation/macos-screens/communitiesBrowse.png",
+    "design_ref": "DESIGN.md",
+    "last_compared_at": "2026-07-05",
+    "validated": [
+      "latest screenshot exists and was compared with reference mockup plate 06",
+      "DESIGN.md design language checked: warm canvas, calm editorial hierarchy, card system, green accents, bottom glass navigation",
+      "search bar, All/Trending/Nearby/New filter pills, create tile with green gradient hero, six community cards in mockup order with Join/Joined badges on cover art",
+      "control behavior tracked separately in controls[]; CUA-click stamped search, filter-pills, create-card, community-card"
+    ],
+    "pending_validation": [],
+    "requires_implementation": [],
+    "requires_fixing": [],
+    "intentional_differences": [
+      "DoodleCover thematic hero art vs scenic photograph covers in mockup montage",
+      "Browse plate maps API community ids to mockup marketing names (e.g. design-craft → Design Circle) while navigation uses real ids",
+      "Responsive grid column count vs mockup carousel arrow (no horizontal pager on Mac browse)"
+    ],
+    "notes": "2026-07-05 plate-06 parity rebuild. 2026-07-05 evening: community card hero flush fix — MacPalette.surface only on text footer (not full card) + DoodleCover top-aligned fill; recapture via npm run macos:validation-batch when convenient."
+  }
 }

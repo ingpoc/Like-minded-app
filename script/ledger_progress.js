@@ -12,6 +12,7 @@
  * - goal.json status=completed while ownership is broken
  * - stale "GUI automation unavailable" evidence while macos_cua_screen.sh exists
  * - README routing that lists Phase 9 external setup without goal:next / ledger deferral
+ * - competing context surfaces (validation README status tables, PROGRESS phase graveyard, etc.)
  */
 const fs = require("node:fs");
 const path = require("node:path");
@@ -20,9 +21,9 @@ const { hashScreenSources, isControlStale } = require("./ledger_hash");
 const root = path.resolve(__dirname, "..");
 
 const PLATFORM_OWNERS = {
-  ios: /Track — iOS Ledger Honesty|validation\/ios|Leave circle|past-meet row|iOS ledger closeout/i,
+  ios: /Track — iOS Ledger Honesty|validation\/ios|iOS stale_pass|iOS infra-blocked/i,
   macos:
-    /Track — macOS Visual Parity|Track — macOS Unimplemented|validation\/macos|macOS profile honesty|macOS soulmate|macOS community members|macOS Settings static|macOS Chat header|macOS infra-blocked|Re-CUA|Manual proofs — \*\*macOS\*\*|create-community form ledger|macOS validation ledgers|macOS visual parity/i
+    /Track — macOS|validation\/macos|macOS infra-blocked|macOS stale_pass/i
 };
 
 const TRACK_LABELS = {
@@ -199,6 +200,69 @@ function forbiddenAutomationClaimErrors() {
   ];
 }
 
+/** Competing context surfaces that waste tokens or lie about status. */
+function contextRoutingErrors() {
+  const errors = [];
+
+  const validationReadme = path.join(root, "validation/README.md");
+  if (fs.existsSync(validationReadme)) {
+    const text = fs.readFileSync(validationReadme, "utf8");
+    if (/## Status summary/i.test(text)) {
+      errors.push(
+        "validation/README.md must be link-only (no ## Status summary); status lives in validation/*.json"
+      );
+    }
+    if (/\| Pass \| Fail \|/i.test(text)) {
+      errors.push(
+        "validation/README.md must not contain pass/fail status tables; regenerate via validation/_generate.js"
+      );
+    }
+  }
+
+  const progress = readProgress();
+  const historicalPhases = progress.match(/^## Phase ([0-8]) /gm);
+  if (historicalPhases && historicalPhases.length > 0) {
+    errors.push(
+      `PROGRESS.md must not list Phase 0–8 sections (found ${historicalPhases.length}); keep Current Status + tracks + Phase 9 only`
+    );
+  }
+
+  const projectContext = path.join(root, "docs/references/project-context.md");
+  if (fs.existsSync(projectContext) && /## Current Evidence/i.test(fs.readFileSync(projectContext, "utf8"))) {
+    errors.push(
+      "docs/references/project-context.md must not contain ## Current Evidence; use Boundaries only"
+    );
+  }
+
+  const dupHarness = path.join(root, ".cursor/rules/harness-autopilot.mdc");
+  if (fs.existsSync(dupHarness)) {
+    errors.push(
+      "delete .cursor/rules/harness-autopilot.mdc — harness routing is owned by AGENTS.md only"
+    );
+  }
+
+  const macosAudit = path.join(root, "docs/references/macos-screen-audit.md");
+  if (fs.existsSync(macosAudit)) {
+    errors.push(
+      "delete docs/references/macos-screen-audit.md — macOS proof routing is docs/workflows/validation.md"
+    );
+  }
+
+  const rulesDir = path.join(root, ".cursor/rules");
+  if (fs.existsSync(rulesDir)) {
+    for (const name of fs.readdirSync(rulesDir).filter((f) => f.endsWith(".mdc"))) {
+      const body = fs.readFileSync(path.join(rulesDir, name), "utf8");
+      if (/Harness routing|harness-autopilot/i.test(body) && name !== "context-alignment.mdc") {
+        errors.push(
+          `.cursor/rules/${name} duplicates AGENTS.md harness routing — delete or fold into AGENTS.md`
+        );
+      }
+    }
+  }
+
+  return errors;
+}
+
 function readmeRouteErrors() {
   const readmePath = path.join(root, "README.md");
   if (!fs.existsSync(readmePath)) return [];
@@ -277,6 +341,9 @@ function ownershipReport(progress = readProgress(), goalStatus = readGoalStatus(
   for (const message of readmeRouteErrors()) {
     errors.push(message);
   }
+  for (const message of contextRoutingErrors()) {
+    errors.push(message);
+  }
 
   if (goalStatus === "completed" && errors.length > 0) {
     errors.push("goal.json status is completed but ledger ↔ PROGRESS ownership still fails");
@@ -313,6 +380,7 @@ module.exports = {
   summarizePlatform,
   formatGoalNextLines,
   siblingMdLedgers,
+  contextRoutingErrors,
   readProgress,
   uncheckedLines
 };

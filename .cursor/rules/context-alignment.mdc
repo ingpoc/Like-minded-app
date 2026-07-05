@@ -1,0 +1,11 @@
+---
+description: Session entry — goal:next before docs; JSON sole status owner
+alwaysApply: true
+---
+
+# Context alignment
+
+1. Run `npm run goal:next` and execute `first_command` before loading PROGRESS, GOAL, validation dirs, or mockups.
+2. Control status lives in `validation/{ios,macos}/*.json` only — never add pass/fail tables or sibling `.md` ledgers.
+3. One screen → `npm run ledger:screen`; gap audit only → `npm run ledger:open`.
+4. Edit owners in place (AGENTS.md, validation.md, PROGRESS track) — do not add parallel reference docs.

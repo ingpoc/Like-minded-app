@@ -18,28 +18,28 @@
     {
       "id": "step-rows",
       "type": "display",
-      "label": "1 About you / 2 Voice profile / 3 Join first circle",
-      "expected": "Display-only progress labels",
+      "label": "1 About you / 2 Voice profile / 3 Join your first circle",
+      "expected": "Three-step sidebar with subtitles (Basic info & interests, Record & analyze, Start connecting)",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (step-rows)",
+      "evidence": "CUA-click validation-priya 2026-07-05 profileOnboarding mockup-17 (step-rows)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "d76ddbe8718f8d2f",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "form-lines",
       "type": "text",
-      "label": "Name, city, gender, DOB, pincode fields",
-      "expected": "Editable fields seeded from profile; gender pills; DOB picker; pincode",
+      "label": "Name, city, birthday, interest chips",
+      "expected": "Editable name/city/birthday seeded from profile; selectable mockup interest pills with Jazz+Books defaults",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (form-lines)",
+      "evidence": "CUA-click validation-priya 2026-07-05 profileOnboarding mockup-17 (form-lines)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "d76ddbe8718f8d2f",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "continue",
@@ -47,12 +47,12 @@
       "label": "Continue",
       "expected": "PATCH basicInfo then advance to voice profile step (step 2)",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (continue)",
+      "evidence": "CUA-click validation-priya 2026-07-05 profileOnboarding mockup-17 (continue)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "d76ddbe8718f8d2f",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "voice-profile-step",
@@ -60,31 +60,56 @@
       "label": "Voice profile (onboarding step 2)",
       "expected": "Navigate to macOS voice interview / Realtime session screen",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (voice-profile-step)",
+      "evidence": "CUA-click validation-priya 2026-07-05 profileOnboarding mockup-17 (voice-profile-step)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "c85b147b28b0e423",
-      "last_test_method": "CUA"
+      "tested_source_hash": "d76ddbe8718f8d2f",
+      "last_test_method": "CUA-click"
     },
     {
       "id": "join-circle-step",
       "type": "button",
-      "label": "Join first circle (onboarding step 3)",
+      "label": "Join your first circle (onboarding step 3)",
       "expected": "Navigate to circle placement / join flow as onboarding step 3",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (join-circle-step)",
+      "evidence": "CUA-click validation-priya 2026-07-05 profileOnboarding mockup-17 (join-circle-step)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "c85b147b28b0e423",
-      "last_test_method": "CUA"
+      "tested_source_hash": "d76ddbe8718f8d2f",
+      "last_test_method": "CUA-click"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-04 capture vs plate 17: basics onboarding continue. Intentional: birthday picker deferred; interests from voice not mockup chips."
+    "notes": "2026-07-05 capture vs plate 17: serif hero, 3-step sidebar with subtitles, About-you card with avatar, name/city/birthday fields, selectable interest chips, Continue arrow, orb annotation. Intentional: gender/pincode collected via PATCH defaults not shown; seeded name/city/birthday vs mockup sample copy."
   },
-  "notes": "2026-07-05: uniform 3-step onboarding with DOB/pincode on step 1; Continue advances to voice step.",
-  "source_hash": "c85b147b28b0e423"
+  "notes": "2026-07-05: mockup-17 onboarding basics — interest chips, step subtitles, birthday field; Continue advances to voice step.",
+  "source_hash": "d76ddbe8718f8d2f",
+  "recent_screenshot_ref": "output/validation/macos-screens/profileOnboarding.png",
+  "ui_validation": {
+    "result": "pass",
+    "reference_mockup_ref": "mockups/macos/17-20-profile-onboarding-detail-settings.png",
+    "recent_screenshot_ref": "output/validation/macos-screens/profileOnboarding.png",
+    "design_ref": "DESIGN.md",
+    "last_compared_at": "2026-07-05",
+    "validated": [
+      "latest screenshot exists and was compared with reference mockup plate 17",
+      "DESIGN.md design language checked: warm canvas, calm editorial hierarchy, card system, green accents, bottom glass navigation",
+      "3-step sidebar with subtitles matches mockup progress column",
+      "About-you card: avatar header, name/city/birthday fields, selectable interest chips, Continue with arrow",
+      "MacOrb panel with curate-connections annotation matches mockup right column",
+      "control behavior tracked separately in controls[]"
+    ],
+    "pending_validation": [],
+    "requires_implementation": [],
+    "requires_fixing": [],
+    "intentional_differences": [
+      "Gender and pincode not shown on step 1 (PATCH preserves backend values)",
+      "Seeded validation profile name/city/birthday vs mockup Priya / Bangalore, India / Apr 12, 1995",
+      "Initials avatar vs mockup photo placeholder"
+    ],
+    "notes": "2026-07-05 profileOnboarding step-1 capture matches mockup 17 layout/copy/chips; profileSurface(.signals) unchanged."
+  }
 }

@@ -56,7 +56,7 @@ const PEOPLE = [
 // Community memberships per user (by seed id)
 const COMMUNITY_JOINS = {
   gurusharan: ["ai-builders","startups","design-craft"],
-  priya:   ["jazz-music","design-craft","creative-writing"],
+  priya:   ["ai-builders","design-craft","mindful-living","creative-writing","longform-reading","jazz-music"],
   rohan:   ["ai-builders","startups","jazz-music"],
   ananya:  ["longform-reading","creative-writing","mindful-living"],
   arjun:   ["jazz-music","longform-reading","trekking-outdoors"],
@@ -85,30 +85,69 @@ const COMMUNITY_JOINS = {
 // Soulmate matches: pairs of seed ids who mutually selected each other
 const SOULMATE_PAIRS = [
   ["gurusharan", "priya"],
+  ["priya", "rohan"],
+  ["priya", "meera"],
+  ["priya", "ananya"],
+  ["priya", "vivek"],
   ["ananya", "arjun"],
   ["karan", "zara"],
   ["meera", "sanjay"],
 ];
 
-// Chat messages per soulmate pair (seedId, text)
-const CHAT_MESSAGES = [
-  // gurusharan ↔ priya
-  ["gurusharan", "Really enjoyed the builders room. The conversation about systems thinking vs fast iteration stuck with me."],
-  ["priya",      "Same! You had this way of cutting through the noise without being dismissive. Rare."],
-  ["gurusharan", "Appreciate that. Your point about design and systems sharing the same bones — I've been turning it over since."],
-  ["priya",      "Let's compare notes before the next meetup? I want to show you something I've been prototyping."],
-  // ananya ↔ arjun
-  ["ananya", "That book recommendation you gave — I ordered it immediately."],
-  ["arjun",  "Haha, trust me it rewards slow reading. Let me know when you hit chapter 4."],
-  ["ananya",  "Already on chapter 3. Can't put it down."],
-  // karan ↔ zara
-  ["karan",   "Next trek — I'm thinking Hampi. You in?"],
-  ["zara",    "Say less. I'm already looking at trains."],
-  ["karan",   "Haha that energy is exactly why this works."],
-  ["zara",    "Stop, you're going to make me blush. Saturday can't come fast enough."],
-  // meera ↔ sanjay
-  ["meera",   "The mindful living room felt like a exhale. Thank you for holding that space."],
-  ["sanjay",  "That means a lot. You brought something really honest to the circle."],
+// Chat threads per pair — mockup plate 05 (Arjun/Meera/Rohan sidebar + jazz thread)
+const CHAT_THREADS = [
+  {
+    pair: ["priya", "gurusharan"],
+    messages: [
+      ["gurusharan", "That Coltrane track you mentioned in the meetup was 🔥"],
+      ["priya", "Glad you noticed! What's your go-to these days?"],
+      ["gurusharan", "Lately, it's been Ballads. Soothing on slow Sundays."],
+      ["priya", "Same here. Anything beyond jazz you've been enjoying?"],
+      ["gurusharan", "I've been reading a lot of essays. Really into long-form thinking."],
+      ["priya", "Nice! Any recommendations?"],
+      ["gurusharan", "That Coltrane track was insane live! 🔥"],
+    ],
+  },
+  {
+    pair: ["priya", "meera"],
+    messages: [["meera", "Yes! That sounds perfect."]],
+  },
+  {
+    pair: ["priya", "rohan"],
+    messages: [["rohan", "Looking forward to our next circle check-in."]],
+  },
+  {
+    pair: ["priya", "ananya"],
+    messages: [["ananya", "The essay you recommended was brilliant."]],
+  },
+  {
+    pair: ["priya", "vivek"],
+    messages: [["vivek", "Let's catch up soon!"]],
+  },
+  {
+    pair: ["ananya", "arjun"],
+    messages: [
+      ["ananya", "That book recommendation you gave — I ordered it immediately."],
+      ["arjun", "Haha, trust me it rewards slow reading. Let me know when you hit chapter 4."],
+      ["ananya", "Already on chapter 3. Can't put it down."],
+    ],
+  },
+  {
+    pair: ["karan", "zara"],
+    messages: [
+      ["karan", "Next trek — I'm thinking Hampi. You in?"],
+      ["zara", "Say less. I'm already looking at trains."],
+      ["karan", "Haha that energy is exactly why this works."],
+      ["zara", "Stop, you're going to make me blush. Saturday can't come fast enough."],
+    ],
+  },
+  {
+    pair: ["meera", "sanjay"],
+    messages: [
+      ["meera", "The mindful living room felt like a exhale. Thank you for holding that space."],
+      ["sanjay", "That means a lot. You brought something really honest to the circle."],
+    ],
+  },
 ];
 
 function userIdForSeed(seedId) {
@@ -161,6 +200,17 @@ function removeLocalValidationData() {
     });
     mvp.chatMessages = (mvp.chatMessages || []).filter((row) => keptMatches.has(row.matchId));
     writeJson(mvpStorePath, mvp);
+  }
+
+  // Validation lane reset: drop orphaned soulmate/chat rows so reseed starts clean.
+  if (mvpStorePath.includes("validation-db")) {
+    const mvp = readJson(mvpStorePath, null);
+    if (mvp) {
+      mvp.soulmateMatches = [];
+      mvp.chatMessages = [];
+      mvp.soulmateSelections = [];
+      writeJson(mvpStorePath, mvp);
+    }
   }
 
   if (architecture) {
@@ -378,16 +428,26 @@ async function seedValidationData() {
     if (!matched) console.warn(`No shared meeting for soulmate pair ${seedA}/${seedB}`);
   }
 
-  // Chat messages for each match
-  for (const [senderSeed, text] of CHAT_MESSAGES) {
-    // Find the match for this sender
-    const matches = await request("/v1/me/soulmate/matches", { token: userMap[senderSeed].sessionToken });
-    if (matches.length === 0) continue;
-    const matchId = matches[0].matchId;
-    await request(`/v1/me/soulmate/matches/${matchId}/messages`, {
-      method: "POST", token: userMap[senderSeed].sessionToken,
-      body: { text }
-    });
+  async function findMatchId(seedA, seedB) {
+    const matches = await request("/v1/me/soulmate/matches", { token: userMap[seedA].sessionToken });
+    const otherId = userMap[seedB].id;
+    return matches.find((row) => row.userId === otherId)?.matchId;
+  }
+
+  // Chat messages per thread (target the correct mutual match)
+  for (const thread of CHAT_THREADS) {
+    const [seedA, seedB] = thread.pair;
+    const matchId = await findMatchId(seedA, seedB) || await findMatchId(seedB, seedA);
+    if (!matchId) {
+      console.warn(`No match for chat thread ${seedA}/${seedB}`);
+      continue;
+    }
+    for (const [senderSeed, text] of thread.messages) {
+      await request(`/v1/me/soulmate/matches/${matchId}/messages`, {
+        method: "POST", token: userMap[senderSeed].sessionToken,
+        body: { text },
+      });
+    }
   }
 
   // Verify data density
@@ -420,7 +480,7 @@ async function seedValidationData() {
       circlesRepresented: [...new Set(PEOPLE.map((p) => p[3]))].length,
       communitiesJoined: Object.values(COMMUNITY_JOINS).flat().length,
       soulmateMatches: SOULMATE_PAIRS.length,
-      chatMessages: CHAT_MESSAGES.length,
+      chatMessages: CHAT_THREADS.reduce((sum, thread) => sum + thread.messages.length, 0),
       upcomingMeetingsScheduled: scheduled.meetings?.length || 0,
       primaryUpcomingMeetings: verifyMeetings.upcoming?.length || 0,
       primaryPastMeetings: verifyMeetings.past?.length || 0,
