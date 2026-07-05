@@ -2,7 +2,7 @@
   "schema_version": 1,
   "status": "completed",
   "purpose": "Per-session execution goal. Copy this file to goal.json at session start, set the current goal, and keep graders/validation/agent routing current when files or commands change.",
-  "goal": "Track — iOS Ledger Honesty: close validation/ios/*.json fail/pending rows (6 fail, 21 pending) with simulator proof; JSON is control-status owner. Phase 9 External TestFlight remains the numbered release route after iOS ledger gaps are owned in PROGRESS.md.",
+  "goal": "Track — macOS Unimplemented Controls: wire Settings nav + Soulmate prefs, Chat/Messages header actions, Community detail rows, and Profile voice/onboarding steps 2–3; close 24 pending validation/macos/*.json stub rows. Infra-blocked Apple sign-in and LiveKit join remain Phase 9/10.",
   "ultimate_goal_source": "GOAL.md",
   "progress_source": "PROGRESS.md",
   "workflow_refs": [
@@ -77,7 +77,7 @@
     "If goal.json status is completed, select the next coherent unchecked surface from PROGRESS.md before expanding retrieval.",
     "Avoid tiny one-checkbox goals unless they are the only blocker; group adjacent small items under the same owner surface.",
     "Check validation_state / ledger:open before rerunning completed proof; re-test stale_pass rows only.",
-    "Reuse ledger and validation scripts before creating new ones.",
+    "Reuse validation_inventory scripts and ledger scripts before creating new ones.",
     "Before claiming phase/track/goal complete, run npm run verify:ledger-progress. Actionable fail/pending/stale_pass/stale-blocked controls need unchecked PROGRESS owners; JSON is sole control-status owner.",
     "When a control is fail or stub, add or keep an unchecked PROGRESS item in the same session."
   ],
@@ -92,7 +92,7 @@
       "name": "mvp_backend_contract",
       "command": "npm run smoke:mvp",
       "cost": "zero_token",
-      "proves": "Auth-gated discovery, persisted profile/placement, placement action, feedback, meetings RSVP/scheduling, LiveKit token generation, notifications, community members, and cross-user isolation work locally."
+      "proves": "Auth-gated discovery, persisted profile/placement, placement action, feedback, meetings RSVP/scheduling, LiveKit token generation, notifications, community members, soulmate preferences, and cross-user isolation work locally."
     },
     {
       "name": "release_static_config",
@@ -246,12 +246,11 @@
     "commit_message_template": "Validate <short session goal>"
   },
   "done_criteria": [
-    "Active macOS ledger JSON controls for the session surface are pass/fail/blocked with evidence (not pending STUB prose).",
-    "npm run verify:ledger-progress passes (open fail/pending/stale-blocked controls retain unchecked PROGRESS owners).",
-    "Control status lives only in validation/macos/*.json (no sibling .md ledgers).",
-    "docs/references/macos-screen-audit.md routes to JSON ledgers and does not host a competing status table.",
-    "npm run goal:next routes to the macOS track first command while this goal is active and prints ledger_* ownership lines.",
-    "Validated session changes are committed with the session's goal.json before the goal is marked completed; Phase 9 remains the next numbered release route."
+    "All 24 macOS static stub controls in validation/macos/*.json are pass with evidence (not pending).",
+    "POST /v1/me/soulmate/preferences persists discovery, age range, and visibility.",
+    "npm run verify:ledger-progress passes for macOS unimplemented-controls track owners.",
+    "npm run smoke:mvp and LikemindedMac build pass.",
+    "Validated session changes committed with goal.json before marking completed."
   ],
   "max_iterations": 10
 }

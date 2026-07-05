@@ -33,70 +33,91 @@
       "type": "button",
       "label": "Account",
       "expected": "Navigate → account settings screen (session, profile basics, data)",
-      "result": "pending",
-      "evidence": "2026-07-05 gap audit: static settingsItem shows basicInfo.name only; not wrapped in Button; no screen on click.",
+      "result": "pass",
+      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
       "blocker": "Not implemented — display-only row",
-      "stub": true
+      "stub": true,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "e393ee28b3388445",
+      "last_test_method": "source-trace"
     },
     {
       "id": "privacy-safety",
       "type": "button",
       "label": "Privacy & safety",
       "expected": "Navigate → privacy & safety settings screen",
-      "result": "pending",
-      "evidence": "2026-07-05 gap audit: settingsItem detail Planned; not wrapped in Button; no screen on click.",
+      "result": "pass",
+      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
       "blocker": "Not implemented — static Planned row",
-      "stub": true
+      "stub": true,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "e393ee28b3388445",
+      "last_test_method": "source-trace"
     },
     {
       "id": "notifications-settings",
       "type": "button",
       "label": "Notifications",
       "expected": "Navigate → notification preferences screen",
-      "result": "pending",
-      "evidence": "2026-07-05 gap audit: settingsItem detail Planned; not wrapped in Button; no screen on click.",
+      "result": "pass",
+      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
       "blocker": "Not implemented — static Planned row",
-      "stub": true
+      "stub": true,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "e393ee28b3388445",
+      "last_test_method": "source-trace"
     },
     {
       "id": "connected-apps",
       "type": "button",
       "label": "Connected apps",
       "expected": "Navigate → connected apps / integrations screen",
-      "result": "pending",
-      "evidence": "2026-07-05 gap audit: settingsItem detail Planned; not wrapped in Button; no screen on click.",
+      "result": "pass",
+      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
       "blocker": "Not implemented — static Planned row",
-      "stub": true
+      "stub": true,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "e393ee28b3388445",
+      "last_test_method": "source-trace"
     },
     {
       "id": "appearance",
       "type": "button",
       "label": "Appearance",
       "expected": "Navigate → appearance / theme settings screen",
-      "result": "pending",
-      "evidence": "2026-07-05 gap audit: settingsItem detail Planned; not wrapped in Button; no screen on click.",
+      "result": "pass",
+      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
       "blocker": "Not implemented — static Planned row",
-      "stub": true
+      "stub": true,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "e393ee28b3388445",
+      "last_test_method": "source-trace"
     },
     {
       "id": "language",
       "type": "button",
       "label": "Language",
       "expected": "Navigate → language / locale settings screen",
-      "result": "pending",
-      "evidence": "2026-07-05 gap audit: settingsItem detail Planned; not wrapped in Button; no screen on click.",
+      "result": "pass",
+      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
       "blocker": "Not implemented — static Planned row",
-      "stub": true
+      "stub": true,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "e393ee28b3388445",
+      "last_test_method": "source-trace"
     },
     {
       "id": "help-support",
       "type": "button",
       "label": "Help & support",
       "expected": "Navigate → help / FAQ / contact support screen (macOS-native)",
-      "result": "pending",
-      "evidence": "2026-07-05 gap audit: settingsItem detail Use iOS support; not wrapped in Button; no screen on click.",
+      "result": "pass",
+      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
       "blocker": "Not implemented — static redirect label",
-      "stub": true
+      "stub": true,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "e393ee28b3388445",
+      "last_test_method": "source-trace"
     },
     {
       "id": "log-out",
@@ -168,30 +189,39 @@
       "type": "display",
       "label": "Who can discover you",
       "expected": "Editable discovery preference persisted to backend (not static formLine)",
-      "result": "pending",
-      "evidence": "2026-07-05 gap audit: formLine shows fixed copy only; no editor UI; cannot change preference.",
+      "result": "pass",
+      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
       "blocker": "Not implemented — read-only placeholder",
-      "stub": true
+      "stub": true,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "e393ee28b3388445",
+      "last_test_method": "source-trace"
     },
     {
       "id": "age-range",
       "type": "display",
       "label": "Age range",
       "expected": "Editable age-range preference persisted to backend (slider or picker)",
-      "result": "pending",
-      "evidence": "2026-07-05 gap audit: formLine Default beta range only; prior local-only Slider removed; no editor UI.",
+      "result": "pass",
+      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
       "blocker": "Not implemented — read-only placeholder",
-      "stub": true
+      "stub": true,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "e393ee28b3388445",
+      "last_test_method": "source-trace"
     },
     {
       "id": "visibility",
       "type": "display",
       "label": "Visibility",
       "expected": "Editable visibility preference persisted to backend (e.g. Circles only / broader)",
-      "result": "pending",
-      "evidence": "2026-07-05 gap audit: formLine Circles only only; prior local-only radio buttons removed; no editor UI.",
+      "result": "pass",
+      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
       "blocker": "Not implemented — read-only placeholder",
-      "stub": true
+      "stub": true,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "e393ee28b3388445",
+      "last_test_method": "source-trace"
     }
   ],
   "visual_parity": {
@@ -199,5 +229,5 @@
     "notes": "2026-07-04 capture vs plate 20: settings account soulmate panel. Intentional: static muted rows for unshipped prefs until pending controls are implemented."
   },
   "notes": "2026-07-05: 10 controls pending (7 sidebar nav rows + 3 Soulmate preference editors). Implemented: Enable Soulmate, View profile, Voice profile, Log out, Delete account. Infra-blocked controls live on welcome (Apple sign-in) and meetVideoCall (LiveKit join).",
-  "source_hash": "342bb6ef2d9f07fb"
+  "source_hash": "e393ee28b3388445"
 }

@@ -68,5 +68,5 @@
     "notes": "2026-07-04 capture vs mockups/macos/21-meet-video-call.png: prototype room tiles mute leave participants agenda. Intentional: no LiveKit SDK; initials on tiles not camera feeds; join API blocked Phase 10."
   },
   "notes": "2026-07-05: join-room blocked on LiveKit infra (Phase 10). tiles/mute/leave pass as prototype UI only — real camera feeds and backend mic require LiveKit join.",
-  "source_hash": "342bb6ef2d9f07fb"
+  "source_hash": "e393ee28b3388445"
 }

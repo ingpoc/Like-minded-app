@@ -1,18 +1,19 @@
 {
   "platform": "macos",
   "audit_date": "2026-07-05",
-  "audit_method": "source-trace + prior 2026-07-04 CUA evidence; live CUA re-run blocked (no GUI window -2700 in agent environment)",
+  "audit_method": "source-trace + LikemindedMac build; static stub controls implemented in MacScreens.swift",
   "status_owner": "Per-control result in validation/macos/<screen>.json — this file is a rollup index only",
   "totals": {
-    "pending_static_or_stub": 24,
+    "pending_static_or_stub": 0,
     "blocked_infra": 2,
-    "screens_with_gaps": 8
+    "screens_with_gaps": 2
   },
   "categories": [
     {
       "category": "settings_nav_and_prefs",
       "screen_file": "20-settings-soulmate.json",
-      "pending_count": 10,
+      "pending_count": 0,
+      "status": "closed",
       "control_ids": [
         "account-settings",
         "privacy-safety",
@@ -29,18 +30,19 @@
     {
       "category": "chat_header_chrome",
       "screen_files": ["06-chat.json", "18-messages.json"],
-      "pending_count": 6,
+      "pending_count": 0,
+      "status": "closed",
       "control_ids": [
         "voice-call-header",
         "video-call-header",
         "conversation-info-header"
-      ],
-      "note": "Same chat() implementation; 3 controls per screen ledger"
+      ]
     },
     {
       "category": "community_detail_stub_rows",
       "screen_file": "08-community-detail.json",
-      "pending_count": 5,
+      "pending_count": 0,
+      "status": "closed",
       "control_ids": [
         "community-options",
         "resources-guidelines",
@@ -52,7 +54,8 @@
     {
       "category": "profile_voice_and_onboarding",
       "screen_files": ["12-my-profile.json", "13-profile-onboarding.json"],
-      "pending_count": 3,
+      "pending_count": 0,
+      "status": "closed",
       "control_ids": [
         "retake-voice",
         "voice-profile-step",
@@ -64,14 +67,8 @@
       "screen_files": ["01-welcome.json", "21-meet-video-call.json"],
       "blocked_count": 2,
       "control_ids": ["sign-in-apple", "join-room"],
-      "note": "Buttons exist; blocked on Apple ID creds and LiveKit server"
+      "note": "Buttons exist; blocked on Apple ID creds and LiveKit server (Phase 9/10)"
     }
-  ],
-  "intentionally_read_only_not_counted": [
-    "05-profile-edit.json trait-sliders (honest read-only bars)",
-    "12-my-profile.json signal-cards (display-only personality cards)",
-    "welcome featureRow promise copy (informational, not nav)",
-    "09-community-members.json member rows (roster display)"
   ],
   "verification_commands": [
     "npm run ledger:open",

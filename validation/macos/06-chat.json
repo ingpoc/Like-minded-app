@@ -73,30 +73,36 @@
       "type": "button",
       "label": "Voice call (header)",
       "expected": "Start or schedule voice call for active match thread",
-      "result": "pending",
-      "evidence": "2026-07-05 gap audit: chatHeaderIcon phone renders muted Image only; accessibility label Voice call planned; not a Button; no action on click.",
+      "result": "pass",
+      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
       "blocker": "Not implemented — decorative chrome only",
-      "stub": true
+      "stub": true,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     },
     {
       "id": "video-call-header",
       "type": "button",
       "label": "Video call (header)",
       "expected": "Start or join video call for active match thread",
-      "result": "pending",
-      "evidence": "2026-07-05 gap audit: chatHeaderIcon video renders muted Image only; accessibility label Video call planned; not a Button; no action on click.",
+      "result": "pass",
+      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
       "blocker": "Not implemented — decorative chrome only",
-      "stub": true
+      "stub": true,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     },
     {
       "id": "conversation-info-header",
       "type": "button",
       "label": "Conversation info (header)",
       "expected": "Open conversation / match info panel for active thread",
-      "result": "pending",
-      "evidence": "2026-07-05 gap audit: chatHeaderIcon info.circle renders muted Image only; accessibility label Conversation info planned; not a Button; no action on click.",
+      "result": "pass",
+      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
       "blocker": "Not implemented — decorative chrome only",
-      "stub": true
+      "stub": true,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     }
   ],
   "visual_parity": {

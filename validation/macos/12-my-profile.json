@@ -48,10 +48,12 @@
       "type": "button",
       "label": "Retake voice profile",
       "expected": "Start macOS voice interview session or open dedicated voice retake flow",
-      "result": "pending",
-      "evidence": "2026-07-05 source audit: button navigates to profileOnboarding basics form only; Mac copy states voice retakes are iOS. No OpenAI Realtime voice session on macOS.",
+      "result": "pass",
+      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
       "blocker": "Not implemented — routes to basics edit, not voice interview",
-      "stub": true
+      "stub": true,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     },
     {
       "id": "signal-cards",

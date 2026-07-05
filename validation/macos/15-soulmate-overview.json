@@ -46,5 +46,5 @@
     "notes": "2026-07-04 capture vs plate 09: matches overview when soulmate enabled. Intentional: enable toggle lives in Settings only."
   },
   "notes": "Soulmate tab is only visible when enabled, so the normal overview path never shows a second enable toggle.",
-  "source_hash": "342bb6ef2d9f07fb"
+  "source_hash": "e393ee28b3388445"
 }
