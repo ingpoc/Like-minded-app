@@ -114,7 +114,8 @@ case "$SCREEN" in
     click_label "does not feel"
     ;;
   settingsSoulmate)
-    click_label "voice profile" || true
+    click_label "account" || true
+    click_label "privacy" || true
     ;;
   circlesRoom)
     click_label "request circle placement"
