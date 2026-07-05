@@ -28,9 +28,9 @@
       "evidence": "Computer Use default/maximized: Meetup shows Value: Selected; Listening Session and Jam Session show Not selected.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "0a10942c08130730",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "daaf1a833530ffd8",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "event-type-listening-session",
@@ -41,9 +41,9 @@
       "evidence": "Computer Use click changed Listening Session to Value: Selected and Meetup to Not selected before the fix pass.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "0a10942c08130730",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "daaf1a833530ffd8",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "event-type-jam-session",
@@ -54,9 +54,9 @@
       "evidence": "Computer Use exposed Jam Session as a reachable button with selected/not-selected accessibility value. Full click cycle remains covered by the same eventTypeButton path as Meetup/Listening Session.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "0a10942c08130730",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "daaf1a833530ffd8",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "event-fields",
@@ -67,9 +67,9 @@
       "evidence": "2026-07-04 CUA validation-priya: type_text Event name idx=10 (CUA Typed Event), Location idx=13 (Test Hall); Date/Time/Details exposed as labeled AXTextFields with seeded defaults. Create event idx=17 clicked via ./script/macos_cua_screen.sh createEvent.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "0a10942c08130730",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "daaf1a833530ffd8",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "add-cover",
@@ -80,9 +80,9 @@
       "evidence": "Computer Use click changed button to Cover added, added image EventJazzListening to the accessibility tree, and showed a hand-drawn jazz listening cover in default and maximized windows.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "0a10942c08130730",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "daaf1a833530ffd8",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "add-tags",
@@ -93,9 +93,9 @@
       "evidence": "Computer Use click changed button to Tags added and preview displayed Meetup and Community hosted chips in default and maximized windows.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "0a10942c08130730",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "daaf1a833530ffd8",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "create-event",
@@ -106,9 +106,9 @@
       "evidence": "Computer Use click showed 'Saturday Jazz Listening Session was created.' without navigation drift. data/validation-db/mvp-store.json contains the created meeting with title, scheduledAt 2026-07-05T19:00:00+05:30, location, compositionSummary, participantIds, groupSize 1, and status scheduled.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "0a10942c08130730",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "daaf1a833530ffd8",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "bottom-nav",
@@ -119,9 +119,9 @@
       "evidence": "Computer Use default, small 1120x752, and maximized 4480x1368 runs showed bottom nav visible with primary controls above it.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "0a10942c08130730",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "daaf1a833530ffd8",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "traffic-lights",
@@ -132,9 +132,9 @@
       "evidence": "Computer Use exposed close, full screen/zoom, and minimize buttons on default, small, and maximized windows.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "0a10942c08130730",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "daaf1a833530ffd8",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     }
   ],
   "visual_parity": {

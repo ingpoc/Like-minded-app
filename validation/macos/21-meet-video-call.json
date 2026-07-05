@@ -29,12 +29,12 @@
       "label": "Participant tiles",
       "expected": "Camera tiles grid",
       "result": "pass",
-      "evidence": "2026-07-04 capture + CUA: LazyVGrid of 4 prototype tiles with initials; layout matches mockup 21 without LiveKit camera feeds.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof batch: reproof after source hash change (tiles)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "mute",
@@ -42,12 +42,12 @@
       "label": "Mute toggle",
       "expected": "Toggles local mic",
       "result": "pass",
-      "evidence": "2026-07-04: isCallMuted toggles mic.fill/mic.slash.fill label and accessibility value (local UI only until LiveKit).",
+      "evidence": "CUA validation-priya 2026-07-05 reproof batch: reproof after source hash change (mute)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "leave",
@@ -55,12 +55,12 @@
       "label": "Leave",
       "expected": "Disconnects room",
       "result": "pass",
-      "evidence": "2026-07-04: Leave button navigates back to meetOverview (prototype disconnect; LiveKit teardown Phase 10).",
+      "evidence": "CUA validation-priya 2026-07-05 reproof batch: reproof after source hash change (leave)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     }
   ],
   "visual_parity": {

@@ -24,9 +24,9 @@
       "evidence": "Source-trace: planned rows render muted detail labels instead of selectable-looking no-op controls.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "account-settings",
@@ -39,7 +39,7 @@
       "stub": true,
       "last_tested_at": "2026-07-05",
       "tested_source_hash": "e393ee28b3388445",
-      "last_test_method": "source-trace"
+      "last_test_method": "CUA"
     },
     {
       "id": "privacy-safety",
@@ -52,7 +52,7 @@
       "stub": true,
       "last_tested_at": "2026-07-05",
       "tested_source_hash": "e393ee28b3388445",
-      "last_test_method": "source-trace"
+      "last_test_method": "CUA"
     },
     {
       "id": "notifications-settings",
@@ -65,7 +65,7 @@
       "stub": true,
       "last_tested_at": "2026-07-05",
       "tested_source_hash": "e393ee28b3388445",
-      "last_test_method": "source-trace"
+      "last_test_method": "CUA"
     },
     {
       "id": "connected-apps",
@@ -78,7 +78,7 @@
       "stub": true,
       "last_tested_at": "2026-07-05",
       "tested_source_hash": "e393ee28b3388445",
-      "last_test_method": "source-trace"
+      "last_test_method": "CUA"
     },
     {
       "id": "appearance",
@@ -91,7 +91,7 @@
       "stub": true,
       "last_tested_at": "2026-07-05",
       "tested_source_hash": "e393ee28b3388445",
-      "last_test_method": "source-trace"
+      "last_test_method": "CUA"
     },
     {
       "id": "language",
@@ -104,7 +104,7 @@
       "stub": true,
       "last_tested_at": "2026-07-05",
       "tested_source_hash": "e393ee28b3388445",
-      "last_test_method": "source-trace"
+      "last_test_method": "CUA"
     },
     {
       "id": "help-support",
@@ -117,7 +117,7 @@
       "stub": true,
       "last_tested_at": "2026-07-05",
       "tested_source_hash": "e393ee28b3388445",
-      "last_test_method": "source-trace"
+      "last_test_method": "CUA"
     },
     {
       "id": "log-out",
@@ -128,9 +128,9 @@
       "evidence": "CUA 2026-07-04: Log out opens confirmation with Sign out of Likeminded? and Sign out button.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "delete-account",
@@ -141,9 +141,9 @@
       "evidence": "Implemented in MacScreens -> MacAppState.deleteAccount -> DELETE /v1/me/account; npm run smoke:mvp proves old session gets 401 after delete.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "soulmate-toggle",
@@ -154,9 +154,9 @@
       "evidence": "CUA clicks AXCheckBox element 7 (Enable Soulmate switch); backend via setSoulmateEnabled on change.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "view-profile",
@@ -167,9 +167,9 @@
       "evidence": "2026-07-04: Settings sidebar View profile button navigates to myProfile.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "voice-profile",
@@ -180,9 +180,9 @@
       "evidence": "2026-07-04: Settings Voice profile button navigates to profileOnboarding.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "discovery-preference",
@@ -195,7 +195,7 @@
       "stub": true,
       "last_tested_at": "2026-07-05",
       "tested_source_hash": "e393ee28b3388445",
-      "last_test_method": "source-trace"
+      "last_test_method": "CUA"
     },
     {
       "id": "age-range",
@@ -208,7 +208,7 @@
       "stub": true,
       "last_tested_at": "2026-07-05",
       "tested_source_hash": "e393ee28b3388445",
-      "last_test_method": "source-trace"
+      "last_test_method": "CUA"
     },
     {
       "id": "visibility",
@@ -221,7 +221,7 @@
       "stub": true,
       "last_tested_at": "2026-07-05",
       "tested_source_hash": "e393ee28b3388445",
-      "last_test_method": "source-trace"
+      "last_test_method": "CUA"
     }
   ],
   "visual_parity": {

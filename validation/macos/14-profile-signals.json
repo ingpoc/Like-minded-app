@@ -2,7 +2,7 @@
   "screen": "Profile Signals (myProfile editing:true)",
   "platform": "macos",
   "source_files": [
-    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (myProfile(editing:true))"
+    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift"
   ],
   "mockup_ref": "mockups/macos/09-12-profile-soulmate-discover-detail.png",
   "mockup_missing": false,
@@ -20,17 +20,18 @@
       "label": "Done",
       "expected": "Navigate → myProfile (editing:false)",
       "result": "pass",
-      "evidence": "Done button on share/signals view returns to myProfile.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof: reproof after source hash change (share-profile)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": null,
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     }
   ],
   "visual_parity": {
     "result": "pass",
     "notes": "2026-07-04 capture vs plate 04: personality signal cards editing mode. Intentional: backend trait labels not mockup slider chrome."
   },
-  "notes": ""
+  "notes": "",
+  "source_hash": "e393ee28b3388445"
 }

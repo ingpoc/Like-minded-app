@@ -19,12 +19,12 @@
       "label": "Message",
       "expected": "Navigate → chat with selected match thread",
       "result": "pass",
-      "evidence": "2026-07-04 CUA: Message idx=7 clicked (exact label match, not Messages tab).",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (message)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "about-panels",
@@ -32,12 +32,12 @@
       "label": "About / You both like / Match status",
       "expected": "About + interests from GET match detail; Mutual status (no 92% score)",
       "result": "pass",
-      "evidence": "Loads SoulmateMatchDetail; Compatibility 92% replaced with Mutual panel.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (about-panels)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     }
   ],
   "visual_parity": {

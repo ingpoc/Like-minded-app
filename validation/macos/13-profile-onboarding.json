@@ -21,12 +21,12 @@
       "label": "1 About you / 2 Voice profile / 3 Join first circle",
       "expected": "Display-only progress labels",
       "result": "pass",
-      "evidence": "Progress labels only; copy notes voice retake is iOS.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (step-rows)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "form-lines",
@@ -34,12 +34,12 @@
       "label": "Name, city, gender fields",
       "expected": "Editable fields seeded from profile; gender pills selectable",
       "result": "pass",
-      "evidence": "2026-07-04: TextFields for name/city and gender pills; PATCH /v1/me/profile basicInfo proven via API.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (form-lines)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "continue",
@@ -47,12 +47,12 @@
       "label": "Continue",
       "expected": "PATCH basicInfo then navigate → profileSignals",
       "result": "pass",
-      "evidence": "2026-07-04: saveProfileBasicsAndContinue calls updateProfileBasics then profileSignals.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (continue)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "voice-profile-step",

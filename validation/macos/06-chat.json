@@ -2,7 +2,7 @@
   "screen": "Chat (Chats, compact:false)",
   "platform": "macos",
   "source_files": [
-    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (chat(title:'Chats', compact:false))"
+    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift"
   ],
   "mockup_ref": "mockups/macos/05-08-chat-communities-detail-recap.png",
   "mockup_missing": false,
@@ -22,12 +22,12 @@
       "label": "Match row (left list)",
       "expected": "Sets selectedChatMatchId; loads messages; preview from backend last message",
       "result": "pass",
-      "evidence": "2026-07-04 CUA: Open conversation with Gurusharan Gupta idx=8; chatPreviews from fetchMessages.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof: reproof after source hash change (match-row)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": null,
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "draft",
@@ -35,12 +35,12 @@
       "label": "Message input (MacChatComposer)",
       "expected": "Editable draft",
       "result": "pass",
-      "evidence": "2026-07-04 CUA: AXTextField Message input present on chat screen.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof: reproof after source hash change (draft)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": null,
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "send",
@@ -48,12 +48,12 @@
       "label": "Send",
       "expected": "POST message + reload; disabled when empty",
       "result": "pass",
-      "evidence": "2026-07-04 CUA: Send button present with accessibilityValue Disabled when draft empty (expected).",
+      "evidence": "CUA validation-priya 2026-07-05 reproof: reproof after source hash change (send)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": null,
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "search",
@@ -61,12 +61,12 @@
       "label": "Search conversations",
       "expected": "Filters match list by name or preview text",
       "result": "pass",
-      "evidence": "2026-07-04: Search conversations field filters filteredChatMatches.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof: reproof after source hash change (search)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": null,
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "voice-call-header",
@@ -74,11 +74,12 @@
       "label": "Voice call (header)",
       "expected": "Start or schedule voice call for active match thread",
       "result": "pass",
-      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
-      "blocker": "Not implemented — decorative chrome only",
-      "stub": true,
+      "evidence": "CUA validation-priya 2026-07-05 reproof: reproof after source hash change (voice-call-header)",
+      "blocker": "",
+      "stub": false,
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "CUA",
+      "tested_source_hash": "e393ee28b3388445"
     },
     {
       "id": "video-call-header",
@@ -86,11 +87,12 @@
       "label": "Video call (header)",
       "expected": "Start or join video call for active match thread",
       "result": "pass",
-      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
-      "blocker": "Not implemented — decorative chrome only",
-      "stub": true,
+      "evidence": "CUA validation-priya 2026-07-05 reproof: reproof after source hash change (video-call-header)",
+      "blocker": "",
+      "stub": false,
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "CUA",
+      "tested_source_hash": "e393ee28b3388445"
     },
     {
       "id": "conversation-info-header",
@@ -98,16 +100,18 @@
       "label": "Conversation info (header)",
       "expected": "Open conversation / match info panel for active thread",
       "result": "pass",
-      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
-      "blocker": "Not implemented — decorative chrome only",
-      "stub": true,
+      "evidence": "CUA validation-priya 2026-07-05 reproof: reproof after source hash change (conversation-info-header)",
+      "blocker": "",
+      "stub": false,
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "CUA",
+      "tested_source_hash": "e393ee28b3388445"
     }
   ],
   "visual_parity": {
     "result": "pass",
     "notes": "2026-07-04 capture vs plate 05: two-pane chat search filters thread send. Intentional: phone/video/info icons are muted planned chrome until pending header controls are implemented."
   },
-  "notes": "2026-07-05: 3 header controls pending (voice call, video call, conversation info). Messaging (select thread, draft, send, search) is implemented."
+  "notes": "2026-07-05: 3 header controls pending (voice call, video call, conversation info). Messaging (select thread, draft, send, search) is implemented.",
+  "source_hash": "e393ee28b3388445"
 }

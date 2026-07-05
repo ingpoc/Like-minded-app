@@ -20,12 +20,12 @@
       "label": "Search communities",
       "expected": "Filters catalog by name/summary/themes",
       "result": "pass",
-      "evidence": "2026-07-04 CUA validation-priya: type_text into Search communities idx=7; value=jazz filters grid via ./script/macos_cua_screen.sh communitiesBrowse.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (search)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "filter-pills",
@@ -33,12 +33,12 @@
       "label": "All/Trending/Nearby/New pills",
       "expected": "Filter communityFilter state",
       "result": "pass",
-      "evidence": "CUA Trending filter Selected/Not selected.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (filter-pills)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "create-card",
@@ -46,12 +46,12 @@
       "label": "Create a community card",
       "expected": "Navigate → createCommunity",
       "result": "pass",
-      "evidence": "2026-07-04 CUA: Create a community grid tile idx=13; navigates to createCommunity.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (create-card)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "community-card",
@@ -59,12 +59,12 @@
       "label": "Community card",
       "expected": "Navigate → communityDetail",
       "result": "pass",
-      "evidence": "CUA Open Jazz Music community.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (community-card)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     }
   ],
   "visual_parity": {

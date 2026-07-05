@@ -71,7 +71,10 @@ function findLedgerByScreenArg(platform, screenArg, repoRoot = root) {
     if (file.replace(/\.json$/, "").toLowerCase().includes(needle)) {
       return { abs, data, file };
     }
-    if ((data.source_files || []).some((s) => s.toLowerCase().includes(`(${screenArg.toLowerCase()})`))) {
+    if ((data.source_files || []).some((s) => {
+      const lower = s.toLowerCase();
+      return lower.includes(`(${needle})`) || lower.includes(needle);
+    })) {
       return { abs, data, file };
     }
   }
