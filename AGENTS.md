@@ -72,5 +72,5 @@ Next-goal: smallest full-session surface (one screen family, endpoint family, or
 
 ## Cursor Cloud specific instructions
 
-- Cloud VM is **Linux, no Swift/Xcode**: only the Node API (`services/api`, local JSON storage) is runnable — never run macOS/simulator scripts (`verify:simulator-local`, `verify:macos-screens`, `dev:macos:validation`, `audit:macos:*`, `build_and_run.sh`, `macos_*.sh`).
-- Full can/cannot list, cloud run command, and Linux-safe vs Xcode-only script tables: `docs/workflows/setup.md` → "Cursor Cloud (Linux, no Xcode)".
+- Linux VM, no Swift/Xcode → only the Node API (`services/api`, local JSON) runs; native iOS/macOS build/run/validate is unavailable.
+- Before any backend run/test or build/validate attempt, load only `docs/workflows/setup.md` → "Cursor Cloud (Linux, no Xcode)" for the can/cannot list, run command, and Linux-safe vs Xcode-only script tables.
