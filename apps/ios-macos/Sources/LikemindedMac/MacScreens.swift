@@ -118,7 +118,7 @@ struct MacScreenView: View {
     @State private var supportStatus: String?
     @State private var showCommunityOptions = false
     @State private var communityResourceDetail: CommunityResourceDetail?
-    @StateObject private var appleSignInController = AppleSignInController()
+    @State private var appleSignInController = AppleSignInController()
     @State private var showChatCallSheet = false
     @State private var chatCallMode = "voice"
     @State private var chatActionStatus: String?

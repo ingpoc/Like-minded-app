@@ -293,9 +293,6 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
-					243BAC188F1EBCA2009DA9DC = {
-						ProvisioningStyle = Automatic;
-					};
 					7EDE60F74566683E3AA458E5 = {
 						ProvisioningStyle = Automatic;
 					};
@@ -464,8 +461,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = Entitlements/LikemindedMac.entitlements;
-				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"\"";
 				GENERATE_INFOPLIST_FILE = YES;
@@ -526,8 +521,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = Entitlements/LikemindedMac.entitlements;
-				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"\"";
 				GENERATE_INFOPLIST_FILE = YES;

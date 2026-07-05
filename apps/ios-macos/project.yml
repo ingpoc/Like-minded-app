@@ -90,8 +90,6 @@ targets:
         INFOPLIST_KEY_NSCameraUsageDescription: "Likeminded uses your camera for scheduled group video meets."
         INFOPLIST_KEY_NSMicrophoneUsageDescription: "Likeminded uses your voice to build private profile signals and suggest a starter circle."
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-        CODE_SIGN_STYLE: Automatic
-        CODE_SIGN_ENTITLEMENTS: Entitlements/LikemindedMac.entitlements
         DEVELOPMENT_ASSET_PATHS: "\"\""
         LIKEMINDED_API_BASE_URL: ""
         GOOGLE_CLIENT_ID_IOS: ""
