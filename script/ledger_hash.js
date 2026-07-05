@@ -62,19 +62,27 @@ function loadScreenLedger(platform, fileOrId, repoRoot = root) {
   return { abs, data: JSON.parse(fs.readFileSync(abs, "utf8")), file };
 }
 
+function normalizeScreenToken(value) {
+  return String(value || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
 function findLedgerByScreenArg(platform, screenArg, repoRoot = root) {
   const dir = path.join(repoRoot, "validation", platform);
-  const needle = screenArg.toLowerCase();
+  const needle = normalizeScreenToken(screenArg);
   for (const file of fs.readdirSync(dir).filter((f) => f.endsWith(".json"))) {
     const abs = path.join(dir, file);
     const data = JSON.parse(fs.readFileSync(abs, "utf8"));
-    if (file.replace(/\.json$/, "").toLowerCase().includes(needle)) {
+    const fileStem = normalizeScreenToken(file.replace(/\.json$/, ""));
+    if (fileStem.includes(needle) || needle.includes(fileStem.replace(/^\d+/, ""))) {
       return { abs, data, file };
     }
     if ((data.source_files || []).some((s) => {
-      const lower = s.toLowerCase();
-      return lower.includes(`(${needle})`) || lower.includes(needle);
+      const token = normalizeScreenToken(s);
+      return token.includes(needle) || needle.includes(token);
     })) {
+      return { abs, data, file };
+    }
+    if (normalizeScreenToken(data.screen).includes(needle)) {
       return { abs, data, file };
     }
   }
