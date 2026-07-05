@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 # Computer Use pass for a single macOS screen: launch → focus → snap/click by label.
+# Driver: trycua/cua-driver via ~/.agents/skills/macos-cua (Cursor/Codex stable path).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # shellcheck source=macos_canonical_app.sh
 source "$ROOT/script/macos_canonical_app.sh"
+# shellcheck source=macos_cua_driver.sh
+source "$ROOT/script/macos_cua_driver.sh"
 
 SCREEN="${1:?screen name, e.g. communityDetail}"
-CUA="${CUA_DRIVER:-$HOME/.local/bin/cua-driver}"
 PID=""
 WID=""
 CLICK_OK=0
@@ -20,12 +22,12 @@ cua_bind() {
 
 snap() {
   cua_bind
-  "$CUA" call get_window_state "{\"pid\":$PID,\"window_id\":$WID,\"max_elements\":${1:-120},\"mode\":\"som\"}" 2>/dev/null
+  "$CUA" call get_window_state "{\"pid\":$PID,\"window_id\":$WID,\"max_elements\":${1:-120},\"session\":\"$MACOS_CUA_SESSION\",\"include_screenshot\":false}" 2>/dev/null
 }
 
 find_field() {
   local needle="$1"
-  snap 120 | python3 -c "import json,sys
+  snap 200 | python3 -c "import json,sys
 n=sys.argv[1].lower()
 els=[e for e in json.load(sys.stdin).get('elements',[]) if e.get('role') in ('AXTextField','AXTextArea')]
 exact=[e for e in els if (e.get('label') or '').lower()==n]
@@ -41,31 +43,22 @@ if cands:
 click_label() {
   local needle="$1"
   local optional="${2:-}"
-  local idx
-  idx=$(snap 120 | python3 -c "import json,sys
-n=sys.argv[1].lower()
-roles={'AXButton','AXCheckBox','AXRadioButton','AXLink','AXPopUpButton','AXMenuButton'}
-els=[e for e in json.load(sys.stdin).get('elements',[]) if e.get('role') in roles]
-exact=[e for e in els if (e.get('label') or '').lower()==n]
-if exact:
-  print(exact[0]['element_index']); raise SystemExit
-cands=[e for e in els if n in (e.get('label') or '').lower()]
-cands.sort(key=lambda e: len(e.get('label') or ''), reverse=True)
-if cands:
-  print(cands[0]['element_index'])
-" "$needle")
-  if [[ -z "$idx" ]]; then
-    echo "MISSING: $needle"
-    if [[ "$optional" != "optional" ]]; then
-      CLICK_MISS=$((CLICK_MISS + 1))
-    fi
+  local out=""
+  cua_export_focus
+  if [[ "$optional" == "optional" ]]; then
+    out="$(python3 "$ROOT/script/macos_cua_click_label.py" "$needle" --optional)" || true
+  else
+    out="$(python3 "$ROOT/script/macos_cua_click_label.py" "$needle")" || true
+  fi
+  echo "$out"
+  if [[ "$out" == OK\ click* ]]; then
+    CLICK_OK=$((CLICK_OK + 1))
+    sleep 0.5
     return 0
   fi
-  cua_bind
-  "$CUA" call click "{\"pid\":$PID,\"window_id\":$WID,\"element_index\":$idx}" 2>/dev/null | head -1
-  sleep 0.7
-  echo "OK click '$needle' idx=$idx"
-  CLICK_OK=$((CLICK_OK + 1))
+  if [[ "$optional" != "optional" ]]; then
+    CLICK_MISS=$((CLICK_MISS + 1))
+  fi
 }
 
 type_field() {
@@ -82,7 +75,7 @@ type_field() {
     return 0
   fi
   cua_bind
-  "$CUA" call click "{\"pid\":$PID,\"window_id\":$WID,\"element_index\":$idx}" 2>/dev/null | head -1
+  "$CUA" call click "{\"pid\":$PID,\"window_id\":$WID,\"element_index\":$idx,\"session\":\"$MACOS_CUA_SESSION\"}" 2>/dev/null | head -1
   sleep 0.4
   "$CUA" call press_key "{\"pid\":$PID,\"window_id\":$WID,\"key\":\"a\",\"modifier\":[\"cmd\"]}" 2>/dev/null | head -1 || true
   sleep 0.2
@@ -116,8 +109,11 @@ LIKEMINDED_VALIDATION_NAME="${LIKEMINDED_VALIDATION_NAME:-Priya Shah}" \
   "$ROOT/script/run_macos_manual_validation.sh" "$SCREEN" >/dev/null
 sleep 5
 
+cua_init_session
 cua_bind
-echo "screen=$SCREEN pid=$PID wid=$WID app=$MACOS_CANONICAL_APP"
+export MACOS_CUA_PID="$PID"
+export MACOS_CUA_WID="$WID"
+echo "screen=$SCREEN pid=$PID wid=$WID session=$MACOS_CUA_SESSION driver=$CUA app=$MACOS_CANONICAL_APP"
 snap 120 | python3 -c "import json,sys
 roles={'AXButton','AXCheckBox','AXRadioButton','AXLink','AXPopUpButton','AXMenuButton'}
 for e in json.load(sys.stdin).get('elements',[]):
@@ -140,12 +136,11 @@ case "$SCREEN" in
     click_label "This does not feel like my circle"
     ;;
   settingsSoulmate)
+    click_label "Save preferences"
+    click_label "Help & support"
     click_label "Account" optional
     click_label "Privacy & safety" optional
     click_label "Notifications" optional
-    click_label "Soulmate" optional
-    click_label "Help & support" optional
-    click_label "Save preferences"
     ;;
   circlesRoom)
     click_label "Request circle placement refresh"

@@ -24,17 +24,17 @@ struct MacRootView: View {
                             }
                             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
                         }
-                        .frame(maxWidth: .infinity, minHeight: max(0, proxy.size.height - (appState.isSignedIn && selectedScreen != .welcome ? 170 : 72)), alignment: .top)
+                        .frame(maxWidth: .infinity, minHeight: max(0, proxy.size.height - (appState.isSignedIn && selectedScreen != .welcome ? bottomContentInset : 72)), alignment: .top)
                         .padding(.horizontal, 28)
                         .padding(.top, 54)
-                        .padding(.bottom, appState.isSignedIn && selectedScreen != .welcome ? 116 : 18)
+                        .padding(.bottom, bottomContentInset)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .overlay(alignment: .bottom) {
-                if appState.isSignedIn, selectedScreen != .welcome {
+                if appState.isSignedIn, selectedScreen != .welcome, selectedScreen != .meetVideoCall {
                     MacBottomNav(selectedTab: activeTab, soulmateEnabled: appState.soulmateEnabled) { tab in
                         returnScreen = nil
                         selectedScreen = tab.primaryScreen
@@ -105,6 +105,11 @@ struct MacRootView: View {
             return returnScreen.tab
         }
         return selectedScreen.tab
+    }
+
+    private var bottomContentInset: CGFloat {
+        guard appState.isSignedIn, selectedScreen != .welcome else { return 18 }
+        return selectedScreen == .meetVideoCall ? 28 : 116
     }
 
     private var titleActionIcon: String {

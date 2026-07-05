@@ -41,6 +41,7 @@ const {
   joinCommunity,
   leaveCommunity,
   getJoinedCommunities,
+  getJoinedCommunityMemberships,
   getCommunityMembers,
   saveMeetingRsvp,
   getMeetingRsvps,
@@ -1010,7 +1011,7 @@ async function handleRequest(req, res) {
     const user = await requireUser(req, res);
     if (!user) return;
     const meetings = (await listMeetingsForUser(user.id)).map((meeting) => meetingSummary(meeting, user.id));
-    const joinedCommunities = (await getJoinedCommunities(user.id)).map(communitySummary);
+    const joinedMemberships = await getJoinedCommunityMemberships(user.id);
     const matches = await getSoulmateMatches(user.id);
     const notifications = [];
     const activity = [];
@@ -1032,12 +1033,14 @@ async function handleRequest(req, res) {
       });
     }
 
-    for (const community of joinedCommunities.slice(0, 3)) {
+    for (const membership of joinedMemberships.slice(0, 3)) {
+      const community = communities.get(membership.communityId);
+      if (!community) continue;
       activity.push({
         id: `activity-community-${community.id}`,
         title: `You joined ${community.name}`,
         detail: community.summary || null,
-        createdAt: null,
+        createdAt: membership.joinedAt,
         kind: "community"
       });
     }

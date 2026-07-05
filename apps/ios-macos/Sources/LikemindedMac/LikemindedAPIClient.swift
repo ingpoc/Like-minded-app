@@ -352,6 +352,21 @@ struct LikemindedAPIClient {
         }
     }
 
+    func joinMeeting(id: String) async throws -> LiveKitJoinToken {
+        let url = baseURL
+            .appendingPathComponent("/v1/meetings")
+            .appendingPathComponent(id)
+            .appendingPathComponent("join")
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        applyCommonHeaders(&request)
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+        return try JSONDecoder().decode(LiveKitJoinToken.self, from: data)
+    }
+
     func fetchSoulmateStatus() async throws -> SoulmateStatus {
         let url = baseURL
             .appendingPathComponent("/v1/me/soulmate/status")
