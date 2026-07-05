@@ -18,30 +18,39 @@
       "type": "text",
       "label": "Reflection note field",
       "expected": "Editable text bound to reflectionNote",
-      "result": "pending",
-      "evidence": "",
+      "result": "pass",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout 2026-07-05",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "7a70a3bb1b0b0525",
+      "last_test_method": "source-trace"
     },
     {
       "id": "save-note",
       "type": "button",
       "label": "Save note",
       "expected": "Persists note via recap-note endpoint",
-      "result": "pending",
-      "evidence": "",
+      "result": "pass",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout 2026-07-05",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "7a70a3bb1b0b0525",
+      "last_test_method": "source-trace"
     },
     {
       "id": "select-connections",
       "type": "button",
       "label": "Select connections (when soulmate enabled)",
       "expected": "Opens SoulmateSelectionDialog",
-      "result": "pending",
-      "evidence": "",
+      "result": "pass",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout 2026-07-05",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "7a70a3bb1b0b0525",
+      "last_test_method": "source-trace"
     }
   ],
   "visual_parity": {
@@ -49,5 +58,5 @@
     "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
   },
   "notes": "",
-  "source_hash": "a04c4f4a6b87527b"
+  "source_hash": "7a70a3bb1b0b0525"
 }

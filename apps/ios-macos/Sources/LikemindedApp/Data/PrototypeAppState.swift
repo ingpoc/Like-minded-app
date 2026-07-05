@@ -514,6 +514,18 @@ final class PrototypeAppState: ObservableObject {
         }
     }
 
+    func createCommunity(name: String, summary: String, themes: [String]) async -> Community? {
+        do {
+            let community = try await client.createCommunity(name: name, summary: summary, themes: themes)
+            await fetchCommunities()
+            communityError = nil
+            return community
+        } catch {
+            communityError = "Community could not be created."
+            return nil
+        }
+    }
+
     func fetchMeetings() async {
         guard isSignedIn else { return }
         isLoadingMeetings = true

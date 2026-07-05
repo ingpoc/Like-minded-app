@@ -19,12 +19,12 @@
       "label": "Start chat",
       "expected": "Pushes ChatView(match:)",
       "result": "pass",
-      "evidence": "Start chat → ChatView pushed",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (start-chat)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "1a270219616a3b7a",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
+      "tested_source_hash": "e5345933548b3571",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     },
     {
       "id": "chat-icon",
@@ -32,12 +32,12 @@
       "label": "Chat icon (top-right)",
       "expected": "Pushes ChatView(match:)",
       "result": "pass",
-      "evidence": "Open chat icon (bubble.right) in toolbar — present on match detail",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (chat-icon)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "1a270219616a3b7a",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
+      "tested_source_hash": "e5345933548b3571",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     },
     {
       "id": "interest-chips",
@@ -45,12 +45,12 @@
       "label": "Interest chips (depth-encoded)",
       "expected": "Shows other person's interests",
       "result": "pass",
-      "evidence": "Interest chips render on match detail (PRIYA SHAH visible)",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (interest-chips)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "1a270219616a3b7a",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
+      "tested_source_hash": "e5345933548b3571",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     }
   ],
   "visual_parity": {
@@ -58,5 +58,5 @@
     "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
   },
   "notes": "",
-  "source_hash": "1a270219616a3b7a"
+  "source_hash": "e5345933548b3571"
 }

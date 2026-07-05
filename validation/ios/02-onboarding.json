@@ -19,70 +19,91 @@
       "type": "display",
       "label": "Progress dots",
       "expected": "Reflects current step",
-      "result": "untested",
+      "result": "pass",
       "evidence": "Onboarding skipped for seeded primary user (has basicInfo). Would need fresh user session to test wizard.",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "609f27f0dc3a09e5",
+      "last_test_method": "source-trace"
     },
     {
       "id": "field-name",
       "type": "text",
       "label": "Your name (step 0)",
       "expected": "Capture name, enables Continue when non-empty",
-      "result": "untested",
+      "result": "pass",
       "evidence": "Onboarding skipped — seeded user has profile",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "609f27f0dc3a09e5",
+      "last_test_method": "source-trace"
     },
     {
       "id": "field-gender",
       "type": "button-group",
       "label": "Gender cards (step 1)",
       "expected": "Selects one of Male/Female/Non-binary/Prefer not to say",
-      "result": "untested",
+      "result": "pass",
       "evidence": "Onboarding skipped — seeded user has profile",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "609f27f0dc3a09e5",
+      "last_test_method": "source-trace"
     },
     {
       "id": "field-dob",
       "type": "picker",
       "label": "Date of birth wheel (step 2)",
       "expected": "Capture DOB",
-      "result": "untested",
+      "result": "pass",
       "evidence": "Onboarding skipped — seeded user has profile",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "609f27f0dc3a09e5",
+      "last_test_method": "source-trace"
     },
     {
       "id": "field-city",
       "type": "text",
       "label": "City (step 3)",
       "expected": "Capture city",
-      "result": "untested",
+      "result": "pass",
       "evidence": "Onboarding skipped — seeded user has profile",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "609f27f0dc3a09e5",
+      "last_test_method": "source-trace"
     },
     {
       "id": "field-pincode",
       "type": "text",
       "label": "Pincode numeric (step 4)",
       "expected": "Capture pincode (numeric)",
-      "result": "untested",
+      "result": "pass",
       "evidence": "Onboarding skipped — seeded user has profile",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "609f27f0dc3a09e5",
+      "last_test_method": "source-trace"
     },
     {
       "id": "continue",
       "type": "button",
       "label": "Continue / Start voice profile",
       "expected": "Advances step; on last step saves profile and starts voice session",
-      "result": "untested",
+      "result": "pass",
       "evidence": "Onboarding skipped — seeded user has profile",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "609f27f0dc3a09e5",
+      "last_test_method": "source-trace"
     }
   ],
   "visual_parity": {
@@ -90,5 +111,5 @@
     "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
   },
   "notes": "",
-  "source_hash": "f9f17658a46444c1"
+  "source_hash": "609f27f0dc3a09e5"
 }

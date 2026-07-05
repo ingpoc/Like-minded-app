@@ -341,7 +341,7 @@ Phase 8 marked iOS manual proofs complete, but `validation/ios/*.json` still has
 
 - [x] iOS Leave circle: Leave circle confirms and calls `deferPlacement` via `POST /v1/me/placement/actions`; evidence in `validation/ios/11-circle-detail.json`.
 - [x] iOS past-meet row navigation: `NavigationLink(value: Meeting)` pushes `PastMeetDetailView`; evidence in `validation/ios/07-meet.json`.
-- [ ] iOS ledger closeout: drive all `validation/ios/*.json` pending controls to pass/fail/blocked (onboarding, Sunday RSVP, past-meet detail, soulmate selection, settings rows, profile concern); JSON is status owner.
+- [ ] iOS ledger closeout: functional controls pass/blocked in `validation/ios/*.json`; remaining open rows are visual-parity mockup compare, LiveKit infra-blocked, and real Apple sign-in (Phase 9/10). macOS parity: create-community sheet, social auth buttons, accessibility labels aligned with macOS ledgers.
 
 ## Deferred
 

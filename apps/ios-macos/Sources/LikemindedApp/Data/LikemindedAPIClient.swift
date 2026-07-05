@@ -33,6 +33,12 @@ struct CommunityResponse: Decodable {
     let community: Community
 }
 
+struct CreateCommunityRequest: Encodable {
+    let name: String
+    let summary: String
+    let themes: [String]
+}
+
 struct CirclesResponse: Decodable {
     let circles: [PlacementCircle]
 }
@@ -281,6 +287,19 @@ struct LikemindedAPIClient {
 
     func leaveCommunity(id: String) async throws {
         try await updateCommunityMembership(id: id, action: "leave")
+    }
+
+    func createCommunity(name: String, summary: String, themes: [String]) async throws -> Community {
+        let url = baseURL.appendingPathComponent("/v1/communities")
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        applyCommonHeaders(&request)
+        request.httpBody = try JSONEncoder().encode(CreateCommunityRequest(name: name, summary: summary, themes: themes))
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+        return try JSONDecoder().decode(CommunityResponse.self, from: data).community
     }
 
     func updateMeetingRSVP(kind: String, available: Bool) async throws {

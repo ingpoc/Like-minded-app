@@ -318,6 +318,8 @@ struct CommunitiesPrototypeView: View {
     @EnvironmentObject private var appState: PrototypeAppState
     @State private var showCards = false
     @State private var searchText = ""
+    @State private var showingCreateCommunity = false
+    @State private var navigationPath = NavigationPath()
 
     private var filteredCommunities: [Community] {
         guard !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
@@ -332,7 +334,7 @@ struct CommunitiesPrototypeView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             ScreenContainer(title: "Communities", subtitle: "What you're into.") {
                 HStack(spacing: 10) {
                     HStack(spacing: 8) {
@@ -392,6 +394,7 @@ struct CommunitiesPrototypeView: View {
                                     .animation(.interactive.delay(Double(index) * 0.06), value: showCards)
                             }
                             .buttonStyle(.plain)
+                            .accessibilityLabel("Your communities card")
                         }
                     }
                 }
@@ -407,6 +410,35 @@ struct CommunitiesPrototypeView: View {
                             .foregroundStyle(PrototypePalette.subink)
                             .contentTransition(.numericText())
                     }
+
+                    Button {
+                        showingCreateCommunity = true
+                    } label: {
+                        HStack(spacing: 12) {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.system(size: 22, weight: .semibold))
+                                .foregroundStyle(PrototypePalette.accent)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Create a community")
+                                    .font(PrototypeTypography.bodyStrong)
+                                    .foregroundStyle(PrototypePalette.ink)
+                                Text("Start a focused room for people who share your interests.")
+                                    .font(PrototypeTypography.caption)
+                                    .foregroundStyle(PrototypePalette.subink)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(PrototypePalette.subink)
+                        }
+                        .padding(16)
+                        .background(PrototypePalette.surface)
+                        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Create a community")
 
                     if filteredCommunities.isEmpty {
                         Text("No communities match “\(searchText)”.")
@@ -443,7 +475,121 @@ struct CommunitiesPrototypeView: View {
                     )
                 }
             }
+            .sheet(isPresented: $showingCreateCommunity) {
+                CreateCommunityView { community in
+                    showingCreateCommunity = false
+                    navigationPath.append(community.id)
+                }
+                .environmentObject(appState)
+            }
         }
+    }
+}
+
+private struct CreateCommunityView: View {
+    @EnvironmentObject private var appState: PrototypeAppState
+    @Environment(\.dismiss) private var dismiss
+    let onCreated: (Community) -> Void
+
+    @State private var name = ""
+    @State private var summary = ""
+    @State private var themesText = ""
+    @State private var status: String?
+    @State private var isCreating = false
+
+    private var draftThemes: [String] {
+        let themes = themesText
+            .split(separator: ",")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+        return themes.isEmpty ? ["Community", "Discussion"] : Array(themes.prefix(3))
+    }
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    FeatureCard(title: "Community details", eyebrow: "Create") {
+                        VStack(alignment: .leading, spacing: 14) {
+                            TextField("Community name", text: $name)
+                                .textFieldStyle(.roundedBorder)
+                                .accessibilityLabel("Community name")
+
+                            TextField("What should this community help people do?", text: $summary, axis: .vertical)
+                                .textFieldStyle(.roundedBorder)
+                                .lineLimit(3...5)
+                                .accessibilityLabel("Community summary")
+
+                            TextField("Books, Rituals, Reflection", text: $themesText)
+                                .textFieldStyle(.roundedBorder)
+                                .accessibilityLabel("Community themes")
+
+                            Button {
+                                Task { await submit() }
+                            } label: {
+                                PrimaryActionButton(
+                                    title: isCreating ? "Creating" : "Create community",
+                                    systemImage: "person.3.fill"
+                                )
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(isCreating || name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || summary.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                            .accessibilityLabel("Create community")
+
+                            if let status {
+                                Text(status)
+                                    .font(PrototypeTypography.metadata)
+                                    .foregroundStyle(PrototypePalette.subink)
+                            }
+                        }
+                    }
+
+                    FeatureCard(title: "Preview", eyebrow: "Browse") {
+                        CommunityCard(
+                            community: Community(
+                                id: "draft",
+                                name: name.isEmpty ? "Community name" : name,
+                                summary: summary.isEmpty ? "Summary appears here as members browse communities." : summary,
+                                themes: draftThemes,
+                                meetingFormat: "Member-led discussion",
+                                membersCount: 1
+                            ),
+                            action: "New",
+                            tone: 1,
+                            compact: true
+                        )
+                    }
+                }
+                .padding(20)
+            }
+            .background(PrototypePalette.background.ignoresSafeArea())
+            .navigationTitle("Create community")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Cancel") { dismiss() }
+                        .foregroundStyle(PrototypePalette.accent)
+                }
+            }
+        }
+    }
+
+    private func submit() async {
+        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedSummary = summary.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedName.isEmpty, !trimmedSummary.isEmpty else {
+            status = "Add a name and summary before creating the community."
+            return
+        }
+        isCreating = true
+        status = nil
+        if let community = await appState.createCommunity(name: trimmedName, summary: trimmedSummary, themes: draftThemes) {
+            onCreated(community)
+            dismiss()
+        } else {
+            status = appState.communityError ?? "Community could not be created."
+        }
+        isCreating = false
     }
 }
 

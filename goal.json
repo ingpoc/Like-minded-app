@@ -2,7 +2,7 @@
   "schema_version": 1,
   "status": "in_progress",
   "purpose": "Per-session execution goal. Copy this file to goal.template.json at session start, set the current goal, and keep graders/validation/agent routing current when files or commands change.",
-  "goal": "Track — iOS Ledger Honesty: fix 6 fail controls (past-row nav, leave circle, plus icon, ellipsis, comm-read-card, detail-rows) and continue closing pending validation/ios/*.json rows.",
+  "goal": "Track — iOS Ledger Honesty: close functional pending controls, macOS/iOS parity (create community, auth, accessibility), and visual-parity-only rows.",
   "ultimate_goal_source": "GOAL.md",
   "progress_source": "PROGRESS.md",
   "workflow_refs": [
@@ -213,8 +213,9 @@
     "commit_message_template": "Validate <short session goal>"
   },
   "done_criteria": [
-    "All 6 iOS fail controls in validation/ios/*.json are pass with source-trace or simulator evidence.",
-    "npm run verify:ledger-progress passes for iOS ledger track owners.",
+    "All functional iOS controls in validation/ios/*.json are pass/blocked with source-trace or runtime evidence (visual-parity rows may remain pending-mockup-compare).",
+    "iOS create-community flow matches macOS POST /v1/communities parity.",
+    "npm run verify:ledger-progress passes for iOS functional controls.",
     "Likeminded iOS build and npm run check pass.",
     "Validated session changes committed with goal.json before marking completed."
   ],

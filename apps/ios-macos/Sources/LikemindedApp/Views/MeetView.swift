@@ -125,7 +125,9 @@ private struct RSVPCard: View {
                 tint: PrototypePalette.success,
                 title: "Saturday",
                 subtitle: "Community meetup",
-                isAvailable: $saturdayAvailable
+                isAvailable: $saturdayAvailable,
+                availableLabel: "Saturday Available",
+                unavailableLabel: "Saturday Not"
             )
             .onChange(of: saturdayAvailable) { _, value in onChange("community", value) }
 
@@ -136,7 +138,9 @@ private struct RSVPCard: View {
                 tint: PrototypePalette.amber,
                 title: "Sunday",
                 subtitle: "Circle meetup",
-                isAvailable: $sundayAvailable
+                isAvailable: $sundayAvailable,
+                availableLabel: "Sunday Available",
+                unavailableLabel: "Sunday Not"
             )
             .onChange(of: sundayAvailable) { _, value in onChange("circle", value) }
 
@@ -172,6 +176,8 @@ private struct RSVPRow: View {
     let title: String
     let subtitle: String
     @Binding var isAvailable: Bool
+    let availableLabel: String
+    let unavailableLabel: String
 
     var body: some View {
         HStack(spacing: 12) {
@@ -193,12 +199,12 @@ private struct RSVPRow: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
             HStack(spacing: 0) {
-                RSVPChoice(title: "Available", isSelected: isAvailable) {
+                RSVPChoice(title: "Available", accessibilityLabel: availableLabel, isSelected: isAvailable) {
                     withAnimation(.spring(response: 0.34, dampingFraction: 0.82)) {
                         isAvailable = true
                     }
                 }
-                RSVPChoice(title: "Not", isSelected: !isAvailable) {
+                RSVPChoice(title: "Not", accessibilityLabel: unavailableLabel, isSelected: !isAvailable) {
                     withAnimation(.spring(response: 0.34, dampingFraction: 0.82)) {
                         isAvailable = false
                     }
@@ -213,6 +219,7 @@ private struct RSVPRow: View {
 
 private struct RSVPChoice: View {
     let title: String
+    let accessibilityLabel: String
     let isSelected: Bool
     let action: () -> Void
 
@@ -226,6 +233,7 @@ private struct RSVPChoice: View {
                 .clipShape(Capsule(style: .continuous))
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(accessibilityLabel)
     }
 }
 
@@ -406,6 +414,7 @@ private struct PastMeetDetailView: View {
                         .font(PrototypeTypography.caption)
                         .textFieldStyle(.roundedBorder)
                         .lineLimit(3...6)
+                        .accessibilityLabel("Reflection note field")
 
                     HStack {
                         Button {
@@ -417,6 +426,7 @@ private struct PastMeetDetailView: View {
                         .buttonStyle(.plain)
                         .foregroundStyle(PrototypePalette.accent)
                         .disabled(isSavingNote)
+                        .accessibilityLabel("Save note")
 
                         if let noteStatus {
                             Text(noteStatus)
@@ -440,6 +450,7 @@ private struct PastMeetDetailView: View {
                             PrimaryActionButton(title: "Select connections", systemImage: "heart")
                         }
                         .buttonStyle(.plain)
+                        .accessibilityLabel("Select connections")
                     }
                 }
             }
@@ -447,8 +458,11 @@ private struct PastMeetDetailView: View {
         .navigationTitle("Recap")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showingSoulmateSelection) {
-            SoulmateSelectionDialog()
+            SoulmateSelectionDialog(meetingId: meeting.id)
                 .environmentObject(appState)
+        }
+        .task {
+            await appState.fetchSoulmateStatus()
         }
         .onAppear {
             reflectionNote = meeting.recapNote ?? ""

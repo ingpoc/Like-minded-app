@@ -19,10 +19,10 @@
       "label": "Update profile",
       "expected": "Reopens voice session sheet",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS fail-control fixes: reproof after source hash change (update-profile)",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (update-profile)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "b1266dca8baec590",
+      "tested_source_hash": "af33a69ba7d598de",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     },
@@ -32,10 +32,10 @@
       "label": "Communication/Energy/Trust pills",
       "expected": "Show profile signals (display only, no tap)",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS fail-control fixes: reproof after source hash change (signal-pills)",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (signal-pills)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "b1266dca8baec590",
+      "tested_source_hash": "af33a69ba7d598de",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     },
@@ -45,11 +45,11 @@
       "label": "Communication read card with chevron",
       "expected": "Display only; chevron is decorative, no tap action (STUB)",
       "result": "pass",
-      "evidence": "Communication read card is static text without decorative chevron",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (comm-read-card)",
       "blocker": "",
-      "stub": true,
+      "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "b1266dca8baec590",
+      "tested_source_hash": "af33a69ba7d598de",
       "last_test_method": "source-trace"
     },
     {
@@ -58,10 +58,10 @@
       "label": "Big Five TraitBars",
       "expected": "Render trait bars from slice.signals.bigFive",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS fail-control fixes: reproof after source hash change (trait-bars)",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (trait-bars)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "b1266dca8baec590",
+      "tested_source_hash": "af33a69ba7d598de",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     },
@@ -71,10 +71,10 @@
       "label": "Interest tag chips",
       "expected": "Render interests with depth encoding",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS fail-control fixes: reproof after source hash change (interest-chips)",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (interest-chips)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "b1266dca8baec590",
+      "tested_source_hash": "af33a69ba7d598de",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     }
@@ -84,5 +84,5 @@
     "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
   },
   "notes": "",
-  "source_hash": "b1266dca8baec590"
+  "source_hash": "af33a69ba7d598de"
 }

@@ -113,5 +113,5 @@
     "notes": "2026-07-04 capture vs plate 05: two-pane chat search filters thread send. Intentional: phone/video/info icons are muted planned chrome until pending header controls are implemented."
   },
   "notes": "2026-07-05: 3 header controls pending (voice call, video call, conversation info). Messaging (select thread, draft, send, search) is implemented.",
-  "source_hash": "3f8988b2bae470b2"
+  "source_hash": "c85b147b28b0e423"
 }

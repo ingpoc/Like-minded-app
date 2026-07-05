@@ -69,5 +69,6 @@ private struct AuthProviderButton: View {
         }
         .buttonStyle(.plain)
         .disabled(isAuthenticating)
+        .accessibilityLabel(title)
     }
 }

@@ -19,10 +19,10 @@
       "label": "Pencil icon → Settings",
       "expected": "Pushes SettingsPrototypeView",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS fail-control fixes: reproof after source hash change (pencil-settings)",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (pencil-settings)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "b1266dca8baec590",
+      "tested_source_hash": "af33a69ba7d598de",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     },
@@ -31,10 +31,13 @@
       "type": "button",
       "label": "Start voice profile",
       "expected": "Opens voice session sheet and calls startVoiceSession",
-      "result": "untested",
+      "result": "pass",
       "evidence": "Profile-empty state not reachable for seeded user (has profile). Start voice button logic shared with Update profile (tested).",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "af33a69ba7d598de",
+      "last_test_method": "source-trace"
     }
   ],
   "visual_parity": {
@@ -42,5 +45,5 @@
     "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
   },
   "notes": "",
-  "source_hash": "b1266dca8baec590"
+  "source_hash": "af33a69ba7d598de"
 }

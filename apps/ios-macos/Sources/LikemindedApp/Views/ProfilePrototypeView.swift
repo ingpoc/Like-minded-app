@@ -121,6 +121,7 @@ struct VoiceProfileView: View {
         }
         .buttonStyle(.plain)
         .disabled(appState.isStartingVoice)
+        .accessibilityLabel("Start voice profile")
     }
 
     private var placementConcernCard: some View {
@@ -145,6 +146,7 @@ struct VoiceProfileView: View {
             }
             .buttonStyle(.plain)
             .disabled(appState.isStartingVoice)
+            .accessibilityLabel("Start re-interview")
         }
         .padding(16)
         .background(PrototypePalette.surface)

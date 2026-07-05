@@ -20,10 +20,10 @@
       "label": "Voice orb (idle/listening/processing/captured)",
       "expected": "Animates with audio amplitude",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS fail-control fixes: reproof after source hash change (voice-orb)",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (voice-orb)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "b1266dca8baec590",
+      "tested_source_hash": "af33a69ba7d598de",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     },
@@ -33,10 +33,10 @@
       "label": "Stop",
       "expected": "Calls stopVoiceSession; persists profile",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS fail-control fixes: reproof after source hash change (stop)",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (stop)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "b1266dca8baec590",
+      "tested_source_hash": "af33a69ba7d598de",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     },
@@ -46,10 +46,10 @@
       "label": "Done",
       "expected": "Dismisses sheet",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS fail-control fixes: reproof after source hash change (done)",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (done)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "b1266dca8baec590",
+      "tested_source_hash": "af33a69ba7d598de",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     }
@@ -59,5 +59,5 @@
     "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
   },
   "notes": "",
-  "source_hash": "b1266dca8baec590"
+  "source_hash": "af33a69ba7d598de"
 }

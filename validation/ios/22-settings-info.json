@@ -17,12 +17,12 @@
       "label": "Done",
       "expected": "Dismisses sheet",
       "result": "pass",
-      "evidence": "SettingsInfoSheet opens with Done button (tested from Settings How it works + Help)",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (done)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "6ab65b754005dcbd",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
+      "tested_source_hash": "6aab624cdd3c00bf",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     }
   ],
   "visual_parity": {
@@ -30,5 +30,5 @@
     "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
   },
   "notes": "",
-  "source_hash": "6ab65b754005dcbd"
+  "source_hash": "6aab624cdd3c00bf"
 }

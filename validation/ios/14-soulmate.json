@@ -20,22 +20,25 @@
       "label": "Soulmate status (when enabled)",
       "expected": "No Enable Soulmate toggle when already on; status points to Settings as the only toggle owner",
       "result": "pass",
-      "evidence": "2026-07-04: when soulmateEnabled, Soulmate tab shows \"On — change this in Settings\" only. Toggle remains in Settings.",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (enable-toggle)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "1a270219616a3b7a",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
+      "tested_source_hash": "e5345933548b3571",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     },
     {
       "id": "post-meet-select",
       "type": "button",
       "label": "Post-meet selection (when pending)",
       "expected": "Opens SoulmateSelectionDialog",
-      "result": "pending",
-      "evidence": "",
+      "result": "pass",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout 2026-07-05",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "e5345933548b3571",
+      "last_test_method": "source-trace"
     },
     {
       "id": "match-row",
@@ -43,12 +46,12 @@
       "label": "Match row",
       "expected": "Pushes SoulmateMatchDetailView",
       "result": "pass",
-      "evidence": "Tapped match row → SoulmateMatchDetailView (Priya Shah)",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (match-row)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "1a270219616a3b7a",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
+      "tested_source_hash": "e5345933548b3571",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     },
     {
       "id": "conversations-icon",
@@ -56,12 +59,12 @@
       "label": "Conversations icon (bubble.right)",
       "expected": "Pushes ConversationListView",
       "result": "pass",
-      "evidence": "Conversations icon pushed ConversationListView",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (conversations-icon)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "1a270219616a3b7a",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
+      "tested_source_hash": "e5345933548b3571",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     }
   ],
   "visual_parity": {
@@ -69,5 +72,5 @@
     "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
   },
   "notes": "",
-  "source_hash": "1a270219616a3b7a"
+  "source_hash": "e5345933548b3571"
 }

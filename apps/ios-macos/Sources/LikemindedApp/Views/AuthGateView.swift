@@ -29,17 +29,20 @@ struct AuthGateView: View {
                     AuthPromiseRow(
                         icon: "waveform",
                         title: "Voice profile",
-                        detail: "AI voice interview that understands you deeply."
+                        detail: "AI voice interview that understands you deeply.",
+                        accessibilityLabel: "Voice profile"
                     )
                     AuthPromiseRow(
                         icon: "person.crop.rectangle",
                         title: "Private by design",
-                        detail: "Your profile is private and under your control."
+                        detail: "Your profile is private and under your control.",
+                        accessibilityLabel: "Private by design"
                     )
                     AuthPromiseRow(
                         icon: "person.3",
                         title: "Circle placement",
-                        detail: "We place you in the right circle and communities."
+                        detail: "We place you in the right circle and communities.",
+                        accessibilityLabel: "Circle placement"
                     )
                 }
 
@@ -114,6 +117,7 @@ private struct AuthPromiseRow: View {
     let icon: String
     let title: String
     let detail: String
+    let accessibilityLabel: String
 
     var body: some View {
         HStack(alignment: .top, spacing: 16) {
@@ -134,6 +138,8 @@ private struct AuthPromiseRow: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(accessibilityLabel)
     }
 }
 

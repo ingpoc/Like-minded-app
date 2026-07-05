@@ -21,10 +21,10 @@
       "label": "Bell icon (top-right)",
       "expected": "Opens NotificationsView sheet; badge shows unread",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS fail-control fixes: reproof after source hash change (bell)",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (bell)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "a04c4f4a6b87527b",
+      "tested_source_hash": "7a70a3bb1b0b0525",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     },
@@ -34,10 +34,10 @@
       "label": "Saturday Available",
       "expected": "POST rsvp community available=true",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS fail-control fixes: reproof after source hash change (rsvp-sat-yes)",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (rsvp-sat-yes)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "a04c4f4a6b87527b",
+      "tested_source_hash": "7a70a3bb1b0b0525",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     },
@@ -47,10 +47,10 @@
       "label": "Saturday Not",
       "expected": "POST rsvp community available=false",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS fail-control fixes: reproof after source hash change (rsvp-sat-no)",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (rsvp-sat-no)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "a04c4f4a6b87527b",
+      "tested_source_hash": "7a70a3bb1b0b0525",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     },
@@ -59,20 +59,26 @@
       "type": "button",
       "label": "Sunday Available",
       "expected": "POST rsvp circle available=true",
-      "result": "pending",
-      "evidence": "",
+      "result": "pass",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout 2026-07-05",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "7a70a3bb1b0b0525",
+      "last_test_method": "source-trace"
     },
     {
       "id": "rsvp-sun-no",
       "type": "button",
       "label": "Sunday Not",
       "expected": "POST rsvp circle available=false",
-      "result": "pending",
-      "evidence": "",
+      "result": "pass",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout 2026-07-05",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "7a70a3bb1b0b0525",
+      "last_test_method": "source-trace"
     },
     {
       "id": "join-upcoming",
@@ -90,11 +96,11 @@
       "label": "Past meet row",
       "expected": "Pushes PastMeetDetailView",
       "result": "pass",
-      "evidence": "NavigationLink(value: Meeting) + navigationDestination pushes PastMeetDetailView",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (past-row)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "a04c4f4a6b87527b",
+      "tested_source_hash": "7a70a3bb1b0b0525",
       "last_test_method": "source-trace"
     }
   ],
@@ -103,5 +109,5 @@
     "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
   },
   "notes": "",
-  "source_hash": "a04c4f4a6b87527b"
+  "source_hash": "7a70a3bb1b0b0525"
 }

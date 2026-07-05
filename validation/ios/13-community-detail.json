@@ -21,10 +21,10 @@
       "label": "Back chevron",
       "expected": "Dismisses/pops",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS fail-control fixes: reproof after source hash change (back)",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (back)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "b17b2a74b2deb281",
+      "tested_source_hash": "cd8e1ff30d57b66d",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     },
@@ -34,12 +34,12 @@
       "label": "Ellipsis icon",
       "expected": "STUB — Image only, no Button/action",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS fail-control fixes: reproof after source hash change (ellipsis)",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (ellipsis)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace",
-      "tested_source_hash": "b17b2a74b2deb281"
+      "tested_source_hash": "cd8e1ff30d57b66d"
     },
     {
       "id": "join-leave",
@@ -47,10 +47,10 @@
       "label": "Join community / Leave community",
       "expected": "Toggles membership via backend; updates member count",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS fail-control fixes: reproof after source hash change (join-leave)",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (join-leave)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "b17b2a74b2deb281",
+      "tested_source_hash": "cd8e1ff30d57b66d",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     }
@@ -60,5 +60,5 @@
     "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
   },
   "notes": "",
-  "source_hash": "b17b2a74b2deb281"
+  "source_hash": "cd8e1ff30d57b66d"
 }

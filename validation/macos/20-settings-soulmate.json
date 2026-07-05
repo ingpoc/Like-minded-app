@@ -175,7 +175,7 @@
       "id": "voice-profile",
       "type": "button",
       "label": "Voice profile",
-      "expected": "Navigate \u2192 profileOnboarding for basics edit",
+      "expected": "Removed — voice profile accessed from Profile tab",
       "result": "pass",
       "evidence": "2026-07-05: Voice profile row removed; Retake voice profile remains on Profile tab.",
       "blocker": "",

@@ -23,6 +23,7 @@ struct SettingsPrototypeView: View {
                     }
                     .tint(PrototypePalette.accent)
                     .padding(.vertical, 8)
+                    .accessibilityLabel("Enable Soulmate")
 
                     Divider().overlay(PrototypePalette.rule)
 
@@ -384,5 +385,6 @@ private struct SettingsRow: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(title)
     }
 }
