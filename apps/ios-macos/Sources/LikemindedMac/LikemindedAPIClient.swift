@@ -82,13 +82,38 @@ struct LikemindedAPIClient {
         }
     }
 
-    func authenticateWithApple(identityToken: String, authorizationCode: String?, fullName: String?) async throws -> AppleAuthResponse {
+    func authenticateWithGoogle(idToken: String) async throws -> AppleAuthResponse {
+        let url = baseURL.appendingPathComponent("/v1/auth/google")
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        applyCommonHeaders(&request)
+        request.httpBody = try JSONEncoder().encode(GoogleAuthRequest(idToken: idToken))
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            let errorText = String(data: data, encoding: .utf8) ?? "Authentication failed"
+            throw URLError(.userAuthenticationRequired, userInfo: [NSLocalizedDescriptionKey: errorText])
+        }
+        return try JSONDecoder().decode(AppleAuthResponse.self, from: data)
+    }
+
+    func authenticateWithApple(
+        identityToken: String,
+        authorizationCode: String?,
+        fullName: String?,
+        nonce: String? = nil
+    ) async throws -> AppleAuthResponse {
         let url = baseURL.appendingPathComponent("/v1/auth/apple")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         applyCommonHeaders(&request)
         request.httpBody = try JSONEncoder().encode(
-            AppleAuthRequest(identityToken: identityToken, authorizationCode: authorizationCode, fullName: fullName)
+            AppleAuthRequest(
+                identityToken: identityToken,
+                authorizationCode: authorizationCode,
+                fullName: fullName,
+                nonce: nonce
+            )
         )
 
         let (data, response) = try await URLSession.shared.data(for: request)

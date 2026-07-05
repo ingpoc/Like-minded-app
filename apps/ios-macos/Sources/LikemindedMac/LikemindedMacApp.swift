@@ -1,14 +1,28 @@
 import AppKit
 import SwiftUI
+#if canImport(GoogleSignIn)
+import GoogleSignIn
+#endif
 
 @main
 struct LikemindedMacApp: App {
+    init() {
+        Task { @MainActor in
+            GoogleSignInSupport.configureIfNeeded()
+        }
+    }
+
     var body: some Scene {
         WindowGroup {
             MacRootView()
                 .frame(minWidth: 1120, minHeight: 720)
                 .preferredColorScheme(.light)
                 .background(MacWindowChromeHider())
+                .onOpenURL { url in
+                    #if canImport(GoogleSignIn)
+                    _ = GIDSignIn.sharedInstance.handle(url)
+                    #endif
+                }
         }
         .defaultSize(width: 1200, height: 760)
         .commands {

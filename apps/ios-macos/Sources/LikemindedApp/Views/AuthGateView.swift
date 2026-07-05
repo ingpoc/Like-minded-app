@@ -3,6 +3,7 @@ import SwiftUI
 
 struct AuthGateView: View {
     @EnvironmentObject private var appState: PrototypeAppState
+    @State private var currentRawNonce: String?
 
     var body: some View {
         ZStack {
@@ -45,23 +46,45 @@ struct AuthGateView: View {
                 Spacer(minLength: 90)
 
                 SignInWithAppleButton(.signIn) { request in
+                    let rawNonce = AppleSignInSupport.randomNonce()
+                    currentRawNonce = rawNonce
                     request.requestedScopes = [.fullName, .email]
+                    request.nonce = AppleSignInSupport.sha256(rawNonce)
                 } onCompletion: { result in
+                    defer { currentRawNonce = nil }
                     switch result {
                     case .success(let authorization):
                         guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential else {
-                            appState.authError = "Apple sign-in returned an unsupported credential."
+                            appState.authError = AppleSignInError.unsupportedCredential.localizedDescription
                             return
                         }
-                        Task { await appState.signIn(with: credential) }
+                        guard let rawNonce = currentRawNonce else {
+                            appState.authError = "Apple sign-in could not be verified. Please try again."
+                            return
+                        }
+                        Task {
+                            do {
+                                let payload = try AppleSignInSupport.payload(from: credential, rawNonce: rawNonce)
+                                await appState.signIn(with: payload)
+                            } catch {
+                                appState.authError = AppleSignInSupport.userFacingMessage(for: error)
+                            }
+                        }
                     case .failure(let error):
-                        appState.authError = error.localizedDescription
+                        appState.authError = AppleSignInSupport.userFacingMessage(for: error)
                     }
                 }
                 .signInWithAppleButtonStyle(.black)
                 .frame(height: 52)
                 .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
                 .disabled(appState.isAuthenticating)
+
+                SocialAuthButtonsView(
+                    isAuthenticating: appState.isAuthenticating,
+                    onGoogleSignIn: { Task { await appState.signInWithGoogle() } },
+                    onMetaMaskSignIn: { Task { await appState.signInWithWallet(.metamask, controller: WalletSignInController()) } },
+                    onSolflareSignIn: { Task { await appState.signInWithWallet(.solflare, controller: WalletSignInController()) } }
+                )
 
                 Label("Your data is private and never shared.", systemImage: "lock")
                     .font(PrototypeTypography.metadata)

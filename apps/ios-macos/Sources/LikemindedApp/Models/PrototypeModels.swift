@@ -242,10 +242,15 @@ struct RealtimeSessionRequest: Encodable {
     let safetyIdentifier: String
 }
 
+struct GoogleAuthRequest: Encodable {
+    let idToken: String
+}
+
 struct AppleAuthRequest: Encodable {
     let identityToken: String
     let authorizationCode: String?
     let fullName: String?
+    let nonce: String?
 }
 
 struct AppleAuthResponse: Decodable {

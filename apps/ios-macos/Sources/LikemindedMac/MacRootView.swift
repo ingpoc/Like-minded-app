@@ -65,6 +65,7 @@ struct MacRootView: View {
         .foregroundStyle(MacPalette.ink)
         .task {
             await appState.signInForLocalValidationIfNeeded()
+            await appState.validateStoredAppleCredentialIfNeeded()
             if ProcessInfo.processInfo.arguments.contains("--likeminded-validation-welcome") {
                 selectedScreen = .welcome
             }

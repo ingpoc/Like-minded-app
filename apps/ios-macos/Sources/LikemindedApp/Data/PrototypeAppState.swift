@@ -1,4 +1,3 @@
-import AuthenticationServices
 import Foundation
 import SwiftUI
 
@@ -147,7 +146,7 @@ final class PrototypeAppState: ObservableObject {
                 authorizationCode: nil,
                 fullName: devName
             )
-            await saveSessionAndLoadPlacement(response)
+            await saveSessionAndLoadPlacement(response, authProvider: "apple")
             if shouldSeedVoicePlacement {
                 await createProfileFromInterview(
                     transcript: environment["LIKEMINDED_DEV_TRANSCRIPT"] ?? "I want honest conversations, small warm circles, steady trust, books, design, and people who communicate directly."
@@ -160,36 +159,78 @@ final class PrototypeAppState: ObservableObject {
         #endif
     }
 
-    func signIn(with credential: ASAuthorizationAppleIDCredential) async {
-        guard let identityTokenData = credential.identityToken,
-              let identityToken = String(data: identityTokenData, encoding: .utf8) else {
-            authError = "Apple did not return an identity token."
-            return
-        }
-        let authorizationCode = credential.authorizationCode.flatMap { String(data: $0, encoding: .utf8) }
-        let formatter = PersonNameComponentsFormatter()
-        let fullName = credential.fullName.map { formatter.string(from: $0) }
+    func signIn(with payload: AppleSignInCredentialPayload) async {
         isAuthenticating = true
         authError = nil
         do {
             let response = try await client.authenticateWithApple(
-                identityToken: identityToken,
-                authorizationCode: authorizationCode,
-                fullName: fullName?.isEmpty == false ? fullName : nil
+                identityToken: payload.identityToken,
+                authorizationCode: payload.authorizationCode,
+                fullName: payload.fullName,
+                nonce: payload.rawNonce
             )
-            await saveSessionAndLoadPlacement(response)
+            await saveSessionAndLoadPlacement(response, authProvider: "apple", appleUserIdentifier: payload.userIdentifier)
         } catch {
-            authError = error.localizedDescription
+            authError = AppleSignInSupport.userFacingMessage(for: error)
         }
         isAuthenticating = false
     }
 
-    private func saveSessionAndLoadPlacement(_ response: AppleAuthResponse) async {
+    func signInWithGoogle() async {
+        isAuthenticating = true
+        authError = nil
+        do {
+            let idToken = try await GoogleSignInSupport.signIn()
+            let response = try await client.authenticateWithGoogle(idToken: idToken)
+            await saveSessionAndLoadPlacement(response, authProvider: "google")
+        } catch {
+            authError = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        }
+        isAuthenticating = false
+    }
+
+    func signInWithWallet(_ wallet: WalletProvider, controller: WalletSignInController) async {
+        isAuthenticating = true
+        authError = nil
+        do {
+            let callback = try await controller.signIn(baseURL: LikemindedAPIClient.defaultBaseURL(), wallet: wallet)
+            let response = AppleAuthResponse(
+                user: APIUser(id: callback.userId, email: nil, fullName: callback.fullName),
+                sessionToken: callback.sessionToken,
+                expiresIn: 60 * 60 * 24 * 30
+            )
+            await saveSessionAndLoadPlacement(response, authProvider: "wallet")
+        } catch {
+            authError = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        }
+        isAuthenticating = false
+    }
+
+    func completeWalletSignIn(_ response: AppleAuthResponse) async {
+        await saveSessionAndLoadPlacement(response, authProvider: "wallet")
+    }
+
+    func validateStoredAppleCredentialIfNeeded() async {
+        guard authSession?.authProvider == "apple" else { return }
+        guard let appleUserIdentifier = authSession?.appleUserIdentifier else { return }
+        let isAuthorized = await AppleSignInSupport.validateCredentialState(for: appleUserIdentifier)
+        guard !isAuthorized else { return }
+        signOut()
+        authError = "Your Apple sign-in is no longer valid. Please sign in again."
+    }
+
+    private func saveSessionAndLoadPlacement(
+        _ response: AppleAuthResponse,
+        authProvider: String,
+        appleUserIdentifier: String? = nil
+    ) async {
         let session = AuthSession(
             userId: response.user.id,
             token: response.sessionToken,
             email: response.user.email,
-            fullName: response.user.fullName
+            fullName: response.user.fullName,
+            appleUserIdentifier: appleUserIdentifier,
+            authProvider: authProvider
         )
         AuthSessionStore.save(session)
         authSession = session

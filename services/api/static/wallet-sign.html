@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Likeminded wallet sign-in</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #f7f1e6;
+        color: #1f2a24;
+        margin: 0;
+        padding: 24px;
+      }
+      main {
+        max-width: 420px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 24px;
+        margin-bottom: 8px;
+      }
+      p {
+        line-height: 1.5;
+        color: #51605a;
+      }
+      button {
+        width: 100%;
+        border: 0;
+        border-radius: 14px;
+        padding: 14px 16px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 12px;
+      }
+      .primary {
+        background: #1f2a24;
+        color: #fff;
+      }
+      .secondary {
+        background: #fff;
+        color: #1f2a24;
+        border: 1px solid #d8cdb8;
+      }
+      .status {
+        margin-top: 16px;
+        min-height: 24px;
+        color: #51605a;
+        white-space: pre-wrap;
+      }
+      .error {
+        color: #b44b3a;
+      }
+      pre {
+        background: #fff;
+        border: 1px solid #d8cdb8;
+        border-radius: 12px;
+        padding: 12px;
+        overflow: auto;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Sign in with __WALLET_LABEL__</h1>
+      <p>Connect your wallet, review the message, and sign to continue in Likeminded.</p>
+      <button id="connect" class="primary">Connect wallet</button>
+      <button id="retry" class="secondary" hidden>Try again</button>
+      <div id="status" class="status">Preparing secure sign-in…</div>
+      <pre id="message" hidden></pre>
+    </main>
+    <script type="module">
+      import UniversalProvider from "https://esm.sh/@walletconnect/universal-provider@2.21.0";
+
+      const params = new URLSearchParams(window.location.search);
+      const challengeId = params.get("challengeId");
+      const wallet = params.get("wallet");
+      const redirectScheme = params.get("redirect") || "com.likeminded.app://auth/wallet";
+      const projectId = "__WALLETCONNECT_PROJECT_ID__";
+      const statusEl = document.getElementById("status");
+      const messageEl = document.getElementById("message");
+      const connectButton = document.getElementById("connect");
+      const retryButton = document.getElementById("retry");
+
+      function setStatus(text, isError = false) {
+        statusEl.textContent = text;
+        statusEl.className = isError ? "status error" : "status";
+      }
+
+      function redirectToApp(payload) {
+        const url = new URL(redirectScheme);
+        url.searchParams.set("sessionToken", payload.sessionToken);
+        url.searchParams.set("userId", payload.user.id);
+        if (payload.user.fullName) url.searchParams.set("fullName", payload.user.fullName);
+        window.location.href = url.toString();
+      }
+
+      async function loadChallenge() {
+        const response = await fetch(`/v1/auth/wallet/challenge/${encodeURIComponent(challengeId)}`);
+        if (!response.ok) {
+          throw new Error("Wallet challenge expired. Return to the app and try again.");
+        }
+        return response.json();
+      }
+
+      async function verifyWallet({ challenge, address, signature }) {
+        const response = await fetch("/v1/auth/wallet/verify", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            challengeId: challenge.challengeId,
+            address,
+            signature,
+            chain: challenge.chain,
+            wallet: challenge.wallet
+          })
+        });
+        const body = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          throw new Error(body.message || "Wallet verification failed.");
+        }
+        return body;
+      }
+
+      async function connectAndSign() {
+        connectButton.disabled = true;
+        retryButton.hidden = true;
+        setStatus("Connecting wallet…");
+
+        const challenge = await loadChallenge();
+        messageEl.hidden = false;
+        messageEl.textContent = challenge.message;
+
+        if (!projectId) {
+          throw new Error("WalletConnect is not configured on the server.");
+        }
+
+        const provider = await UniversalProvider.init({
+          projectId,
+          metadata: {
+            name: "Likeminded",
+            description: "Sign in to Likeminded",
+            url: window.location.origin,
+            icons: ["https://likeminded.app/icon.png"]
+          }
+        });
+
+        const namespaces =
+          challenge.chain === "ethereum"
+            ? {
+                eip155: {
+                  methods: ["personal_sign", "eth_sign", "eth_signTypedData", "eth_signTypedData_v4"],
+                  chains: ["eip155:1"],
+                  events: ["accountsChanged", "chainChanged"]
+                }
+              }
+            : {
+                solana: {
+                  methods: ["solana_signMessage"],
+                  chains: ["solana:mainnet"],
+                  events: ["accountsChanged"]
+                }
+              };
+
+        const session = await provider.connect({ optionalNamespaces: namespaces });
+        setStatus("Wallet connected. Requesting signature…");
+
+        let address;
+        let signature;
+
+        if (challenge.chain === "ethereum") {
+          const accounts = session.namespaces.eip155?.accounts || [];
+          address = accounts[0]?.split(":").pop();
+          if (!address) throw new Error("No Ethereum account returned by wallet.");
+          signature = await provider.request({
+            method: "personal_sign",
+            params: [challenge.message, address]
+          });
+        } else {
+          const accounts = session.namespaces.solana?.accounts || [];
+          address = accounts[0]?.split(":").pop();
+          if (!address) throw new Error("No Solana account returned by wallet.");
+          const encodedMessage = btoa(String.fromCharCode(...new TextEncoder().encode(challenge.message)));
+          const result = await provider.request({
+            method: "solana_signMessage",
+            params: { pubkey: address, message: encodedMessage }
+          });
+          signature =
+            typeof result === "string"
+              ? result
+              : result?.signature || result?.sig || "";
+          if (!signature) throw new Error("Solana wallet did not return a signature.");
+        }
+
+        setStatus("Verifying signature…");
+        const auth = await verifyWallet({ challenge, address, signature });
+        setStatus("Signed in. Returning to Likeminded…");
+        redirectToApp(auth);
+      }
+
+      connectButton.addEventListener("click", () => {
+        connectAndSign().catch((error) => {
+          connectButton.disabled = false;
+          retryButton.hidden = false;
+          setStatus(error.message || "Wallet sign-in failed.", true);
+        });
+      });
+
+      retryButton.addEventListener("click", () => {
+        connectButton.disabled = false;
+        connectAndSign().catch((error) => {
+          connectButton.disabled = false;
+          retryButton.hidden = false;
+          setStatus(error.message || "Wallet sign-in failed.", true);
+        });
+      });
+
+      if (!challengeId || !wallet) {
+        setStatus("Missing wallet sign-in parameters.", true);
+        connectButton.disabled = true;
+      }
+    </script>
+  </body>
+</html>

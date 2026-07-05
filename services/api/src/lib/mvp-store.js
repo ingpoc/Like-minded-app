@@ -9,7 +9,11 @@ const LOCAL_PATH = path.join(LOCAL_DIR, "mvp-store.json");
 let pool;
 
 function userIdForAppleSub(appleSub) {
-  return `usr_${crypto.createHash("sha256").update(appleSub).digest("hex").slice(0, 24)}`;
+  return userIdForAuthSubject("apple", appleSub);
+}
+
+function userIdForAuthSubject(provider, subject) {
+  return `usr_${crypto.createHash("sha256").update(`${provider}:${subject}`).digest("hex").slice(0, 24)}`;
 }
 
 function getPool() {
@@ -165,30 +169,76 @@ async function migrateMvpStore() {
     ALTER TABLE soulmate_users
     ADD COLUMN IF NOT EXISTS preferences JSONB NOT NULL DEFAULT '{"discovery":"circles_extended","ageMin":22,"ageMax":35,"visibility":"circles_only"}'::jsonb;
   `);
+  await getPool().query(`ALTER TABLE users ALTER COLUMN apple_sub DROP NOT NULL;`);
+  await getPool().query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS google_sub TEXT UNIQUE;`);
+  await getPool().query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS wallet_address TEXT;`);
+  await getPool().query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS wallet_chain TEXT;`);
+  await getPool().query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS auth_provider TEXT;`);
+  await getPool().query(`
+    CREATE UNIQUE INDEX IF NOT EXISTS users_wallet_unique
+    ON users (wallet_chain, lower(wallet_address))
+    WHERE wallet_address IS NOT NULL;
+  `);
 }
 
-async function upsertAppleUser({ appleSub, email, fullName }) {
-  const id = userIdForAppleSub(appleSub);
+async function upsertAuthUser({ provider, subject, email, fullName, walletChain, walletAddress }) {
+  const id = userIdForAuthSubject(provider, subject);
   const now = new Date().toISOString();
+  const appleSub = provider === "apple" ? subject : null;
+  const googleSub = provider === "google" ? subject : null;
+  const walletAddressValue = provider === "wallet" ? walletAddress : null;
+  const walletChainValue = provider === "wallet" ? walletChain : null;
+
   if (isPostgres) {
+    let existingId = id;
+    if (provider === "apple") {
+      const existing = await getPool().query("SELECT id FROM users WHERE apple_sub = $1 LIMIT 1", [subject]);
+      if (existing.rows[0]?.id) existingId = existing.rows[0].id;
+    } else if (provider === "google") {
+      const existing = await getPool().query("SELECT id FROM users WHERE google_sub = $1 LIMIT 1", [subject]);
+      if (existing.rows[0]?.id) existingId = existing.rows[0].id;
+    } else {
+      const existing = await getPool().query(
+        "SELECT id FROM users WHERE wallet_chain = $1 AND lower(wallet_address) = lower($2) LIMIT 1",
+        [walletChainValue, walletAddressValue]
+      );
+      if (existing.rows[0]?.id) existingId = existing.rows[0].id;
+    }
+
     const result = await getPool().query(
-      `INSERT INTO users (id, apple_sub, email, full_name, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, now(), now())
-       ON CONFLICT (apple_sub) DO UPDATE
-       SET email = COALESCE(EXCLUDED.email, users.email),
+      `INSERT INTO users (id, apple_sub, google_sub, wallet_address, wallet_chain, auth_provider, email, full_name, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, now(), now())
+       ON CONFLICT (id) DO UPDATE
+       SET apple_sub = COALESCE(users.apple_sub, EXCLUDED.apple_sub),
+           google_sub = COALESCE(users.google_sub, EXCLUDED.google_sub),
+           wallet_address = COALESCE(users.wallet_address, EXCLUDED.wallet_address),
+           wallet_chain = COALESCE(users.wallet_chain, EXCLUDED.wallet_chain),
+           auth_provider = COALESCE(users.auth_provider, EXCLUDED.auth_provider),
+           email = COALESCE(EXCLUDED.email, users.email),
            full_name = COALESCE(EXCLUDED.full_name, users.full_name),
            updated_at = now()
-       RETURNING id, apple_sub, email, full_name`,
-      [id, appleSub, email || null, fullName || null]
+       RETURNING id, apple_sub, google_sub, wallet_address, wallet_chain, auth_provider, email, full_name`,
+      [existingId, appleSub, googleSub, walletAddressValue, walletChainValue, provider, email || null, fullName || null]
     );
     return rowToUser(result.rows[0]);
   }
 
   const store = readLocalStore();
-  const existing = Object.values(store.users).find((user) => user.apple_sub === appleSub);
+  const existing =
+    store.users[id] ||
+    Object.values(store.users).find((user) => {
+      if (provider === "apple") return user.apple_sub === subject;
+      if (provider === "google") return user.google_sub === subject;
+      return user.wallet_chain === walletChain && String(user.wallet_address || "").toLowerCase() === String(walletAddress || "").toLowerCase();
+    });
+
   store.users[id] = {
     id,
-    apple_sub: appleSub,
+    apple_sub: appleSub || existing?.apple_sub || null,
+    google_sub: googleSub || existing?.google_sub || null,
+    wallet_address: walletAddressValue || existing?.wallet_address || null,
+    wallet_chain: walletChainValue || existing?.wallet_chain || null,
+    auth_provider: existing?.auth_provider || provider,
     email: email || existing?.email || null,
     full_name: fullName || existing?.full_name || null,
     created_at: existing?.created_at || now,
@@ -198,9 +248,31 @@ async function upsertAppleUser({ appleSub, email, fullName }) {
   return rowToUser(store.users[id]);
 }
 
+async function upsertAppleUser({ appleSub, email, fullName }) {
+  return upsertAuthUser({ provider: "apple", subject: appleSub, email, fullName });
+}
+
+async function upsertGoogleUser({ googleSub, email, fullName }) {
+  return upsertAuthUser({ provider: "google", subject: googleSub, email, fullName });
+}
+
+async function upsertWalletUser({ walletChain, walletAddress }) {
+  const subject = `${walletChain}:${String(walletAddress).toLowerCase()}`;
+  return upsertAuthUser({
+    provider: "wallet",
+    subject,
+    walletChain,
+    walletAddress: String(walletAddress),
+    fullName: `${walletAddress.slice(0, 6)}…${walletAddress.slice(-4)}`
+  });
+}
+
 async function getUserById(id) {
   if (isPostgres) {
-    const result = await getPool().query("SELECT id, apple_sub, email, full_name FROM users WHERE id = $1", [id]);
+    const result = await getPool().query(
+      "SELECT id, apple_sub, google_sub, wallet_address, wallet_chain, auth_provider, email, full_name FROM users WHERE id = $1",
+      [id]
+    );
     return rowToUser(result.rows[0]);
   }
   return rowToUser(readLocalStore().users[id]);
@@ -804,9 +876,19 @@ async function deleteUserAccount(userId) {
 
 function rowToUser(row) {
   if (!row) return null;
+  const authProvider = row.auth_provider || (row.apple_sub ? "apple" : row.google_sub ? "google" : row.wallet_address ? "wallet" : null);
+  const authSubject =
+    row.apple_sub ||
+    row.google_sub ||
+    (row.wallet_chain && row.wallet_address ? `${row.wallet_chain}:${row.wallet_address}` : null);
   return {
     id: row.id,
-    appleSub: row.apple_sub,
+    appleSub: row.apple_sub || null,
+    googleSub: row.google_sub || null,
+    walletAddress: row.wallet_address || null,
+    walletChain: row.wallet_chain || null,
+    authProvider,
+    authSubject,
     email: row.email || null,
     fullName: row.full_name || null
   };
@@ -822,6 +904,9 @@ module.exports = {
   isPostgres,
   migrateMvpStore,
   upsertAppleUser,
+  upsertGoogleUser,
+  upsertWalletUser,
+  upsertAuthUser,
   getUserById,
   saveProfilePlacement,
   getLatestProfile,

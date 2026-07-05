@@ -24,7 +24,16 @@ OPENAI_REALTIME_VOICE=marin
 SESSION_SECRET=replace-with-at-least-24-characters
 APPLE_BUNDLE_ID=com.likeminded.app
 APPLE_CLIENT_ID=com.likeminded.app
+APPLE_MAC_BUNDLE_ID=com.likeminded.mac
+APPLE_CLIENT_IDS=com.likeminded.app,com.likeminded.mac
+APPLE_REQUIRE_NONCE=1
 APPLE_AUTH_BYPASS=0
+GOOGLE_CLIENT_ID_IOS=your-ios-client-id.apps.googleusercontent.com
+GOOGLE_REVERSED_CLIENT_ID=com.googleusercontent.apps.your-ios-client-id
+GOOGLE_CLIENT_IDS=your-ios-client-id.apps.googleusercontent.com
+GOOGLE_AUTH_BYPASS=0
+WALLETCONNECT_PROJECT_ID=your-walletconnect-cloud-project-id
+WALLET_AUTH_BYPASS=0
 ```
 
 2. Source it before running the API server:

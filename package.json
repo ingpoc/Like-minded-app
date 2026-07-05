@@ -13,6 +13,7 @@
     "replay:latest-profile": "node script/replay_latest_profile.js",
     "seed:test-profiles": "node script/seed_test_profiles.js",
     "smoke:mvp": "node script/smoke_mvp.js",
+    "test:auth": "node --test services/api/test/auth.test.js services/api/test/social-auth.test.js",
     "verify:release-config": "node script/verify_release_config.js",
     "verify:goal": "node script/verify_goal_contract.js && node script/verify_ledger_progress.js",
     "verify:ledger-progress": "node script/verify_ledger_progress.js",
@@ -39,7 +40,12 @@
     "node": ">=20"
   },
   "dependencies": {
+    "@solana/web3.js": "^1.98.4",
+    "bs58": "^6.0.0",
+    "ethers": "^6.17.0",
+    "google-auth-library": "^10.9.0",
     "livekit-server-sdk": "^2.16.0",
-    "pg": "^8.22.0"
+    "pg": "^8.22.0",
+    "tweetnacl": "^1.0.3"
   }
 }
