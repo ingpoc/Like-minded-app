@@ -125,6 +125,8 @@ const contract = goal.route_contract;
 const useContract =
   !dirtyFirst && goal.status !== "completed" && contract?.first_command;
 
+const compact = process.argv.includes("--compact");
+
 const firstCommand = dirtyFirst
   ? "git status --short"
   : useContract
@@ -132,6 +134,17 @@ const firstCommand = dirtyFirst
     : goal.status !== "completed" && !trackRoute && !activeCommand
       ? `./script/project_context.sh query --task ${JSON.stringify(goal.goal)}`
       : routeCommand;
+
+if (compact) {
+  console.log(`first_command: ${firstCommand}`);
+  if (useContract && contract.lane) console.log(`session_lane: ${contract.lane}`);
+  console.log(`dirty_work_required: ${dirtyFirst ? "yes" : "no"}`);
+  if (dirtyFirst) console.log(`after_dirty_resolved: ${routeCommand}`);
+  for (const line of formatGoalNextLines(ledger)) {
+    console.log(line);
+  }
+  process.exit(0);
+}
 
 console.log(`# Goal Next
 current_status: ${goal.status}
@@ -146,12 +159,6 @@ first_command: ${firstCommand}`);
 
 if (useContract && contract.lane) {
   console.log(`session_lane: ${contract.lane}`);
-}
-if (useContract && contract.execute) {
-  console.log(`route_execute: ${contract.execute}`);
-}
-if (useContract && Array.isArray(contract.forbid) && contract.forbid.length) {
-  console.log(`route_forbid: ${contract.forbid.join("; ")}`);
 }
 
 for (const line of formatGoalNextLines(ledger)) {
