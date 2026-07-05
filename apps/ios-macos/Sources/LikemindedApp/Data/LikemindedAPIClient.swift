@@ -325,6 +325,35 @@ struct LikemindedAPIClient {
         return try JSONDecoder().decode(MeetingsResponse.self, from: data)
     }
 
+    func createMeeting(
+        kind: String,
+        targetId: String,
+        title: String,
+        scheduledAt: String,
+        location: String,
+        details: String
+    ) async throws -> Meeting {
+        let url = baseURL.appendingPathComponent("/v1/meetings")
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        applyCommonHeaders(&request)
+        request.httpBody = try JSONEncoder().encode(
+            CreateMeetingRequest(
+                kind: kind,
+                targetId: targetId,
+                title: title,
+                scheduledAt: scheduledAt,
+                location: location,
+                details: details
+            )
+        )
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+        return try JSONDecoder().decode(MeetingResponse.self, from: data).meeting
+    }
+
     func saveMeetingRecapNote(meetingId: String, note: String) async throws {
         let url = baseURL
             .appendingPathComponent("/v1/meetings")

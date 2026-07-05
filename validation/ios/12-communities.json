@@ -28,6 +28,26 @@
       "last_test_method": "source-trace"
     },
     {
+      "id": "filter-pills",
+      "type": "button",
+      "label": "All/Trending/Nearby/New pills",
+      "expected": "Filters browse catalog like macOS communitiesBrowse",
+      "result": "pass",
+      "evidence": "2026-07-05 iOS macOS parity P0: CommunityBrowseFilter pills with Mac filter logic.",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "create-card",
+      "type": "button",
+      "label": "Create a community card",
+      "expected": "Opens CreateCommunityView sheet",
+      "result": "pass",
+      "evidence": "2026-07-05 iOS macOS parity P0: browse section create-community row opens sheet.",
+      "blocker": "",
+      "stub": false
+    },
+    {
       "id": "joined-card",
       "type": "nav-link",
       "label": "Your communities card",

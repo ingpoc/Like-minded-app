@@ -1,0 +1,95 @@
+{
+  "screen": "Create Event",
+  "platform": "ios",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedApp/Views/CommunitiesPrototypeView.swift (CreateEventView)",
+    "apps/ios-macos/Sources/LikemindedApp/Data/PrototypeAppState.swift (createMeeting)",
+    "apps/ios-macos/Sources/LikemindedApp/Data/LikemindedAPIClient.swift (createMeeting)"
+  ],
+  "mockup_ref": "mockups/ios/17-20-profile-community-settings.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "Community Detail → Events tab → Create community event"
+  ],
+  "backend_dependencies": [
+    "POST /v1/meetings"
+  ],
+  "controls": [
+    {
+      "id": "event-type-meetup",
+      "type": "button",
+      "label": "Meetup",
+      "expected": "Selects Meetup event type",
+      "result": "pass",
+      "evidence": "2026-07-05 iOS macOS parity P0: eventTypePills Meetup button.",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "event-type-listening-session",
+      "type": "button",
+      "label": "Listening Session",
+      "expected": "Selects Listening Session event type",
+      "result": "pass",
+      "evidence": "2026-07-05 iOS macOS parity P0: eventTypePills Listening Session button.",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "event-type-jam-session",
+      "type": "button",
+      "label": "Jam Session",
+      "expected": "Selects Jam Session event type",
+      "result": "pass",
+      "evidence": "2026-07-05 iOS macOS parity P0: eventTypePills Jam Session button.",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "event-fields",
+      "type": "text fields",
+      "label": "Event name, Date, Time, Location, Details",
+      "expected": "Fields editable and drive preview/create payload",
+      "result": "pass",
+      "evidence": "2026-07-05 iOS macOS parity P0: labeledField bindings + live preview card.",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "add-cover",
+      "type": "button",
+      "label": "Add cover",
+      "expected": "Adds cover state to preview",
+      "result": "pass",
+      "evidence": "2026-07-05 iOS macOS parity P0: eventCoverAdded toggles preview gradient icon.",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "add-tags",
+      "type": "button",
+      "label": "Add tags",
+      "expected": "Adds tags to preview",
+      "result": "pass",
+      "evidence": "2026-07-05 iOS macOS parity P0: eventTagsAdded shows type + Community hosted pills.",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "create-event",
+      "type": "button",
+      "label": "Create event",
+      "expected": "POST /v1/meetings persists community event",
+      "result": "pass",
+      "evidence": "2026-07-05 iOS macOS parity P0: submit() calls appState.createMeeting.",
+      "blocker": "",
+      "stub": false
+    }
+  ],
+  "visual_parity": {
+    "result": "pass",
+    "notes": "2026-07-05 stacked mobile form + live preview mirrors macOS createEvent controls."
+  },
+  "notes": "Parity with validation/macos/10-create-event.json.",
+  "source_hash": ""
+}

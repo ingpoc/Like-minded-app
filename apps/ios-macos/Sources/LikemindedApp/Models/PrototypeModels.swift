@@ -104,6 +104,19 @@ struct MeetingsResponse: Decodable {
     let past: [Meeting]
 }
 
+struct MeetingResponse: Decodable {
+    let meeting: Meeting
+}
+
+struct CreateMeetingRequest: Encodable {
+    let kind: String
+    let targetId: String
+    let title: String
+    let scheduledAt: String
+    let location: String
+    let details: String
+}
+
 struct LiveKitJoinToken: Decodable {
     let token: String
     let url: String

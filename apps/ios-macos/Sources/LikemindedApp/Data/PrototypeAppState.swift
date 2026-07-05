@@ -28,6 +28,8 @@ final class PrototypeAppState: ObservableObject {
     @Published var joinedCommunities: [Community] = []
     @Published var isLoadingCommunities = false
     @Published var communityError: String?
+    @Published var communityMembers: [CommunityMember] = []
+    @Published var isLoadingCommunityMembers = false
     @Published var circles: [PlacementCircle] = []
     @Published var joinedCircles: [PlacementCircle] = []
     @Published var isLoadingCircles = false
@@ -522,6 +524,44 @@ final class PrototypeAppState: ObservableObject {
             return community
         } catch {
             communityError = "Community could not be created."
+            return nil
+        }
+    }
+
+    func fetchCommunityMembers(id: String) async {
+        isLoadingCommunityMembers = true
+        defer { isLoadingCommunityMembers = false }
+        do {
+            communityMembers = try await client.fetchCommunityMembers(id: id)
+            communityError = nil
+        } catch {
+            communityMembers = []
+            communityError = "Community members could not be loaded."
+        }
+    }
+
+    func createMeeting(
+        kind: String,
+        targetId: String,
+        title: String,
+        scheduledAt: String,
+        location: String,
+        details: String
+    ) async -> Meeting? {
+        do {
+            let meeting = try await client.createMeeting(
+                kind: kind,
+                targetId: targetId,
+                title: title,
+                scheduledAt: scheduledAt,
+                location: location,
+                details: details
+            )
+            await fetchMeetings()
+            meetingError = nil
+            return meeting
+        } catch {
+            meetingError = "Event could not be created."
             return nil
         }
     }
