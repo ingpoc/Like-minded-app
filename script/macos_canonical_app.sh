@@ -14,7 +14,33 @@ macos_clear_cua_cache() {
   rm -f "$MACOS_CUA_CACHE_DIR"/*.json 2>/dev/null || true
 }
 
+macos_macos_app_lock_held_by_other() {
+  local lock_dir="${LIKEMINDED_VALIDATION_LOCK_DIR:-/tmp/likeminded-validation-locks}"
+  local holder_file="$lock_dir/macos-app.holder"
+  [[ "${LIKEMINDED_HOLDS_MACOS_APP_LOCK:-0}" == "1" ]] && return 1
+  [[ -f "$holder_file" ]] || return 1
+  local holder_pid
+  holder_pid="$(cat "$holder_file" 2>/dev/null || true)"
+  [[ -n "$holder_pid" ]] && kill -0 "$holder_pid" 2>/dev/null
+}
+
+macos_kill_if_lock_holder() {
+  if macos_macos_app_lock_held_by_other; then
+    local holder_pid
+    holder_pid="$(cat "${LIKEMINDED_VALIDATION_LOCK_DIR:-/tmp/likeminded-validation-locks}/macos-app.holder" 2>/dev/null || true)"
+    echo "[macos_kill_if_lock_holder] macos-app lock held by pid $holder_pid; refusing kill" >&2
+    return 0
+  fi
+  macos_kill_all
+}
+
 macos_kill_all() {
+  if macos_macos_app_lock_held_by_other; then
+    local holder_pid
+    holder_pid="$(cat "${LIKEMINDED_VALIDATION_LOCK_DIR:-/tmp/likeminded-validation-locks}/macos-app.holder" 2>/dev/null || true)"
+    echo "[macos_kill_all] macos-app lock held by pid $holder_pid; skipping kill" >&2
+    return 0
+  fi
   # Terminate every running instance of com.likeminded.mac (any copy/path).
   python3 -c "
 from AppKit import NSWorkspace, NSApplicationActivateIgnoringOtherApps

@@ -159,7 +159,7 @@
     }
   ],
   "notes": "CUA 2026-07-05: type pills, fields, Add cover/tags, Create event on seeded jazz form at 1200x760.",
-  "source_hash": "670925994252f00e",
+  "source_hash": "5d631745e82fa6cb",
   "recent_screenshot_ref": "output/validation/macos-screens/createEvent.png",
   "ui_validation": {
     "result": "pass",

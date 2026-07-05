@@ -4,7 +4,7 @@
  *
  *   node script/ledger_stamp_screen.js --platform macos --screen meetOverview \
  *     --controls rsvp-sun-yes,rsvp-sun-no --method CUA \
- *     --evidence-prefix "CUA validation-priya"
+ *     --evidence-prefix "CUA validation-gurusharan"
  */
 const {
   findLedgerByScreenArg,

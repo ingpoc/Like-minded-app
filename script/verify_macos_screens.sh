@@ -4,6 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # shellcheck source=macos_canonical_app.sh
 source "$ROOT_DIR/script/macos_canonical_app.sh"
+LOCK="$ROOT_DIR/script/cross_platform_validation_lock.sh"
 IOS_DIR="$ROOT_DIR/apps/ios-macos"
 OUT_DIR="$ROOT_DIR/output/validation/macos-screens"
 API_LOG="/tmp/likeminded-validation-api.log"
@@ -39,18 +40,15 @@ macos_launch_args_for_screen() {
     welcome)
       printf '%s\n' \
         --likeminded-reset-auth-session \
-        --likeminded-dev-auth-bypass \
-        --likeminded-dev-auth-token validation-priya \
-        --likeminded-dev-auth-name "Priya Shah" \
         --likeminded-validation-welcome \
-        --mac-screen meetOverview
+        --mac-screen welcome
       ;;
     *)
       printf '%s\n' \
         --likeminded-reset-auth-session \
         --likeminded-dev-auth-bypass \
-        --likeminded-dev-auth-token validation-priya \
-        --likeminded-dev-auth-name "Priya Shah" \
+        --likeminded-dev-auth-token "${LIKEMINDED_VALIDATION_USER:-validation-gurusharan}" \
+        --likeminded-dev-auth-name "${LIKEMINDED_VALIDATION_NAME:-Gurusharan Gupta}" \
         --mac-screen "$1"
       ;;
   esac
@@ -59,7 +57,12 @@ macos_launch_args_for_screen() {
 cleanup() {
   # shellcheck source=macos_canonical_app.sh
   source "$ROOT_DIR/script/macos_canonical_app.sh"
-  macos_kill_all
+  if [[ "${LIKEMINDED_HOLDS_MACOS_APP_LOCK:-0}" == "1" ]]; then
+    macos_kill_all
+    "$LOCK" release macos-app 2>/dev/null || true
+  else
+    macos_kill_if_lock_holder
+  fi
   if [[ -n "$api_pid" ]]; then
     kill "$api_pid" >/dev/null 2>&1 || true
   fi
@@ -131,6 +134,9 @@ macos_ensure_built >/tmp/likeminded-macos-build.log 2>&1 || {
   exit 1
 }
 
+"$LOCK" acquire macos-app
+export LIKEMINDED_HOLDS_MACOS_APP_LOCK=1
+
 for screen in "${screens[@]}"; do
   launch_args=()
   while IFS= read -r arg; do
@@ -155,6 +161,9 @@ for screen in "${screens[@]}"; do
     exit 1
   fi
 done
+
+"$LOCK" release macos-app
+unset LIKEMINDED_HOLDS_MACOS_APP_LOCK
 
 (cd "$ROOT_DIR" && npm run remove:validation-data >/tmp/likeminded-validation-remove.log)
 echo "macOS captures: $captured/${#screens[@]} succeeded, $failed failed"

@@ -2,15 +2,20 @@
   "screen": "Conversations List",
   "platform": "ios",
   "source_files": [
-    "apps/ios-macos/Sources/LikemindedApp/Views/SoulmateView.swift (ConversationListView)"
+    "apps/ios-macos/Sources/LikemindedApp/Views/SoulmateView.swift (ConversationListView)",
+    "apps/ios-macos/Sources/LikemindedApp/Views/RootView.swift",
+    "apps/ios-macos/Sources/LikemindedApp/Data/PrototypeAppState.swift"
   ],
   "mockup_ref": "mockups/ios/13-16-soulmate-chat.png",
   "mockup_missing": false,
+  "recent_screenshot_ref": "output/validation/ios-screens/17-conversations.png",
   "entry_points": [
-    "Soulmate tab conversations icon"
+    "Soulmate tab conversations icon",
+    "--likeminded-start-conversations validation deep-link (RootView dedicated route)"
   ],
   "backend_dependencies": [
-    "GET /v1/me/soulmate/matches"
+    "GET /v1/me/soulmate/matches",
+    "GET /v1/me/soulmate/matches/:id/messages"
   ],
   "controls": [
     {
@@ -19,18 +24,18 @@
       "label": "Conversation row",
       "expected": "Pushes ChatView for that match",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (conv-row)",
+      "evidence": "screen-capture 2026-07-05 validation-gurusharan: Meera row (Priya Shah match) with You: Coltrane preview; NavigationLink → ChatView; macOS parity via validation/macos/18-messages.json sidebar rows",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "e5345933548b3571",
+      "tested_source_hash": "d98a20c451721880",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-05 source-trace vs plate 13-16: conversation list rows from soulmate matches."
+    "notes": "2026-07-05 capture output/validation/ios-screens/17-conversations.png vs mockups/ios/13-16-soulmate-chat.png: CHATS header, avatar initials, display name (Meera), last-message preview, today timestamp. Intentional: single live match for validation-gurusharan vs montage multi-row plate; macOS messages deep-link uses MacMessagesFixtures for plate 15."
   },
-  "notes": "",
-  "source_hash": "e5345933548b3571"
+  "notes": "macOS cross-ref: validation/macos/18-messages.json (--mac-screen messages). Live API roster for validation-gurusharan: 1 mutual match (Priya Shah → Meera via ChatDisplayNames) with seeded jazz thread preview on both platforms.",
+  "source_hash": "d98a20c451721880"
 }

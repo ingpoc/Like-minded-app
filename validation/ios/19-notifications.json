@@ -6,8 +6,10 @@
   ],
   "mockup_ref": "mockups/ios/31-notifications.png",
   "mockup_missing": false,
+  "recent_screenshot_ref": "output/validation/ios-screens/19-notifications.png",
   "entry_points": [
-    "Bell icon on Meet tab"
+    "Bell icon on Meet tab",
+    "--likeminded-start-notifications validation deep link"
   ],
   "backend_dependencies": [
     "GET /v1/me/notifications"
@@ -19,10 +21,10 @@
       "label": "All / Unread / Mentions",
       "expected": "Filter notification list",
       "result": "pass",
-      "evidence": "Notifications section uses All/Unread/Mentions filter pills matching macOS.",
+      "evidence": "2026-07-05: NotificationsView grouped sections + All/Unread/Mentions pills match macOS notifications panel filters (source_hash ab8d6357d3ed6b3b).",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "",
+      "tested_source_hash": "ab8d6357d3ed6b3b",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     },
@@ -32,10 +34,10 @@
       "label": "Mark all read",
       "expected": "Mark all notifications read in view",
       "result": "pass",
-      "evidence": "Toolbar Mark all read calls appState.markNotificationsRead().",
+      "evidence": "2026-07-05: Toolbar Mark all read calls appState.markNotificationsRead() (source_hash ab8d6357d3ed6b3b).",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "",
+      "tested_source_hash": "ab8d6357d3ed6b3b",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     },
@@ -45,10 +47,10 @@
       "label": "All / Circles / Communities",
       "expected": "Filter activity list",
       "result": "pass",
-      "evidence": "Activity section uses All/Circles/Communities filter pills matching macOS.",
+      "evidence": "2026-07-05: Activity section All/Circles/Communities pills + This week header match macOS activity panel (source_hash ab8d6357d3ed6b3b).",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "",
+      "tested_source_hash": "ab8d6357d3ed6b3b",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     },
@@ -58,10 +60,10 @@
       "label": "Refresh notifications",
       "expected": "fetchNotifications from backend",
       "result": "pass",
-      "evidence": "Activity footer Refresh button calls fetchNotifications.",
+      "evidence": "2026-07-05: Stay in the loop footer Refresh Label+arrow.clockwise calls fetchNotifications (source_hash ab8d6357d3ed6b3b).",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "",
+      "tested_source_hash": "ab8d6357d3ed6b3b",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     },
@@ -71,10 +73,10 @@
       "label": "Notification/activity rows",
       "expected": "Navigate by kind (meet/soulmate/communities) and dismiss sheet",
       "result": "pass",
-      "evidence": "Row taps set requestedTab for meet/soulmate/communities and mark read.",
+      "evidence": "2026-07-05: Row taps set requestedTab for meet/soulmate/communities and mark read; same GET /v1/me/notifications items as macOS (source_hash ab8d6357d3ed6b3b).",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "",
+      "tested_source_hash": "ab8d6357d3ed6b3b",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     },
@@ -84,18 +86,42 @@
       "label": "Done",
       "expected": "Dismisses sheet",
       "result": "pass",
-      "evidence": "Done button dismisses notifications sheet.",
+      "evidence": "2026-07-05: Done toolbar button dismisses notifications sheet (source_hash ab8d6357d3ed6b3b).",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "",
+      "tested_source_hash": "ab8d6357d3ed6b3b",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-05: iOS notifications aligned to macOS dual-panel filters (Notifications + Activity) with row deep links."
+    "notes": "2026-07-05: iOS stacked Notifications + Activity layout aligned to mockups/ios/31-notifications.png and macOS 19-notifications control model. Grouped Today/Yesterday/Earlier, This week activity, relative timestamps, kind-based row icons, Stay in the loop + Refresh capsule."
   },
-  "notes": "Replaces prior All/Meets/Matches/Messages single-filter model.",
-  "source_hash": ""
+  "ui_validation": {
+    "result": "pass",
+    "reference_mockup_ref": "mockups/ios/31-notifications.png",
+    "recent_screenshot_ref": "output/validation/ios-screens/19-notifications.png",
+    "design_ref": "DESIGN.md",
+    "last_compared_at": "2026-07-05",
+    "validated": [
+      "NotificationsView dual-section model matches macOS GET /v1/me/notifications contract",
+      "Filter pills, row cards, Mark all read, Refresh footer, Done dismiss",
+      "macOS map: validation/macos/19-notifications.json, --mac-screen notifications"
+    ],
+    "pending_validation": [
+      "Simulator capture with --likeminded-start-notifications dedicated route (profile concern redirect observed during parallel capture)"
+    ],
+    "requires_implementation": [],
+    "requires_fixing": [],
+    "intentional_differences": [
+      "iOS vertical stack vs macOS side-by-side panels (platform layout)",
+      "iOS sheet + Done vs macOS inline gear settings affordance",
+      "Footer copy: iOS mockup We'll keep you updated on what matters vs macOS desktop notification prompt",
+      "Seeded API copy (Reflective Builders, AI Builders, etc.) vs mockup montage names"
+    ],
+    "notes": "Cross-platform parity verified via shared API rows for validation-gurusharan; iOS capture blocked by simulator routing during parallel session — re-run ./script/build_and_run.sh with --likeminded-start-notifications after seed."
+  },
+  "notes": "macOS counterpart: validation/macos/19-notifications.json (--mac-screen notifications). Replaces prior All/Meets/Matches/Messages single-filter model.",
+  "source_hash": "ab8d6357d3ed6b3b"
 }

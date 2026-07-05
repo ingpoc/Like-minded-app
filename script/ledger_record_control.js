@@ -5,7 +5,7 @@
  *   node script/ledger_record_control.js \
  *     --platform macos --screen meetOverview \
  *     --control join-meetup --result pass \
- *     --evidence "2026-07-04 CUA validation-priya: Join clicked" \
+ *     --evidence "2026-07-04 CUA validation-gurusharan: Join clicked" \
  *     --method CUA
  */
 const {

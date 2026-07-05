@@ -95,6 +95,7 @@ resolution, build, install, and launch:
 ```
 Modes accepted as the first arg:
 - `run` — build, install, launch
+- `build` — build + install only (no launch; prints `SIMULATOR_ID=` for locked capture scripts)
 - `--debug` / `debug` — build, then `lldb` into the app
 - `--logs` / `logs` — build, install, launch, stream `log stream`
 - `--telemetry` — same as logs
@@ -146,7 +147,7 @@ Example (via simctl):
 ```
 xcrun simctl launch --terminate-running-process booted com.likeminded.app \
   --likeminded-reset-auth-session --likeminded-dev-auth-bypass \
-  --likeminded-dev-auth-token validation-priya --likeminded-dev-auth-name "Priya Shah" \
+  --likeminded-dev-auth-token validation-gurusharan --likeminded-dev-auth-name "Gurusharan Gupta" \
   --likeminded-start-profile
 ```
 
@@ -162,7 +163,7 @@ Per AGENTS.md: before claiming seamless behavior, point both apps at
    ```
 2. Boot simulator + build + install (steps above).
 3. Launch with the auth-bypass args above (use the seeded profile token, e.g.
-   `validation-priya`).
+   `validation-gurusharan` / Gurusharan Gupta).
 4. Capture screenshots per flow and diff against the relevant montage in
    `mockups/ios/`:
    - onboarding / voice / meet / soulmate → `01-04-...png`
@@ -177,7 +178,22 @@ Per AGENTS.md: before claiming seamless behavior, point both apps at
    Writes `output/validation/fresh-auth-gate.png`,
    `local-dev-empty-onboarding.png`, `local-dev-auth-tabs.png`.
 
-## Conventions Specific to This App
+### Validation deep-link checklist (per screen)
+
+When adding or fixing a ledger screen for capture:
+
+1. **`RootView` route** — every `--likeminded-start-*` flag must map to the correct tab/sheet/selection in `RootView.swift` (and `initialSelection()` when the screen is tab-adjacent, e.g. voice session on Meet).
+2. **Concern-flag bypass** — during validation launches, block the profile-concern redirect so `--likeminded-start-profile` / populated profile screens land on the intended surface.
+3. **`LIKEMINDED_VALIDATION_SCREEN` fallback** — when `simctl launch` drops args, set UserDefaults before screenshot (patterns: chat, community-members, past-meet-detail).
+4. **Explicit simulator UDID** — read from `./script/build_and_run.sh` output; never use `booted` when multiple simulators are running.
+5. **Build-only + explicit launch** — for capture, prefer `xcodebuild` + locked `simctl launch` with full arg list; `./script/build_and_run.sh run` alone auto-launches without deep links.
+6. **Post-launch wait** — 15–60s after launch for dev-auth before screenshot.
+7. **Parallel proof** — code edits per screen can run in parallel; build + capture must be **sequential** via `./script/cross_platform_screen_validate.sh --platform ios`.
+
+Example locked single-screen capture:
+```
+./script/cross_platform_screen_validate.sh --screen 16-chat --platform ios
+```
 
 - **Backend contract is `LIKEMINDED_API_BASE_URL`.** Both iOS and macOS read
   the same key from their Info.plist (`INFOPLIST_KEY_LIKEMINDED_API_BASE_URL`).
@@ -200,6 +216,8 @@ Per AGENTS.md: before claiming seamless behavior, point both apps at
 - API not running → blank auth gate / no placement. Always `curl /health` first.
 - Leaving the validation API on port 8787 → `verify_simulator_local.sh` will refuse to start a second one; stop the prior instance.
 - Building without the `LiveKit`/`LiveKitWebRTC` SPM packages resolving → ensure network access on first build; packages resolve into the generated project.
+- **Parallel `xcodebuild` / `simctl launch`** → SIGKILL and wrong screens; use `./script/cross_platform_validation_lock.sh` and sequential `./script/cross_platform_screen_validate.sh`.
+- **Auth gate “Could not connect”** → usually `:8787` was killed mid-seed by another agent, not a wrong plist URL.
 
 ## Related
 - `build-macos-app` skill — the macOS SwiftUI surface (`LikemindedMac`).

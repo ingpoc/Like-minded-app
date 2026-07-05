@@ -94,10 +94,22 @@ function normalizeScreenToken(value) {
 function findLedgerByScreenArg(platform, screenArg, repoRoot = root) {
   const dir = path.join(repoRoot, "validation", platform);
   const needle = normalizeScreenToken(screenArg);
-  for (const file of fs.readdirSync(dir).filter((f) => f.endsWith(".json"))) {
+  const entries = fs.readdirSync(dir).filter((f) => f.endsWith(".json")).map((file) => {
     const abs = path.join(dir, file);
     const data = JSON.parse(fs.readFileSync(abs, "utf8"));
     const fileStem = normalizeScreenToken(file.replace(/\.json$/, ""));
+    return { abs, data, file, fileStem };
+  });
+
+  // Exact ledger filename stem (e.g. 22-settings-info) — avoids 22-* matching 20-settings.
+  const exact = entries.find((e) => e.fileStem === needle);
+  if (exact) return exact;
+
+  const exactScreen = entries.find((e) => normalizeScreenToken(e.data.screen) === needle);
+  if (exactScreen) return exactScreen;
+
+  for (const entry of entries) {
+    const { abs, data, file, fileStem } = entry;
     if (fileStem.includes(needle) || needle.includes(fileStem.replace(/^\d+/, ""))) {
       return { abs, data, file };
     }

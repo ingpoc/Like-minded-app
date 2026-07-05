@@ -165,6 +165,8 @@ function resultEnvelope(profile, placement, allCircleFits = null, synthesisMode 
     signals: safeProfile.signals,
     basicInfo: safeProfile.basicInfo || null,
     interests: safeProfile.interests || [],
+    concernFlag: !!safeProfile.concernFlag,
+    placementConcern: typeof safeProfile.placementConcern === "string" ? safeProfile.placementConcern : null,
     placement: placementWithMemberCounts(placement),
     allCircleFits,
     synthesisMode
@@ -807,7 +809,12 @@ async function handleRequest(req, res) {
   if (req.method === "POST" && url.pathname === "/v1/me/circles/concern") {
     const user = await requireUser(req, res);
     if (!user) return;
-    const profile = await updateLatestProfile(user.id, { concernFlag: true });
+    const body = await readJsonBody(req).catch(() => ({}));
+    const message = typeof body?.message === "string" ? body.message.trim() : "";
+    const profile = await updateLatestProfile(user.id, {
+      concernFlag: true,
+      placementConcern: message || null
+    });
     if (!profile) {
       json(res, 404, { error: "profile_not_found", message: "No profile has been created yet." });
       return;

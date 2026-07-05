@@ -87,6 +87,28 @@ enum LikemindedDate {
         guard let date = parse(value) else { return value }
         return date.formatted(date: .abbreviated, time: .shortened)
     }
+
+    static func meetHeader(_ value: String) -> String {
+        guard let date = parse(value) else { return value }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE, MMM d · h:mm a"
+        return formatter.string(from: date)
+    }
+
+    static func countdownUntil(_ value: String) -> String {
+        guard let date = parse(value) else { return "Soon" }
+        let seconds = max(0, Int(date.timeIntervalSinceNow))
+        let days = seconds / 86_400
+        let hours = (seconds % 86_400) / 3_600
+        return "\(days)d \(hours)h away"
+    }
+
+    static func relative(_ value: String?) -> String {
+        guard let date = parse(value) else { return "Recently" }
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .full
+        return formatter.localizedString(for: date, relativeTo: Date())
+    }
 }
 
 struct MeetingRsvps: Codable, Equatable {
@@ -209,7 +231,7 @@ struct SoulmatePotentialMatch: Decodable, Identifiable, Equatable {
     var id: String { userId }
 }
 
-struct SoulmateMatch: Decodable, Identifiable, Equatable {
+struct SoulmateMatch: Decodable, Identifiable, Equatable, Hashable {
     let matchId: String
     let userId: String
     let name: String
@@ -218,6 +240,10 @@ struct SoulmateMatch: Decodable, Identifiable, Equatable {
     let createdAt: String
 
     var id: String { matchId }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(matchId)
+    }
 }
 
 struct SoulmateMatchDetail: Decodable, Equatable {
@@ -327,6 +353,8 @@ struct UserProfile: Decodable, Equatable {
     let basicInfo: BasicInfo?
     let interests: [Interest]
     let synthesizedAt: String?
+    let concernFlag: Bool?
+    let placementConcern: String?
 }
 
 struct UserProfileResponse: Decodable {

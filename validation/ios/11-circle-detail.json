@@ -11,53 +11,94 @@
     "Available circle card"
   ],
   "backend_dependencies": [
-    "GET /v1/circles/:id"
+    "GET /v1/circles/:id",
+    "GET /v1/meetings/upcoming"
   ],
   "controls": [
     {
       "id": "back",
       "type": "button",
       "label": "Back to circles",
-      "expected": "Dismisses cover",
+      "expected": "Hero chevron dismisses fullScreenCover",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (back)",
+      "evidence": "source-trace 2026-07-05 validation-gurusharan: DoodleCover hero overlay chevron + accessibilityLabel Back to circles dismisses cover",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "cd8e1ff30d57b66d",
+      "tested_source_hash": "e913c8bf1fb01209",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
+    },
+    {
+      "id": "circle-options",
+      "type": "button",
+      "label": "Circle options",
+      "expected": "Opens options sheet (Report placement concern)",
+      "result": "pass",
+      "evidence": "source-trace 2026-07-05 validation-gurusharan: hero ellipsis opens Circle options sheet",
+      "blocker": "",
+      "stub": false,
+      "tested_source_hash": "e913c8bf1fb01209",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     },
     {
       "id": "detail-rows",
       "type": "display",
-      "label": "Members / socialFormat rows with chevron",
-      "expected": "Display only; chevron decorative, no tap (STUB)",
+      "label": "Next meetup / members / socialFormat rows with chevron",
+      "expected": "Display only; members and format chevrons decorative (no navigation wired)",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (detail-rows)",
+      "evidence": "source-trace 2026-07-05 validation-gurusharan: next meetup row with countdown badge; members + socialFormat StaticDetailRow chevrons",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace",
-      "tested_source_hash": "cd8e1ff30d57b66d"
+      "tested_source_hash": "e913c8bf1fb01209"
     },
     {
       "id": "leave-circle",
       "type": "button",
       "label": "Leave circle",
-      "expected": "STUB — bare SecondaryActionButton label, no Button/action wired",
+      "expected": "Confirmation dialog; Leave defers placement and dismisses cover",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (leave-circle)",
+      "evidence": "source-trace 2026-07-05 validation-gurusharan: SecondaryActionButton opens confirmationDialog; destructive Leave calls deferPlacement then dismiss",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace",
-      "tested_source_hash": "cd8e1ff30d57b66d"
+      "tested_source_hash": "e913c8bf1fb01209"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-05 source-trace vs plate 05-08: circle detail fullScreenCover, static detail rows, leave circle defer. Intentional: gradient hero vs mockup scenic photo."
+    "notes": "2026-07-05 rebuild vs mockups/ios/05-08 plate 6: DoodleCover hero with back/ellipsis overlays, trait line + tags, Why you fit card, next meetup + members + format rows, leave circle CTA. macOS circleDetail maps same backend fields in desktop 3-column layout (validation/macos/04-circle-detail.json). Intentional: DoodleCover thematic hero vs mockup scenic forest photo; iOS single-column vs macOS tabs/Moderators panel."
   },
-  "notes": "",
-  "source_hash": "cd8e1ff30d57b66d"
+  "notes": "Deep-link capture: --likeminded-start-circle-detail on Circles tab (RootView + CirclesPrototypeView.task id isSignedIn).",
+  "source_hash": "e913c8bf1fb01209",
+  "recent_screenshot_ref": "output/validation/ios-screens/11-circle-detail.png",
+  "ui_validation": {
+    "result": "pass",
+    "reference_mockup_ref": "mockups/ios/05-08-circles-meet-communities.png",
+    "recent_screenshot_ref": "output/validation/ios-screens/11-circle-detail.png",
+    "design_ref": "DESIGN.md",
+    "last_compared_at": "2026-07-05",
+    "validated": [
+      "CircleDetailView matches plate 6 structure: hero header, why you fit, detail rows, leave circle",
+      "Cross-platform content parity with macOS circleDetailScreen (name, traits, placement copy, meetup, members, format)",
+      "DoodleCover hero aligned with macOS circle detail art direction"
+    ],
+    "pending_validation": [
+      "Fresh PNG with API stable under parallel validation (port 8787 contention); last capture often auth-gate when API dropped mid-launch"
+    ],
+    "requires_implementation": [],
+    "requires_fixing": [],
+    "intentional_differences": [
+      "DoodleCover hero vs scenic forest photograph in mockup",
+      "Seeded circle name/copy (Reflective Builders / The Quiet Builders) vs mockup placeholder",
+      "iOS mobile stack vs macOS About/Upcoming/Moderators three-column layout",
+      "Members/format row chevrons decorative on iOS (no sub-screens yet)"
+    ],
+    "notes": "2026-07-05 layout rebuild + validation-gurusharan profile; simulator PNG blocked intermittently by parallel :8787 resets.",
+    "last_capture_at": "2026-07-05",
+    "capture_evidence": "2026-07-05 ios-sim lock: validation-gurusharan + --likeminded-start-circle-detail; OCR Why you fit + Leave circle (11-circle-detail.png 1602019B)"
+  }
 }

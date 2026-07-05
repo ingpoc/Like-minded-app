@@ -15,6 +15,8 @@ struct ProfileCircleMatchResult: Decodable {
     let basicInfo: BasicInfo?
     let interests: [Interest]?
     let hiddenSignals: HiddenSignals?
+    let concernFlag: Bool?
+    let placementConcern: String?
 }
 
 struct CircleFitScore: Decodable, Identifiable {
@@ -202,11 +204,15 @@ struct LikemindedAPIClient {
         return try JSONDecoder().decode(ProfileCircleMatchResult.self, from: data)
     }
 
-    func registerCircleConcern() async throws {
+    func registerCircleConcern(message: String? = nil) async throws {
         let url = baseURL.appendingPathComponent("/v1/me/circles/concern")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         applyCommonHeaders(&request)
+        if let message, !message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            request.httpBody = try JSONEncoder().encode(["message": message.trimmingCharacters(in: .whitespacesAndNewlines)])
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        }
         let (_, response) = try await URLSession.shared.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
             throw URLError(.badServerResponse)

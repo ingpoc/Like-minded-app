@@ -3,6 +3,20 @@ import SwiftUI
 
 @MainActor
 final class PrototypeAppState: ObservableObject {
+    init() {
+        #if DEBUG
+        let args = ProcessInfo.processInfo.arguments
+        let env = ProcessInfo.processInfo.environment
+        if args.contains("--likeminded-start-past-meet-detail")
+            || env["LIKEMINDED_VALIDATION_SCREEN"] == "past-meet-detail" {
+            validationDirectCommunityMembers = false
+        } else if args.contains("--likeminded-start-community-members")
+            || UserDefaults.standard.string(forKey: "LIKEMINDED_VALIDATION_SCREEN") == "communityMembers" {
+            validationDirectCommunityMembers = true
+        }
+        #endif
+    }
+
     @Published var authSession = AuthSessionStore.load()
     @Published var isAuthenticating = false
     @Published var authError: String?
@@ -42,6 +56,7 @@ final class PrototypeAppState: ObservableObject {
     @Published var soulmateEnabled = false
     @Published var soulmatePendingSelections: [SoulmatePendingSelection] = []
     @Published var soulmateMatches: [SoulmateMatch] = []
+    @Published var chatPreviews: [String: ChatMessage] = [:]
     @Published var soulmateError: String?
     @Published var isLoadingSoulmate = false
     @Published var soulmatePreferences = SoulmatePreferences.defaults
@@ -50,6 +65,8 @@ final class PrototypeAppState: ObservableObject {
     @Published var notificationError: String?
     @Published var readNotificationIds: Set<String> = []
     @Published var requestedTab: AppTab?
+    @Published var validationDirectCommunityMembers = false
+    @Published var pendingPastMeetDetail = false
 
     private let voiceClient = RealtimeVoiceClient()
 
@@ -63,12 +80,38 @@ final class PrototypeAppState: ObservableObject {
         "I want closeness with clear pacing and room to reflect."
     ]
 
+    static let defaultPlacementConcernCopy = "This circle doesn't match how I connect with people."
+
+    var displayPlacementConcern: String {
+        let trimmed = placementConcern.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? Self.defaultPlacementConcernCopy : trimmed
+    }
+
     var activeSlice: ReflectPlaceConnectSlice {
         slice ?? PrototypeData.reflectPlaceConnectSlice
     }
 
     var isSignedIn: Bool {
         authSession != nil
+    }
+
+    #if DEBUG
+    static var devProfileEmptyPreview: Bool {
+        ProcessInfo.processInfo.arguments.contains("--likeminded-dev-profile-empty")
+    }
+    #else
+    static var devProfileEmptyPreview: Bool { false }
+    #endif
+
+    func applyDevProfileEmptyPreviewIfNeeded() {
+        guard Self.devProfileEmptyPreview else { return }
+        if let info = slice?.profile.basicInfo ?? basicInfo {
+            basicInfo = info
+        }
+        slice = nil
+        placementId = nil
+        sourceLabel = "Ready"
+        loadError = nil
     }
 
     var currentPlacement: CirclePlacement {
@@ -135,6 +178,18 @@ final class PrototypeAppState: ObservableObject {
         #if DEBUG
         let environment = ProcessInfo.processInfo.environment
         let arguments = ProcessInfo.processInfo.arguments
+        if arguments.contains("--likeminded-start-community-members") {
+            validationDirectCommunityMembers = true
+        }
+        if arguments.contains("--likeminded-start-past-meet-detail")
+            || environment["LIKEMINDED_VALIDATION_SCREEN"] == "past-meet-detail" {
+            validationDirectCommunityMembers = false
+            UserDefaults.standard.set("past-meet-detail", forKey: "LIKEMINDED_VALIDATION_SCREEN")
+        }
+        if arguments.contains("--likeminded-start-chat")
+            || environment["LIKEMINDED_VALIDATION_SCREEN"] == "chat" {
+            UserDefaults.standard.set("chat", forKey: "LIKEMINDED_VALIDATION_SCREEN")
+        }
         guard environment["LIKEMINDED_DEV_AUTH_BYPASS"] == "1" || arguments.contains("--likeminded-dev-auth-bypass") else { return }
         let shouldSeedVoicePlacement = arguments.contains("--likeminded-dev-voice-placement")
         isAuthenticating = true
@@ -157,6 +212,8 @@ final class PrototypeAppState: ObservableObject {
                     transcript: environment["LIKEMINDED_DEV_TRANSCRIPT"] ?? "I want honest conversations, small warm circles, steady trust, books, design, and people who communicate directly."
                 )
             }
+            applyDevProfileConcernLaunchArg(from: arguments)
+            applyDevTabLaunchArg(from: arguments)
         } catch {
             authError = error.localizedDescription
         }
@@ -240,6 +297,7 @@ final class PrototypeAppState: ObservableObject {
         AuthSessionStore.save(session)
         authSession = session
         await loadCurrentPlacement()
+        applyDevProfileEmptyPreviewIfNeeded()
     }
 
     func signOut() {
@@ -271,12 +329,14 @@ final class PrototypeAppState: ObservableObject {
             let result = try await client.fetchMyPlacement()
             applyProfileResult(result, source: "Saved placement")
             loadError = nil
+            applyDevProfileEmptyPreviewIfNeeded()
         } catch {
             if slice == nil {
                 sourceLabel = "Ready"
             }
             loadError = nil
         }
+        applyValidationLaunchOverrides()
         isLoading = false
     }
 
@@ -320,6 +380,19 @@ final class PrototypeAppState: ObservableObject {
         realtimeError = nil
         realtimeTranscript = ""
         capturedVoiceSignals = []
+    }
+
+    func seedVoiceSessionPreviewIfNeeded() {
+        #if DEBUG
+        guard ProcessInfo.processInfo.arguments.contains("--likeminded-dev-voice-preview") else { return }
+        realtimeStatus = RealtimeVoicePhase.streaming.rawValue
+        realtimeError = nil
+        capturedVoiceSignals = [
+            "Prefers slow, honest conversation",
+            "Values steady and thoughtful pacing",
+            "Enjoys depth over small talk"
+        ]
+        #endif
     }
 
     func synthesizePlacementFromVoice() async {
@@ -518,7 +591,7 @@ final class PrototypeAppState: ObservableObject {
         guard !note.isEmpty else { return }
         placementConcern = note
         concernFlag = true
-        try? await client.registerCircleConcern()
+        try? await client.registerCircleConcern(message: note)
         await submitFeedback(rating: 2, message: "Circle fit concern: \(note)")
     }
 
@@ -540,14 +613,22 @@ final class PrototypeAppState: ObservableObject {
         isLoadingCommunities = true
         defer { isLoadingCommunities = false }
         do {
-            async let catalog = client.fetchCommunities()
-            async let joined = isSignedIn ? client.fetchMyCommunities() : []
-            communities = try await catalog
-            joinedCommunities = try await joined
-            communityError = nil
+            communities = try await client.fetchCommunities()
         } catch {
             communityError = "Communities could not be loaded."
+            return
         }
+
+        if isSignedIn {
+            do {
+                joinedCommunities = try await client.fetchMyCommunities()
+            } catch {
+                joinedCommunities = []
+            }
+        } else {
+            joinedCommunities = []
+        }
+        communityError = nil
     }
 
     func joinCommunity(id: String) async {
@@ -686,6 +767,14 @@ final class PrototypeAppState: ObservableObject {
             soulmatePendingSelections = status.pendingSelections
             soulmatePreferences = status.preferences ?? .defaults
             soulmateMatches = try await client.fetchSoulmateMatches()
+            var previews: [String: ChatMessage] = [:]
+            for match in soulmateMatches {
+                let messages = try await client.fetchMessages(matchId: match.matchId)
+                if let last = messages.last {
+                    previews[match.matchId] = last
+                }
+            }
+            chatPreviews = previews
             soulmateError = nil
         } catch {
             soulmateError = "Soulmate could not be loaded."
@@ -788,6 +877,62 @@ final class PrototypeAppState: ObservableObject {
         placementId = result.placementId
         editedReflection = newSlice.profile.reflection.summary
         sourceLabel = source
+        applyConcernState(concernFlag: result.concernFlag, placementConcern: result.placementConcern)
+    }
+
+    private func applyConcernState(concernFlag: Bool?, placementConcern: String?) {
+        if concernFlag == true {
+            self.concernFlag = true
+        }
+        if let placementConcern {
+            let trimmed = placementConcern.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !trimmed.isEmpty {
+                self.placementConcern = trimmed
+            }
+        }
+        if self.concernFlag && self.placementConcern.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            self.placementConcern = Self.defaultPlacementConcernCopy
+        }
+    }
+
+    private func applyDevProfileConcernLaunchArg(from arguments: [String]) {
+        guard arguments.contains("--likeminded-dev-profile-concern") else { return }
+        let message = Self.argumentValue(after: "--likeminded-dev-profile-concern", in: arguments)
+            ?? Self.defaultPlacementConcernCopy
+        placementConcern = message
+        concernFlag = true
+    }
+
+    private func applyDevTabLaunchArg(from arguments: [String]) {
+        if arguments.contains("--likeminded-start-circles") || arguments.contains("--likeminded-start-circle-detail") {
+            requestedTab = .circles
+        } else if arguments.contains("--likeminded-start-create-event")
+            || arguments.contains("--likeminded-start-create-community")
+            || arguments.contains("--likeminded-start-community-members")
+            || arguments.contains("--likeminded-start-community-detail")
+            || arguments.contains("--likeminded-start-communities") {
+            requestedTab = .communities
+        } else if arguments.contains("--likeminded-start-soulmate")
+            || arguments.contains("--likeminded-start-soulmate-selection")
+            || arguments.contains("--likeminded-start-chat") {
+            requestedTab = .soulmate
+        } else if arguments.contains("--likeminded-start-profile")
+            || arguments.contains("--likeminded-start-settings")
+            || arguments.contains("--likeminded-start-settings-info")
+            || arguments.contains("--likeminded-start-settings-support") {
+            requestedTab = .profile
+        } else if arguments.contains("--likeminded-start-past-meet-detail") {
+            requestedTab = .meet
+            pendingPastMeetDetail = true
+        }
+    }
+
+    private func applyValidationLaunchOverrides() {
+        #if DEBUG
+        let arguments = ProcessInfo.processInfo.arguments
+        applyDevProfileConcernLaunchArg(from: arguments)
+        applyDevTabLaunchArg(from: arguments)
+        #endif
     }
 
     private func estimateWordCount(from transcript: String) -> Int {

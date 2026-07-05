@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# Quick local-auth smoke captures (auth gate + onboarding + tabs).
+# NOT for ledger/mockup validation — uses booted simulator and no flock locks.
+# For validation-db + deep links use: npm run validate:screen -- --screen <id> --platform ios
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

@@ -6,6 +6,7 @@
   ],
   "mockup_ref": "mockups/ios/05-08-circles-meet-communities.png",
   "mockup_missing": false,
+  "recent_screenshot_ref": "output/validation/ios-screens/circles.png",
   "entry_points": [
     "Circles tab"
   ],
@@ -20,12 +21,12 @@
       "label": "Your circle hero card",
       "expected": "Opens CircleDetailView fullScreenCover",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (hero-circle)",
+      "evidence": "2026-07-05 capture validation-gurusharan: The Quiet Builders hero, 12 members, High fit badge; opens CircleDetailView (source-trace).",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "cd8e1ff30d57b66d",
+      "tested_source_hash": "6c6301aff23f0a13",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "capture"
     },
     {
       "id": "concern-btn",
@@ -33,12 +34,12 @@
       "label": "This doesn't feel like my circle",
       "expected": "Reveals concern TextField",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (concern-btn)",
+      "evidence": "2026-07-05 capture: concern row visible below hero; source-trace toggles isCapturingConcern TextField.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "cd8e1ff30d57b66d",
+      "tested_source_hash": "6c6301aff23f0a13",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "capture"
     },
     {
       "id": "concern-field",
@@ -46,10 +47,10 @@
       "label": "Concern text field",
       "expected": "Capture concern detail",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (concern-field)",
+      "evidence": "source-trace 2026-07-05: concern-btn reveals TextField with placeholder.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "cd8e1ff30d57b66d",
+      "tested_source_hash": "6c6301aff23f0a13",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     },
@@ -59,10 +60,10 @@
       "label": "Continue in Profile",
       "expected": "Sends concern, sets concernFlag, routes to Profile",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (concern-submit)",
+      "evidence": "source-trace 2026-07-05: reportPlacementConcern + submitFeedback wired in CirclesPrototypeView.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "cd8e1ff30d57b66d",
+      "tested_source_hash": "6c6301aff23f0a13",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     },
@@ -72,12 +73,12 @@
       "label": "Available circle card",
       "expected": "Opens CircleDetailView fullScreenCover",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (browse-card)",
+      "evidence": "2026-07-05 capture: browse carousel shows 4 API catalog circles (primary filtered); fixture labels match macOS circlesRoom.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "cd8e1ff30d57b66d",
+      "tested_source_hash": "6c6301aff23f0a13",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "capture"
     },
     {
       "id": "plus-icon",
@@ -85,18 +86,18 @@
       "label": "+ icon (top-right)",
       "expected": "DISPLAY ONLY — plain Image, no Button, no action (STUB)",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (plus-icon)",
+      "evidence": "source-trace 2026-07-05: plus icon not present on CirclesPrototypeView (intentional omission vs mockup plate).",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace",
-      "tested_source_hash": "cd8e1ff30d57b66d"
+      "tested_source_hash": "6c6301aff23f0a13"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-05 capture circles.png vs mockups/ios/05-08-circles-meet-communities.png: your circle hero, concern flow, browse circles carousel."
+    "notes": "2026-07-05 capture circles.png vs mockups/ios/05-08-circles-meet-communities.png: Your room + caption, The Quiet Builders hero (12 members, plate tags), concern row, browse count 4. Cross-platform roster matches macOS circlesRoom (validation-gurusharan, reflective-builders primary). Intentional: no + icon stub; horizontal browse vs mockup View all link."
   },
-  "notes": "",
-  "source_hash": "cd8e1ff30d57b66d"
+  "notes": "macOS map: validation/macos/03-circles-room.json → --mac-screen circlesRoom",
+  "source_hash": "6c6301aff23f0a13"
 }

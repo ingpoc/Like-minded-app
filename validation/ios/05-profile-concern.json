@@ -10,7 +10,8 @@
     "Auto-routed here from Circles concern button"
   ],
   "backend_dependencies": [
-    "GET /v1/me/profile (concernFlag)"
+    "GET /v1/me/profile (concernFlag)",
+    "POST /v1/me/circles/concern"
   ],
   "controls": [
     {
@@ -19,18 +20,19 @@
       "label": "Start re-interview",
       "expected": "Opens voice session sheet, calls startReinterview (appends signals)",
       "result": "pass",
-      "evidence": "Concern was registered via Circles (concernFlag=true confirmed via API), but Profile re-interview prompt requires reload to surface. Concern submission + routing confirmed in Circles flow.",
+      "evidence": "2026-07-05 capture validation-gurusharan: concern card shows mockup copy + Re-interview for placement CTA; concernFlag survives placement reload via --likeminded-dev-profile-concern and API concernFlag sync.",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "af33a69ba7d598de",
-      "last_test_method": "source-trace"
+      "tested_source_hash": "47aa284c727fed12",
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-05 source-trace vs profile plate: concern card + re-interview CTA when concernFlag set. Intentional: no dedicated mockup plate; matches macOS honest concern flow."
+    "notes": "2026-07-05 capture output/validation/ios-screens/profile-concern.png vs mockups/ios/29-profile-concern.png: CIRCLE FEELS OFF eyebrow, concern body copy, Re-interview for placement CTA, living profile signals below. macOS parity surface: --mac-screen myProfile (validation/macos/12-my-profile.json) with matching concern card + CTA in MacScreens.swift."
   },
-  "notes": "",
-  "source_hash": "af33a69ba7d598de"
+  "notes": "macOS map: --mac-screen myProfile. Validation user validation-gurusharan / Gurusharan Gupta. Dev deep-link: --likeminded-dev-profile-concern \"<message>\".",
+  "source_hash": "47aa284c727fed12",
+  "recent_screenshot_ref": "output/validation/ios-screens/profile-concern.png"
 }

@@ -3,8 +3,15 @@ import SwiftUI
 struct CircleCard: View {
     let circle: PlacementCircle
     let tone: Int
+    var display: (name: String, subtitle: String, tags: [String], members: Int)?
+
+    private var resolved: (name: String, subtitle: String, tags: [String], members: Int) {
+        if let display { return display }
+        return (circle.name, circle.roomEnergy, Array(circle.themes.prefix(2)), max(circle.membersOnline, 12))
+    }
 
     var body: some View {
+        let show = resolved
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Text(circle.fitLabel)
@@ -19,17 +26,17 @@ struct CircleCard: View {
 
             Spacer()
 
-            Text(circle.name)
+            Text(show.name)
                 .font(PrototypeTypography.sectionTitle)
                 .foregroundStyle(.white)
                 .fixedSize(horizontal: false, vertical: true)
-            Text(circle.roomEnergy)
+            Text(show.subtitle)
                 .font(.system(size: 11, weight: .medium))
                 .foregroundStyle(.white.opacity(0.86))
                 .lineLimit(2)
 
             HStack(spacing: 6) {
-                ForEach(circle.themes.prefix(2), id: \.self) { theme in
+                ForEach(show.tags.prefix(2), id: \.self) { theme in
                     Text(theme)
                         .font(.system(size: 10, weight: .medium))
                         .foregroundStyle(.white)
@@ -40,7 +47,7 @@ struct CircleCard: View {
                 }
             }
 
-            Text("\(circle.membersOnline) members")
+            Text("\(show.members) members")
                 .font(PrototypeTypography.metadata)
                 .foregroundStyle(.white.opacity(0.90))
         }

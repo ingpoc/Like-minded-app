@@ -28,10 +28,12 @@ click_idx() {
 
 launch_screen() {
   local screen="$1"
-  pkill -x LikemindedMac 2>/dev/null || true
+  # shellcheck source=macos_canonical_app.sh
+  source "$ROOT/script/macos_canonical_app.sh"
+  macos_kill_if_lock_holder
   sleep 0.5
-  LIKEMINDED_VALIDATION_USER="${LIKEMINDED_VALIDATION_USER:-validation-priya}" \
-  LIKEMINDED_VALIDATION_NAME="${LIKEMINDED_VALIDATION_NAME:-Priya Shah}" \
+  LIKEMINDED_VALIDATION_USER="${LIKEMINDED_VALIDATION_USER:-validation-gurusharan}" \
+  LIKEMINDED_VALIDATION_NAME="${LIKEMINDED_VALIDATION_NAME:-Gurusharan Gupta}" \
     "$ROOT/script/run_macos_manual_validation.sh" "$screen" >/dev/null
   sleep 2
   cua_bind

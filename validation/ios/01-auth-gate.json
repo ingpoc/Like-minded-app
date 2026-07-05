@@ -9,6 +9,7 @@
   ],
   "mockup_ref": "mockups/ios/27-auth-login.png",
   "mockup_missing": false,
+  "recent_screenshot_ref": "output/validation/ios-screens/auth-gate.png",
   "entry_points": [
     "App launch when no signed-in session"
   ],
@@ -24,7 +25,7 @@
       "label": "Sign in with Apple",
       "expected": "Authenticates via Apple ID, creates session, advances to onboarding or app",
       "result": "blocked",
-      "evidence": "SignInWithAppleButton requires real Apple ID/iCloud account in simulator; none configured. Dev-bypass launch arg (--likeminded-dev-auth-bypass) used for testing instead. Bypass confirmed working: validation-gurusharan token → seeded primary user.",
+      "evidence": "SignInWithAppleButton requires real Apple ID/iCloud account in simulator; none configured. Dev-bypass launch arg (--likeminded-dev-auth-bypass) used for downstream screens. validation-gurusharan / Gurusharan Gupta seeded via dev bypass.",
       "blocker": "Real Apple ID unavailable in simulator without TestFlight creds",
       "stub": false
     },
@@ -34,12 +35,12 @@
       "label": "Continue with Google",
       "expected": "POST /v1/auth/google with id token; creates session",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (sign-in-google)",
+      "evidence": "source-trace 2026-07-05: SocialAuthButtonsView + GoogleSignInSupport wired; visible on capture output/validation/ios-screens/auth-gate.png",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace",
-      "tested_source_hash": "66b5a8a6b09cc392"
+      "tested_source_hash": "f3287fe0dc502783"
     },
     {
       "id": "sign-in-metamask",
@@ -47,12 +48,12 @@
       "label": "Continue with MetaMask",
       "expected": "Wallet challenge + verify flow; creates session",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (sign-in-metamask)",
+      "evidence": "source-trace 2026-07-05: WalletSignInSupport + SocialAuthButtonsView; visible on auth-gate capture",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace",
-      "tested_source_hash": "66b5a8a6b09cc392"
+      "tested_source_hash": "f3287fe0dc502783"
     },
     {
       "id": "sign-in-solflare",
@@ -60,12 +61,12 @@
       "label": "Continue with Solflare",
       "expected": "Wallet challenge + verify flow; creates session",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (sign-in-solflare)",
+      "evidence": "source-trace 2026-07-05: WalletSignInSupport + SocialAuthButtonsView; visible on auth-gate capture",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace",
-      "tested_source_hash": "66b5a8a6b09cc392"
+      "tested_source_hash": "f3287fe0dc502783"
     },
     {
       "id": "promise-rows",
@@ -73,18 +74,18 @@
       "label": "Voice profile / Private by design / Circle placement rows",
       "expected": "Display-only promise copy",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (promise-rows)",
+      "evidence": "2026-07-05 capture vs mockups/ios/27-auth-login.png: three promise rows + lock footer match. macOS mapped screen: --mac-screen welcome (validation/macos/01-welcome.json).",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "66b5a8a6b09cc392",
-      "last_test_method": "source-trace"
+      "tested_source_hash": "f3287fe0dc502783",
+      "last_test_method": "visual-compare"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-05 dedicated mockup mockups/ios/27-auth-login.png (was montage panel 01). Capture vs dedicated: single auth gate with Google/MetaMask/Solflare buttons."
+    "notes": "2026-07-05 capture output/validation/ios-screens/auth-gate.png vs mockups/ios/27-auth-login.png: Likeminded wordmark, Meet the right people / In the right room hero, three promise rows (Voice profile / Private by design / Circle placement), Sign in with Apple + Google/MetaMask/Solflare, lock footer. Intentional: SF Symbol provider icons vs mockup brand logos. macOS parity copy aligned in MacScreens welcome (2026-07-05); macOS recapture blocked by parallel LikemindedMac workers — rerun welcome capture solo."
   },
-  "notes": "",
-  "source_hash": "66b5a8a6b09cc392"
+  "notes": "Cross-platform map: iOS 01-auth-gate → macOS --mac-screen welcome (+ --likeminded-validation-welcome for signed-in layout hold). Launch unsigned: --likeminded-reset-auth-session only (iOS simctl / macOS open). Dev user: validation-gurusharan / Gurusharan Gupta.",
+  "source_hash": "f3287fe0dc502783"
 }

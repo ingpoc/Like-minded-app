@@ -3,6 +3,7 @@ import SwiftUI
 private enum ProfileRoute: Hashable {
     case edit
     case signals
+    case settings
 }
 
 struct ProfileSignalLabel: Identifiable {
@@ -42,14 +43,17 @@ enum ProfileSignalFormatting {
 struct VoiceProfileView: View {
     @EnvironmentObject private var appState: PrototypeAppState
     @State private var showingVoiceSession = false
+    @State private var showSettingsForValidation = false
 
     var body: some View {
         NavigationStack {
             ScreenContainer(title: "Profile", subtitle: "Who you are.") {
                 profileHeader
 
-                if appState.slice == nil {
+                if shouldShowOnboarding {
                     OnboardingView()
+                } else if shouldShowVoiceEmptyHero {
+                    profileVoiceEmptyState
                 } else {
                     if appState.concernFlag {
                         placementConcernCard
@@ -64,6 +68,8 @@ struct VoiceProfileView: View {
                     ProfileEditView()
                 case .signals:
                     ProfileSignalsView()
+                case .settings:
+                    SettingsPrototypeView()
                 }
             }
             .sheet(isPresented: $showingVoiceSession) {
@@ -77,7 +83,42 @@ struct VoiceProfileView: View {
                     await appState.fetchSoulmateStatus()
                 }
             }
+            .onAppear {
+                openVoiceSessionForValidationIfNeeded()
+                openSettingsForValidationIfNeeded()
+            }
+            .background {
+                NavigationLink(isActive: $showSettingsForValidation) {
+                    SettingsPrototypeView()
+                } label: {
+                    EmptyView()
+                }
+                .hidden()
+            }
         }
+    }
+
+    private func openSettingsForValidationIfNeeded() {
+        #if DEBUG
+        let args = ProcessInfo.processInfo.arguments
+        if args.contains("--likeminded-start-settings")
+            || args.contains("--likeminded-start-settings-support")
+            || args.contains("--likeminded-start-settings-info") {
+            showSettingsForValidation = true
+        }
+        #endif
+    }
+
+    private func openVoiceSessionForValidationIfNeeded() {
+        #if DEBUG
+        let args = ProcessInfo.processInfo.arguments
+        guard args.contains("--likeminded-start-voice-session") else { return }
+        appState.seedVoiceSessionPreviewIfNeeded()
+        showingVoiceSession = true
+        if !args.contains("--likeminded-dev-voice-preview") {
+            Task { await appState.startVoiceSession() }
+        }
+        #endif
     }
 
     private var profileHeader: some View {
@@ -88,9 +129,7 @@ struct VoiceProfileView: View {
 
             Spacer()
 
-            NavigationLink {
-                SettingsPrototypeView()
-            } label: {
+            NavigationLink(value: ProfileRoute.settings) {
                 Image(systemName: "gearshape")
                     .font(PrototypeTypography.bodyStrong)
                     .foregroundStyle(PrototypePalette.ink)
@@ -100,12 +139,36 @@ struct VoiceProfileView: View {
         }
     }
 
+    private var shouldShowOnboarding: Bool {
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("--likeminded-force-onboarding") {
+            return true
+        }
+        #endif
+        return appState.slice == nil && appState.basicInfo == nil
+    }
+
+    private var shouldShowVoiceEmptyHero: Bool {
+        if PrototypeAppState.devProfileEmptyPreview {
+            return appState.basicInfo != nil
+        }
+        return appState.slice == nil && appState.basicInfo != nil
+    }
+
     private var profileHeaderText: String {
         guard let info = appState.slice?.profile.basicInfo ?? appState.basicInfo else {
             return "Start with the basics"
         }
 
-        return [info.name, info.gender.label, info.city]
+        var parts = [info.name, info.gender.label]
+        if let parsed = LikemindedDate.parse(info.dateOfBirth) {
+            let age = Calendar.current.dateComponents([.year], from: parsed, to: Date()).year ?? 0
+            if age > 0 {
+                parts.append("\(age)")
+            }
+        }
+        parts.append(info.city)
+        return parts
             .filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
             .joined(separator: " · ")
     }
@@ -160,20 +223,14 @@ struct VoiceProfileView: View {
         }
     }
 
-    private var startVoiceButton: some View {
-        Button {
-            showingVoiceSession = true
-            Task { await appState.startVoiceSession() }
-        } label: {
-            PrimaryActionButton(
-                title: appState.isStartingVoice ? "Opening voice profile" : "Start voice profile",
-                systemImage: "waveform"
-            )
-            .contentTransition(.opacity)
-        }
-        .buttonStyle(.plain)
-        .disabled(appState.isStartingVoice)
-        .accessibilityLabel("Start voice profile")
+    private var profileVoiceEmptyState: some View {
+        ProfileVoiceEmptyCard(
+            isLoading: appState.isStartingVoice,
+            onStartVoice: {
+                showingVoiceSession = true
+                Task { await appState.startVoiceSession() }
+            }
+        )
     }
 
     private var placementConcernCard: some View {
@@ -182,7 +239,7 @@ struct VoiceProfileView: View {
                 .font(PrototypeTypography.eyebrow)
                 .foregroundStyle(PrototypePalette.accent)
 
-            Text(appState.placementConcern)
+            Text(appState.displayPlacementConcern)
                 .font(PrototypeTypography.caption)
                 .foregroundStyle(PrototypePalette.ink)
 
@@ -208,35 +265,40 @@ struct VoiceProfileView: View {
 
     private var livingProfile: some View {
         VStack(alignment: .leading, spacing: 20) {
-            profileHubCard
-
-            FeatureCard(title: "Personality signals", eyebrow: "Private") {
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
-                    ForEach(ProfileSignalFormatting.cards(from: appState.slice?.signals)) { item in
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(item.title)
-                                .font(PrototypeTypography.metadata)
-                                .foregroundStyle(PrototypePalette.subink)
-                            Text(item.value)
-                                .font(PrototypeTypography.bodyStrong)
-                                .foregroundStyle(PrototypePalette.ink)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(12)
-                        .background(PrototypePalette.background)
-                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                    }
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Signals".uppercased())
+                        .font(PrototypeTypography.eyebrow)
+                        .foregroundStyle(PrototypePalette.accent)
+                    Text("Living profile")
+                        .font(PrototypeTypography.sectionTitle)
+                        .foregroundStyle(PrototypePalette.ink)
                 }
 
-                Button {
+                Spacer()
+
+                Button("Update profile") {
                     showingVoiceSession = true
                     Task { await appState.startVoiceSession() }
-                } label: {
-                    SecondaryActionButton(title: "Retake voice profile", systemImage: "waveform")
                 }
+                .font(PrototypeTypography.metadata)
+                .foregroundStyle(PrototypePalette.ink)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 10)
+                .background(PrototypePalette.surface)
+                .clipShape(Capsule(style: .continuous))
+                .overlay(Capsule(style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
                 .buttonStyle(.plain)
-                .accessibilityLabel("Retake voice profile")
+                .accessibilityLabel("Update profile")
             }
+
+            HStack(spacing: 10) {
+                ProfileSignalPill("Communication", selected: true)
+                ProfileSignalPill("Energy")
+                ProfileSignalPill("Trust")
+            }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Communication, Energy, Trust")
 
             HStack(spacing: 14) {
                 Image(systemName: "ellipsis.message")
@@ -256,11 +318,26 @@ struct VoiceProfileView: View {
                 }
 
                 Spacer(minLength: 0)
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(PrototypePalette.subink)
             }
             .padding(16)
             .background(PrototypePalette.surface)
             .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
             .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("\(communicationReadTitle). \(communicationReadDetail)")
+            .accessibilityAddTraits(.isStaticText)
+
+            VStack(spacing: 15) {
+                ForEach(profileTraits, id: \.left) { trait in
+                    ProfileTraitRow(left: trait.left, right: trait.right, value: trait.value)
+                }
+            }
+
+            Divider().overlay(PrototypePalette.rule)
 
             VStack(alignment: .leading, spacing: 14) {
                 Text("Interests".uppercased())
@@ -275,95 +352,21 @@ struct VoiceProfileView: View {
                         .font(PrototypeTypography.caption)
                         .foregroundStyle(PrototypePalette.subink)
                 } else {
-                    FlexibleTagLayout(items: profileInterests.map { $0.label })
+                    ProfileInterestTagLayout(interests: profileInterests)
                 }
             }
         }
-    }
-
-    private var profileHubCard: some View {
-        let name = appState.slice?.profile.basicInfo?.name ?? appState.basicInfo?.name ?? "You"
-        let city = appState.slice?.profile.basicInfo?.city ?? appState.basicInfo?.city ?? "Your location"
-        let circleCount = max(appState.joinedCircles.count, appState.placementId == nil ? 0 : 1)
-        let connectionCount = appState.soulmateMatches.count
-        let eventCount = appState.upcomingMeetings.count + appState.pastMeetings.count
-
-        return VStack(spacing: 16) {
-            Circle()
-                .fill(Color.white.opacity(0.18))
-                .frame(width: 84, height: 84)
-                .overlay {
-                    Text(String(name.prefix(1)))
-                        .font(PrototypeTypography.hero)
-                        .foregroundStyle(.white)
-                }
-
-            Text(name)
-                .font(PrototypeTypography.cardTitle)
-                .foregroundStyle(.white)
-
-            Label(city, systemImage: "mappin")
-                .font(PrototypeTypography.caption)
-                .foregroundStyle(.white.opacity(0.85))
-
-            Label("Voice profile active", systemImage: "waveform")
-                .font(PrototypeTypography.metadata)
-                .foregroundStyle(.white)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(Color.white.opacity(0.16))
-                .clipShape(Capsule(style: .continuous))
-
-            HStack(spacing: 0) {
-                profileStat(value: "\(circleCount)", label: "Circles")
-                profileStat(value: "\(connectionCount)", label: "Connections")
-                profileStat(value: "\(eventCount)", label: "Events")
-            }
-
-            HStack(spacing: 12) {
-                NavigationLink(value: ProfileRoute.signals) {
-                    Text("Share profile")
-                        .font(PrototypeTypography.button)
-                        .foregroundStyle(PrototypePalette.accent)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(Color.white.opacity(0.92))
-                        .clipShape(Capsule(style: .continuous))
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Share profile")
-
-                NavigationLink(value: ProfileRoute.edit) {
-                    Text("Edit profile")
-                        .font(PrototypeTypography.metadata)
-                        .foregroundStyle(.white.opacity(0.9))
-                        .underline()
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Edit profile")
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .padding(22)
-        .background(PrototypePalette.roomGradient(1))
+        .padding(18)
+        .background(PrototypePalette.surface.opacity(0.58))
         .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
-    }
-
-    private func profileStat(value: String, label: String) -> some View {
-        VStack(spacing: 4) {
-            Text(value)
-                .font(PrototypeTypography.sectionTitle)
-                .foregroundStyle(.white)
-                .contentTransition(.numericText())
-            Text(label)
-                .font(PrototypeTypography.metadata)
-                .foregroundStyle(.white.opacity(0.75))
-        }
-        .frame(maxWidth: .infinity)
+        .overlay(RoundedRectangle(cornerRadius: 22, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
     }
 }
 
 private struct ProfileVoiceEmptyCard: View {
+    var isLoading = false
+    var onStartVoice: () -> Void = {}
+
     var body: some View {
         VStack(spacing: 26) {
             VoiceListeningCard()
@@ -386,13 +389,22 @@ private struct ProfileVoiceEmptyCard: View {
                     .frame(maxWidth: 260)
             }
 
-            Label("Start voice profile", systemImage: "waveform")
+            Button(action: onStartVoice) {
+                Label(
+                    isLoading ? "Opening voice profile" : "Start voice profile",
+                    systemImage: "waveform"
+                )
                 .font(PrototypeTypography.button)
                 .foregroundStyle(PrototypePalette.accent)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
                 .background(Color.white.opacity(0.88))
                 .clipShape(Capsule(style: .continuous))
+                .contentTransition(.opacity)
+            }
+            .buttonStyle(.plain)
+            .disabled(isLoading)
+            .accessibilityLabel("Start voice profile")
         }
         .padding(24)
         .frame(maxWidth: .infinity)
@@ -405,54 +417,187 @@ private struct VoiceProfileSessionSheet: View {
     @EnvironmentObject private var appState: PrototypeAppState
     @Environment(\.dismiss) private var dismiss
 
+    private var statusLine: String {
+        switch appState.realtimeStatus {
+        case RealtimeVoicePhase.streaming.rawValue:
+            return "I am listening for fit."
+        case RealtimeVoicePhase.connecting.rawValue, RealtimeVoicePhase.stopping.rawValue:
+            return appState.realtimeStatus + "…"
+        case RealtimeVoicePhase.stopped.rawValue:
+            return "Signals captured."
+        case RealtimeVoicePhase.failed.rawValue:
+            return "Voice issue — try again."
+        default:
+            return appState.capturedVoiceSignals.isEmpty ? "Tell me how you connect." : "Review captured signals."
+        }
+    }
+
     var body: some View {
         NavigationStack {
-            ScreenContainer(title: "Voice profile", subtitle: "Speak naturally.") {
-                ProfileVoiceEmptyCard()
-
-                FeatureCard(title: "Realtime status", eyebrow: "Voice") {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Label(appState.realtimeStatus, systemImage: appState.isVoiceStreaming ? "waveform" : "waveform.circle")
-                            .font(PrototypeTypography.bodyStrong)
-                            .foregroundStyle(PrototypePalette.ink)
-
-                        if let error = appState.realtimeError, !error.isEmpty {
-                            Text(error)
-                                .font(PrototypeTypography.caption)
-                                .foregroundStyle(PrototypePalette.amber)
-                                .fixedSize(horizontal: false, vertical: true)
-                        } else {
-                            Text("The profile updates from the backend voice session when realtime is available.")
-                                .font(PrototypeTypography.caption)
-                                .foregroundStyle(PrototypePalette.subink)
-                        }
-
-                        if !appState.realtimeTranscript.isEmpty {
-                            Text(appState.realtimeTranscript)
-                                .font(PrototypeTypography.caption)
-                                .foregroundStyle(PrototypePalette.ink)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(spacing: 22) {
+                    VStack(spacing: 8) {
+                        Text("PROFILE")
+                            .font(PrototypeTypography.eyebrow)
+                            .foregroundStyle(.white.opacity(0.72))
+                        Text("Voice profile")
+                            .font(PrototypeTypography.display)
+                            .foregroundStyle(.white)
+                        Text(statusLine)
+                            .font(PrototypeTypography.body)
+                            .foregroundStyle(.white.opacity(0.82))
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: 280)
                     }
-                }
+                    .padding(.top, 8)
 
-                HStack(spacing: 12) {
+                    VoiceListeningCard(isActive: appState.isVoiceStreaming || appState.realtimeStatus == RealtimeVoicePhase.streaming.rawValue)
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel("Voice orb")
+                        .accessibilityValue(appState.isVoiceStreaming ? "Listening" : appState.realtimeStatus)
+
+                    VoiceWaveformBars(isActive: appState.isVoiceStreaming || appState.realtimeStatus == RealtimeVoicePhase.streaming.rawValue)
+                        .frame(height: 36)
+                        .accessibilityHidden(true)
+
+                    if let error = appState.realtimeError, !error.isEmpty {
+                        Text(error)
+                            .font(PrototypeTypography.caption)
+                            .foregroundStyle(PrototypePalette.amber)
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: 300)
+                    }
+
+                    if !appState.capturedVoiceSignals.isEmpty {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Captured signals")
+                                .font(PrototypeTypography.metadata)
+                                .foregroundStyle(.white.opacity(0.7))
+
+                            ForEach(Array(appState.capturedVoiceSignals.enumerated()), id: \.offset) { index, signal in
+                                HStack(alignment: .top, spacing: 12) {
+                                    Text("\(index + 1)")
+                                        .font(PrototypeTypography.metadata.weight(.bold))
+                                        .foregroundStyle(.white)
+                                        .frame(width: 28, height: 28)
+                                        .background(PrototypePalette.success.opacity(0.85), in: Circle())
+
+                                    Text(signal)
+                                        .font(PrototypeTypography.body)
+                                        .foregroundStyle(.white.opacity(0.92))
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                                    Circle()
+                                        .fill(PrototypePalette.success)
+                                        .frame(width: 8, height: 8)
+                                        .padding(.top, 8)
+                                }
+                            }
+                        }
+                        .padding(18)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Color.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    }
+
                     Button {
                         Task { await appState.stopVoiceSession() }
                     } label: {
-                        SecondaryActionButton(title: "Stop", systemImage: "stop.circle")
+                        Label("Stop and extract signals", systemImage: "stop.fill")
+                            .font(PrototypeTypography.button)
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                            .background(PrototypePalette.actionGradient, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("Stop")
 
                     Button {
                         dismiss()
                     } label: {
-                        PrimaryActionButton(title: "Done", systemImage: "checkmark")
+                        Label("Done", systemImage: "checkmark")
+                            .font(PrototypeTypography.button)
+                            .foregroundStyle(.white.opacity(0.92))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                            .background(Color.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("Done")
+
+                    HStack(alignment: .top, spacing: 10) {
+                        Image(systemName: "lock.fill")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(PrototypePalette.success)
+                        Text("Profile read is private. Circle placement needs confirmation.")
+                            .font(PrototypeTypography.caption)
+                            .foregroundStyle(.white.opacity(0.78))
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .padding(16)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(PrototypePalette.accent.opacity(0.42), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 28)
+            }
+            .background {
+                LinearGradient(
+                    colors: [Color(red: 0.05, green: 0.14, blue: 0.11), Color(red: 0.02, green: 0.05, blue: 0.04)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
+            }
+            .toolbarBackground(.hidden, for: .navigationBar)
+        }
+        .onAppear {
+            appState.seedVoiceSessionPreviewIfNeeded()
+        }
+    }
+}
+
+private struct ProfileInterestTagLayout: View {
+    let interests: [Interest]
+
+    var body: some View {
+        ViewThatFits(in: .vertical) {
+            HStack(spacing: 8) {
+                ForEach(interests, id: \.label) { interest in
+                    ProfileInterestTag(interest: interest)
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(interests, id: \.label) { interest in
+                    ProfileInterestTag(interest: interest)
                 }
             }
         }
+    }
+}
+
+private struct ProfileInterestTag: View {
+    let interest: Interest
+
+    private var isEmphasized: Bool {
+        interest.depth == .deep || interest.depth == .active
+    }
+
+    var body: some View {
+        Text(interest.label)
+            .font(PrototypeTypography.metadata)
+            .foregroundStyle(isEmphasized ? .white : PrototypePalette.ink)
+            .padding(.horizontal, 11)
+            .padding(.vertical, 8)
+            .background(
+                Capsule(style: .continuous)
+                    .fill(isEmphasized ? PrototypePalette.accent : PrototypePalette.surface)
+            )
+            .overlay(
+                Capsule(style: .continuous)
+                    .stroke(isEmphasized ? Color.clear : PrototypePalette.rule, lineWidth: 1)
+            )
     }
 }
 
@@ -519,31 +664,97 @@ private struct ProfileTraitRow: View {
 }
 
 private struct VoiceListeningCard: View {
+    var isActive = false
+
+    @State private var pulse = false
+
     var body: some View {
         ZStack {
             ForEach(0..<5, id: \.self) { index in
                 Circle()
-                    .stroke(PrototypePalette.success.opacity(0.12), lineWidth: 1)
-                    .frame(width: CGFloat(112 + index * 38), height: CGFloat(112 + index * 38))
+                    .stroke(PrototypePalette.success.opacity(isActive ? 0.22 : 0.12), lineWidth: 1)
+                    .frame(
+                        width: CGFloat(112 + index * 38) * (isActive && pulse ? 1.04 : 1.0),
+                        height: CGFloat(112 + index * 38) * (isActive && pulse ? 1.04 : 1.0)
+                    )
+                    .animation(
+                        isActive ? .easeInOut(duration: 0.9 + Double(index) * 0.08).repeatForever(autoreverses: true) : .default,
+                        value: pulse
+                    )
             }
 
             Circle()
                 .fill(
                     RadialGradient(
-                        colors: [PrototypePalette.success.opacity(0.64), PrototypePalette.accent.opacity(0.24), .clear],
+                        colors: [PrototypePalette.success.opacity(isActive ? 0.78 : 0.64), PrototypePalette.accent.opacity(0.24), .clear],
                         center: .center,
                         startRadius: 6,
-                        endRadius: 112
+                        endRadius: isActive ? 124 : 112
                     )
                 )
-                .frame(width: 216, height: 216)
+                .frame(width: isActive ? 228 : 216, height: isActive ? 228 : 216)
+                .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: isActive && pulse)
+
+            Image(systemName: "sparkle")
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(.white.opacity(0.92))
+                .shadow(color: PrototypePalette.success, radius: isActive ? 18 : 10)
 
             Circle()
                 .fill(PrototypePalette.success.opacity(0.85))
                 .frame(width: 26, height: 26)
-                .shadow(color: PrototypePalette.success, radius: 24)
+                .shadow(color: PrototypePalette.success, radius: isActive ? 28 : 24)
         }
         .frame(height: 260)
+        .onAppear {
+            pulse = true
+        }
+        .onChange(of: isActive) { _, active in
+            if active { pulse.toggle() }
+        }
+    }
+}
+
+private struct VoiceWaveformBars: View {
+    let isActive: Bool
+
+    @State private var levels: [CGFloat] = Array(repeating: 0.35, count: 14)
+    @State private var timerActive = false
+
+    var body: some View {
+        HStack(alignment: .center, spacing: 4) {
+            ForEach(levels.indices, id: \.self) { index in
+                RoundedRectangle(cornerRadius: 2, style: .continuous)
+                    .fill(PrototypePalette.success.opacity(isActive ? 0.92 : 0.35))
+                    .frame(width: 4, height: 10 + levels[index] * 26)
+            }
+        }
+        .onAppear { refreshLevels() }
+        .onChange(of: isActive) { _, active in
+            if active {
+                refreshLevels()
+            } else {
+                levels = Array(repeating: 0.2, count: levels.count)
+            }
+        }
+    }
+
+    private func refreshLevels() {
+        guard isActive, !timerActive else { return }
+        timerActive = true
+        Task {
+            while !Task.isCancelled {
+                await MainActor.run {
+                    guard isActive else {
+                        timerActive = false
+                        return
+                    }
+                    levels = levels.map { _ in CGFloat.random(in: 0.18...1.0) }
+                }
+                try? await Task.sleep(for: .milliseconds(140))
+            }
+            await MainActor.run { timerActive = false }
+        }
     }
 }
 

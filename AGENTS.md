@@ -113,16 +113,20 @@ Use the **main thread** when **all** are true:
 
 Do **not** spawn a background worker for these. If a subagent stalls &gt;5 minutes on such a task, interrupt it and fix on the main thread.
 
-### macOS validation parallelism
+### Native validation parallelism (iOS + macOS)
+
+**Two waves:** parallel **code** per ledger screen; **sequential proof** (seed → build → capture). See `docs/workflows/validation.md` § Parallel screen validation.
 
 | Phase | Parallel? | Tool |
 |-------|-----------|------|
-| UI implementation per screen | Yes — disjoint `validation/macos/*.json` + `MacScreens.swift` MARK slices | Subagents or main thread |
-| Screenshot capture | **No** — one `LikemindedMac` instance | `npm run verify:macos-screens` or batch script |
-| CUA control proof | **No** — sole owner of `:8787` | `./script/macos_validation_batch.sh` |
+| UI implementation per screen | Yes — disjoint ledger JSON + platform source slices | Subagents or main thread |
+| `xcodebuild` (either platform) | **No** — one derived-data owner | `cross_platform_validation_lock.sh` |
+| iOS screenshot / `simctl launch` | **No** | `cross_platform_screen_validate.sh` |
+| macOS screenshot / CUA | **No** — one `LikemindedMac` instance | `verify_macos_screens.sh` or `macos_validation_batch.sh` |
+| `reset:validation-data` | **No** — sole `:8787` owner | lock `seed` |
 | API contract after `server.js` edit | No | `npm run smoke:mvp` |
 
-After parallel UI workers finish: `./script/macos_validation_batch.sh` (capture + sequential CUA). Do not run `macos_cua_screen.sh` in parallel across agents.
+Use `./script/cross_platform_validation_lock.sh` for all kills/launches/captures. After parallel UI workers finish: `npm run validate:screen -- --screen <id> --platform ios|both` per screen or `npm run macos:validation-batch` for macOS closeout.
 
 Scripts own proof. Subagents own bounded sidecars. Main thread owns integration and final judgment.
 

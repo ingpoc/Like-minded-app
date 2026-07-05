@@ -111,8 +111,8 @@ curl -fsS "http://127.0.0.1:${PORT:-8787}/health" >/dev/null || {
   exit 1
 }
 
-LIKEMINDED_VALIDATION_USER="${LIKEMINDED_VALIDATION_USER:-validation-priya}" \
-LIKEMINDED_VALIDATION_NAME="${LIKEMINDED_VALIDATION_NAME:-Priya Shah}" \
+LIKEMINDED_VALIDATION_USER="${LIKEMINDED_VALIDATION_USER:-validation-gurusharan}" \
+LIKEMINDED_VALIDATION_NAME="${LIKEMINDED_VALIDATION_NAME:-Gurusharan Gupta}" \
   "$ROOT/script/run_macos_manual_validation.sh" "$SCREEN" >/dev/null
 sleep 5
 
@@ -137,8 +137,8 @@ case "$SCREEN" in
     ;;
   circleDetail)
     click_label "Message circle"
-    LIKEMINDED_VALIDATION_USER="${LIKEMINDED_VALIDATION_USER:-validation-priya}" \
-    LIKEMINDED_VALIDATION_NAME="${LIKEMINDED_VALIDATION_NAME:-Priya Shah}" \
+    LIKEMINDED_VALIDATION_USER="${LIKEMINDED_VALIDATION_USER:-validation-gurusharan}" \
+    LIKEMINDED_VALIDATION_NAME="${LIKEMINDED_VALIDATION_NAME:-Gurusharan Gupta}" \
       "$ROOT/script/run_macos_manual_validation.sh" "$SCREEN" >/dev/null
     sleep 5
     cua_bind
@@ -277,7 +277,7 @@ if [[ -n "$STAMP_CONTROLS" ]]; then
       --screen "$SCREEN" \
       --controls "$STAMP_CONTROLS" \
       --method CUA-click \
-      --evidence-prefix "CUA-click ${LIKEMINDED_VALIDATION_USER:-validation-priya}" || true
+      --evidence-prefix "CUA-click ${LIKEMINDED_VALIDATION_USER:-validation-gurusharan}" || true
   else
     echo "skip stamp: required CUA clicks incomplete (ok=$CLICK_OK miss=$CLICK_MISS)"
   fi

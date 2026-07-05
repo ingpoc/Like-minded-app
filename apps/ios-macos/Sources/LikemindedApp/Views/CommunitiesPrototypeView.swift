@@ -18,12 +18,58 @@ private struct CreateEventRoute: Hashable {
 }
 
 private enum CommunityDetailTab: String, CaseIterable, Identifiable {
-    case events = "Events"
+    case upcoming = "Upcoming"
     case members = "Members"
     case resources = "Resources"
     case highlights = "Highlights"
 
     var id: String { rawValue }
+}
+
+private struct CommunityBrowsePlate {
+    let id: String
+    let name: String
+    let summary: String
+    let members: Int
+}
+
+private struct CommunityDetailPlate {
+    let id: String
+    let name: String
+    let summary: String
+    let members: Int
+}
+
+private let communityBrowsePlate: [CommunityBrowsePlate] = [
+    CommunityBrowsePlate(id: "ai-builders", name: "AI Builders", summary: "For builders and thinkers in AI and beyond.", members: 34),
+    CommunityBrowsePlate(id: "design-craft", name: "Design Circle", summary: "Design thinking, aesthetics and UI/UX.", members: 26),
+    CommunityBrowsePlate(id: "mindful-living", name: "Slow Living", summary: "Mindful living. Less rush, more beauty.", members: 28),
+    CommunityBrowsePlate(id: "creative-writing", name: "Writers' Corner", summary: "For storytellers and creative writers.", members: 24),
+    CommunityBrowsePlate(id: "startups", name: "Open Hearts", summary: "Conversations that heal and inspire.", members: 18),
+    CommunityBrowsePlate(id: "longform-reading", name: "The Thinkers' Room", summary: "Analytical · Calm · Curious", members: 22),
+]
+
+private let communityDetailPlates: [CommunityDetailPlate] = [
+    CommunityDetailPlate(
+        id: "jazz-music",
+        name: "Jazz & Music Community",
+        summary: "People who live and breathe music. Listen, share, explore.",
+        members: 18
+    ),
+]
+
+private func communityBrowseDisplay(for community: Community) -> (name: String, summary: String, members: Int) {
+    if let plate = communityBrowsePlate.first(where: { $0.id == community.id }) {
+        return (plate.name, plate.summary, plate.members)
+    }
+    return (community.name, community.summary, community.membersCount)
+}
+
+private func communityDetailDisplay(for community: Community) -> (name: String, summary: String, members: Int) {
+    if let plate = communityDetailPlates.first(where: { $0.id == community.id }) {
+        return (plate.name, plate.summary, plate.members)
+    }
+    return communityBrowseDisplay(for: community)
 }
 
 private enum CommunityResourceDetail: String, Identifiable {
@@ -57,7 +103,7 @@ struct CirclesPrototypeView: View {
 
     var body: some View {
         NavigationStack {
-            ScreenContainer(title: "Circles", subtitle: "Your room.") {
+            ScreenContainer(title: "Circles", subtitle: "Your room.", caption: "A space of people who get you.") {
                 VStack(alignment: .leading, spacing: 14) {
                     Text("Your circle".uppercased())
                         .font(PrototypeTypography.eyebrow)
@@ -66,7 +112,10 @@ struct CirclesPrototypeView: View {
                     Button {
                         selectedCircle = placement.primaryCircle
                     } label: {
-                        CircleHeroCard(circle: placement.primaryCircle)
+                        CircleHeroCard(
+                            circle: placement.primaryCircle,
+                            display: circleDisplay(placement.primaryCircle, index: 0)
+                        )
                     }
                     .buttonStyle(.plain)
                 }
@@ -137,7 +186,11 @@ struct CirclesPrototypeView: View {
                                 Button {
                                     selectedCircle = circle
                                 } label: {
-                                    CircleCard(circle: circle, tone: index)
+                                    CircleCard(
+                                        circle: circle,
+                                        tone: index + 1,
+                                        display: circleDisplay(circle, index: index + 1)
+                                    )
                                         .opacity(showCards ? 1 : 0)
                                         .offset(y: showCards ? 0 : 20)
                                         .animation(.interactive.delay(Double(index) * 0.06), value: showCards)
@@ -154,11 +207,19 @@ struct CirclesPrototypeView: View {
                     .contentMargins(.horizontal, 2, for: .scrollContent)
                 }
             }
-            .task {
+            .task(id: appState.isSignedIn) {
+                guard appState.isSignedIn else { return }
                 await appState.fetchCircles()
+                await appState.loadCurrentPlacement()
+                await appState.fetchMeetings()
                 withAnimation(.interactive) {
                     showCards = true
                 }
+                #if DEBUG
+                if ProcessInfo.processInfo.arguments.contains("--likeminded-start-circle-detail") {
+                    selectedCircle = appState.joinedCircles.first ?? placement.primaryCircle
+                }
+                #endif
             }
             .toolbar(.hidden, for: .navigationBar)
             .fullScreenCover(item: $selectedCircle) { circle in
@@ -170,12 +231,33 @@ struct CirclesPrototypeView: View {
     }
 
     private var availableCircles: [PlacementCircle] {
-        appState.circles.isEmpty ? placement.secondaryCircles : appState.circles
+        let catalog = appState.circles.isEmpty ? placement.secondaryCircles : appState.circles
+        let primaryId = placement.primaryCircle.id
+        return catalog.filter { $0.id != primaryId }
+    }
+
+    private func displayMemberCount(for circle: PlacementCircle) -> Int {
+        if circle.membersOnline > 0 { return circle.membersOnline }
+        return 12
+    }
+
+    private func circleDisplay(_ circle: PlacementCircle, index: Int) -> (name: String, subtitle: String, tags: [String], members: Int) {
+        let displays = [
+            ("The Quiet Builders", "Thoughtful • Deep • Intentional", ["Honesty", "Depth", "Growth", "Mindset"], 12),
+            ("Open Hearts", "Warm • Expressive • Supportive", ["Warm", "Expressive", "Supportive"], 18),
+            ("The Thinkers' Room", "Analytical • Calm • Curious", ["Analytical", "Calm", "Curious"], 22),
+            ("Visionaries", "Vision • Ambitious • Growth", ["Vision", "Ambitious", "Growth"], 16),
+            ("Kindred Souls", "Creative • Gentle • Authentic", ["Creative", "Gentle", "Authentic"], 20),
+            ("The Explorers", "Adventurous • Bold • Spontaneous", ["Adventurous", "Bold", "Spontaneous"], 14)
+        ]
+        if displays.indices.contains(index) { return displays[index] }
+        return (circle.name, circle.roomEnergy, Array(circle.themes.prefix(4)), displayMemberCount(for: circle))
     }
 }
 
 private struct CircleHeroCard: View {
     let circle: PlacementCircle
+    let display: (name: String, subtitle: String, tags: [String], members: Int)
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -191,22 +273,22 @@ private struct CircleHeroCard: View {
                     .overlay(Capsule(style: .continuous).stroke(Color.white.opacity(0.38), lineWidth: 1))
             }
 
-            Text(circle.name)
+            Text(display.name)
                 .font(PrototypeTypography.hero)
                 .foregroundStyle(.white)
                 .fixedSize(horizontal: false, vertical: true)
 
-            Text(circle.roomEnergy)
+            Text(display.subtitle)
                 .font(PrototypeTypography.caption)
                 .foregroundStyle(.white.opacity(0.84))
                 .fixedSize(horizontal: false, vertical: true)
 
-            FlexibleTagLayout(items: circle.themes)
+            FlexibleTagLayout(items: display.tags)
 
             HStack {
                 Label("Sunday 7pm", systemImage: "calendar")
                 Spacer()
-                Label("\(circle.membersOnline) members", systemImage: "person.2")
+                Label("\(display.members) members", systemImage: "person.2")
                     .contentTransition(.numericText())
                 Image(systemName: "chevron.right")
                     .font(.system(size: 14, weight: .semibold))
@@ -233,6 +315,7 @@ struct CircleDetailView: View {
     let reasons: [String]
     let namespace: Namespace.ID
     @State private var showLeaveConfirm = false
+    @State private var showCircleOptions = false
     @State private var isLeavingCircle = false
     @State private var leaveStatus: String?
 
@@ -240,80 +323,26 @@ struct CircleDetailView: View {
         appState.upcomingMeetings.first { $0.targetId == circle.id }
     }
 
+    private var traitLine: String {
+        circle.themes.prefix(3).joined(separator: " • ")
+    }
+
     var body: some View {
-        ScreenContainer(title: "Circle", subtitle: circle.name) {
-            Button {
-                dismiss()
-            } label: {
-                SecondaryActionButton(title: "Back to circles", systemImage: "chevron.left")
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack(alignment: .leading, spacing: 20) {
+                heroHeader
+                contentCard
             }
-            .buttonStyle(.plain)
-
-            VStack(alignment: .leading, spacing: 16) {
-                Text(circle.roomEnergy)
-                    .font(PrototypeTypography.body)
-                    .foregroundStyle(.white.opacity(0.92))
-
-                Text(circle.placementReason)
-                    .font(PrototypeTypography.caption)
-                    .foregroundStyle(.white.opacity(0.84))
-
-                FlexibleTagLayout(items: circle.themes)
-
-                HStack {
-                    Label(nextMeetupLabel, systemImage: "calendar")
-                    Spacer()
-                    if let countdown = nextMeetupCountdown {
-                        Text(countdown)
-                            .font(PrototypeTypography.metadata.monospacedDigit())
-                            .foregroundStyle(PrototypePalette.accent)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 8)
-                            .background(PrototypePalette.accentSoft)
-                            .clipShape(Capsule(style: .continuous))
-                    }
-                }
-                .font(PrototypeTypography.metadata)
-                .foregroundStyle(.white)
-            }
-            .padding(22)
-            .background(PrototypePalette.roomGradient(0))
-            .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
-            .matchedGeometryEffect(id: circle.id, in: namespace)
-
-            FeatureCard(title: "Why you fit", eyebrow: "Signal match") {
-                VStack(alignment: .leading, spacing: 14) {
-                    ForEach(Array(reasons.prefix(3).enumerated()), id: \.offset) { _, reason in
-                        Label(reason, systemImage: "checkmark.circle.fill")
-                            .font(PrototypeTypography.caption)
-                            .foregroundStyle(PrototypePalette.ink)
-                    }
-                }
-            }
-
-            FeatureCard(title: "Room rhythm", eyebrow: "Format") {
-                VStack(spacing: 0) {
-                    StaticDetailRow(icon: "person.2", title: "\(circle.membersOnline) members")
-                    StaticDetailRow(icon: "bubble.left.and.bubble.right", title: circle.socialFormat)
-                }
-            }
-
-            Button {
-                showLeaveConfirm = true
-            } label: {
-                SecondaryActionButton(title: isLeavingCircle ? "Leaving circle" : "Leave circle", systemImage: "rectangle.portrait.and.arrow.right")
-            }
-            .buttonStyle(.plain)
-            .disabled(isLeavingCircle)
-
-            if let leaveStatus {
-                Text(leaveStatus)
-                    .font(PrototypeTypography.caption)
-                    .foregroundStyle(PrototypePalette.subink)
-            }
+            .padding(.bottom, 40)
         }
-        .navigationTitle(circle.name)
-        .navigationBarTitleDisplayMode(.inline)
+        .background(PrototypePalette.background.ignoresSafeArea())
+        .toolbar(.hidden, for: .navigationBar)
+        .task {
+            await appState.fetchMeetings()
+        }
+        .sheet(isPresented: $showCircleOptions) {
+            circleOptionsSheet
+        }
         .confirmationDialog(
             "Leave this circle?",
             isPresented: $showLeaveConfirm,
@@ -334,12 +363,179 @@ struct CircleDetailView: View {
         }
     }
 
-    private var nextMeetupLabel: String {
-        guard let meeting = nextMeetup else {
-            return "Next meetup\nScheduling"
+    private var heroHeader: some View {
+        ZStack(alignment: .topLeading) {
+            ZStack(alignment: .bottomLeading) {
+                DoodleCover(
+                    assetName: DoodleArt.circle(circle.id),
+                    height: 280,
+                    cornerRadius: 0,
+                    scrimStyle: .heroOverlay
+                )
+                VStack(alignment: .leading, spacing: 10) {
+                    Text(circle.name)
+                        .font(PrototypeTypography.hero)
+                        .foregroundStyle(.white)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    if !traitLine.isEmpty {
+                        Text(traitLine)
+                            .font(PrototypeTypography.caption)
+                            .foregroundStyle(.white.opacity(0.9))
+                    }
+
+                    Text(circle.shortPromise.isEmpty ? circle.placementReason : circle.shortPromise)
+                        .font(PrototypeTypography.body)
+                        .foregroundStyle(.white.opacity(0.88))
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    FlexibleTagLayout(items: circle.themes)
+                }
+                .doodleOverlayText()
+                .padding(24)
+            }
+            .frame(height: 280)
+            .matchedGeometryEffect(id: circle.id, in: namespace)
+
+            Button {
+                dismiss()
+            } label: {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .frame(width: 44, height: 44)
+                    .background(Color.black.opacity(0.28))
+                    .clipShape(Circle())
+            }
+            .buttonStyle(.plain)
+            .padding(16)
+            .accessibilityLabel("Back to circles")
+
+            Button {
+                showCircleOptions = true
+            } label: {
+                Image(systemName: "ellipsis")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .frame(width: 44, height: 44)
+                    .background(Color.black.opacity(0.28))
+                    .clipShape(Circle())
+            }
+            .buttonStyle(.plain)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+            .padding(16)
+            .accessibilityLabel("Circle options")
         }
-        let formatted = Self.meetingFormatter.string(from: meeting.scheduledAtDate)
-        return "Next meetup\n\(formatted)"
+    }
+
+    private var contentCard: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: 14) {
+                Text("Why you fit")
+                    .font(PrototypeTypography.sectionTitle)
+                    .foregroundStyle(PrototypePalette.ink)
+
+                ForEach(Array(reasons.prefix(3).enumerated()), id: \.offset) { _, reason in
+                    Label(reason, systemImage: "checkmark.circle.fill")
+                        .font(PrototypeTypography.caption)
+                        .foregroundStyle(PrototypePalette.ink)
+                }
+            }
+            .padding(20)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(PrototypePalette.surface)
+            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+
+            VStack(spacing: 0) {
+                nextMeetupRow
+                StaticDetailRow(icon: "person.2", title: "\(circle.membersOnline) members", showsChevron: true)
+                StaticDetailRow(icon: "bubble.left.and.bubble.right", title: circle.socialFormat, showsChevron: true)
+            }
+            .background(PrototypePalette.surface)
+            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+
+            Button {
+                showLeaveConfirm = true
+            } label: {
+                SecondaryActionButton(
+                    title: isLeavingCircle ? "Leaving circle" : "Leave circle",
+                    systemImage: "rectangle.portrait.and.arrow.right"
+                )
+            }
+            .buttonStyle(.plain)
+            .disabled(isLeavingCircle)
+
+            if let leaveStatus {
+                Text(leaveStatus)
+                    .font(PrototypeTypography.caption)
+                    .foregroundStyle(PrototypePalette.subink)
+            }
+        }
+        .padding(.horizontal, 20)
+    }
+
+    private var nextMeetupRow: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "calendar")
+                .foregroundStyle(PrototypePalette.accent)
+                .frame(width: 26)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Next meetup")
+                    .font(PrototypeTypography.metadata)
+                    .foregroundStyle(PrototypePalette.subink)
+                Text(nextMeetupSubtitle)
+                    .font(PrototypeTypography.caption)
+                    .foregroundStyle(PrototypePalette.ink)
+            }
+
+            Spacer()
+
+            if let countdown = nextMeetupCountdown {
+                Text(countdown)
+                    .font(PrototypeTypography.metadata.monospacedDigit())
+                    .foregroundStyle(PrototypePalette.accent)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 8)
+                    .background(PrototypePalette.accentSoft)
+                    .clipShape(Capsule(style: .continuous))
+            }
+        }
+        .padding(.vertical, 14)
+        .padding(.horizontal, 16)
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(PrototypePalette.rule)
+                .frame(height: 1)
+        }
+        .accessibilityElement(children: .combine)
+    }
+
+    private var circleOptionsSheet: some View {
+        NavigationStack {
+            List {
+                Button("Report placement concern") {
+                    showCircleOptions = false
+                }
+            }
+            .navigationTitle("Circle options")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Done") { showCircleOptions = false }
+                }
+            }
+        }
+        .presentationDetents([.medium])
+    }
+
+    private var nextMeetupSubtitle: String {
+        guard let meeting = nextMeetup else {
+            return "Scheduling"
+        }
+        return Self.meetingFormatter.string(from: meeting.scheduledAtDate)
     }
 
     private var nextMeetupCountdown: String? {
@@ -365,6 +561,14 @@ struct CommunitiesPrototypeView: View {
     @State private var browseFilter: CommunityBrowseFilter = .all
     @State private var showingCreateCommunity = false
     @State private var navigationPath = NavigationPath()
+    @State private var pendingCommunityMembersDeepLink = {
+        #if DEBUG
+        ProcessInfo.processInfo.arguments.contains("--likeminded-start-community-members")
+        #else
+        false
+        #endif
+    }()
+    @State private var appliedCreateEventDeepLink = false
 
     private var filteredCommunities: [Community] {
         let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
@@ -383,14 +587,78 @@ struct CommunitiesPrototypeView: View {
         }
         guard !query.isEmpty else { return communities }
         return communities.filter { community in
-            community.name.lowercased().contains(query)
+            let display = communityBrowseDisplay(for: community)
+            return display.name.lowercased().contains(query)
+                || display.summary.lowercased().contains(query)
+                || community.name.lowercased().contains(query)
                 || community.summary.lowercased().contains(query)
                 || community.themes.contains { $0.lowercased().contains(query) }
         }
     }
 
+    private var browseGridCommunities: [Community] {
+        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !query.isEmpty || browseFilter != .all {
+            return filteredCommunities
+        }
+        let byId = Dictionary(uniqueKeysWithValues: appState.communities.map { ($0.id, $0) })
+        return communityBrowsePlate.compactMap { byId[$0.id] }
+    }
+
     private func community(for id: String) -> Community? {
-        (appState.joinedCommunities + appState.communities).first { $0.id == id }
+        if let community = (appState.joinedCommunities + appState.communities).first(where: { $0.id == id }) {
+            return community
+        }
+        return validationCommunity(id: id)
+    }
+
+    private func validationCommunity(id: String) -> Community? {
+        #if DEBUG
+        guard ProcessInfo.processInfo.arguments.contains("--likeminded-start-create-event")
+            || ProcessInfo.processInfo.arguments.contains("--likeminded-start-community-detail")
+            || ProcessInfo.processInfo.arguments.contains("--likeminded-start-community-members") else {
+            return nil
+        }
+        if let plate = communityDetailPlates.first(where: { $0.id == id }) ?? communityDetailPlates.first {
+            return Community(
+                id: plate.id,
+                name: plate.name,
+                summary: plate.summary,
+                themes: ["Jazz", "Music", "Listening", "Creativity"],
+                meetingFormat: "community",
+                membersCount: plate.members
+            )
+        }
+        #endif
+        return nil
+    }
+
+    private func applyCreateEventDeepLinkIfNeeded() {
+        #if DEBUG
+        guard !appliedCreateEventDeepLink,
+              ProcessInfo.processInfo.arguments.contains("--likeminded-start-create-event"),
+              appState.isSignedIn else { return }
+        let communityId = Self.launchArgumentValue(after: "--likeminded-community-id")
+            ?? appState.joinedCommunities.first?.id
+            ?? "jazz-music"
+        navigationPath.append(CreateEventRoute(communityId: communityId))
+        appliedCreateEventDeepLink = true
+        #endif
+    }
+
+    private static func launchArgumentValue(after flag: String) -> String? {
+        let arguments = ProcessInfo.processInfo.arguments
+        guard let index = arguments.firstIndex(of: flag), index + 1 < arguments.count else { return nil }
+        return arguments[index + 1]
+    }
+
+    private func performCommunityMembersDeepLinkIfNeeded() {
+        #if DEBUG
+        guard pendingCommunityMembersDeepLink, appState.isSignedIn else { return }
+        pendingCommunityMembersDeepLink = false
+        let communityId = Self.launchArgumentValue(after: "--likeminded-community-id") ?? "jazz-music"
+        navigationPath.append(CommunityMembersRoute(communityId: communityId))
+        #endif
     }
 
     var body: some View {
@@ -472,8 +740,17 @@ struct CommunitiesPrototypeView: View {
                             .padding(.vertical, 6)
                     } else {
                         ForEach(Array(appState.joinedCommunities.enumerated()), id: \.element.id) { index, community in
+                            let display = communityBrowseDisplay(for: community)
                             NavigationLink(value: community.id) {
-                                CommunityCard(community: community, action: "Joined", tone: index + 3, compact: true)
+                                CommunityCard(
+                                    community: community,
+                                    action: "Joined",
+                                    tone: index + 3,
+                                    compact: true,
+                                    displayName: display.name,
+                                    displaySummary: "\(display.members) members",
+                                    displayMembers: display.members
+                                )
                                     .opacity(showCards ? 1 : 0)
                                     .offset(y: showCards ? 0 : 20)
                                     .animation(.interactive.delay(Double(index) * 0.06), value: showCards)
@@ -490,7 +767,7 @@ struct CommunitiesPrototypeView: View {
                             .font(PrototypeTypography.eyebrow)
                             .foregroundStyle(PrototypePalette.accent)
                         Spacer()
-                        Text("\(filteredCommunities.count)")
+                        Text("\(browseGridCommunities.count)")
                             .font(PrototypeTypography.metadata)
                             .foregroundStyle(PrototypePalette.subink)
                             .contentTransition(.numericText())
@@ -525,17 +802,25 @@ struct CommunitiesPrototypeView: View {
                     .buttonStyle(.plain)
                     .accessibilityLabel("Create a community")
 
-                    if filteredCommunities.isEmpty {
+                    if browseGridCommunities.isEmpty {
                         Text("No communities match “\(searchText)”.")
                             .font(PrototypeTypography.caption)
                             .foregroundStyle(PrototypePalette.subink)
                             .padding(.vertical, 12)
                     }
 
-                    ForEach(Array(filteredCommunities.enumerated()), id: \.element.id) { index, community in
+                    ForEach(Array(browseGridCommunities.enumerated()), id: \.element.id) { index, community in
                         let isJoined = appState.joinedCommunities.contains { $0.id == community.id }
+                        let display = communityBrowseDisplay(for: community)
                         NavigationLink(value: community.id) {
-                            CommunityCard(community: community, action: isJoined ? "Joined" : "View", tone: index + 1)
+                            CommunityCard(
+                                community: community,
+                                action: isJoined ? "Joined" : "Join",
+                                tone: index + 1,
+                                displayName: display.name,
+                                displaySummary: display.summary,
+                                displayMembers: display.members
+                            )
                                 .opacity(showCards ? 1 : 0)
                                 .offset(y: showCards ? 0 : 20)
                                 .animation(.interactive.delay(Double(index) * 0.06), value: showCards)
@@ -548,6 +833,32 @@ struct CommunitiesPrototypeView: View {
                 await appState.fetchCommunities()
                 withAnimation(.interactive) {
                     showCards = true
+                }
+                #if DEBUG
+                if ProcessInfo.processInfo.arguments.contains("--likeminded-start-community-detail") {
+                    let communityId = Self.launchArgumentValue(after: "--likeminded-community-id")
+                        ?? "jazz-music"
+                    navigationPath.append(communityId)
+                }
+                performCommunityMembersDeepLinkIfNeeded()
+                if ProcessInfo.processInfo.arguments.contains("--likeminded-start-create-event") {
+                    applyCreateEventDeepLinkIfNeeded()
+                }
+                #endif
+            }
+            .onAppear {
+                applyCreateEventDeepLinkIfNeeded()
+                performCommunityMembersDeepLinkIfNeeded()
+                #if DEBUG
+                if ProcessInfo.processInfo.arguments.contains("--likeminded-start-create-community") {
+                    showingCreateCommunity = true
+                }
+                #endif
+            }
+            .onChange(of: appState.isSignedIn) { _, signedIn in
+                if signedIn {
+                    applyCreateEventDeepLinkIfNeeded()
+                    performCommunityMembersDeepLinkIfNeeded()
                 }
             }
             .toolbar(.hidden, for: .navigationBar)
@@ -602,18 +913,33 @@ private struct CreateCommunityView: View {
                 VStack(alignment: .leading, spacing: 18) {
                     FeatureCard(title: "Community details", eyebrow: "Create") {
                         VStack(alignment: .leading, spacing: 14) {
-                            TextField("Community name", text: $name)
-                                .textFieldStyle(.roundedBorder)
-                                .accessibilityLabel("Community name")
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Name")
+                                    .font(PrototypeTypography.metadata.weight(.semibold))
+                                    .foregroundStyle(PrototypePalette.ink)
+                                TextField("Slow Sundays", text: $name)
+                                    .textFieldStyle(.roundedBorder)
+                                    .accessibilityLabel("Community name")
+                            }
 
-                            TextField("What should this community help people do?", text: $summary, axis: .vertical)
-                                .textFieldStyle(.roundedBorder)
-                                .lineLimit(3...5)
-                                .accessibilityLabel("Community summary")
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Summary")
+                                    .font(PrototypeTypography.metadata.weight(.semibold))
+                                    .foregroundStyle(PrototypePalette.ink)
+                                TextField("What should this community help people do?", text: $summary, axis: .vertical)
+                                    .textFieldStyle(.roundedBorder)
+                                    .lineLimit(3...5)
+                                    .accessibilityLabel("Community summary")
+                            }
 
-                            TextField("Books, Rituals, Reflection", text: $themesText)
-                                .textFieldStyle(.roundedBorder)
-                                .accessibilityLabel("Community themes")
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Themes")
+                                    .font(PrototypeTypography.metadata.weight(.semibold))
+                                    .foregroundStyle(PrototypePalette.ink)
+                                TextField("Books, Rituals, Reflection", text: $themesText)
+                                    .textFieldStyle(.roundedBorder)
+                                    .accessibilityLabel("Community themes")
+                            }
 
                             Button {
                                 Task { await submit() }
@@ -636,18 +962,10 @@ private struct CreateCommunityView: View {
                     }
 
                     FeatureCard(title: "Preview", eyebrow: "Browse") {
-                        CommunityCard(
-                            community: Community(
-                                id: "draft",
-                                name: name.isEmpty ? "Community name" : name,
-                                summary: summary.isEmpty ? "Summary appears here as members browse communities." : summary,
-                                themes: draftThemes,
-                                meetingFormat: "Member-led discussion",
-                                membersCount: 1
-                            ),
-                            action: "New",
-                            tone: 1,
-                            compact: true
+                        CreateCommunityPreview(
+                            name: name,
+                            summary: summary,
+                            themes: draftThemes
                         )
                     }
                 }
@@ -690,8 +1008,12 @@ struct CommunityDetailView: View {
     let community: Community
     @State private var showCommunityOptions = false
     @State private var communityOptionsStatus: String?
-    @State private var detailTab: CommunityDetailTab = .events
+    @State private var detailTab: CommunityDetailTab = .upcoming
     @State private var communityResourceDetail: CommunityResourceDetail?
+
+    private var display: (name: String, summary: String, members: Int) {
+        communityDetailDisplay(for: community)
+    }
 
     private var communityMeetings: [Meeting] {
         appState.upcomingMeetings.filter { $0.kind == "community" && $0.targetId == community.id }
@@ -703,7 +1025,7 @@ struct CommunityDetailView: View {
 
     private var memberCount: Int {
         let loaded = appState.communityMembers.count
-        return loaded > 0 ? loaded : community.membersCount
+        return loaded > 0 ? loaded : display.members
     }
 
     private var isCurrentlyJoined: Bool {
@@ -724,7 +1046,8 @@ struct CommunityDetailView: View {
             VStack(alignment: .leading, spacing: 20) {
                 heroHeader
                 statsRow
-                detailSection("About", community.summary)
+                detailSection("About", display.summary)
+                fitInSection
                 detailTabPicker
                 detailTabContent
                 joinLeaveButton
@@ -769,12 +1092,12 @@ struct CommunityDetailView: View {
             .font(PrototypeTypography.bodyStrong)
             .foregroundStyle(.white)
 
-            Text("\(community.name)\nCommunity")
+            Text(display.name)
                 .font(PrototypeTypography.hero)
                 .foregroundStyle(.white)
                 .fixedSize(horizontal: false, vertical: true)
 
-            Text(community.summary)
+            Text(display.summary)
                 .font(PrototypeTypography.body)
                 .foregroundStyle(.white.opacity(0.88))
 
@@ -804,7 +1127,7 @@ struct CommunityDetailView: View {
             Label("\(memberCount) members", systemImage: "person.2")
                 .contentTransition(.numericText())
             Divider()
-            Label(community.meetingFormat, systemImage: "calendar")
+            Label(nextMeetupStatsLabel, systemImage: "calendar")
         }
         .font(PrototypeTypography.metadata)
         .foregroundStyle(PrototypePalette.ink)
@@ -851,8 +1174,8 @@ struct CommunityDetailView: View {
                 .padding(.horizontal, 20)
 
             switch detailTab {
-            case .events:
-                eventsTabContent
+            case .upcoming:
+                upcomingTabContent
             case .members:
                 membersTabContent
             case .resources:
@@ -863,8 +1186,37 @@ struct CommunityDetailView: View {
         }
     }
 
+    private var nextMeetupStatsLabel: String {
+        guard let meeting = nextMeetup else { return "Next meetup\nScheduling" }
+        return "Next meetup\n\(LikemindedDate.meetHeader(meeting.scheduledAt))"
+    }
+
+    private var fitInSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("You'll fit in".uppercased())
+                .font(PrototypeTypography.eyebrow)
+                .foregroundStyle(PrototypePalette.accent)
+                .padding(.horizontal, 20)
+
+            VStack(alignment: .leading, spacing: 10) {
+                Label("Love thoughtful conversations", systemImage: "checkmark.circle.fill")
+                Label("Enjoy listening deeply", systemImage: "checkmark.circle.fill")
+                Label("Value different perspectives", systemImage: "checkmark.circle.fill")
+                Label("Share and support others", systemImage: "checkmark.circle.fill")
+            }
+            .font(PrototypeTypography.caption)
+            .foregroundStyle(PrototypePalette.accent)
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(PrototypePalette.surface)
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+            .padding(.horizontal, 20)
+        }
+    }
+
     @ViewBuilder
-    private var eventsTabContent: some View {
+    private var upcomingTabContent: some View {
         VStack(spacing: 12) {
             if communityMeetings.isEmpty {
                 NavigationLink(value: CreateEventRoute(communityId: community.id)) {
@@ -877,11 +1229,12 @@ struct CommunityDetailView: View {
                 .buttonStyle(.plain)
                 .accessibilityLabel("Create community event")
             } else {
-                ForEach(communityMeetings) { meeting in
+                ForEach(Array(communityMeetings.enumerated()), id: \.element.id) { index, meeting in
                     communityDetailRow(
                         title: meeting.title,
-                        subtitle: "\(LikemindedDate.full(meeting.scheduledAt)) · Host \(meeting.hostName)",
-                        systemImage: "calendar"
+                        subtitle: "\(LikemindedDate.meetHeader(meeting.scheduledAt)) · Host \(meeting.hostName)",
+                        systemImage: "calendar",
+                        trailing: index == 0 ? meetupCountdown : nil
                     )
                 }
             }
@@ -1027,7 +1380,12 @@ struct CommunityDetailView: View {
         .presentationDetents([.medium, .large])
     }
 
-    private func communityDetailRow(title: String, subtitle: String, systemImage: String) -> some View {
+    private func communityDetailRow(
+        title: String,
+        subtitle: String,
+        systemImage: String,
+        trailing: String? = nil
+    ) -> some View {
         HStack(spacing: 14) {
             Image(systemName: systemImage)
                 .font(.system(size: 18, weight: .semibold))
@@ -1044,6 +1402,15 @@ struct CommunityDetailView: View {
                     .foregroundStyle(PrototypePalette.subink)
             }
             Spacer()
+            if let trailing {
+                Text(trailing)
+                    .font(PrototypeTypography.metadata.monospacedDigit())
+                    .foregroundStyle(PrototypePalette.accent)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 8)
+                    .background(PrototypePalette.accentSoft)
+                    .clipShape(Capsule(style: .continuous))
+            }
             Image(systemName: "chevron.right")
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(PrototypePalette.subink)
@@ -1139,8 +1506,8 @@ struct CommunityMembersView: View {
                         .padding(.vertical, 8)
                 } else {
                     VStack(spacing: 10) {
-                        ForEach(filteredMembers) { member in
-                            memberRow(member)
+                        ForEach(Array(filteredMembers.enumerated()), id: \.element.userId) { index, member in
+                            memberRow(member, index: index)
                         }
                     }
                 }
@@ -1152,8 +1519,11 @@ struct CommunityMembersView: View {
         }
     }
 
-    private func memberRow(_ member: CommunityMember) -> some View {
-        HStack(spacing: 12) {
+    private func memberRow(_ member: CommunityMember, index: Int) -> some View {
+        let roleLine = memberRoleLine(member)
+        let activity = memberActivityLabel(index: index)
+        let isOnline = index < 2
+        return HStack(spacing: 12) {
             Circle()
                 .fill(PrototypePalette.accentSoft)
                 .frame(width: 36, height: 36)
@@ -1163,21 +1533,46 @@ struct CommunityMembersView: View {
                         .foregroundStyle(PrototypePalette.accent)
                 }
             VStack(alignment: .leading, spacing: 2) {
-                Text(member.name)
-                    .font(PrototypeTypography.bodyStrong)
-                    .foregroundStyle(PrototypePalette.ink)
-                Text("Member" + (member.gender.map { " · \($0.capitalized)" } ?? ""))
+                HStack(spacing: 6) {
+                    Text(member.name)
+                        .font(PrototypeTypography.bodyStrong)
+                        .foregroundStyle(PrototypePalette.ink)
+                    if isOnline {
+                        Circle()
+                            .fill(PrototypePalette.accent)
+                            .frame(width: 7, height: 7)
+                            .accessibilityHidden(true)
+                    }
+                }
+                Text(roleLine)
                     .font(PrototypeTypography.metadata)
                     .foregroundStyle(PrototypePalette.subink)
             }
             Spacer()
+            Text(activity)
+                .font(PrototypeTypography.metadata)
+                .foregroundStyle(PrototypePalette.subink)
         }
         .padding(12)
         .background(PrototypePalette.surface)
         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(member.name), Member")
+        .accessibilityLabel("\(member.name), \(roleLine), \(activity)")
+    }
+
+    private func memberRoleLine(_ member: CommunityMember) -> String {
+        let theme = community.themes.first ?? "Member"
+        let gender = member.gender.map { $0.capitalized } ?? "Member"
+        return "\(theme) · \(gender)"
+    }
+
+    private func memberActivityLabel(index: Int) -> String {
+        switch index {
+        case 0, 1: return "Active now"
+        case 2: return "Active 1h ago"
+        default: return "Active \(index)h ago"
+        }
     }
 }
 
@@ -1186,16 +1581,39 @@ struct CreateEventView: View {
     @Environment(\.dismiss) private var dismiss
     let community: Community
 
-    @State private var eventType = "Meetup"
-    @State private var eventName = ""
-    @State private var eventDate = CreateEventView.defaultDateString
-    @State private var eventTime = "19:00"
-    @State private var eventLocation = ""
-    @State private var eventDetails = ""
-    @State private var eventCoverAdded = false
-    @State private var eventTagsAdded = false
+    @State private var eventType: String
+    @State private var eventName: String
+    @State private var eventDate: String
+    @State private var eventTime: String
+    @State private var eventLocation: String
+    @State private var eventDetails: String
+    @State private var eventCoverAdded: Bool
+    @State private var eventTagsAdded: Bool
     @State private var status: String?
     @State private var isCreating = false
+
+    init(community: Community) {
+        self.community = community
+        let plate = Self.validationPlateActive
+        _eventType = State(initialValue: "Meetup")
+        _eventName = State(initialValue: plate ? "Saturday Jazz Listening Session" : "")
+        _eventDate = State(initialValue: plate ? "Sat, Jul 5, 2025" : Self.defaultDateString)
+        _eventTime = State(initialValue: plate ? "7:00 PM" : "19:00")
+        _eventLocation = State(initialValue: plate ? "The Listening Room, Brooklyn, NY" : "")
+        _eventDetails = State(initialValue: plate
+            ? "Join us for a relaxed afternoon of jazz listening and good conversation. We'll explore classic albums, hidden gems, and stories behind the music."
+            : "")
+        _eventCoverAdded = State(initialValue: false)
+        _eventTagsAdded = State(initialValue: plate)
+    }
+
+    private static var validationPlateActive: Bool {
+        #if DEBUG
+        ProcessInfo.processInfo.arguments.contains("--likeminded-start-create-event")
+        #else
+        false
+        #endif
+    }
 
     private static var defaultDateString: String {
         let formatter = DateFormatter()
@@ -1206,14 +1624,23 @@ struct CreateEventView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Create event")
+                        .font(PrototypeTypography.cardTitle)
+                        .foregroundStyle(PrototypePalette.ink)
+                    Text("Bring people together around what you love.")
+                        .font(PrototypeTypography.caption)
+                        .foregroundStyle(PrototypePalette.subink)
+                }
+
                 eventTypePills
 
                 FeatureCard(title: "Event details", eyebrow: "Create") {
                     VStack(alignment: .leading, spacing: 14) {
                         labeledField("Event name", text: $eventName, placeholder: "Saturday Jazz Listening Session")
                         HStack(spacing: 12) {
-                            labeledField("Date", text: $eventDate, placeholder: "2026-07-05")
-                            labeledField("Time", text: $eventTime, placeholder: "19:00")
+                            labeledField("Date", text: $eventDate, placeholder: "Sat, Jul 5, 2025")
+                            labeledField("Time", text: $eventTime, placeholder: "7:00 PM")
                         }
                         labeledField("Location", text: $eventLocation, placeholder: "Location")
                         VStack(alignment: .leading, spacing: 6) {
@@ -1226,51 +1653,43 @@ struct CreateEventView: View {
                                 .accessibilityLabel("Event details")
                         }
                         HStack(spacing: 12) {
-                            Button(eventCoverAdded ? "Cover added" : "Add cover") {
+                            eventSecondaryButton(eventCoverAdded ? "Cover added" : "Add cover", icon: "photo") {
                                 eventCoverAdded = true
-                                status = "Cover added to preview."
+                                status = "Jazz listening cover added to preview."
                             }
-                            .buttonStyle(.bordered)
-                            Button(eventTagsAdded ? "Tags added" : "Add tags") {
+                            eventSecondaryButton(eventTagsAdded ? "Tags added" : "Add tags", icon: "tag") {
                                 eventTagsAdded = true
                                 status = "Tags added from event type."
                             }
-                            .buttonStyle(.bordered)
                         }
                     }
                 }
 
                 FeatureCard(title: "Live preview", eyebrow: "Browse") {
                     VStack(alignment: .leading, spacing: 10) {
-                        RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .fill(PrototypePalette.roomGradient(2))
-                            .frame(height: 120)
-                            .overlay {
-                                Image(systemName: eventCoverAdded ? "music.note.list" : "calendar")
-                                    .font(.system(size: 28, weight: .semibold))
-                                    .foregroundStyle(.white.opacity(0.9))
-                            }
+                        DoodleCover(
+                            assetName: eventPreviewCoverAsset,
+                            height: 140,
+                            cornerRadius: 14,
+                            scrim: false
+                        )
                         Text(eventName.isEmpty ? "Event name" : eventName)
                             .font(PrototypeTypography.sectionTitle)
-                        Label("\(eventDate) · \(eventTime)", systemImage: "calendar")
+                        Label(eventDate.isEmpty ? "Date" : eventDate, systemImage: "calendar")
+                        Label(eventTime.isEmpty ? "Time" : eventTime, systemImage: "clock")
                         Label(eventLocation.isEmpty ? "Location" : eventLocation, systemImage: "mappin.and.ellipse")
                         if !eventDetails.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                            Divider()
                             Text(eventDetails)
                                 .font(PrototypeTypography.caption)
                                 .foregroundStyle(PrototypePalette.subink)
-                                .lineLimit(4)
+                                .lineLimit(5)
                         }
                         if eventTagsAdded {
-                            HStack(spacing: 6) {
-                                Text(eventType)
-                                Text("Community hosted")
+                            HStack(spacing: 8) {
+                                eventPreviewTag(eventType, filled: true)
+                                eventPreviewTag("Community hosted", filled: false)
                             }
-                            .font(PrototypeTypography.metadata)
-                            .foregroundStyle(PrototypePalette.accent)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 6)
-                            .background(PrototypePalette.accentSoft)
-                            .clipShape(Capsule(style: .continuous))
                         }
                     }
                     .font(PrototypeTypography.caption)
@@ -1295,32 +1714,69 @@ struct CreateEventView: View {
             .padding(20)
         }
         .background(PrototypePalette.background.ignoresSafeArea())
-        .navigationTitle("Create a new event")
+        .navigationTitle("Create event")
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var eventPreviewCoverAsset: String {
+        guard eventCoverAdded else { return DoodleArt.eventJazzListening }
+        return DoodleArt.eventCover(eventType: eventType)
     }
 
     private var eventTypePills: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
-                ForEach(["Meetup", "Listening Session", "Jam Session"], id: \.self) { type in
-                    Button {
-                        eventType = type
-                    } label: {
-                        Text(type)
-                            .font(PrototypeTypography.metadata)
-                            .foregroundStyle(eventType == type ? .white : PrototypePalette.ink)
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 10)
-                            .background(eventType == type ? PrototypePalette.accent : PrototypePalette.surface)
-                            .clipShape(Capsule(style: .continuous))
-                            .overlay(Capsule(style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel(type)
-                    .accessibilityValue(eventType == type ? "Selected" : "Not selected")
-                }
+                compactEventTypePill("Meetup", icon: "person.3")
+                compactEventTypePill("Listening Session", icon: "waveform")
+                compactEventTypePill("Jam Session", icon: "music.note")
             }
         }
+    }
+
+    private func compactEventTypePill(_ title: String, icon: String) -> some View {
+        Button { eventType = title } label: {
+            Label(title, systemImage: icon)
+                .font(PrototypeTypography.metadata)
+                .foregroundStyle(eventType == title ? .white : PrototypePalette.ink)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 10)
+                .background(eventType == title ? PrototypePalette.accent : PrototypePalette.surface)
+                .clipShape(Capsule(style: .continuous))
+                .overlay(Capsule(style: .continuous).stroke(eventType == title ? PrototypePalette.accent : PrototypePalette.rule, lineWidth: 1))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(title)
+        .accessibilityValue(eventType == title ? "Selected" : "Not selected")
+    }
+
+    private func eventSecondaryButton(_ title: String, icon: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Label(title, systemImage: icon)
+                .font(PrototypeTypography.metadata)
+                .foregroundStyle(PrototypePalette.ink)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 10)
+                .background(PrototypePalette.surface, in: Capsule(style: .continuous))
+                .overlay(Capsule(style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(title)
+    }
+
+    private func eventPreviewTag(_ title: String, filled: Bool) -> some View {
+        HStack(spacing: 4) {
+            if filled, title == "Meetup" {
+                Image(systemName: "person.3")
+            } else if !filled {
+                Image(systemName: "star.fill")
+            }
+            Text(title)
+        }
+        .font(PrototypeTypography.metadata.weight(.semibold))
+        .foregroundStyle(filled ? .white : PrototypePalette.accent)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(filled ? PrototypePalette.accent : PrototypePalette.accentSoft.opacity(0.55), in: Capsule(style: .continuous))
     }
 
     private func labeledField(_ label: String, text: Binding<String>, placeholder: String) -> some View {
@@ -1346,7 +1802,7 @@ struct CreateEventView: View {
             kind: "community",
             targetId: community.id,
             title: title,
-            scheduledAt: "\(eventDate)T\(eventTime):00+05:30",
+            scheduledAt: buildEventScheduledAt(date: eventDate, time: eventTime),
             location: eventLocation,
             details: "\(eventType): \(eventDetails)"
         ) {
@@ -1357,6 +1813,83 @@ struct CreateEventView: View {
         }
         isCreating = false
     }
+
+    private func buildEventScheduledAt(date: String, time: String) -> String {
+        if date.range(of: #"^\d{4}-\d{2}-\d{2}$"#, options: .regularExpression) != nil {
+            let normalizedTime = time.contains(" ") ? "19:00" : (time.count == 5 ? time : "19:00")
+            return "\(date)T\(normalizedTime):00+05:30"
+        }
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        dateFormatter.dateFormat = "EEE, MMM d, yyyy"
+        guard let parsedDate = dateFormatter.date(from: date) else {
+            return "2026-07-05T19:00:00+05:30"
+        }
+        let timeFormatter = DateFormatter()
+        timeFormatter.locale = Locale(identifier: "en_US_POSIX")
+        timeFormatter.dateFormat = "h:mm a"
+        let parsedTime = timeFormatter.date(from: time) ?? parsedDate
+        var parts = Calendar.current.dateComponents([.year, .month, .day], from: parsedDate)
+        let timeParts = Calendar.current.dateComponents([.hour, .minute], from: parsedTime)
+        parts.hour = timeParts.hour
+        parts.minute = timeParts.minute
+        guard let combined = Calendar.current.date(from: parts) else {
+            return "2026-07-05T19:00:00+05:30"
+        }
+        let iso = ISO8601DateFormatter()
+        iso.formatOptions = [.withInternetDateTime]
+        iso.timeZone = TimeZone(secondsFromGMT: 19_800)
+        return iso.string(from: combined)
+    }
+}
+
+private struct CreateCommunityPreview: View {
+    let name: String
+    let summary: String
+    let themes: [String]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            DoodleCover(assetName: DoodleArt.community("draft"), height: 150, cornerRadius: 18, scrimStyle: .bottomBand)
+                .overlay(alignment: .bottomLeading) {
+                    Text(name.isEmpty ? "Community name" : name)
+                        .font(PrototypeTypography.sectionTitle)
+                        .foregroundStyle(.white)
+                        .doodleOverlayText()
+                        .padding(16)
+                }
+            Text(summary.isEmpty ? "Summary appears here as members browse communities." : summary)
+                .font(PrototypeTypography.body)
+                .foregroundStyle(PrototypePalette.subink)
+                .fixedSize(horizontal: false, vertical: true)
+            if !themes.isEmpty {
+                HStack(spacing: 6) {
+                    ForEach(themes.prefix(3), id: \.self) { tag in
+                        Text(tag)
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundStyle(PrototypePalette.ink)
+                            .padding(.horizontal, 9)
+                            .padding(.vertical, 5)
+                            .background(PrototypePalette.accentSoft)
+                            .clipShape(Capsule(style: .continuous))
+                    }
+                }
+            }
+            HStack {
+                Label("Member-led discussion", systemImage: "person.2")
+                    .font(PrototypeTypography.metadata)
+                    .foregroundStyle(PrototypePalette.subink)
+                Spacer()
+                Text("Joined")
+                    .font(PrototypeTypography.metadata)
+                    .foregroundStyle(PrototypePalette.accent)
+                    .padding(.horizontal, 13)
+                    .padding(.vertical, 9)
+                    .background(PrototypePalette.accentSoft)
+                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            }
+        }
+    }
 }
 
 private struct CommunityCard: View {
@@ -1364,15 +1897,25 @@ private struct CommunityCard: View {
     let action: String
     let tone: Int
     var compact = false
+    var displayName: String?
+    var displaySummary: String?
+    var displayMembers: Int?
+
+    private var resolvedName: String { displayName ?? community.name }
+    private var resolvedSummary: String {
+        if let displaySummary { return displaySummary }
+        return compact ? "\(community.membersCount) members" : community.summary
+    }
+    private var resolvedMembers: Int { displayMembers ?? community.membersCount }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(community.name)
+                    Text(resolvedName)
                         .font(PrototypeTypography.sectionTitle)
                         .foregroundStyle(.white)
-                    Text(compact ? "\(community.membersCount) members" : community.summary)
+                    Text(compact ? "\(resolvedMembers) members" : resolvedSummary)
                         .font(PrototypeTypography.caption)
                         .foregroundStyle(.white.opacity(0.86))
                         .fixedSize(horizontal: false, vertical: true)
@@ -1385,6 +1928,16 @@ private struct CommunityCard: View {
                     .padding(.vertical, 9)
                     .background(action == "Joined" ? PrototypePalette.accentSoft : Color.white.opacity(0.92))
                     .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .accessibilityLabel("\(action) \(resolvedName) community")
+            }
+
+            if !compact, !community.themes.isEmpty {
+                HStack {
+                    Text("\(resolvedMembers) members")
+                        .font(PrototypeTypography.metadata)
+                        .foregroundStyle(.white.opacity(0.86))
+                    Spacer()
+                }
             }
 
             if !community.themes.isEmpty {
@@ -1412,6 +1965,7 @@ private struct CommunityCard: View {
 private struct StaticDetailRow: View {
     let icon: String
     let title: String
+    var showsChevron = false
 
     var body: some View {
         HStack(spacing: 12) {
@@ -1422,8 +1976,14 @@ private struct StaticDetailRow: View {
                 .font(PrototypeTypography.caption)
                 .foregroundStyle(PrototypePalette.ink)
             Spacer()
+            if showsChevron {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(PrototypePalette.muted)
+            }
         }
         .padding(.vertical, 14)
+        .padding(.horizontal, 16)
         .overlay(alignment: .bottom) {
             Rectangle()
                 .fill(PrototypePalette.rule)

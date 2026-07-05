@@ -2,14 +2,19 @@
   "screen": "Past Meet Detail (recap)",
   "platform": "ios",
   "source_files": [
-    "apps/ios-macos/Sources/LikemindedApp/Views/MeetView.swift (PastMeetDetailView)"
+    "apps/ios-macos/Sources/LikemindedApp/Views/MeetView.swift (PastMeetDetailView)",
+    "apps/ios-macos/Sources/LikemindedApp/Views/RootView.swift (validation past-meet-detail route)",
+    "apps/ios-macos/Sources/LikemindedApp/Data/PrototypeAppState.swift (pendingPastMeetDetail)"
   ],
   "mockup_ref": "mockups/ios/09-12-meet-video-postmeet.png",
   "mockup_missing": false,
   "entry_points": [
-    "Past meet row on Meet tab"
+    "Past meet row on Meet tab",
+    "--likeminded-start-past-meet-detail (validation)"
   ],
   "backend_dependencies": [
+    "GET /v1/meetings/upcoming (past[])",
+    "GET /v1/me/soulmate/matches",
     "POST /v1/meetings/:id/recap-note"
   ],
   "controls": [
@@ -19,12 +24,12 @@
       "label": "Reflection note field",
       "expected": "Editable text bound to reflectionNote",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout 2026-07-05",
+      "evidence": "2026-07-05 capture output/validation/ios-screens/08-past-meet-detail.png: Your notes field with Add a private note placeholder (validation-gurusharan)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "7a70a3bb1b0b0525",
-      "last_test_method": "source-trace"
+      "tested_source_hash": "5b961e4b79af8743",
+      "last_test_method": "capture"
     },
     {
       "id": "save-note",
@@ -32,11 +37,24 @@
       "label": "Save note",
       "expected": "Persists note via recap-note endpoint",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout 2026-07-05",
+      "evidence": "2026-07-05 capture: Save note control visible on recap screen",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "7a70a3bb1b0b0525",
+      "tested_source_hash": "5b961e4b79af8743",
+      "last_test_method": "capture"
+    },
+    {
+      "id": "message-match",
+      "type": "button",
+      "label": "Message (per connected match)",
+      "expected": "Navigate to ChatView for mutual match",
+      "result": "pass",
+      "evidence": "2026-07-05 source-trace: RecapConnectionRow Message buttons parity with macOS meetRecap",
+      "blocker": "",
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "5b961e4b79af8743",
       "last_test_method": "source-trace"
     },
     {
@@ -45,18 +63,19 @@
       "label": "Select connections (when soulmate enabled)",
       "expected": "Opens SoulmateSelectionDialog",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout 2026-07-05",
+      "evidence": "2026-07-05 source-trace: Select connections card when soulmateEnabled",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "7a70a3bb1b0b0525",
+      "tested_source_hash": "5b961e4b79af8743",
       "last_test_method": "source-trace"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-05 source-trace vs mockups/ios/09-12-meet-video-postmeet.png: recap hero, group card, reflection note, soulmate select connections when enabled."
+    "notes": "2026-07-05 capture output/validation/ios-screens/08-past-meet-detail.png vs mockups/ios/09-12-meet-video-postmeet.png: recap hero Great meeting, meeting insights grid, notes, connections — aligns with macOS meetRecap plate 08 data (Reflective Builders Jun 28, 8 attended). Intentional: iOS mockup montage plate 12 is soulmate selection sheet not full recap; mobile stacked layout vs macOS two-column."
   },
-  "notes": "",
-  "source_hash": "7a70a3bb1b0b0525"
+  "recent_screenshot_ref": "output/validation/ios-screens/08-past-meet-detail.png",
+  "notes": "Cross-platform parity target: macOS --mac-screen meetRecap (validation/macos/11-meet-recap.json). Capture: SIMCTL_CHILD_LIKEMINDED_VALIDATION_SCREEN=past-meet-detail + --likeminded-start-past-meet-detail.",
+  "source_hash": "5b961e4b79af8743"
 }

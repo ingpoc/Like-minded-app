@@ -3,7 +3,7 @@
  * Re-stamp stale-pass controls after CUA/screen-capture reproof.
  *
  *   node script/ledger_stamp_stale_pass.js --platform macos --method CUA \
- *     --evidence-prefix "CUA validation-priya 2026-07-05"
+ *     --evidence-prefix "CUA validation-gurusharan 2026-07-05"
  *
  * Optional: --screen meetOverview  (only one ledger file)
  */

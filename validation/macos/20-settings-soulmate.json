@@ -231,7 +231,7 @@
     "notes": "2026-07-05 capture vs plate 20: Soulmate hero with heart orb, enable toggle, feature cards, discovery dropdown, dual-handle age slider, visibility radio cards. Intentional: Delete account sidebar row; no Voice profile row."
   },
   "notes": "Settings sidebar selects inline panels; View profile and Voice profile rows removed.",
-  "source_hash": "a893a2d9f61eb368",
+  "source_hash": "cddf6d49d6f6274f",
   "recent_screenshot_ref": "output/validation/macos-screens/settingsSoulmate.png",
   "ui_validation": {
     "result": "pass",

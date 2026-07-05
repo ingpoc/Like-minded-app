@@ -29,7 +29,7 @@
     "result": "pass",
     "notes": "2026-07-04 capture vs plate 01: Likeminded wordmark, hero copy, three promise rows, Sign in with Apple, MacOrb art, terms footer. Unsigned capture (no dev-auth bypass). Intentional: promise subtitles slightly shorter than montage."
   },
-  "source_hash": "550b40049467ec3d",
+  "source_hash": "094d399492036ad0",
   "recent_screenshot_ref": "output/validation/macos-screens/welcome.png",
   "ui_validation": {
     "result": "pass",

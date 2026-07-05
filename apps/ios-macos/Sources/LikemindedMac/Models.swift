@@ -240,6 +240,8 @@ struct UserProfile: Decodable, Equatable {
     let basicInfo: BasicInfo?
     let interests: [Interest]
     let synthesizedAt: String?
+    let concernFlag: Bool?
+    let placementConcern: String?
 }
 
 struct UserProfileResponse: Decodable {

@@ -21,10 +21,10 @@
       "label": "Bell icon (top-right)",
       "expected": "Opens NotificationsView sheet; badge shows unread",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (bell)",
+      "evidence": "source-trace 2026-07-05 meetOverview parity: bell overlay unchanged (hash 1d696e577d4a8948)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "7a70a3bb1b0b0525",
+      "tested_source_hash": "1d696e577d4a8948",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     },
@@ -34,10 +34,10 @@
       "label": "Saturday Available",
       "expected": "POST rsvp community available=true",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (rsvp-sat-yes)",
+      "evidence": "source-trace 2026-07-05 meetOverview parity: RSVPCard community toggle (hash 1d696e577d4a8948)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "7a70a3bb1b0b0525",
+      "tested_source_hash": "1d696e577d4a8948",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     },
@@ -47,10 +47,10 @@
       "label": "Saturday Not",
       "expected": "POST rsvp community available=false",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (rsvp-sat-no)",
+      "evidence": "source-trace 2026-07-05 meetOverview parity: RSVPCard community toggle (hash 1d696e577d4a8948)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "7a70a3bb1b0b0525",
+      "tested_source_hash": "1d696e577d4a8948",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     },
@@ -60,11 +60,11 @@
       "label": "Sunday Available",
       "expected": "POST rsvp circle available=true",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout 2026-07-05",
+      "evidence": "source-trace 2026-07-05 meetOverview parity: RSVPCard circle toggle (hash 1d696e577d4a8948)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "7a70a3bb1b0b0525",
+      "tested_source_hash": "1d696e577d4a8948",
       "last_test_method": "source-trace"
     },
     {
@@ -73,11 +73,11 @@
       "label": "Sunday Not",
       "expected": "POST rsvp circle available=false",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout 2026-07-05",
+      "evidence": "source-trace 2026-07-05 meetOverview parity: RSVPCard circle toggle (hash 1d696e577d4a8948)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "7a70a3bb1b0b0525",
+      "tested_source_hash": "1d696e577d4a8948",
       "last_test_method": "source-trace"
     },
     {
@@ -86,9 +86,12 @@
       "label": "Join live room (upcoming)",
       "expected": "Pushes GroupVideoCallView; disabled until meetup time",
       "result": "blocked",
-      "evidence": "Join button present but labeled 'Join unlocks at meetup time' (disabled until meetup time); LiveKit server not provisioned locally so video call cannot be tested",
+      "evidence": "MeetHeroJoinCard join on hero (parity with macOS meetOverview); disabled until meetup unless --likeminded-dev-meet-join; LiveKit server not provisioned locally",
       "blocker": "LiveKit server + LIVEKIT_* env not provisioned locally",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "1d696e577d4a8948",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     },
     {
       "id": "past-row",
@@ -96,18 +99,19 @@
       "label": "Past meet row",
       "expected": "Pushes PastMeetDetailView",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (past-row)",
+      "evidence": "source-trace 2026-07-05 meetOverview parity: Past meets FeatureCard rows (hash 1d696e577d4a8948)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "7a70a3bb1b0b0525",
+      "tested_source_hash": "1d696e577d4a8948",
       "last_test_method": "source-trace"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-05 capture meet.png vs mockups/ios/05-08-circles-meet-communities.png: RSVP weekend toggles, upcoming/past meets, notifications bell. Intentional: seeded copy vs mockup people photos."
+    "notes": "2026-07-05 meetOverview parity refactor: RSVP → hero (first upcoming) → past meets; removed duplicate Upcoming-meets list + PreMeetTeaser cards to match macOS meetOverview + mockup plate 07. Hero shows meetHeader date + countdownUntil. Intentional iOS-only: notifications bell; vertical stack vs macOS side-by-side hero/RSVP; join gated until meetup time (macOS prototype navigates immediately). Fresh post-build capture pending LiveKit SPM rebuild."
   },
-  "notes": "",
-  "source_hash": "7a70a3bb1b0b0525"
+  "notes": "Cross-platform map: iOS MeetView ↔ macOS meetOverview (MacScreens.swift). validation-gurusharan primary user. macOS ref capture: output/validation/macos-screens/meetOverview.png @ 1200×760. iOS interim capture: output/validation/ios-screens/meet-gurusharan.png (pre-rebuild binary).",
+  "source_hash": "190064b2d223df8d",
+  "recent_screenshot_ref": "output/validation/ios-screens/meet-gurusharan.png"
 }

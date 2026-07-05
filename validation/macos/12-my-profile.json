@@ -88,7 +88,7 @@
     "notes": "2026-07-05 capture vs plate 09: MacProfilePortrait glow rings, dark card metrics, 4-column signal grid, Top interests, My vibe orb. Intentional: DoodlePortraitFemale asset vs mockup photo; backend signal labels not mockup copy."
   },
   "notes": "2026-07-05: retake-voice routes to profileOnboarding step 2 (honest MVP).",
-  "source_hash": "57af14224c2305a9",
+  "source_hash": "01fded38dcfba52d",
   "recent_screenshot_ref": "output/validation/macos-screens/myProfile.png",
   "ui_validation": {
     "result": "pass",

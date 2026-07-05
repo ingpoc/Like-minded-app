@@ -17,9 +17,7 @@ Skip when:
 
 Before work:
 - Read AGENTS.md.
-- Run workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs summary project-context.
-- Run workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs summary project-spine.
-- Run workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs summary validation.
+- Run `npm run goal:next` and the routed `first_command` only — do not preload workflow summaries unless boundary dispute.
 
 Rules:
 - Treat apps/ios-macos/Sources/LikemindedApp/LikemindedApp.swift as a SwiftUI source placeholder until a native project workflow is chosen.

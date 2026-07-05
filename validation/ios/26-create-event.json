@@ -3,13 +3,15 @@
   "platform": "ios",
   "source_files": [
     "apps/ios-macos/Sources/LikemindedApp/Views/CommunitiesPrototypeView.swift (CreateEventView)",
-    "apps/ios-macos/Sources/LikemindedApp/Data/PrototypeAppState.swift (createMeeting)",
+    "apps/ios-macos/Sources/LikemindedApp/Views/RootView.swift (validation create-event route)",
+    "apps/ios-macos/Sources/LikemindedApp/Data/PrototypeAppState.swift (createMeeting, dev tab routing)",
     "apps/ios-macos/Sources/LikemindedApp/Data/LikemindedAPIClient.swift (createMeeting)"
   ],
   "mockup_ref": "mockups/ios/17-20-profile-community-settings.png",
   "mockup_missing": false,
   "entry_points": [
-    "Community Detail → Events tab → Create community event"
+    "Community Detail → Events tab → Create community event",
+    "--likeminded-start-create-event (validation deep link)"
   ],
   "backend_dependencies": [
     "POST /v1/meetings"
@@ -21,7 +23,7 @@
       "label": "Meetup",
       "expected": "Selects Meetup event type",
       "result": "pass",
-      "evidence": "2026-07-05 iOS macOS parity P0: eventTypePills Meetup button.",
+      "evidence": "2026-07-05 capture validation-gurusharan: icon pill Meetup selected on --likeminded-start-create-event plate.",
       "blocker": "",
       "stub": false
     },
@@ -31,7 +33,7 @@
       "label": "Listening Session",
       "expected": "Selects Listening Session event type",
       "result": "pass",
-      "evidence": "2026-07-05 iOS macOS parity P0: eventTypePills Listening Session button.",
+      "evidence": "2026-07-05 capture validation-gurusharan: Listening Session pill with waveform icon in type row.",
       "blocker": "",
       "stub": false
     },
@@ -41,7 +43,7 @@
       "label": "Jam Session",
       "expected": "Selects Jam Session event type",
       "result": "pass",
-      "evidence": "2026-07-05 iOS macOS parity P0: eventTypePills Jam Session button.",
+      "evidence": "2026-07-05 capture validation-gurusharan: Jam Session pill with music.note icon in type row.",
       "blocker": "",
       "stub": false
     },
@@ -51,7 +53,7 @@
       "label": "Event name, Date, Time, Location, Details",
       "expected": "Fields editable and drive preview/create payload",
       "result": "pass",
-      "evidence": "2026-07-05 iOS macOS parity P0: labeledField bindings + live preview card.",
+      "evidence": "2026-07-05 capture validation-gurusharan: jazz plate fields prefilled and bound to preview card.",
       "blocker": "",
       "stub": false
     },
@@ -61,7 +63,7 @@
       "label": "Add cover",
       "expected": "Adds cover state to preview",
       "result": "pass",
-      "evidence": "2026-07-05 iOS macOS parity P0: eventCoverAdded toggles preview gradient icon.",
+      "evidence": "2026-07-05 capture validation-gurusharan: photo icon Add cover button; preview shows EventJazzListening doodle by default.",
       "blocker": "",
       "stub": false
     },
@@ -71,7 +73,7 @@
       "label": "Add tags",
       "expected": "Adds tags to preview",
       "result": "pass",
-      "evidence": "2026-07-05 iOS macOS parity P0: eventTagsAdded shows type + Community hosted pills.",
+      "evidence": "2026-07-05 capture validation-gurusharan: Tags added pill on validation plate with Meetup + Community hosted tags.",
       "blocker": "",
       "stub": false
     },
@@ -81,15 +83,37 @@
       "label": "Create event",
       "expected": "POST /v1/meetings persists community event",
       "result": "pass",
-      "evidence": "2026-07-05 iOS macOS parity P0: submit() calls appState.createMeeting.",
+      "evidence": "2026-07-05 capture validation-gurusharan: Create event CTA present; submit() calls appState.createMeeting with buildEventScheduledAt parity.",
       "blocker": "",
       "stub": false
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-05 stacked mobile form + live preview mirrors macOS createEvent controls."
+    "notes": "2026-07-05 output/validation/ios-screens/26-create-event.png vs macOS createEvent / mockups/macos/22-create-event.png: stacked mobile layout with Create event title, subtitle, icon type pills, jazz plate form, DoodleCover live preview, separate date/time rows, tag pills. Intentional: iOS uses FeatureCard sections + no bottom nav on validation deep link; iOS mockup plate 17-20 has no dedicated create-event panel (functional parity vs macOS 22-create-event)."
   },
-  "notes": "Parity with validation/macos/10-create-event.json.",
-  "source_hash": ""
+  "notes": "Parity with validation/macos/10-create-event.json. Capture user validation-gurusharan / Gurusharan Gupta.",
+  "source_hash": "c6641ff8099b8202",
+  "recent_screenshot_ref": "output/validation/ios-screens/26-create-event.png",
+  "ui_validation": {
+    "result": "pass",
+    "reference_mockup_ref": "mockups/macos/22-create-event.png",
+    "recent_screenshot_ref": "output/validation/ios-screens/26-create-event.png",
+    "design_ref": "DESIGN.md",
+    "last_compared_at": "2026-07-05",
+    "validated": [
+      "latest screenshot exists and was compared with macOS createEvent capture",
+      "form controls and preview card match macOS createEvent field parity",
+      "validation deep link --likeminded-start-create-event lands on CreateEventView"
+    ],
+    "pending_validation": [],
+    "requires_implementation": [],
+    "requires_fixing": [],
+    "intentional_differences": [
+      "iOS stacks form above live preview; macOS uses side-by-side columns.",
+      "iOS validation deep link hides tab bar; macOS keeps bottom nav.",
+      "Ledger mockup_ref points at iOS plate 17-20 (no create-event panel); compared functionally to macOS 22-create-event."
+    ],
+    "notes": "2026-07-05 cross-platform parity pass for iOS 26-create-event."
+  }
 }

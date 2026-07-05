@@ -30,7 +30,7 @@ const PASS_NOTES = {
   "08-past-meet-detail.json":
     `${DATE} source-trace vs mockups/ios/09-12-meet-video-postmeet.png: recap hero, group card, reflection note, soulmate select connections when enabled.`,
   "09-group-video-call.json":
-    `${DATE} source-trace vs plate 09-12: GroupVideoCallView tiles mute leave. Intentional: prototype room until LiveKit Phase 10; initials not camera feeds.`,
+    `${DATE} capture output/validation/ios-screens/group-video-call.png vs mockups/ios/09-12-meet-video-postmeet.png: dark full-screen 2-col tile grid, Live badge, participant count, host pill, floating self-view, mute/leave/participants controls. Intentional: gradient initials not camera feeds until LiveKit Phase 10; macOS adds sidebar/agenda panel.`,
   "10-circles.json":
     `${DATE} capture circles.png vs mockups/ios/05-08-circles-meet-communities.png: your circle hero, concern flow, browse circles carousel.`,
   "11-circle-detail.json":
@@ -38,7 +38,7 @@ const PASS_NOTES = {
   "12-communities.json":
     `${DATE} capture communities.png vs plate 05-08: search, joined cards, browse grid, create-community tile parity with macOS.`,
   "13-community-detail.json":
-    `${DATE} source-trace vs mockups/ios/13-16-soulmate-chat.png: community hero, join/leave, options sheet, meetup countdown from backend.`,
+    `${DATE} capture output/validation/ios-screens/13-community-detail.png vs mockups/ios/17-20-profile-community-settings.png plate 19: Jazz & Music Community hero, stats row, fit-in checklist, Upcoming tabs, meetup countdown. macOS communityDetail parity.`,
   "14-soulmate.json":
     `${DATE} capture soulmate.png vs plate 13-16: matches list, post-meet selection entry, conversations icon; Settings owns enable toggle when on.`,
   "15-soulmate-match-detail.json":
@@ -48,7 +48,7 @@ const PASS_NOTES = {
   "17-conversations.json":
     `${DATE} source-trace vs plate 13-16: conversation list rows from soulmate matches.`,
   "18-soulmate-selection.json":
-    `${DATE} source-trace: SoulmateSelectionDialog multi-select + Submit from recap or Soulmate tab; meetingId scoped when opened from recap.`,
+    `${DATE} capture output/validation/ios-screens/soulmate-selection.png vs mockups/ios/30-soulmate-selection.png: multi-select rows, Submit, Soulmate title. Intentional: Arjun N./Meera I./Rohan M. roster matches macOS soulmateDiscover; plate-30 uses Marco/Ananya/Jordan.`,
   "19-notifications.json":
     `${DATE} source-trace: NotificationsView filter pills + grouped cards from GET /v1/me/notifications.`,
   "20-settings.json":
