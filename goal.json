@@ -2,7 +2,7 @@
   "schema_version": 1,
   "status": "pending",
   "purpose": "Per-session execution goal. Copy this file to goal.json at session start, set the current goal, and keep graders/validation/agent routing current when files or commands change.",
-  "goal": "Reproof stale iOS/macOS ledger controls after validation closeout; commit uncommitted slice.",
+  "goal": "Wave 2 reproof: sequentially re-stamp stale iOS/macOS ledger controls (119 stale_pass) via validate:screen and macos:validation-batch — no parallel build/capture.",
   "ultimate_goal_source": "GOAL.md",
   "progress_source": "PROGRESS.md",
   "workflow_refs": [
