@@ -408,6 +408,27 @@ struct LikemindedAPIClient {
         }
     }
 
+    func setSoulmatePreferences(_ preferences: SoulmatePreferences) async throws -> SoulmatePreferences {
+        let url = baseURL.appendingPathComponent("/v1/me/soulmate/preferences")
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        applyCommonHeaders(&request)
+        request.httpBody = try JSONEncoder().encode(
+            SoulmatePreferencesRequest(
+                discovery: preferences.discovery,
+                ageMin: preferences.ageMin,
+                ageMax: preferences.ageMax,
+                visibility: preferences.visibility
+            )
+        )
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+        struct Response: Decodable { let preferences: SoulmatePreferences }
+        return try JSONDecoder().decode(Response.self, from: data).preferences
+    }
+
     func submitSoulmateSelection(meetingId: String, selectedUserIds: [String]) async throws {
         let url = baseURL.appendingPathComponent("/v1/me/soulmate/select")
         var request = URLRequest(url: url)

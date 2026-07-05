@@ -9,6 +9,17 @@ struct SoulmatePrototypeView: View {
             ScreenContainer(title: "Soulmate", subtitle: "Who you connected with.") {
                 SoulmateHeroCard()
 
+                FeatureCard(title: "How matches work", eyebrow: "Discover") {
+                    Text("Matches appear only after mutual selection from a meetup. Distance and interest filters are not part of this MVP.")
+                        .font(PrototypeTypography.caption)
+                        .foregroundStyle(PrototypePalette.subink)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Label("Source: Mutual meetup selection", systemImage: "person.2.circle")
+                    Label("Visible when: \(appState.soulmateEnabled ? "Soulmate enabled" : "Soulmate off")", systemImage: "heart")
+                    Label("Matches: \(appState.soulmateMatches.count)", systemImage: "bubble.left.and.bubble.right")
+                        .contentTransition(.numericText())
+                }
+
                 if appState.soulmateEnabled {
                     FeatureCard(title: "Soulmate is on", eyebrow: "Private") {
                         Label("On — change this in Settings", systemImage: "checkmark.circle.fill")
@@ -50,6 +61,24 @@ struct SoulmatePrototypeView: View {
                 }
 
                 FeatureCard(title: "Matches", eyebrow: "Mutual") {
+                    HStack {
+                        Spacer()
+                        Button {
+                            Task { await appState.fetchSoulmateStatus() }
+                        } label: {
+                            Text("New matches")
+                                .font(PrototypeTypography.metadata)
+                                .foregroundStyle(PrototypePalette.accent)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 8)
+                                .background(PrototypePalette.surface)
+                                .clipShape(Capsule(style: .continuous))
+                                .overlay(Capsule(style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("New matches")
+                    }
+
                     if appState.isLoadingSoulmate {
                         ProgressView("Loading matches")
                             .font(PrototypeTypography.metadata)
@@ -173,13 +202,30 @@ struct SoulmateMatchDetailView: View {
     var body: some View {
         ScreenContainer(title: match.name, subtitle: "Match detail.") {
             if let detail {
-                FeatureCard(title: detail.basicInfo.name ?? detail.name, eyebrow: detail.basicInfo.gender) {
+                FeatureCard(title: "About", eyebrow: detail.basicInfo.gender ?? "Match") {
+                    Text("\(detail.basicInfo.gender?.capitalized ?? "Member"). Interests are shared only after a mutual match.")
+                        .font(PrototypeTypography.caption)
+                        .foregroundStyle(PrototypePalette.subink)
+                }
+
+                FeatureCard(title: "You both like", eyebrow: "Interests") {
                     if detail.interests.isEmpty {
                         Text("No interests shared yet.")
                             .font(PrototypeTypography.body)
                             .foregroundStyle(PrototypePalette.subink)
                     } else {
                         FlexibleTagLayout(items: detail.interests.map { "\($0.label) · \($0.depth.rawValue)" })
+                    }
+                }
+
+                FeatureCard(title: "Match status", eyebrow: "Mutual") {
+                    Text("Matched from a meetup. Chat opens once both people selected each other.")
+                        .font(PrototypeTypography.caption)
+                        .foregroundStyle(PrototypePalette.subink)
+                    if let date = match.meetingDate {
+                        Label("Met \(LikemindedDate.short(date))", systemImage: "calendar")
+                            .font(PrototypeTypography.metadata)
+                            .foregroundStyle(PrototypePalette.ink)
                     }
                 }
 
@@ -266,6 +312,9 @@ struct ChatView: View {
     @State private var messages: [ChatMessage] = []
     @State private var draft = ""
     @State private var error: String?
+    @State private var showCallSheet = false
+    @State private var callSheetMode = "voice"
+    @State private var showConversationInfo = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -302,6 +351,68 @@ struct ChatView: View {
             .background(.regularMaterial)
         }
         .navigationTitle(match.name)
+        .toolbar {
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                Button {
+                    callSheetMode = "voice"
+                    showCallSheet = true
+                } label: {
+                    Image(systemName: "phone")
+                }
+                .accessibilityLabel("Voice call")
+
+                Button {
+                    callSheetMode = "video"
+                    showCallSheet = true
+                } label: {
+                    Image(systemName: "video")
+                }
+                .accessibilityLabel("Video call")
+
+                Button {
+                    showConversationInfo = true
+                } label: {
+                    Image(systemName: "info.circle")
+                }
+                .accessibilityLabel("Conversation info")
+            }
+        }
+        .sheet(isPresented: $showCallSheet) {
+            NavigationStack {
+                VStack(alignment: .leading, spacing: 14) {
+                    Text(callSheetMode == "voice" ? "Voice call" : "Video call")
+                        .font(PrototypeTypography.sectionTitle)
+                    Text("Scheduling a \(callSheetMode) call with \(match.name) is not wired in this MVP. Message them to coordinate a meetup room instead.")
+                        .font(PrototypeTypography.caption)
+                        .foregroundStyle(PrototypePalette.subink)
+                    Button("Done") { showCallSheet = false }
+                        .buttonStyle(.borderedProminent)
+                        .tint(PrototypePalette.accent)
+                }
+                .padding(20)
+                .navigationTitle("Call")
+                .navigationBarTitleDisplayMode(.inline)
+            }
+            .presentationDetents([.medium])
+        }
+        .sheet(isPresented: $showConversationInfo) {
+            NavigationStack {
+                VStack(alignment: .leading, spacing: 14) {
+                    Text(match.name)
+                        .font(PrototypeTypography.sectionTitle)
+                    Text("Mutual match from \(match.meetingId). Messages sync through the backend chat thread.")
+                        .font(PrototypeTypography.caption)
+                        .foregroundStyle(PrototypePalette.subink)
+                    Button("Done") { showConversationInfo = false }
+                        .buttonStyle(.borderedProminent)
+                        .tint(PrototypePalette.accent)
+                }
+                .padding(20)
+                .navigationTitle("Conversation info")
+                .navigationBarTitleDisplayMode(.inline)
+            }
+            .presentationDetents([.medium])
+        }
         .task { await loadMessages() }
         .task {
             while !Task.isCancelled {

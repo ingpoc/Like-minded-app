@@ -30,8 +30,15 @@ struct NotificationsView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") { dismiss() }
+                    HStack(spacing: 12) {
+                        Button("Mark all read") {
+                            appState.markNotificationsRead()
+                        }
                         .foregroundStyle(PrototypePalette.accent)
+                        .accessibilityLabel("Mark all as read")
+                        Button("Done") { dismiss() }
+                            .foregroundStyle(PrototypePalette.accent)
+                    }
                 }
             }
             .task {

@@ -8,6 +8,10 @@ struct MeetView: View {
     var body: some View {
         NavigationStack {
             ScreenContainer(title: "Meet", subtitle: "When you meet.") {
+                if let heroMeeting = appState.upcomingMeetings.first {
+                    MeetHeroJoinCard(meeting: heroMeeting)
+                }
+
                 RSVPCard(rsvps: appState.meetingRsvps) { kind, available in
                     Task { await appState.updateMeetingRSVP(kind: kind, available: available) }
                 }
@@ -105,6 +109,79 @@ struct MeetView: View {
                 await appState.fetchMeetings()
             }
         }
+    }
+}
+
+private struct MeetHeroJoinCard: View {
+    let meeting: Meeting
+
+    private var countdownText: String {
+        guard let date = LikemindedDate.parse(meeting.scheduledAt) else { return "Soon" }
+        let seconds = max(0, Int(date.timeIntervalSinceNow))
+        return "\(seconds / 86_400)d \((seconds % 86_400) / 3_600)h away"
+    }
+
+    private var canJoin: Bool {
+        Date() >= (LikemindedDate.parse(meeting.scheduledAt) ?? .distantFuture)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Text("Upcoming meetup")
+                    .font(PrototypeTypography.metadata)
+                    .foregroundStyle(.white.opacity(0.85))
+                Spacer()
+                Text(countdownText)
+                    .font(PrototypeTypography.metadata.monospacedDigit())
+                    .foregroundStyle(PrototypePalette.accent)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(Color.white.opacity(0.95))
+                    .clipShape(Capsule(style: .continuous))
+                    .contentTransition(.numericText())
+            }
+
+            Text(meeting.title)
+                .font(PrototypeTypography.cardTitle)
+                .foregroundStyle(.white)
+                .fixedSize(horizontal: false, vertical: true)
+
+            VStack(alignment: .leading, spacing: 8) {
+                Label("Host: \(meeting.hostName)", systemImage: "person.circle")
+                Label("\(meeting.groupSize) participants", systemImage: "person.2")
+                if !meeting.compositionSummary.isEmpty {
+                    Label(meeting.compositionSummary, systemImage: "person.3")
+                }
+            }
+            .font(PrototypeTypography.caption)
+            .foregroundStyle(.white.opacity(0.88))
+
+            NavigationLink {
+                GroupVideoCallView(meeting: meeting)
+            } label: {
+                Text("Join meetup")
+                    .font(PrototypeTypography.button)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(Color.white.opacity(0.92))
+                    .foregroundStyle(PrototypePalette.accent)
+                    .clipShape(Capsule(style: .continuous))
+            }
+            .disabled(!canJoin)
+            .accessibilityLabel("Join meetup")
+        }
+        .padding(22)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            LinearGradient(
+                colors: [PrototypePalette.accent, PrototypePalette.accentDeep],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Color.white.opacity(0.12), lineWidth: 1))
     }
 }
 

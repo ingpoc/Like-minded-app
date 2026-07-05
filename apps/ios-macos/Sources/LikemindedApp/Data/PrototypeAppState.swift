@@ -44,9 +44,11 @@ final class PrototypeAppState: ObservableObject {
     @Published var soulmateMatches: [SoulmateMatch] = []
     @Published var soulmateError: String?
     @Published var isLoadingSoulmate = false
+    @Published var soulmatePreferences = SoulmatePreferences.defaults
     @Published var notifications: [NotificationItem] = []
     @Published var activityItems: [NotificationItem] = []
     @Published var notificationError: String?
+    @Published var notificationsReadAt: Date?
 
     private let voiceClient = RealtimeVoiceClient()
 
@@ -620,6 +622,10 @@ final class PrototypeAppState: ObservableObject {
         }
     }
 
+    func markNotificationsRead() {
+        notificationsReadAt = Date()
+    }
+
     func fetchSoulmateStatus() async {
         guard isSignedIn else { return }
         isLoadingSoulmate = true
@@ -628,6 +634,7 @@ final class PrototypeAppState: ObservableObject {
             let status = try await client.fetchSoulmateStatus()
             soulmateEnabled = status.enabled
             soulmatePendingSelections = status.pendingSelections
+            soulmatePreferences = status.preferences ?? .defaults
             soulmateMatches = try await client.fetchSoulmateMatches()
             soulmateError = nil
         } catch {
@@ -644,6 +651,17 @@ final class PrototypeAppState: ObservableObject {
             await fetchSoulmateStatus()
         } catch {
             soulmateError = "Soulmate preference could not be saved."
+        }
+    }
+
+    func saveSoulmatePreferences(_ preferences: SoulmatePreferences) async -> Bool {
+        do {
+            soulmatePreferences = try await client.setSoulmatePreferences(preferences)
+            soulmateError = nil
+            return true
+        } catch {
+            soulmateError = "Soulmate preferences could not be saved."
+            return false
         }
     }
 

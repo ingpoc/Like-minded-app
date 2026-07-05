@@ -6,6 +6,8 @@ struct SettingsPrototypeView: View {
     @State private var showingDeleteConfirm = false
     @State private var isDeletingAccount = false
     @State private var activeSheet: SettingsSheet?
+    @State private var isSavingSoulmatePrefs = false
+    @State private var soulmatePrefsStatus: String?
 
     var body: some View {
         ScreenContainer(title: "Soulmate", subtitle: "Settings") {
@@ -30,6 +32,10 @@ struct SettingsPrototypeView: View {
                     SettingsRow(icon: "heart", title: "How it works") {
                         activeSheet = .howItWorks
                     }
+
+                    Divider().overlay(PrototypePalette.rule)
+
+                    discoveryPreferencesSection
                 }
             }
 
@@ -81,6 +87,9 @@ struct SettingsPrototypeView: View {
             }
         }
         .toolbar(.hidden, for: .navigationBar)
+        .task {
+            await appState.fetchSoulmateStatus()
+        }
         .confirmationDialog(
             "Sign out of Likeminded?",
             isPresented: $showingSignOutConfirm,
@@ -144,6 +153,88 @@ struct SettingsPrototypeView: View {
             set: { newValue in
                 Task { await appState.setSoulmateEnabled(newValue) }
             }
+        )
+    }
+
+    private var discoveryPreferencesSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Discovery preferences")
+                .font(PrototypeTypography.bodyStrong)
+                .foregroundStyle(PrototypePalette.ink)
+
+            Picker("Who can discover you", selection: discoveryBinding) {
+                Text("People in my circles").tag("circles")
+                Text("Circles + circle of circles").tag("circles_extended")
+                Text("People in my communities").tag("communities")
+            }
+            .pickerStyle(.menu)
+            .accessibilityLabel("Who can discover you")
+
+            Text("Age range")
+                .font(PrototypeTypography.metadata)
+                .foregroundStyle(PrototypePalette.ink)
+            HStack(spacing: 12) {
+                Stepper("Min \(appState.soulmatePreferences.ageMin)", value: ageMinBinding, in: 18...70)
+                Stepper("Max \(appState.soulmatePreferences.ageMax)", value: ageMaxBinding, in: 18...80)
+            }
+
+            Text("Visibility")
+                .font(PrototypeTypography.metadata)
+                .foregroundStyle(PrototypePalette.ink)
+            Picker("Visibility", selection: visibilityBinding) {
+                Text("Circles only").tag("circles_only")
+                Text("Circles and communities").tag("circles_communities")
+                Text("Mutual matches only").tag("matches_only")
+            }
+            .pickerStyle(.segmented)
+            .accessibilityLabel("Visibility")
+
+            Button(isSavingSoulmatePrefs ? "Saving…" : "Save preferences") {
+                Task {
+                    isSavingSoulmatePrefs = true
+                    let saved = await appState.saveSoulmatePreferences(appState.soulmatePreferences)
+                    isSavingSoulmatePrefs = false
+                    soulmatePrefsStatus = saved ? "Preferences saved." : appState.soulmateError
+                }
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(PrototypePalette.accent)
+            .accessibilityLabel("Save preferences")
+
+            if let soulmatePrefsStatus {
+                Text(soulmatePrefsStatus)
+                    .font(PrototypeTypography.caption)
+                    .foregroundStyle(PrototypePalette.subink)
+            }
+        }
+        .padding(.vertical, 8)
+    }
+
+    private var discoveryBinding: Binding<String> {
+        Binding(
+            get: { appState.soulmatePreferences.discovery },
+            set: { appState.soulmatePreferences.discovery = $0 }
+        )
+    }
+
+    private var visibilityBinding: Binding<String> {
+        Binding(
+            get: { appState.soulmatePreferences.visibility },
+            set: { appState.soulmatePreferences.visibility = $0 }
+        )
+    }
+
+    private var ageMinBinding: Binding<Int> {
+        Binding(
+            get: { appState.soulmatePreferences.ageMin },
+            set: { appState.soulmatePreferences.ageMin = min($0, appState.soulmatePreferences.ageMax) }
+        )
+    }
+
+    private var ageMaxBinding: Binding<Int> {
+        Binding(
+            get: { appState.soulmatePreferences.ageMax },
+            set: { appState.soulmatePreferences.ageMax = max($0, appState.soulmatePreferences.ageMin) }
         )
     }
 
