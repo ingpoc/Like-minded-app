@@ -69,3 +69,12 @@ Next-goal: smallest full-session surface (one screen family, endpoint family, or
 - iOS → `LikemindedApp/`; macOS → `LikemindedMac/`.
 - Command/script changes: update `docs/workflows/validation.md` + `docs/references/project-context.md` in the same change—**edit, don't add** parallel docs.
 - No sibling `validation/**/*.md` ledgers; JSON only.
+
+## Cursor Cloud specific instructions
+
+- Cloud VM is **Linux with no Swift/Xcode**, so the iOS/macOS native surfaces cannot be built or run here. Any command using `xcodebuild`/`simctl`/`xcodegen`/`osascript` (`verify:simulator-local`, `verify:macos-screens`, `dev:macos:validation`, `audit:macos:*`, `build_and_run.sh`, `macos_*.sh`) is macOS-only and will not run in cloud.
+- The only runnable service on Linux is the Node API (`services/api/src/server.js`, Node 20+). It defaults to **local JSON storage** under `./data/` (git-ignored) — no Postgres/`DATABASE_URL` needed for dev.
+- Start it with dev auth bypass so authenticated routes work without real Sign in with Apple: `SESSION_SECRET=local-session-secret-minimum-24-chars APPLE_AUTH_BYPASS=1 node services/api/src/server.js` (or `npm run dev:api:local-auth`). Default host/port is `127.0.0.1:8787`; health at `GET /health` reports active storage mode.
+- Auth-gated routes need a session token: `POST /v1/auth/apple` (any body under bypass) returns `sessionToken`; pass it as `Authorization: Bearer <token>`. Core loop: `/v1/discover` → `/v1/me/placement` → `/v1/me/placement/actions` → `/v1/me/circles` → `/v1/feedback`.
+- Zero-token verification on Linux: `npm run check` (syntax/lint gate) and `npm run smoke:mvp` (self-contained end-to-end backend test on a temp DB). No formal unit-test framework exists; smoke + verify graders are the checks.
+- `run_api.sh`/`run_validation_api.sh` use `lsof` (present on the VM). `OPENAI_API_KEY`/`LIVEKIT_*` are only needed for live voice/video; the placement loop works without them.
