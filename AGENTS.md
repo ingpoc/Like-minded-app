@@ -69,3 +69,8 @@ Next-goal: smallest full-session surface (one screen family, endpoint family, or
 - iOS → `LikemindedApp/`; macOS → `LikemindedMac/`.
 - Command/script changes: update `docs/workflows/validation.md` + `docs/references/project-context.md` in the same change—**edit, don't add** parallel docs.
 - No sibling `validation/**/*.md` ledgers; JSON only.
+
+## Cursor Cloud specific instructions
+
+- Linux VM, no Swift/Xcode → only the Node API (`services/api`, local JSON) runs; native iOS/macOS build/run/validate is unavailable.
+- Before any backend run/test or build/validate attempt, load only `docs/workflows/setup.md` → "Cursor Cloud (Linux, no Xcode)" for the can/cannot list, run command, and Linux-safe vs Xcode-only script tables.
