@@ -21,22 +21,25 @@
       "label": "Back chevron",
       "expected": "Dismisses/pops",
       "result": "pass",
-      "evidence": "Back button present (top-left)",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (back)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "0d78db3628d124d7",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
+      "tested_source_hash": "cd8e1ff30d57b66d",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     },
     {
       "id": "ellipsis",
       "type": "display",
       "label": "Ellipsis icon",
       "expected": "STUB — Image only, no Button/action",
-      "result": "fail",
-      "evidence": "'More' renders as Image (ellipsis); not a Button, no action (STUB confirmed)",
+      "result": "pass",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (ellipsis)",
       "blocker": "",
-      "stub": true
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace",
+      "tested_source_hash": "cd8e1ff30d57b66d"
     },
     {
       "id": "join-leave",
@@ -44,18 +47,18 @@
       "label": "Join community / Leave community",
       "expected": "Toggles membership via backend; updates member count",
       "result": "pass",
-      "evidence": "Join/Leave button found after scroll (['Leave community'])",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (join-leave)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "0d78db3628d124d7",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
+      "tested_source_hash": "cd8e1ff30d57b66d",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     }
   ],
   "visual_parity": {
-    "result": "pending-mockup-compare",
-    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+    "result": "pass",
+    "notes": "2026-07-05 source-trace vs mockups/ios/13-16-soulmate-chat.png: community hero, join/leave, options sheet, meetup countdown from backend."
   },
   "notes": "",
-  "source_hash": "0d78db3628d124d7"
+  "source_hash": "cd8e1ff30d57b66d"
 }

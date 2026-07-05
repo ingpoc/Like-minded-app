@@ -3,8 +3,10 @@ const crypto = require("node:crypto");
 const APPLE_ISSUER = "https://appleid.apple.com";
 const APPLE_KEYS_URL = "https://appleid.apple.com/auth/keys";
 const SESSION_TTL_SECONDS = 60 * 60 * 24 * 30;
+const APPLE_KEYS_CACHE_MS = 60 * 60 * 1000;
 
 let cachedAppleKeys = null;
+let cachedAppleKeysAt = 0;
 
 function base64url(input) {
   return Buffer.from(input)
@@ -43,7 +45,9 @@ function createSessionToken(user) {
   const header = { alg: "HS256", typ: "JWT" };
   const payload = {
     sub: user.id,
-    appleSub: user.appleSub,
+    authProvider: user.authProvider || (user.appleSub ? "apple" : user.googleSub ? "google" : user.walletAddress ? "wallet" : null),
+    authSubject: user.authSubject || user.appleSub || user.googleSub || null,
+    appleSub: user.appleSub || null,
     iat: now,
     exp: now + SESSION_TTL_SECONDS
   };
@@ -63,29 +67,75 @@ function verifySessionToken(token) {
   return parsed.payload;
 }
 
-async function appleKeys() {
-  if (cachedAppleKeys) return cachedAppleKeys;
+function appleAudiences() {
+  const audiences = new Set();
+  for (const value of [
+    process.env.APPLE_CLIENT_IDS,
+    process.env.APPLE_CLIENT_ID,
+    process.env.APPLE_BUNDLE_ID,
+    process.env.APPLE_MAC_BUNDLE_ID
+  ]) {
+    if (!value) continue;
+    for (const part of String(value).split(",")) {
+      const trimmed = part.trim();
+      if (trimmed) audiences.add(trimmed);
+    }
+  }
+  return audiences;
+}
+
+function verifyNonce(rawNonce, tokenNonce, { requireNonce = false } = {}) {
+  if (!rawNonce) {
+    if (requireNonce) throw new Error("nonce_required");
+    return;
+  }
+  if (!tokenNonce) throw new Error("apple_nonce_missing");
+  const expected = crypto.createHash("sha256").update(rawNonce).digest("hex");
+  if (expected !== tokenNonce) throw new Error("apple_nonce_mismatch");
+}
+
+async function fetchAppleKeys() {
   const response = await fetch(APPLE_KEYS_URL);
   if (!response.ok) throw new Error("apple_keys_unavailable");
-  cachedAppleKeys = await response.json();
+  return response.json();
+}
+
+async function appleKeys({ forceRefresh = false } = {}) {
+  const isFresh = cachedAppleKeys && Date.now() - cachedAppleKeysAt < APPLE_KEYS_CACHE_MS;
+  if (!forceRefresh && isFresh) return cachedAppleKeys;
+  cachedAppleKeys = await fetchAppleKeys();
+  cachedAppleKeysAt = Date.now();
   return cachedAppleKeys;
 }
 
-async function verifyAppleIdentityToken(identityToken) {
+function findAppleJwk(keys, kid) {
+  return keys.keys.find((key) => key.kid === kid);
+}
+
+async function verifyAppleIdentityToken(identityToken, options = {}) {
   if (process.env.APPLE_AUTH_BYPASS === "1") {
     return {
       sub: `dev-${crypto.createHash("sha256").update(identityToken || "tester").digest("hex").slice(0, 16)}`,
       email: "tester@likeminded.local",
-      emailVerified: true
+      email_verified: true
     };
   }
 
-  const expectedAudience = process.env.APPLE_CLIENT_ID || process.env.APPLE_BUNDLE_ID;
-  if (!expectedAudience) throw new Error("APPLE_CLIENT_ID or APPLE_BUNDLE_ID must be set");
+  const audiences = appleAudiences();
+  if (audiences.size === 0) {
+    throw new Error("APPLE_CLIENT_ID, APPLE_BUNDLE_ID, or APPLE_CLIENT_IDS must be set");
+  }
 
   const parsed = parseJwt(identityToken);
-  const keys = await appleKeys();
-  const jwk = keys.keys.find((key) => key.kid === parsed.header.kid);
+  const requireNonce = process.env.APPLE_REQUIRE_NONCE === "1" || options.requireNonce === true;
+  verifyNonce(options.nonce, parsed.payload.nonce, { requireNonce });
+
+  let keys = await appleKeys();
+  let jwk = findAppleJwk(keys, parsed.header.kid);
+  if (!jwk) {
+    keys = await appleKeys({ forceRefresh: true });
+    jwk = findAppleJwk(keys, parsed.header.kid);
+  }
   if (!jwk) throw new Error("apple_key_not_found");
 
   const publicKey = crypto.createPublicKey({ key: jwk, format: "jwk" });
@@ -94,9 +144,15 @@ async function verifyAppleIdentityToken(identityToken) {
 
   const now = Math.floor(Date.now() / 1000);
   if (parsed.payload.iss !== APPLE_ISSUER) throw new Error("invalid_apple_issuer");
-  if (parsed.payload.aud !== expectedAudience) throw new Error("invalid_apple_audience");
+  if (!audiences.has(parsed.payload.aud)) throw new Error("invalid_apple_audience");
   if (parsed.payload.exp < now) throw new Error("apple_token_expired");
   if (!parsed.payload.sub) throw new Error("apple_sub_missing");
+  if (typeof parsed.payload.auth_time === "number" && parsed.payload.auth_time > now + 60) {
+    throw new Error("apple_auth_time_invalid");
+  }
+  if (parsed.payload.email && parsed.payload.email_verified === false) {
+    throw new Error("apple_email_unverified");
+  }
   return parsed.payload;
 }
 
@@ -110,5 +166,8 @@ module.exports = {
   createSessionToken,
   verifySessionToken,
   verifyAppleIdentityToken,
-  bearerToken
+  bearerToken,
+  appleAudiences,
+  verifyNonce,
+  parseJwt
 };

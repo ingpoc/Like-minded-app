@@ -5,7 +5,11 @@ Node HTTP backend for the Likeminded TestFlight MVP placement loop.
 ## Current MVP Routes
 
 - `GET /health` - service health and active storage mode.
-- `POST /v1/auth/apple` - validates Sign in with Apple identity token and returns an app session token.
+- `POST /v1/auth/apple` - validates Sign in with Apple identity token (audience, signature, optional nonce) and returns an app session token.
+- `POST /v1/auth/google` - validates Google ID token and returns an app session token.
+- `POST /v1/auth/wallet/challenge` - creates a short-lived sign-in message for MetaMask (Ethereum) or Solflare (Solana).
+- `GET /v1/auth/wallet/sign` - WalletConnect signing page used by native clients through `ASWebAuthenticationSession`.
+- `POST /v1/auth/wallet/verify` - verifies wallet signature and returns an app session token.
 - `POST /v1/discover` - authenticated voice/reflection input -> profile signals -> circle placement.
 - `GET /v1/me/profile` - latest signed-in user's profile.
 - `PATCH /v1/me/profile` - signed-in user's profile corrections.
@@ -34,6 +38,8 @@ npm run smoke:mvp
 For voice sessions, set `OPENAI_API_KEY` on the API server. Production defaults to `gpt-realtime-2`; local cost-sensitive testing can use `npm run dev:api:realtime-test`.
 
 `APPLE_AUTH_BYPASS=1` is only for isolated local API smoke checks. Do not enable it in TestFlight or production.
+
+Production should set `APPLE_CLIENT_IDS=com.likeminded.app,com.likeminded.mac`, keep `APPLE_AUTH_BYPASS=0`, and enable `APPLE_REQUIRE_NONCE=1` so clients must send the raw nonce used during Sign in with Apple.
 
 ## Scope
 

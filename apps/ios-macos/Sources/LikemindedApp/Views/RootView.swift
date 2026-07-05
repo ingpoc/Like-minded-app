@@ -45,6 +45,7 @@ struct RootView: View {
         }
         .task {
             await appState.signInForLocalValidationIfNeeded()
+            await appState.validateStoredAppleCredentialIfNeeded()
         }
     }
 

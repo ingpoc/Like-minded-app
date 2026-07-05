@@ -315,7 +315,7 @@ Update docs to match shipped product. Run all graders.
 Parallel to Phase 9; not a numbered phase. Owner: `docs/references/macos-screen-audit.md`. First command when focusing this track: `./script/macos_audit_prepare.sh` then `./script/run_macos_manual_validation.sh <screen>` or `./script/macos_cua_screen.sh`.
 
 - [x] Manual proofs — **macOS**: infra-only blockers remain (welcome Apple sign-in, meet video LiveKit join); all other `validation/macos/*.json` controls pass/fail/blocked with CUA on validation-priya.
-- [x] macOS validation ledgers: drive `validation/macos/*.json` controls to pass/fail/blocked with runtime evidence (JSON is the only status owner). Closed: chat/messages, soulmate discover/detail, profile surfaces, communities browse typing, create-event typing, meet recap note, create-community (`22-create-community.json`). Remaining infra: welcome Apple sign-in, meet video (Phase 10).
+- [x] macOS validation ledgers: drive `validation/macos/*.json` controls to pass/fail/blocked with runtime evidence (JSON is the only status owner). Closed: chat/messages, soulmate discover/detail, profile surfaces, communities browse typing, create-event typing, meet recap note, create-community (`22-create-community.json`), CUA stale reproof after social auth (`npm run macos:cua-reproof`). Remaining infra: welcome Apple sign-in capture, meet video LiveKit join (Phase 10).
 - [x] macOS profile honesty: `profileEdit` / `profileOnboarding` / personality signal cards use backend profile data or honest static labels; CUA evidence in `validation/macos/05-profile-edit.json`, `12-my-profile.json`, `13-profile-onboarding.json`, `14-profile-signals.json`.
 - [x] macOS soulmate discover/detail honesty: fake distance/filter/compatibility chrome removed; match cards use API fields; CUA evidence in `validation/macos/15-soulmate-overview.json`, `16-soulmate-discover.json`, `17-soulmate-detail.json`.
 - [x] macOS community members honesty: sidebar/filter pills/member rows wired or demoted; search proven; CUA evidence in `validation/macos/09-community-members.json`.
@@ -339,9 +339,9 @@ Ledger owner: `validation/macos/*.json` pending rows with `stub: true` and block
 
 Phase 8 marked iOS manual proofs complete, but `validation/ios/*.json` still has open fail/pending rows. Close these before claiming production-grade iOS control coverage.
 
-- [ ] iOS Leave circle: wire a real leave/placement action or remove/honestly disable the control; evidence in `validation/ios/11-circle-detail.json`.
-- [ ] iOS past-meet row navigation: fix Meet past-row → recap; evidence in `validation/ios/07-meet.json`.
-- [ ] iOS ledger closeout: drive all `validation/ios/*.json` pending controls to pass/fail/blocked (onboarding, Sunday RSVP, past-meet detail, soulmate selection, settings rows, profile concern); JSON is status owner.
+- [x] iOS Leave circle: Leave circle confirms and calls `deferPlacement` via `POST /v1/me/placement/actions`; evidence in `validation/ios/11-circle-detail.json`.
+- [x] iOS past-meet row navigation: `NavigationLink(value: Meeting)` pushes `PastMeetDetailView`; evidence in `validation/ios/07-meet.json`.
+- [x] iOS ledger closeout: functional + visual parity controls pass/blocked in `validation/ios/*.json`; remaining infra-blocked: real Apple sign-in + LiveKit (Phase 9/10).
 
 ## Deferred
 

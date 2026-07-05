@@ -44,7 +44,7 @@ struct Community: Codable, Identifiable, Equatable {
     let membersCount: Int
 }
 
-struct Meeting: Codable, Identifiable, Equatable {
+struct Meeting: Codable, Identifiable, Equatable, Hashable {
     let id: String
     let kind: String
     let targetId: String
@@ -242,10 +242,15 @@ struct RealtimeSessionRequest: Encodable {
     let safetyIdentifier: String
 }
 
+struct GoogleAuthRequest: Encodable {
+    let idToken: String
+}
+
 struct AppleAuthRequest: Encodable {
     let identityToken: String
     let authorizationCode: String?
     let fullName: String?
+    let nonce: String?
 }
 
 struct AppleAuthResponse: Decodable {

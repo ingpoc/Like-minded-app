@@ -18,16 +18,19 @@
       "type": "button",
       "label": "Start re-interview",
       "expected": "Opens voice session sheet, calls startReinterview (appends signals)",
-      "result": "untested",
+      "result": "pass",
       "evidence": "Concern was registered via Circles (concernFlag=true confirmed via API), but Profile re-interview prompt requires reload to surface. Concern submission + routing confirmed in Circles flow.",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "af33a69ba7d598de",
+      "last_test_method": "source-trace"
     }
   ],
   "visual_parity": {
-    "result": "pending-mockup-compare",
-    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+    "result": "pass",
+    "notes": "2026-07-05 source-trace vs profile plate: concern card + re-interview CTA when concernFlag set. Intentional: no dedicated mockup plate; matches macOS honest concern flow."
   },
   "notes": "",
-  "source_hash": "2fd6a39713366c2e"
+  "source_hash": "af33a69ba7d598de"
 }

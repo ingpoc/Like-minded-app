@@ -29,12 +29,12 @@
       "label": "Participant tiles",
       "expected": "Camera tiles grid",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (tiles)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof batch: reproof after source hash change (tiles)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     },
     {
       "id": "mute",
@@ -42,12 +42,12 @@
       "label": "Mute toggle",
       "expected": "Toggles local mic",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (mute)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof batch: reproof after source hash change (mute)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     },
     {
       "id": "leave",
@@ -55,12 +55,12 @@
       "label": "Leave",
       "expected": "Disconnects room",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (leave)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof batch: reproof after source hash change (leave)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     }
   ],
   "visual_parity": {
@@ -68,5 +68,5 @@
     "notes": "2026-07-04 capture vs mockups/macos/21-meet-video-call.png: prototype room tiles mute leave participants agenda. Intentional: no LiveKit SDK; initials on tiles not camera feeds; join API blocked Phase 10."
   },
   "notes": "2026-07-05: join-room blocked on LiveKit infra (Phase 10). tiles/mute/leave pass as prototype UI only — real camera feeds and backend mic require LiveKit join.",
-  "source_hash": "3f8988b2bae470b2"
+  "source_hash": "c85b147b28b0e423"
 }

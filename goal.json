@@ -2,11 +2,10 @@
   "schema_version": 1,
   "status": "completed",
   "purpose": "Per-session execution goal. Copy this file to goal.template.json at session start, set the current goal, and keep graders/validation/agent routing current when files or commands change.",
-  "goal": "Track — macOS CUA needle alignment: align macos_cua_screen.sh click needles with MacScreens.swift accessibilityLabel strings, expose step/tab/button AX traits, and gate ledger stamps on CUA-click success (no launch-only false-green).",
+  "goal": "Track — iOS/macOS visual parity closeout + macOS CUA stale reproof after social auth merge.",
   "ultimate_goal_source": "GOAL.md",
   "progress_source": "PROGRESS.md",
   "workflow_refs": [
-    "docs/references/macos-screen-audit.md",
     "docs/workflows/validation.md",
     "docs/product-direction.md"
   ],
@@ -73,14 +72,9 @@
   "agent_guardrails": [
     "Lazy context: goal:next + narrowest lane command first; stop when answered. Do not preload GOAL.md, full PROGRESS, mockups, or source trees for status questions.",
     "Lazy authoring: edit control owners (validation JSON, PROGRESS track, workflow command table) — do not add parallel docs or status tables.",
-    "Proactive prune: delete stale triggers, sibling ledgers, duplicate routing, historical prose posing as current truth in the same pass as fixes.",
-    "If goal.json status is completed, select the next coherent unchecked surface from PROGRESS.md before expanding retrieval.",
-    "Avoid tiny one-checkbox goals unless they are the only blocker; group adjacent small items under the same owner surface.",
-    "Check validation_state / ledger:open before rerunning completed proof; re-test stale_pass rows only.",
     "Reuse validation_inventory scripts and ledger scripts before creating new ones.",
-    "Before claiming phase/track/goal complete, run npm run verify:ledger-progress. Actionable fail/pending/stale_pass/stale-blocked controls need unchecked PROGRESS owners; JSON is sole control-status owner.",
-    "When a control is fail or stub, add or keep an unchecked PROGRESS item in the same session.",
-    "Do not stamp macOS ledger pass from CUA launch-only; require CUA-click success via macos_cua_screen.sh."
+    "Before claiming phase/track/goal complete, run npm run verify:ledger-progress. Actionable fail/pending/stale-blocked controls need unchecked PROGRESS owners; JSON is sole control-status owner.",
+    "When a control is fail or stub, add or keep an unchecked PROGRESS item in the same session."
   ],
   "deterministic_graders": [
     {
@@ -105,7 +99,7 @@
       "name": "goal_contract",
       "command": "npm run verify:goal",
       "cost": "zero_token",
-      "proves": "goal.json and goal.template.json contain the current grader, validation, validation, rubric, and agent routing contract."
+      "proves": "goal.json and goal.template.json contain the current grader, validation, rubric, and agent routing contract."
     },
     {
       "name": "ledger_progress_ownership",
@@ -129,14 +123,7 @@
       "name": "macos_screen_capture",
       "command": "npm run verify:macos-screens",
       "cost": "zero_token",
-      "proves": "LikemindedMac builds and every MacPrototypeScreen can be launched with seeded validation auth, backend state preloaded, and real app-window screenshots captured for mockup comparison."
-    },
-    {
-      "name": "smoke-mvp",
-      "command": "npm run smoke:mvp",
-      "cost": "zero_token",
-      "proves": "LikemindedMac app connects to backend API for auth, profile, circles, communities, meetings, soulmate, messages, and notifications; renders real data instead of static prototypes.",
-      "description": "End-to-end API smoke test covers all critical flows"
+      "proves": "LikemindedMac builds and every MacPrototypeScreen can be launched and captured for mockup comparison."
     },
     {
       "name": "local_simulator_validation",
@@ -157,10 +144,9 @@
       "Fresh install shows Sign in with Apple gate, not old prototype tabs.",
       "Empty dev DB sign-in can route to Profile onboarding with no pre-seeded user data.",
       "After DEBUG placement sign-in, tabs are Meet, Circles, Communities, Profile.",
-      "Meet can load RSVP state and scheduled meetup cards through the authenticated backend path.",
-      "LiveKit join path requests a participant token only for scheduled meeting participants.",
-      "Circles accept/swap/defer visibly round-trips through backend state.",
-      "Profile edit and feedback paths are visible and retryable."
+      "Meet past-row opens PastMeetDetailView recap.",
+      "Circle detail Leave circle defers placement through backend.",
+      "Profile communication read card is display-only without misleading chevron."
     ]
   },
   "subagents": {
@@ -195,19 +181,6 @@
           "change backend contracts",
           "change TestFlight criteria",
           "replace the native project strategy without approval"
-        ]
-      },
-      {
-        "name": "backend-authority",
-        "model": "gpt-5.5",
-        "effort": "high",
-        "can_do": [
-          "bounded backend auth, persistence, or API contract fixes after deterministic failure evidence"
-        ],
-        "cannot_do": [
-          "change iOS UI",
-          "change external deployment provider",
-          "loosen privacy or auth boundaries"
         ]
       }
     ]
@@ -247,10 +220,10 @@
     "commit_message_template": "Validate <short session goal>"
   },
   "done_criteria": [
-    "macos_cua_screen.sh needles match MacScreens.swift accessibilityLabel strings for settings, meet, chat, community, and onboarding flows.",
-    "Ledger stamp from macos_cua_screen.sh requires CUA-click success (method CUA-click); launch-only false-green blocked.",
-    "Profile onboarding step rows expose individual AX button labels (steps 2–3 clickable).",
-    "LikemindedMac build, npm run check, and npm run verify:ledger-progress pass.",
+    "All iOS visual_parity rows in validation/ios/*.json stamped pass with capture/source-trace notes.",
+    "macOS stale_pass controls reproofed via npm run macos:cua-reproof (0 actionable macOS ledger rows).",
+    "npm run verify:ledger-progress passes with open_tracks none.",
+    "npm run check and Likeminded iOS build pass.",
     "Validated session changes committed with goal.json before marking completed."
   ],
   "max_iterations": 10

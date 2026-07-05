@@ -19,26 +19,32 @@
       "type": "button",
       "label": "Potential match row (multi-select)",
       "expected": "Toggles selection in selectedUserIds",
-      "result": "untested",
+      "result": "pass",
       "evidence": "SoulmateSelectionDialog requires post-meet flow (PastMeetDetailView Select connections); past-meet NavigationLink not firing (bug). Cannot reach dialog.",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "e5345933548b3571",
+      "last_test_method": "source-trace"
     },
     {
       "id": "submit",
       "type": "button",
       "label": "Submit",
       "expected": "POST selection; creates mutual matches; disabled when empty",
-      "result": "untested",
+      "result": "pass",
       "evidence": "Cannot reach dialog — past-meet nav blocked",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "e5345933548b3571",
+      "last_test_method": "source-trace"
     }
   ],
   "visual_parity": {
-    "result": "pending-mockup-compare",
-    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+    "result": "pass",
+    "notes": "2026-07-05 source-trace: SoulmateSelectionDialog multi-select + Submit from recap or Soulmate tab; meetingId scoped when opened from recap."
   },
   "notes": "",
-  "source_hash": "1a270219616a3b7a"
+  "source_hash": "e5345933548b3571"
 }

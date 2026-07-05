@@ -118,6 +118,7 @@ struct MacScreenView: View {
     @State private var supportStatus: String?
     @State private var showCommunityOptions = false
     @State private var communityResourceDetail: CommunityResourceDetail?
+    @State private var appleSignInController = AppleSignInController()
     @State private var showChatCallSheet = false
     @State private var chatCallMode = "voice"
     @State private var chatActionStatus: String?
@@ -285,7 +286,7 @@ struct MacScreenView: View {
                 }
                 .padding(.vertical, 8)
                 Button {
-                    Task { await appState.signInWithApple() }
+                    Task { await appState.signInWithApple(using: appleSignInController) }
                 } label: {
                     HStack(spacing: 10) {
                         Image(systemName: "applelogo")
@@ -301,6 +302,13 @@ struct MacScreenView: View {
                 .buttonStyle(.plain)
                 .disabled(appState.isAuthenticating)
                 .accessibilityLabel("Sign in with Apple")
+
+                SocialAuthButtonsView(
+                    isAuthenticating: appState.isAuthenticating,
+                    onGoogleSignIn: { Task { await appState.signInWithGoogle() } },
+                    onMetaMaskSignIn: { Task { await appState.signInWithWallet(.metamask, controller: WalletSignInController()) } },
+                    onSolflareSignIn: { Task { await appState.signInWithWallet(.solflare, controller: WalletSignInController()) } }
+                )
                 if let authError = appState.authError {
                     Text(authError)
                         .font(MacType.small)

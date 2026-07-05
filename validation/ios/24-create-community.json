@@ -1,0 +1,88 @@
+{
+  "screen": "Create Community",
+  "platform": "ios",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedApp/Views/CommunitiesPrototypeView.swift (CreateCommunityView)"
+  ],
+  "mockup_ref": "mockups/ios/05-08-circles-meet-communities.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "Communities tab Create a community card"
+  ],
+  "backend_dependencies": [
+    "POST /v1/communities"
+  ],
+  "controls": [
+    {
+      "id": "create-entry",
+      "type": "button",
+      "label": "Create a community",
+      "expected": "Opens CreateCommunityView sheet",
+      "result": "pass",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (create-entry)",
+      "blocker": "",
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace",
+      "tested_source_hash": "cd8e1ff30d57b66d"
+    },
+    {
+      "id": "name",
+      "type": "text",
+      "label": "Community name",
+      "expected": "Editable name field bound to create payload",
+      "result": "pass",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (name)",
+      "blocker": "",
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace",
+      "tested_source_hash": "cd8e1ff30d57b66d"
+    },
+    {
+      "id": "summary",
+      "type": "text",
+      "label": "Community summary",
+      "expected": "Editable summary field bound to create payload",
+      "result": "pass",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (summary)",
+      "blocker": "",
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace",
+      "tested_source_hash": "cd8e1ff30d57b66d"
+    },
+    {
+      "id": "themes",
+      "type": "text",
+      "label": "Community themes",
+      "expected": "Comma-separated themes (max 3) in create payload",
+      "result": "pass",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (themes)",
+      "blocker": "",
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace",
+      "tested_source_hash": "cd8e1ff30d57b66d"
+    },
+    {
+      "id": "submit",
+      "type": "button",
+      "label": "Create community",
+      "expected": "POST /v1/communities then navigate to CommunityDetailView",
+      "result": "pass",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (submit)",
+      "blocker": "",
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace",
+      "tested_source_hash": "cd8e1ff30d57b66d"
+    }
+  ],
+  "visual_parity": {
+    "result": "pass",
+    "notes": "2026-07-05 source-trace vs plate 05-08 + macOS create-community: name/summary/themes preview POST /v1/communities navigate to detail."
+  },
+  "notes": "macOS parity: mirrors validation/macos/22-create-community.json controls on iOS sheet flow.",
+  "source_hash": "cd8e1ff30d57b66d"
+}

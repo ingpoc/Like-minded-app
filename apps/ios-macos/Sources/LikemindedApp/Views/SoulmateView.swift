@@ -46,6 +46,7 @@ struct SoulmatePrototypeView: View {
                         PrimaryActionButton(title: "Post-meet selection", systemImage: "heart.circle.fill")
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("Post-meet selection")
                 }
 
                 FeatureCard(title: "Matches", eyebrow: "Mutual") {
@@ -389,9 +390,13 @@ struct SoulmateSelectionDialog: View {
     @Environment(\.dismiss) private var dismiss
     @State private var selectedUserIds: Set<String> = []
     @State private var feedbackTrigger = 0
+    var meetingId: String?
 
     private var selection: SoulmatePendingSelection? {
-        appState.soulmatePendingSelections.first
+        if let meetingId {
+            return appState.soulmatePendingSelections.first { $0.meetingId == meetingId }
+        }
+        return appState.soulmatePendingSelections.first
     }
 
     var body: some View {
@@ -428,6 +433,8 @@ struct SoulmateSelectionDialog: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
                             }
                             .buttonStyle(.plain)
+                            .accessibilityLabel("Potential match row")
+                            .accessibilityValue(selectedUserIds.contains(potentialMatch.userId) ? "Selected" : "Not selected")
                             .sensoryFeedback(.success, trigger: feedbackTrigger)
                         }
                     }
@@ -443,6 +450,7 @@ struct SoulmateSelectionDialog: View {
                     }
                     .buttonStyle(.plain)
                     .disabled(selectedUserIds.isEmpty)
+                    .accessibilityLabel("Submit")
                     .sensoryFeedback(.success, trigger: feedbackTrigger)
                 } else {
                     Text("No meetup selection is waiting.")

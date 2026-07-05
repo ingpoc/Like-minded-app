@@ -33,6 +33,12 @@ struct CommunityResponse: Decodable {
     let community: Community
 }
 
+struct CreateCommunityRequest: Encodable {
+    let name: String
+    let summary: String
+    let themes: [String]
+}
+
 struct CirclesResponse: Decodable {
     let circles: [PlacementCircle]
 }
@@ -76,13 +82,38 @@ struct LikemindedAPIClient {
         }
     }
 
-    func authenticateWithApple(identityToken: String, authorizationCode: String?, fullName: String?) async throws -> AppleAuthResponse {
+    func authenticateWithGoogle(idToken: String) async throws -> AppleAuthResponse {
+        let url = baseURL.appendingPathComponent("/v1/auth/google")
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        applyCommonHeaders(&request)
+        request.httpBody = try JSONEncoder().encode(GoogleAuthRequest(idToken: idToken))
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            let errorText = String(data: data, encoding: .utf8) ?? "Authentication failed"
+            throw URLError(.userAuthenticationRequired, userInfo: [NSLocalizedDescriptionKey: errorText])
+        }
+        return try JSONDecoder().decode(AppleAuthResponse.self, from: data)
+    }
+
+    func authenticateWithApple(
+        identityToken: String,
+        authorizationCode: String?,
+        fullName: String?,
+        nonce: String? = nil
+    ) async throws -> AppleAuthResponse {
         let url = baseURL.appendingPathComponent("/v1/auth/apple")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         applyCommonHeaders(&request)
         request.httpBody = try JSONEncoder().encode(
-            AppleAuthRequest(identityToken: identityToken, authorizationCode: authorizationCode, fullName: fullName)
+            AppleAuthRequest(
+                identityToken: identityToken,
+                authorizationCode: authorizationCode,
+                fullName: fullName,
+                nonce: nonce
+            )
         )
 
         let (data, response) = try await URLSession.shared.data(for: request)
@@ -256,6 +287,19 @@ struct LikemindedAPIClient {
 
     func leaveCommunity(id: String) async throws {
         try await updateCommunityMembership(id: id, action: "leave")
+    }
+
+    func createCommunity(name: String, summary: String, themes: [String]) async throws -> Community {
+        let url = baseURL.appendingPathComponent("/v1/communities")
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        applyCommonHeaders(&request)
+        request.httpBody = try JSONEncoder().encode(CreateCommunityRequest(name: name, summary: summary, themes: themes))
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+        return try JSONDecoder().decode(CommunityResponse.self, from: data).community
     }
 
     func updateMeetingRSVP(kind: String, available: Bool) async throws {

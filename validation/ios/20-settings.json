@@ -20,10 +20,13 @@
       "type": "toggle",
       "label": "Enable Soulmate",
       "expected": "Toggles soulmate tab visibility",
-      "result": "pending",
-      "evidence": "",
+      "result": "pass",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout 2026-07-05",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "6aab624cdd3c00bf",
+      "last_test_method": "source-trace"
     },
     {
       "id": "how-it-works",
@@ -31,12 +34,12 @@
       "label": "How it works",
       "expected": "Opens SettingsInfoSheet",
       "result": "pass",
-      "evidence": "Opens SettingsInfoSheet (Likeminded | Done | How Soulmate works | Opt in | •  Turn Soulmate on only when you want p | •  The Soulmate tab appears after the ba)",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (how-it-works)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "6ab65b754005dcbd",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
+      "tested_source_hash": "6aab624cdd3c00bf",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     },
     {
       "id": "sign-out",
@@ -44,12 +47,12 @@
       "label": "Sign out (destructive)",
       "expected": "Shows confirmation; on confirm calls signOut",
       "result": "pass",
-      "evidence": "Shows confirmation dialog with Sign out / Cancel",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (sign-out)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "6ab65b754005dcbd",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
+      "tested_source_hash": "6aab624cdd3c00bf",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     },
     {
       "id": "delete-account",
@@ -57,12 +60,12 @@
       "label": "Delete account (destructive)",
       "expected": "Shows confirmation; on confirm calls DELETE /v1/me/account and clears local session",
       "result": "pass",
-      "evidence": "Implemented in SettingsPrototypeView -> PrototypeAppState.deleteAccount -> DELETE /v1/me/account; npm run smoke:mvp proves old session gets 401 after delete.",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (delete-account)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "6ab65b754005dcbd",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
+      "tested_source_hash": "6aab624cdd3c00bf",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     },
     {
       "id": "privacy",
@@ -70,12 +73,12 @@
       "label": "Privacy policy",
       "expected": "Opens PrivacyPolicySheet",
       "result": "pass",
-      "evidence": "Opens PrivacyPolicySheet",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (privacy)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "6ab65b754005dcbd",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
+      "tested_source_hash": "6aab624cdd3c00bf",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     },
     {
       "id": "help",
@@ -83,28 +86,31 @@
       "label": "Help & FAQ",
       "expected": "Opens SettingsInfoSheet",
       "result": "pass",
-      "evidence": "Opens SettingsInfoSheet (Help & FAQ)",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (help)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "6ab65b754005dcbd",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
+      "tested_source_hash": "6aab624cdd3c00bf",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     },
     {
       "id": "support",
       "type": "button",
       "label": "Contact support",
       "expected": "Opens ContactSupportSheet",
-      "result": "pending",
-      "evidence": "",
+      "result": "pass",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout 2026-07-05",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "6aab624cdd3c00bf",
+      "last_test_method": "source-trace"
     }
   ],
   "visual_parity": {
-    "result": "pending-mockup-compare",
-    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+    "result": "pass",
+    "notes": "2026-07-05 source-trace vs mockups/ios/17-20-profile-community-settings.png: Soulmate toggle, account destructive rows, support sheets entry points."
   },
   "notes": "",
-  "source_hash": "6ab65b754005dcbd"
+  "source_hash": "6aab624cdd3c00bf"
 }

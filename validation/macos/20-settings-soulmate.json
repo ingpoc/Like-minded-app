@@ -21,12 +21,12 @@
       "label": "Settings sidebar (honest static styling)",
       "expected": "Unshipped rows use muted Planned/detail labels; no fake selectable chrome",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (sidebar-honesty)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (sidebar-honesty)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     },
     {
       "id": "account-settings",
@@ -34,12 +34,12 @@
       "label": "Account",
       "expected": "Select inline panel: account settings screen (session, profile basics, data)",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (account-settings)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (account-settings)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "3f8988b2bae470b2",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "c85b147b28b0e423",
+      "last_test_method": "CUA"
     },
     {
       "id": "privacy-safety",
@@ -47,12 +47,12 @@
       "label": "Privacy & safety",
       "expected": "Select inline panel: privacy & safety settings screen",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (privacy-safety)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (privacy-safety)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "3f8988b2bae470b2",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "c85b147b28b0e423",
+      "last_test_method": "CUA"
     },
     {
       "id": "notifications-settings",
@@ -60,12 +60,12 @@
       "label": "Notifications",
       "expected": "Select inline panel: notification preferences screen",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (notifications-settings)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (notifications-settings)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "3f8988b2bae470b2",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "c85b147b28b0e423",
+      "last_test_method": "CUA"
     },
     {
       "id": "connected-apps",
@@ -73,12 +73,12 @@
       "label": "Connected apps",
       "expected": "Select inline panel: connected apps / integrations screen",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (connected-apps)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (connected-apps)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "3f8988b2bae470b2",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "c85b147b28b0e423",
+      "last_test_method": "CUA"
     },
     {
       "id": "appearance",
@@ -86,12 +86,12 @@
       "label": "Appearance",
       "expected": "Select inline panel: appearance / theme settings screen",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (appearance)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (appearance)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "3f8988b2bae470b2",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "c85b147b28b0e423",
+      "last_test_method": "CUA"
     },
     {
       "id": "language",
@@ -99,12 +99,12 @@
       "label": "Language",
       "expected": "Select inline panel: language / locale settings screen",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (language)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (language)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "3f8988b2bae470b2",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "c85b147b28b0e423",
+      "last_test_method": "CUA"
     },
     {
       "id": "help-support",
@@ -112,12 +112,12 @@
       "label": "Help & support",
       "expected": "Select inline panel: help / FAQ / contact support screen (macOS-native)",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (help-support)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (help-support)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "3f8988b2bae470b2",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "c85b147b28b0e423",
+      "last_test_method": "CUA"
     },
     {
       "id": "log-out",
@@ -125,12 +125,12 @@
       "label": "Log out",
       "expected": "Opens confirmation; Sign out \u2192 appState.signOut()",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (log-out)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (log-out)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     },
     {
       "id": "delete-account",
@@ -138,12 +138,12 @@
       "label": "Delete account",
       "expected": "Opens confirmation; Delete account \u2192 DELETE /v1/me/account and clears local session",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (delete-account)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (delete-account)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     },
     {
       "id": "soulmate-toggle",
@@ -151,23 +151,23 @@
       "label": "Enable Soulmate",
       "expected": "Toggles soulmate via backend",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (soulmate-toggle)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (soulmate-toggle)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     },
     {
       "id": "view-profile",
       "type": "button",
       "label": "View profile",
-      "expected": "Navigate \u2192 myProfile",
+      "expected": "Removed — Profile tab owns profile view",
       "result": "pass",
       "evidence": "2026-07-05: View profile row removed from settings sidebar.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     },
@@ -175,12 +175,12 @@
       "id": "voice-profile",
       "type": "button",
       "label": "Voice profile",
-      "expected": "Navigate \u2192 profileOnboarding for basics edit",
+      "expected": "Removed — voice profile accessed from Profile tab",
       "result": "pass",
       "evidence": "2026-07-05: Voice profile row removed; Retake voice profile remains on Profile tab.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     },
@@ -190,12 +190,12 @@
       "label": "Who can discover you",
       "expected": "Editable discovery preference persisted to backend (not static formLine)",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (discovery-preference)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (discovery-preference)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "3f8988b2bae470b2",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "c85b147b28b0e423",
+      "last_test_method": "CUA"
     },
     {
       "id": "age-range",
@@ -203,12 +203,12 @@
       "label": "Age range",
       "expected": "Editable age-range preference persisted to backend (slider or picker)",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (age-range)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (age-range)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "3f8988b2bae470b2",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "c85b147b28b0e423",
+      "last_test_method": "CUA"
     },
     {
       "id": "visibility",
@@ -216,12 +216,12 @@
       "label": "Visibility",
       "expected": "Editable visibility preference persisted to backend (e.g. Circles only / broader)",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (visibility)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (visibility)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "3f8988b2bae470b2",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "c85b147b28b0e423",
+      "last_test_method": "CUA"
     }
   ],
   "visual_parity": {

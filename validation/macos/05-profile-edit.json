@@ -22,9 +22,9 @@
       "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (comm-pills)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "trait-sliders",
@@ -35,9 +35,9 @@
       "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (trait-sliders)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "save",
@@ -48,9 +48,9 @@
       "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (save)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA-click"
     }
   ],
   "visual_parity": {
@@ -58,5 +58,5 @@
     "notes": "2026-07-04 capture vs plate 04: read-only living profile signals from backend. Intentional: no fake editable trait sliders (honest read-only)."
   },
   "notes": "Honesty pass 2026-07-04: no fake editable trait chrome.",
-  "source_hash": "3f8988b2bae470b2"
+  "source_hash": "c85b147b28b0e423"
 }

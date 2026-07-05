@@ -13,6 +13,9 @@ packages:
   LiveKitWebRTC:
     url: https://github.com/livekit/webrtc-xcframework.git
     exactVersion: 144.7559.10
+  GoogleSignIn:
+    url: https://github.com/google/GoogleSignIn-iOS
+    from: 8.0.0
 
 settings:
   base:
@@ -27,11 +30,16 @@ targets:
     deploymentTarget: "18.0"
     sources:
       - path: Sources/LikemindedApp
+      - path: Sources/Shared
       - path: Sources/DoodleArt
       - path: Assets.xcassets
     dependencies:
       - package: LiveKit
       - package: LiveKitWebRTC
+      - package: GoogleSignIn
+        product: GoogleSignIn
+    info:
+      path: Info/Likeminded-Info.plist
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.likeminded.app
@@ -52,6 +60,8 @@ targets:
         CODE_SIGN_ENTITLEMENTS: Entitlements/Likeminded.entitlements
         DEVELOPMENT_ASSET_PATHS: "\"\""
         LIKEMINDED_API_BASE_URL: ""
+        GOOGLE_CLIENT_ID_IOS: ""
+        GOOGLE_REVERSED_CLIENT_ID: ""
     scheme:
       gatherCoverageData: false
       testTargets: []
@@ -62,8 +72,14 @@ targets:
     deploymentTarget: "15.0"
     sources:
       - path: Sources/LikemindedMac
+      - path: Sources/Shared
       - path: Sources/DoodleArt
       - path: Assets.xcassets
+    dependencies:
+      - package: GoogleSignIn
+        product: GoogleSignIn
+    info:
+      path: Info/LikemindedMac-Info.plist
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.likeminded.mac
@@ -74,9 +90,10 @@ targets:
         INFOPLIST_KEY_NSCameraUsageDescription: "Likeminded uses your camera for scheduled group video meets."
         INFOPLIST_KEY_NSMicrophoneUsageDescription: "Likeminded uses your voice to build private profile signals and suggest a starter circle."
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-        CODE_SIGN_STYLE: Automatic
         DEVELOPMENT_ASSET_PATHS: "\"\""
         LIKEMINDED_API_BASE_URL: ""
+        GOOGLE_CLIENT_ID_IOS: ""
+        GOOGLE_REVERSED_CLIENT_ID: ""
     scheme:
       gatherCoverageData: false
       testTargets: []

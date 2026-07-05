@@ -29,6 +29,10 @@ const entitlements = read("apps/ios-macos/Entitlements/Likeminded.entitlements")
 assertIncludes("apps/ios-macos/Entitlements/Likeminded.entitlements", entitlements, "com.apple.developer.applesignin");
 assertIncludes("apps/ios-macos/Entitlements/Likeminded.entitlements", entitlements, "<string>Default</string>");
 
+const macEntitlements = read("apps/ios-macos/Entitlements/LikemindedMac.entitlements");
+assertIncludes("apps/ios-macos/Entitlements/LikemindedMac.entitlements", macEntitlements, "com.apple.developer.applesignin");
+assertIncludes("apps/ios-macos/project.yml", project, "CODE_SIGN_ENTITLEMENTS: Entitlements/LikemindedMac.entitlements");
+
 const apiClient = read("apps/ios-macos/Sources/LikemindedApp/Data/LikemindedAPIClient.swift");
 assertIncludes("LikemindedAPIClient.swift", apiClient, "https://likeminded-api.onrender.com");
 assertIncludes("LikemindedAPIClient.swift", apiClient, "Authorization");
@@ -49,6 +53,9 @@ for (const key of [
   "LIVEKIT_URL",
   "APPLE_BUNDLE_ID",
   "APPLE_CLIENT_ID",
+  "APPLE_MAC_BUNDLE_ID",
+  "APPLE_CLIENT_IDS",
+  "APPLE_REQUIRE_NONCE",
   "APPLE_AUTH_BYPASS"
 ]) {
   assertIncludes("render.yaml", render, `key: ${key}`);
@@ -65,6 +72,9 @@ for (const key of [
   "LIVEKIT_URL=",
   "APPLE_BUNDLE_ID=com.likeminded.app",
   "APPLE_CLIENT_ID=com.likeminded.app",
+  "APPLE_MAC_BUNDLE_ID=com.likeminded.mac",
+  "APPLE_CLIENT_IDS=com.likeminded.app,com.likeminded.mac",
+  "APPLE_REQUIRE_NONCE=1",
   "APPLE_AUTH_BYPASS=0"
 ]) {
   assertIncludes(".env.example", envExample, key);

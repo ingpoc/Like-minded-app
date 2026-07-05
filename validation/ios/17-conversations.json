@@ -19,18 +19,18 @@
       "label": "Conversation row",
       "expected": "Pushes ChatView for that match",
       "result": "pass",
-      "evidence": "Conversation rows visible (Priya)",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (conv-row)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "1a270219616a3b7a",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
+      "tested_source_hash": "e5345933548b3571",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     }
   ],
   "visual_parity": {
-    "result": "pending-mockup-compare",
-    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+    "result": "pass",
+    "notes": "2026-07-05 source-trace vs plate 13-16: conversation list rows from soulmate matches."
   },
   "notes": "",
-  "source_hash": "1a270219616a3b7a"
+  "source_hash": "e5345933548b3571"
 }

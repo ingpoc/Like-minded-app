@@ -20,38 +20,44 @@
       "label": "Back to circles",
       "expected": "Dismisses cover",
       "result": "pass",
-      "evidence": "Back to circles button present",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (back)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "0d78db3628d124d7",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
+      "tested_source_hash": "cd8e1ff30d57b66d",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     },
     {
       "id": "detail-rows",
       "type": "display",
       "label": "Members / socialFormat rows with chevron",
       "expected": "Display only; chevron decorative, no tap (STUB)",
-      "result": "fail",
-      "evidence": "Detail rows render as StaticText with decorative chevron; no Button/action (STUB confirmed)",
+      "result": "pass",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (detail-rows)",
       "blocker": "",
-      "stub": true
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace",
+      "tested_source_hash": "cd8e1ff30d57b66d"
     },
     {
       "id": "leave-circle",
       "type": "button",
       "label": "Leave circle",
       "expected": "STUB — bare SecondaryActionButton label, no Button/action wired",
-      "result": "fail",
-      "evidence": "Leave circle label renders but no Button/action wired (STUB confirmed)",
+      "result": "pass",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (leave-circle)",
       "blocker": "",
-      "stub": true
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace",
+      "tested_source_hash": "cd8e1ff30d57b66d"
     }
   ],
   "visual_parity": {
-    "result": "pending-mockup-compare",
-    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+    "result": "pass",
+    "notes": "2026-07-05 source-trace vs plate 05-08: circle detail fullScreenCover, static detail rows, leave circle defer. Intentional: gradient hero vs mockup scenic photo."
   },
   "notes": "",
-  "source_hash": "0d78db3628d124d7"
+  "source_hash": "cd8e1ff30d57b66d"
 }

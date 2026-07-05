@@ -19,12 +19,12 @@
       "label": "Members section sidebar",
       "expected": "Honest Members-only section label",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (sidebar-nav)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (sidebar-nav)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     },
     {
       "id": "search",
@@ -32,12 +32,12 @@
       "label": "Search members",
       "expected": "Filters filteredCommunityMembers by name/gender",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (search)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (search)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     },
     {
       "id": "filter-pills",
@@ -45,12 +45,12 @@
       "label": "Member count label",
       "expected": "Display-only member count",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (filter-pills)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (filter-pills)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     },
     {
       "id": "member-rows",
@@ -58,12 +58,12 @@
       "label": "Member rows",
       "expected": "Display-only roster from API",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (member-rows)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (member-rows)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     }
   ],
   "visual_parity": {
@@ -71,5 +71,5 @@
     "notes": "2026-07-04 capture vs plate 13: members search roster from API. Intentional: no fake host badges; initials not photos."
   },
   "notes": "",
-  "source_hash": "3f8988b2bae470b2"
+  "source_hash": "c85b147b28b0e423"
 }

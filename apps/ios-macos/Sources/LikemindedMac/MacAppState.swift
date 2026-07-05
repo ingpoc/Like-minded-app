@@ -62,7 +62,7 @@ final class MacAppState: ObservableObject {
                 authorizationCode: nil,
                 fullName: fullName
             )
-            await saveSessionAndLoadPlacement(response)
+            await saveSessionAndLoadPlacement(response, authProvider: "apple")
         } catch {
             authError = error.localizedDescription
         }
@@ -70,20 +70,70 @@ final class MacAppState: ObservableObject {
         #endif
     }
 
-    func signInWithApple() async {
+    func signInWithApple(using controller: AppleSignInController) async {
+        isAuthenticating = true
+        authError = nil
+        let result = await controller.signIn()
+        switch result {
+        case .success(let payload):
+            do {
+                let response = try await client.authenticateWithApple(
+                    identityToken: payload.identityToken,
+                    authorizationCode: payload.authorizationCode,
+                    fullName: payload.fullName,
+                    nonce: payload.rawNonce
+                )
+                await saveSessionAndLoadPlacement(response, authProvider: "apple", appleUserIdentifier: payload.userIdentifier)
+            } catch {
+                authError = AppleSignInSupport.userFacingMessage(for: error)
+            }
+        case .failure(let error):
+            authError = AppleSignInSupport.userFacingMessage(for: error)
+        }
+        isAuthenticating = false
+    }
+
+    func signInWithGoogle() async {
         isAuthenticating = true
         authError = nil
         do {
-            let response = try await client.authenticateWithApple(
-                identityToken: "macos-apple-sign-in",
-                authorizationCode: nil,
-                fullName: "Mac Tester"
-            )
-            await saveSessionAndLoadPlacement(response)
+            let idToken = try await GoogleSignInSupport.signIn()
+            let response = try await client.authenticateWithGoogle(idToken: idToken)
+            await saveSessionAndLoadPlacement(response, authProvider: "google")
         } catch {
-            authError = "Sign in failed. Check Apple auth or local validation bypass."
+            authError = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
         }
         isAuthenticating = false
+    }
+
+    func signInWithWallet(_ wallet: WalletProvider, controller: WalletSignInController) async {
+        isAuthenticating = true
+        authError = nil
+        do {
+            let callback = try await controller.signIn(baseURL: LikemindedAPIClient.defaultBaseURL(), wallet: wallet)
+            let response = AppleAuthResponse(
+                user: APIUser(id: callback.userId, email: nil, fullName: callback.fullName),
+                sessionToken: callback.sessionToken,
+                expiresIn: 60 * 60 * 24 * 30
+            )
+            await saveSessionAndLoadPlacement(response, authProvider: "wallet")
+        } catch {
+            authError = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        }
+        isAuthenticating = false
+    }
+
+    func completeWalletSignIn(_ response: AppleAuthResponse) async {
+        await saveSessionAndLoadPlacement(response, authProvider: "wallet")
+    }
+
+    func validateStoredAppleCredentialIfNeeded() async {
+        guard authSession?.authProvider == "apple" else { return }
+        guard let appleUserIdentifier = authSession?.appleUserIdentifier else { return }
+        let isAuthorized = await AppleSignInSupport.validateCredentialState(for: appleUserIdentifier)
+        guard !isAuthorized else { return }
+        signOut()
+        authError = "Your Apple sign-in is no longer valid. Please sign in again."
     }
 
     private static func argumentValue(after flag: String, in arguments: [String]) -> String? {
@@ -93,12 +143,18 @@ final class MacAppState: ObservableObject {
         return arguments[index + 1]
     }
 
-    private func saveSessionAndLoadPlacement(_ response: AppleAuthResponse) async {
+    private func saveSessionAndLoadPlacement(
+        _ response: AppleAuthResponse,
+        authProvider: String,
+        appleUserIdentifier: String? = nil
+    ) async {
         let session = MacAuthSession(
             userId: response.user.id,
             token: response.sessionToken,
             email: response.user.email,
-            fullName: response.user.fullName
+            fullName: response.user.fullName,
+            appleUserIdentifier: appleUserIdentifier,
+            authProvider: authProvider
         )
         MacAuthSessionStore.save(session)
         authSession = session
@@ -496,6 +552,8 @@ struct MacAuthSession: Codable, Equatable {
     let token: String
     let email: String?
     let fullName: String?
+    let appleUserIdentifier: String?
+    let authProvider: String?
 }
 
 enum MacAuthSessionStore {

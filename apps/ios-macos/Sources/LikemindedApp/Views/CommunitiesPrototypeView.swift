@@ -116,17 +116,6 @@ struct CirclesPrototypeView: View {
                     showCards = true
                 }
             }
-            .overlay(alignment: .topTrailing) {
-                Image(systemName: "plus")
-                    .font(PrototypeTypography.bodyStrong)
-                    .foregroundStyle(PrototypePalette.ink)
-                    .frame(width: 36, height: 36)
-                    .background(PrototypePalette.surface)
-                    .clipShape(Circle())
-                    .overlay(Circle().stroke(PrototypePalette.rule, lineWidth: 1))
-                    .padding(.top, 42)
-                    .padding(.trailing, 22)
-            }
             .toolbar(.hidden, for: .navigationBar)
             .fullScreenCover(item: $selectedCircle) { circle in
                 NavigationStack {
@@ -199,6 +188,9 @@ struct CircleDetailView: View {
     let circle: PlacementCircle
     let reasons: [String]
     let namespace: Namespace.ID
+    @State private var showLeaveConfirm = false
+    @State private var isLeavingCircle = false
+    @State private var leaveStatus: String?
 
     private var nextMeetup: Meeting? {
         appState.upcomingMeetings.first { $0.targetId == circle.id }
@@ -257,15 +249,45 @@ struct CircleDetailView: View {
 
             FeatureCard(title: "Room rhythm", eyebrow: "Format") {
                 VStack(spacing: 0) {
-                    DetailRow(icon: "person.2", title: "\(circle.membersOnline) members")
-                    DetailRow(icon: "bubble.left.and.bubble.right", title: circle.socialFormat)
+                    StaticDetailRow(icon: "person.2", title: "\(circle.membersOnline) members")
+                    StaticDetailRow(icon: "bubble.left.and.bubble.right", title: circle.socialFormat)
                 }
             }
 
-            SecondaryActionButton(title: "Leave circle", systemImage: "rectangle.portrait.and.arrow.right")
+            Button {
+                showLeaveConfirm = true
+            } label: {
+                SecondaryActionButton(title: isLeavingCircle ? "Leaving circle" : "Leave circle", systemImage: "rectangle.portrait.and.arrow.right")
+            }
+            .buttonStyle(.plain)
+            .disabled(isLeavingCircle)
+
+            if let leaveStatus {
+                Text(leaveStatus)
+                    .font(PrototypeTypography.caption)
+                    .foregroundStyle(PrototypePalette.subink)
+            }
         }
         .navigationTitle(circle.name)
         .navigationBarTitleDisplayMode(.inline)
+        .confirmationDialog(
+            "Leave this circle?",
+            isPresented: $showLeaveConfirm,
+            titleVisibility: .visible
+        ) {
+            Button("Leave circle", role: .destructive) {
+                Task {
+                    isLeavingCircle = true
+                    await appState.deferPlacement()
+                    leaveStatus = appState.loadError ?? "Circle placement deferred. Browse other circles in Circles."
+                    isLeavingCircle = false
+                    dismiss()
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This defers your current circle placement so you can explore other rooms.")
+        }
     }
 
     private var nextMeetupLabel: String {
@@ -296,6 +318,8 @@ struct CommunitiesPrototypeView: View {
     @EnvironmentObject private var appState: PrototypeAppState
     @State private var showCards = false
     @State private var searchText = ""
+    @State private var showingCreateCommunity = false
+    @State private var navigationPath = NavigationPath()
 
     private var filteredCommunities: [Community] {
         guard !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
@@ -310,7 +334,7 @@ struct CommunitiesPrototypeView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             ScreenContainer(title: "Communities", subtitle: "What you're into.") {
                 HStack(spacing: 10) {
                     HStack(spacing: 8) {
@@ -370,6 +394,7 @@ struct CommunitiesPrototypeView: View {
                                     .animation(.interactive.delay(Double(index) * 0.06), value: showCards)
                             }
                             .buttonStyle(.plain)
+                            .accessibilityLabel("Your communities card")
                         }
                     }
                 }
@@ -385,6 +410,35 @@ struct CommunitiesPrototypeView: View {
                             .foregroundStyle(PrototypePalette.subink)
                             .contentTransition(.numericText())
                     }
+
+                    Button {
+                        showingCreateCommunity = true
+                    } label: {
+                        HStack(spacing: 12) {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.system(size: 22, weight: .semibold))
+                                .foregroundStyle(PrototypePalette.accent)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Create a community")
+                                    .font(PrototypeTypography.bodyStrong)
+                                    .foregroundStyle(PrototypePalette.ink)
+                                Text("Start a focused room for people who share your interests.")
+                                    .font(PrototypeTypography.caption)
+                                    .foregroundStyle(PrototypePalette.subink)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(PrototypePalette.subink)
+                        }
+                        .padding(16)
+                        .background(PrototypePalette.surface)
+                        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Create a community")
 
                     if filteredCommunities.isEmpty {
                         Text("No communities match “\(searchText)”.")
@@ -421,7 +475,121 @@ struct CommunitiesPrototypeView: View {
                     )
                 }
             }
+            .sheet(isPresented: $showingCreateCommunity) {
+                CreateCommunityView { community in
+                    showingCreateCommunity = false
+                    navigationPath.append(community.id)
+                }
+                .environmentObject(appState)
+            }
         }
+    }
+}
+
+private struct CreateCommunityView: View {
+    @EnvironmentObject private var appState: PrototypeAppState
+    @Environment(\.dismiss) private var dismiss
+    let onCreated: (Community) -> Void
+
+    @State private var name = ""
+    @State private var summary = ""
+    @State private var themesText = ""
+    @State private var status: String?
+    @State private var isCreating = false
+
+    private var draftThemes: [String] {
+        let themes = themesText
+            .split(separator: ",")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+        return themes.isEmpty ? ["Community", "Discussion"] : Array(themes.prefix(3))
+    }
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    FeatureCard(title: "Community details", eyebrow: "Create") {
+                        VStack(alignment: .leading, spacing: 14) {
+                            TextField("Community name", text: $name)
+                                .textFieldStyle(.roundedBorder)
+                                .accessibilityLabel("Community name")
+
+                            TextField("What should this community help people do?", text: $summary, axis: .vertical)
+                                .textFieldStyle(.roundedBorder)
+                                .lineLimit(3...5)
+                                .accessibilityLabel("Community summary")
+
+                            TextField("Books, Rituals, Reflection", text: $themesText)
+                                .textFieldStyle(.roundedBorder)
+                                .accessibilityLabel("Community themes")
+
+                            Button {
+                                Task { await submit() }
+                            } label: {
+                                PrimaryActionButton(
+                                    title: isCreating ? "Creating" : "Create community",
+                                    systemImage: "person.3.fill"
+                                )
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(isCreating || name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || summary.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                            .accessibilityLabel("Create community")
+
+                            if let status {
+                                Text(status)
+                                    .font(PrototypeTypography.metadata)
+                                    .foregroundStyle(PrototypePalette.subink)
+                            }
+                        }
+                    }
+
+                    FeatureCard(title: "Preview", eyebrow: "Browse") {
+                        CommunityCard(
+                            community: Community(
+                                id: "draft",
+                                name: name.isEmpty ? "Community name" : name,
+                                summary: summary.isEmpty ? "Summary appears here as members browse communities." : summary,
+                                themes: draftThemes,
+                                meetingFormat: "Member-led discussion",
+                                membersCount: 1
+                            ),
+                            action: "New",
+                            tone: 1,
+                            compact: true
+                        )
+                    }
+                }
+                .padding(20)
+            }
+            .background(PrototypePalette.background.ignoresSafeArea())
+            .navigationTitle("Create community")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Cancel") { dismiss() }
+                        .foregroundStyle(PrototypePalette.accent)
+                }
+            }
+        }
+    }
+
+    private func submit() async {
+        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedSummary = summary.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedName.isEmpty, !trimmedSummary.isEmpty else {
+            status = "Add a name and summary before creating the community."
+            return
+        }
+        isCreating = true
+        status = nil
+        if let community = await appState.createCommunity(name: trimmedName, summary: trimmedSummary, themes: draftThemes) {
+            onCreated(community)
+            dismiss()
+        } else {
+            status = appState.communityError ?? "Community could not be created."
+        }
+        isCreating = false
     }
 }
 
@@ -430,6 +598,8 @@ struct CommunityDetailView: View {
     @Environment(\.dismiss) private var dismiss
     let community: Community
     let isJoined: Bool
+    @State private var showCommunityOptions = false
+    @State private var communityOptionsStatus: String?
 
     private var nextMeetup: Meeting? {
         appState.upcomingMeetings.first { $0.targetId == community.id }
@@ -472,7 +642,13 @@ struct CommunityDetailView: View {
                         }
                         .buttonStyle(.plain)
                         Spacer()
-                        Image(systemName: "ellipsis")
+                        Button {
+                            showCommunityOptions = true
+                        } label: {
+                            Image(systemName: "ellipsis")
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Community options")
                     }
                     .font(PrototypeTypography.bodyStrong)
                     .foregroundStyle(.white)
@@ -604,6 +780,38 @@ struct CommunityDetailView: View {
         }
         .background(PrototypePalette.background.ignoresSafeArea())
         .toolbar(.hidden, for: .navigationBar)
+        .sheet(isPresented: $showCommunityOptions) {
+            NavigationStack {
+                VStack(alignment: .leading, spacing: 18) {
+                    Text(community.name)
+                        .font(PrototypeTypography.sectionTitle)
+                    Text("Community options")
+                        .font(PrototypeTypography.caption)
+                        .foregroundStyle(PrototypePalette.subink)
+                    Button("View guidelines") {
+                        communityOptionsStatus = "Guidelines for \(community.name): be kind, stay curious, keep conversations constructive."
+                        showCommunityOptions = false
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(PrototypePalette.accent)
+                    if let communityOptionsStatus {
+                        Text(communityOptionsStatus)
+                            .font(PrototypeTypography.caption)
+                            .foregroundStyle(PrototypePalette.subink)
+                    }
+                    Spacer()
+                }
+                .padding(20)
+                .navigationTitle("Options")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("Done") { showCommunityOptions = false }
+                    }
+                }
+            }
+            .presentationDetents([.medium])
+        }
     }
 
     private func detailSection(_ title: String, _ body: String) -> some View {
@@ -670,7 +878,7 @@ private struct CommunityCard: View {
     }
 }
 
-private struct DetailRow: View {
+private struct StaticDetailRow: View {
     let icon: String
     let title: String
 
@@ -683,9 +891,6 @@ private struct DetailRow: View {
                 .font(PrototypeTypography.caption)
                 .foregroundStyle(PrototypePalette.ink)
             Spacer()
-            Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(PrototypePalette.subink)
         }
         .padding(.vertical, 14)
         .overlay(alignment: .bottom) {
@@ -693,5 +898,6 @@ private struct DetailRow: View {
                 .fill(PrototypePalette.rule)
                 .frame(height: 1)
         }
+        .accessibilityElement(children: .combine)
     }
 }

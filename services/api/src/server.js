@@ -18,9 +18,20 @@ const {
 } = require("./lib/architecture");
 const { savePlacement, getAllPlacements, getPlacementsByProfile, saveTranscript, registerDevice, getDevice, getProfilesByDevice } = require("./lib/db");
 const { bearerToken, createSessionToken, verifyAppleIdentityToken, verifySessionToken } = require("./lib/auth");
+const { verifyGoogleIdentityToken } = require("./lib/google-auth");
+const {
+  createWalletChallenge,
+  getWalletChallenge,
+  consumeWalletChallenge,
+  verifyWalletSignature,
+  normalizeWallet,
+  walletChainForWallet
+} = require("./lib/wallet-auth");
 const {
   migrateMvpStore,
   upsertAppleUser,
+  upsertGoogleUser,
+  upsertWalletUser,
   getUserById,
   saveProfilePlacement,
   getLatestProfile,
@@ -105,6 +116,27 @@ function readRawBody(req) {
     req.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
     req.on("error", reject);
   });
+}
+
+function authResponse(user) {
+  return { user, sessionToken: createSessionToken(user), expiresIn: 60 * 60 * 24 * 30 };
+}
+
+function html(res, statusCode, body) {
+  const payload = String(body);
+  res.writeHead(statusCode, {
+    "content-type": "text/html; charset=utf-8",
+    "content-length": Buffer.byteLength(payload)
+  });
+  res.end(payload);
+}
+
+function renderWalletSignPage({ wallet, challengeId }) {
+  const templatePath = path.join(__dirname, "../static/wallet-sign.html");
+  const walletLabel = wallet === "metamask" ? "MetaMask" : "Solflare";
+  return fs.readFileSync(templatePath, "utf8")
+    .replaceAll("__WALLET_LABEL__", walletLabel)
+    .replaceAll("__WALLETCONNECT_PROJECT_ID__", process.env.WALLETCONNECT_PROJECT_ID || "");
 }
 
 async function currentUser(req) {
@@ -350,15 +382,104 @@ async function handleRequest(req, res) {
   if (req.method === "POST" && url.pathname === "/v1/auth/apple") {
     try {
       const body = await readJsonBody(req);
-      const applePayload = await verifyAppleIdentityToken(body.identityToken);
+      const applePayload = await verifyAppleIdentityToken(body.identityToken, {
+        nonce: typeof body.nonce === "string" ? body.nonce : undefined,
+        requireNonce: process.env.APPLE_REQUIRE_NONCE === "1"
+      });
       const user = await upsertAppleUser({
         appleSub: applePayload.sub,
         email: applePayload.email,
         fullName: typeof body.fullName === "string" ? body.fullName.trim() : null
       });
-      json(res, 200, { user, sessionToken: createSessionToken(user), expiresIn: 60 * 60 * 24 * 30 });
+      json(res, 200, authResponse(user));
     } catch (error) {
       json(res, 401, { error: "apple_auth_failed", message: error.message });
+    }
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname === "/v1/auth/google") {
+    try {
+      const body = await readJsonBody(req);
+      const googlePayload = await verifyGoogleIdentityToken(body.idToken);
+      const user = await upsertGoogleUser({
+        googleSub: googlePayload.sub,
+        email: googlePayload.email,
+        fullName: typeof googlePayload.name === "string" ? googlePayload.name.trim() : null
+      });
+      json(res, 200, authResponse(user));
+    } catch (error) {
+      json(res, 401, { error: "google_auth_failed", message: error.message });
+    }
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname === "/v1/auth/wallet/challenge") {
+    try {
+      const body = await readJsonBody(req);
+      const wallet = normalizeWallet(body.wallet);
+      const chain = body.chain ? String(body.chain) : walletChainForWallet(wallet);
+      const challenge = createWalletChallenge({ wallet, chain });
+      json(res, 200, {
+        challengeId: challenge.id,
+        wallet: challenge.wallet,
+        chain: challenge.chain,
+        message: challenge.message,
+        expiresAt: new Date(challenge.expiresAt).toISOString()
+      });
+    } catch (error) {
+      json(res, 400, { error: "wallet_challenge_failed", message: error.message });
+    }
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname.startsWith("/v1/auth/wallet/challenge/")) {
+    try {
+      const challengeId = decodeURIComponent(url.pathname.split("/").pop());
+      const challenge = getWalletChallenge(challengeId);
+      json(res, 200, {
+        challengeId: challenge.id,
+        wallet: challenge.wallet,
+        chain: challenge.chain,
+        message: challenge.message,
+        expiresAt: new Date(challenge.expiresAt).toISOString()
+      });
+    } catch (error) {
+      json(res, 404, { error: "wallet_challenge_not_found", message: error.message });
+    }
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/v1/auth/wallet/sign") {
+    try {
+      const wallet = normalizeWallet(url.searchParams.get("wallet"));
+      const challengeId = url.searchParams.get("challengeId");
+      if (!challengeId) throw new Error("challenge_id_required");
+      getWalletChallenge(challengeId);
+      html(res, 200, renderWalletSignPage({ wallet, challengeId }));
+    } catch (error) {
+      html(res, 400, `<html><body><p>${error.message}</p></body></html>`);
+    }
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname === "/v1/auth/wallet/verify") {
+    try {
+      const body = await readJsonBody(req);
+      const challenge = consumeWalletChallenge(body.challengeId);
+      const verifiedAddress = verifyWalletSignature({
+        chain: challenge.chain,
+        message: challenge.message,
+        signature: body.signature,
+        address: body.address
+      });
+      const user = await upsertWalletUser({
+        walletChain: challenge.chain,
+        walletAddress: verifiedAddress
+      });
+      json(res, 200, authResponse(user));
+    } catch (error) {
+      json(res, 401, { error: "wallet_auth_failed", message: error.message });
     }
     return;
   }

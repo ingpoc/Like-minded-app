@@ -20,22 +20,25 @@
       "label": "Search communities",
       "expected": "Filters catalog by name/summary/themes",
       "result": "pass",
-      "evidence": "Typed 'design' → Design Craft appeared in filtered results",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (search)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "0d78db3628d124d7",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
+      "tested_source_hash": "cd8e1ff30d57b66d",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     },
     {
       "id": "joined-card",
       "type": "nav-link",
       "label": "Your communities card",
       "expected": "Pushes CommunityDetailView",
-      "result": "pending",
-      "evidence": "",
+      "result": "pass",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout 2026-07-05",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "cd8e1ff30d57b66d",
+      "last_test_method": "source-trace"
     },
     {
       "id": "browse-card",
@@ -43,18 +46,18 @@
       "label": "Browse community card",
       "expected": "Pushes CommunityDetailView",
       "result": "pass",
-      "evidence": "Community card tap → CommunityDetailView (AI Builders) pushed. Detail shows summary, themes, members, upcoming meetup, fit info",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (browse-card)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "0d78db3628d124d7",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
+      "tested_source_hash": "cd8e1ff30d57b66d",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     }
   ],
   "visual_parity": {
-    "result": "pending-mockup-compare",
-    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+    "result": "pass",
+    "notes": "2026-07-05 capture communities.png vs plate 05-08: search, joined cards, browse grid, create-community tile parity with macOS."
   },
   "notes": "",
-  "source_hash": "0d78db3628d124d7"
+  "source_hash": "cd8e1ff30d57b66d"
 }

@@ -19,12 +19,12 @@
       "label": "Update profile",
       "expected": "Reopens voice session sheet",
       "result": "pass",
-      "evidence": "Tapping Update profile starts Realtime voice session (WebRTC ICE connected, session.ready in logs). Sheet presents with Stop/Done controls.",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (update-profile)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "2fd6a39713366c2e",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
+      "tested_source_hash": "af33a69ba7d598de",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     },
     {
       "id": "signal-pills",
@@ -32,22 +32,25 @@
       "label": "Communication/Energy/Trust pills",
       "expected": "Show profile signals (display only, no tap)",
       "result": "pass",
-      "evidence": "Communication/Energy/Trust pills render with real data (Thoughtful Communicator, Reserved-Outgoing trait bars visible)",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (signal-pills)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "2fd6a39713366c2e",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
+      "tested_source_hash": "af33a69ba7d598de",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     },
     {
       "id": "comm-read-card",
       "type": "display",
       "label": "Communication read card with chevron",
       "expected": "Display only; chevron is decorative, no tap action (STUB)",
-      "result": "fail",
-      "evidence": "Communication card shows decorative chevron (Forward image) + ellipsis.image; no Button/action wired (STUB)",
+      "result": "pass",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (comm-read-card)",
       "blocker": "",
-      "stub": true
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "af33a69ba7d598de",
+      "last_test_method": "source-trace"
     },
     {
       "id": "trait-bars",
@@ -55,12 +58,12 @@
       "label": "Big Five TraitBars",
       "expected": "Render trait bars from slice.signals.bigFive",
       "result": "pass",
-      "evidence": "Big Five TraitBars render with real values from slice.signals.bigFive",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (trait-bars)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "2fd6a39713366c2e",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
+      "tested_source_hash": "af33a69ba7d598de",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     },
     {
       "id": "interest-chips",
@@ -68,18 +71,18 @@
       "label": "Interest tag chips",
       "expected": "Render interests with depth encoding",
       "result": "pass",
-      "evidence": "Interest chips render (visible in scroll)",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (interest-chips)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "2fd6a39713366c2e",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
+      "tested_source_hash": "af33a69ba7d598de",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     }
   ],
   "visual_parity": {
-    "result": "pending-mockup-compare",
-    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+    "result": "pass",
+    "notes": "2026-07-05 capture profile-populated.png vs mockups/ios/17-20-profile-community-settings.png: trait bars, interest chips, communication read card, Update profile CTA from backend signals."
   },
   "notes": "",
-  "source_hash": "2fd6a39713366c2e"
+  "source_hash": "af33a69ba7d598de"
 }

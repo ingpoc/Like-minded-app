@@ -20,6 +20,7 @@ struct OnboardingView: View {
                     fieldStep("Name") {
                         TextField("Your name", text: $name)
                             .textFieldStyle(.roundedBorder)
+                            .accessibilityLabel("Your name")
                     }
                     .tag(0)
 
@@ -43,8 +44,11 @@ struct OnboardingView: View {
                                     .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                                 }
                                 .buttonStyle(.plain)
+                                .accessibilityLabel(option.label)
                             }
                         }
+                        .accessibilityElement(children: .contain)
+                        .accessibilityLabel("Gender cards")
                     }
                     .tag(1)
 
@@ -52,6 +56,7 @@ struct OnboardingView: View {
                         DatePicker("", selection: $dateOfBirth, displayedComponents: .date)
                             .datePickerStyle(.wheel)
                             .labelsHidden()
+                            .accessibilityLabel("Date of birth wheel")
                             .padding(8)
                             .background(PrototypePalette.background)
                             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
@@ -61,6 +66,7 @@ struct OnboardingView: View {
                     fieldStep("City") {
                         TextField("City", text: $city)
                             .textFieldStyle(.roundedBorder)
+                            .accessibilityLabel("City")
                     }
                     .tag(3)
 
@@ -68,6 +74,7 @@ struct OnboardingView: View {
                         TextField("Pincode", text: $pincode)
                             .keyboardType(.numberPad)
                             .textFieldStyle(.roundedBorder)
+                            .accessibilityLabel("Pincode numeric")
                     }
                     .tag(4)
                 }
@@ -81,6 +88,7 @@ struct OnboardingView: View {
                 }
                 .buttonStyle(.plain)
                 .disabled(!canContinue || appState.isStartingVoice)
+                .accessibilityLabel(step == steps - 1 ? "Start voice profile" : "Continue")
             }
         }
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
@@ -102,6 +110,7 @@ struct OnboardingView: View {
                     .animation(.spring(response: 0.38, dampingFraction: 0.82), value: step)
             }
         }
+        .accessibilityLabel("Progress dots")
     }
 
     private func fieldStep<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {

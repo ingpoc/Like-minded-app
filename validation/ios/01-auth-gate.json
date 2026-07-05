@@ -2,7 +2,10 @@
   "screen": "Auth Gate (Sign in with Apple)",
   "platform": "ios",
   "source_files": [
-    "apps/ios-macos/Sources/LikemindedApp/Views/AuthGateView.swift"
+    "apps/ios-macos/Sources/LikemindedApp/Views/AuthGateView.swift",
+    "apps/ios-macos/Sources/Shared/SocialAuthButtonsView.swift",
+    "apps/ios-macos/Sources/Shared/GoogleSignInSupport.swift",
+    "apps/ios-macos/Sources/Shared/WalletSignInSupport.swift"
   ],
   "mockup_ref": "mockups/ios/01-04-onboarding-voice-meet-soulmate.png",
   "mockup_missing": false,
@@ -10,7 +13,9 @@
     "App launch when no signed-in session"
   ],
   "backend_dependencies": [
-    "Apple Sign In credential → AuthSessionStore.signIn"
+    "Apple Sign In credential → AuthSessionStore.signIn",
+    "POST /v1/auth/google",
+    "POST /v1/auth/wallet/challenge + verify"
   ],
   "controls": [
     {
@@ -24,20 +29,62 @@
       "stub": false
     },
     {
+      "id": "sign-in-google",
+      "type": "button",
+      "label": "Continue with Google",
+      "expected": "POST /v1/auth/google with id token; creates session",
+      "result": "pass",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (sign-in-google)",
+      "blocker": "",
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace",
+      "tested_source_hash": "66b5a8a6b09cc392"
+    },
+    {
+      "id": "sign-in-metamask",
+      "type": "button",
+      "label": "Continue with MetaMask",
+      "expected": "Wallet challenge + verify flow; creates session",
+      "result": "pass",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (sign-in-metamask)",
+      "blocker": "",
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace",
+      "tested_source_hash": "66b5a8a6b09cc392"
+    },
+    {
+      "id": "sign-in-solflare",
+      "type": "button",
+      "label": "Continue with Solflare",
+      "expected": "Wallet challenge + verify flow; creates session",
+      "result": "pass",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (sign-in-solflare)",
+      "blocker": "",
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace",
+      "tested_source_hash": "66b5a8a6b09cc392"
+    },
+    {
       "id": "promise-rows",
       "type": "display",
       "label": "Voice profile / Private by design / Circle placement rows",
       "expected": "Display-only promise copy",
-      "result": "pending",
-      "evidence": "",
+      "result": "pass",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (promise-rows)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "66b5a8a6b09cc392",
+      "last_test_method": "source-trace"
     }
   ],
   "visual_parity": {
-    "result": "pending-mockup-compare",
-    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+    "result": "pass",
+    "notes": "2026-07-05 capture output/validation/ios-screens/auth-gate.png vs mockups/ios/01-04-onboarding-voice-meet-soulmate.png: Likeminded hero, three promise rows, Sign in with Apple, Google/MetaMask/Solflare parity with macOS welcome. Intentional: montage includes onboarding steps not on auth gate."
   },
   "notes": "",
-  "source_hash": "e3d06788b3e7aac0"
+  "source_hash": "66b5a8a6b09cc392"
 }

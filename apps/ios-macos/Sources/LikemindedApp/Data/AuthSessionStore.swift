@@ -6,6 +6,8 @@ struct AuthSession: Codable, Equatable {
     let token: String
     let email: String?
     let fullName: String?
+    let appleUserIdentifier: String?
+    let authProvider: String?
 }
 
 enum AuthSessionStore {

@@ -54,8 +54,8 @@
     }
   ],
   "visual_parity": {
-    "result": "pending-mockup-compare",
-    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+    "result": "pass",
+    "notes": "2026-07-05 source-trace: NotificationsView filter pills + grouped cards from GET /v1/me/notifications."
   },
   "notes": "",
   "source_hash": "9a9bbe7c2f254b3c"

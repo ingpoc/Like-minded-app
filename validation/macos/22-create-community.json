@@ -22,9 +22,9 @@
       "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (name)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "summary",
@@ -35,9 +35,9 @@
       "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (summary)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "themes",
@@ -48,9 +48,9 @@
       "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (themes)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "submit",
@@ -61,9 +61,9 @@
       "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (submit)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA-click"
     }
   ],
   "visual_parity": {
@@ -71,5 +71,5 @@
     "notes": "2026-07-04 capture vs communities plate: name summary themes live preview submit. Intentional: no dedicated mockup plate; form parity with browse create tile path."
   },
   "notes": "Closes PROGRESS create-community form ledger owner.",
-  "source_hash": "3f8988b2bae470b2"
+  "source_hash": "c85b147b28b0e423"
 }

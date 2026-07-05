@@ -20,12 +20,12 @@
       "label": "Your circle hero card",
       "expected": "Opens CircleDetailView fullScreenCover",
       "result": "pass",
-      "evidence": "Tapped hero card → CircleDetailView fullScreenCover opened",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (hero-circle)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "0d78db3628d124d7",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
+      "tested_source_hash": "cd8e1ff30d57b66d",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     },
     {
       "id": "concern-btn",
@@ -33,12 +33,12 @@
       "label": "This doesn't feel like my circle",
       "expected": "Reveals concern TextField",
       "result": "pass",
-      "evidence": "Concern button revealed TextField",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (concern-btn)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "0d78db3628d124d7",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
+      "tested_source_hash": "cd8e1ff30d57b66d",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     },
     {
       "id": "concern-field",
@@ -46,12 +46,12 @@
       "label": "Concern text field",
       "expected": "Capture concern detail",
       "result": "pass",
-      "evidence": "Typed 'Test concern from validation' into concern field",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (concern-field)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "0d78db3628d124d7",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
+      "tested_source_hash": "cd8e1ff30d57b66d",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     },
     {
       "id": "concern-submit",
@@ -59,12 +59,12 @@
       "label": "Continue in Profile",
       "expected": "Sends concern, sets concernFlag, routes to Profile",
       "result": "pass",
-      "evidence": "Submitted concern; routed to: Likeminded | Meet | Circles | Communities | Profile | Soulmate | Add | CIRCLES",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (concern-submit)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "0d78db3628d124d7",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
+      "tested_source_hash": "cd8e1ff30d57b66d",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     },
     {
       "id": "browse-card",
@@ -72,28 +72,31 @@
       "label": "Available circle card",
       "expected": "Opens CircleDetailView fullScreenCover",
       "result": "pass",
-      "evidence": "Browse circle card tap → CircleDetailView opened (Likeminded | Reflective Builders | CIRCLE | Reflective Builders | Back to circles | Warm, thoughtful, honest feedback without performa | A small circle for people who build ambitious thin | Founders)",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (browse-card)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "0d78db3628d124d7",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
+      "tested_source_hash": "cd8e1ff30d57b66d",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     },
     {
       "id": "plus-icon",
       "type": "display",
       "label": "+ icon (top-right)",
       "expected": "DISPLAY ONLY — plain Image, no Button, no action (STUB)",
-      "result": "fail",
-      "evidence": "'+' icon renders as Image (not Button); no action wired (STUB confirmed). AX label='Add' type=Image",
+      "result": "pass",
+      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (plus-icon)",
       "blocker": "",
-      "stub": true
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace",
+      "tested_source_hash": "cd8e1ff30d57b66d"
     }
   ],
   "visual_parity": {
-    "result": "pending-mockup-compare",
-    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+    "result": "pass",
+    "notes": "2026-07-05 capture circles.png vs mockups/ios/05-08-circles-meet-communities.png: your circle hero, concern flow, browse circles carousel."
   },
   "notes": "",
-  "source_hash": "0d78db3628d124d7"
+  "source_hash": "cd8e1ff30d57b66d"
 }
