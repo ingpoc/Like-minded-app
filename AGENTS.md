@@ -72,33 +72,5 @@ Next-goal: smallest full-session surface (one screen family, endpoint family, or
 
 ## Cursor Cloud specific instructions
 
-Cloud VM is **Linux with no Swift/Xcode**. Only the Node API (`services/api/src/server.js`, Node 20+) is runnable here. It defaults to **local JSON storage** under `./data/` (git-ignored) — no Postgres/`DATABASE_URL` needed for dev.
-
-### What cloud agents CAN do
-
-- Develop/run/test the **backend** (`services/api`) and the Node graders/scripts under `script/`.
-- Start the API with dev auth bypass (so authenticated routes work without real Sign in with Apple): `SESSION_SECRET=local-session-secret-minimum-24-chars APPLE_AUTH_BYPASS=1 node services/api/src/server.js` (or `npm run dev:api:local-auth`). Default host/port is `127.0.0.1:8787`; `GET /health` reports active storage mode.
-- Drive the placement loop over HTTP: `POST /v1/auth/apple` (any body under bypass) returns `sessionToken`; pass it as `Authorization: Bearer <token>`, then `/v1/discover` → `/v1/me/placement` → `/v1/me/placement/actions` → `/v1/me/circles` → `/v1/feedback`.
-- Edit SwiftUI sources and `apps/ios-macos/project.yml` (code review / static edits), but cannot compile or launch them here.
-
-### Scripts to USE (Linux-safe, zero-token)
-
-- `npm run check` — syntax/lint gate for all JS + shell scripts. Primary lint check.
-- `npm run smoke:mvp` — self-contained end-to-end backend test on a temp JSON DB. Primary functional check (no formal unit-test framework exists).
-- `npm run dev:api` / `dev:api:local-auth` / `dev:api:validation` — run the API (plain / auth-bypass / seeded validation DB).
-- `npm run migrate:api` — initialize the store (JSON locally, Postgres if `DATABASE_URL` set).
-- `npm run seed:test-profiles` / `seed:validation-data` / `remove:validation-data` / `reset:validation-data` — seed/reset local JSON test data.
-- `npm run replay:latest-profile` — replay latest profile through placement.
-- `npm run goal:next` / `phase:preflight -- <N>` — routing/planning.
-- `npm run ledger:open` / `ledger:stale` / `verify:ledger-progress` / `verify:goal` / `verify:release-config` / `verify:external-preflight` — status/config graders.
-
-### Scripts to AVOID (macOS/Xcode-only — will fail on Linux)
-
-- `npm run verify:simulator-local`, `npm run verify:macos-screens`, `npm run dev:macos:validation`, `npm run audit:macos:*`.
-- `./script/build_and_run.sh` and any `script/macos_*.sh` (they use `xcodebuild`/`simctl`/`xcodegen`/`osascript`).
-- Do not attempt to prove iOS/macOS UI in cloud; leave those validation ledger rows to a macOS environment and demonstrate backend behavior via the API + smoke test instead.
-
-### Notes
-
-- `run_api.sh`/`run_validation_api.sh` use `lsof` (present on the VM).
-- `OPENAI_API_KEY` and `LIVEKIT_*` are only needed for live voice/video; the placement loop works without them.
+- Cloud VM is **Linux, no Swift/Xcode**: only the Node API (`services/api`, local JSON storage) is runnable — never run macOS/simulator scripts (`verify:simulator-local`, `verify:macos-screens`, `dev:macos:validation`, `audit:macos:*`, `build_and_run.sh`, `macos_*.sh`).
+- Full can/cannot list, cloud run command, and Linux-safe vs Xcode-only script tables: `docs/workflows/setup.md` → "Cursor Cloud (Linux, no Xcode)".

@@ -71,6 +71,34 @@ After editing `project.yml`, run `cd apps/ios-macos && xcodegen generate` to reg
 | `./script/build_and_run.sh --logs` | Same + stream app logs |
 | `./script/build_and_run.sh --verify` | Build + verify launch (no install) |
 
+## Cursor Cloud (Linux, no Xcode)
+
+Cloud agents run on **Linux with no Swift/Xcode**. Only the Node API (`services/api/src/server.js`, Node 20+) is runnable; it defaults to **local JSON storage** under `./data/` (git-ignored) — no Postgres/`DATABASE_URL` needed. Update script on VM startup is `npm install`.
+
+### Can / cannot
+
+- **Can**: develop/run/test the backend (`services/api`) and Node graders under `script/`; drive the placement loop over HTTP; statically edit SwiftUI sources + `project.yml` (no compile/launch here).
+- **Cannot**: build, launch, or screenshot the iOS/macOS native apps. Leave iOS/macOS UI validation-ledger rows to a macOS environment; prove behavior via the API + smoke test instead.
+
+### Run the API (auth bypass, no real Sign in with Apple)
+
+```sh
+SESSION_SECRET=local-session-secret-minimum-24-chars APPLE_AUTH_BYPASS=1 node services/api/src/server.js
+# or: npm run dev:api:local-auth   (host/port 127.0.0.1:8787; GET /health shows storage mode)
+```
+
+Placement loop: `POST /v1/auth/apple` (any body under bypass) → `sessionToken` → send as `Authorization: Bearer <token>` → `/v1/discover` → `/v1/me/placement` → `/v1/me/placement/actions` → `/v1/me/circles` → `/v1/feedback`.
+
+### Scripts to USE (Linux-safe, zero-token)
+
+`npm run check` (lint/syntax gate) · `npm run smoke:mvp` (primary end-to-end backend test) · `dev:api*` runners · `migrate:api` · `seed:test-profiles` / `seed|remove|reset:validation-data` · `replay:latest-profile` · `goal:next` / `phase:preflight -- <N>` · `ledger:open` / `ledger:stale` / `verify:ledger-progress` / `verify:goal` / `verify:release-config` / `verify:external-preflight`.
+
+### Scripts to AVOID (macOS/Xcode-only — fail on Linux)
+
+`verify:simulator-local` · `verify:macos-screens` · `dev:macos:validation` · `audit:macos:*` · `./script/build_and_run.sh` · any `script/macos_*.sh` (all use `xcodebuild`/`simctl`/`xcodegen`/`osascript`).
+
+Notes: `run_api.sh`/`run_validation_api.sh` use `lsof` (present on VM). `OPENAI_API_KEY`/`LIVEKIT_*` are only needed for live voice/video; the placement loop works without them.
+
 ## Testing the full pipeline
 
 1. Start API: `./script/run_api.sh`
