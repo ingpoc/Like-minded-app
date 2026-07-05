@@ -77,12 +77,36 @@
       "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
+    },
+    {
+      "id": "activity-community-titles",
+      "type": "display",
+      "label": "Activity community join titles",
+      "expected": "Community activity rows show joined community name (never undefined)",
+      "result": "pass",
+      "evidence": "2026-07-05 operator audit fix: notifications endpoint resolves community objects before communitySummary; activity titles use community.name.",
+      "blocker": "",
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "API+screen-capture"
+    },
+    {
+      "id": "activity-date-format",
+      "type": "display",
+      "label": "Activity row dates",
+      "expected": "Activity dates use LikemindedDate.short (not truncated ISO prefix)",
+      "result": "pass",
+      "evidence": "2026-07-05 operator audit fix: activityRow uses notificationDateLabel → LikemindedDate.short; null dates show Recent.",
+      "blocker": "",
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
     "result": "pass",
     "notes": "2026-07-04 capture vs plate 16: activity filters refresh. Intentional: avatar density from seed not mockup montage."
   },
-  "notes": "",
-  "source_hash": "c85b147b28b0e423"
+  "notes": "2026-07-05: fixed activity You joined undefined (API mapped IDs through communitySummary) and truncated activity dates.",
+  "source_hash": "6ccbfbd1ab21d0b0"
 }

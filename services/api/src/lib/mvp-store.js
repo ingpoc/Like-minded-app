@@ -455,13 +455,24 @@ async function leaveCommunity(userId, communityId) {
 }
 
 async function getJoinedCommunities(userId) {
+  const memberships = await getJoinedCommunityMemberships(userId);
+  return memberships.map((row) => row.communityId);
+}
+
+async function getJoinedCommunityMemberships(userId) {
   if (isPostgres) {
-    const result = await getPool().query("SELECT community_id FROM community_memberships WHERE user_id = $1 ORDER BY created_at", [userId]);
-    return result.rows.map((row) => row.community_id);
+    const result = await getPool().query(
+      "SELECT community_id, created_at FROM community_memberships WHERE user_id = $1 ORDER BY created_at",
+      [userId]
+    );
+    return result.rows.map((row) => ({
+      communityId: row.community_id,
+      joinedAt: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at
+    }));
   }
   return readLocalStore().communityMemberships
     .filter((row) => row.user_id === userId)
-    .map((row) => row.community_id);
+    .map((row) => ({ communityId: row.community_id, joinedAt: row.created_at }));
 }
 
 async function getCommunityMembers(communityId) {
@@ -916,6 +927,7 @@ module.exports = {
   joinCommunity,
   leaveCommunity,
   getJoinedCommunities,
+  getJoinedCommunityMemberships,
   getCommunityMembers,
   saveMeetingRsvp,
   getMeetingRsvps,

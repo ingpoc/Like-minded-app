@@ -107,10 +107,9 @@ struct MacScreenView: View {
     @State private var isCreatingEvent = false
     @State private var showDeleteAccountConfirm = false
     @State private var isDeletingAccount = false
-    @State private var isCallMuted = false
-    @State private var callSidePanel = "Participants"
     @State private var selectedSettingsPane: MacSettingsPane = .soulmate
     @State private var profileOnboardingStep = 1
+    @State private var pendingVoiceRetake = false
     @State private var soulmatePrefsStatus: String?
     @State private var isSavingSoulmatePrefs = false
     @State private var supportNote = ""
@@ -148,6 +147,15 @@ struct MacScreenView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .onChange(of: screen) { _, newScreen in
+            guard newScreen == .profileOnboarding, pendingVoiceRetake else { return }
+            profileOnboardingStep = 2
+            pendingVoiceRetake = false
+            voiceReflectionPromptIndex = 0
+            voiceReflectionAnswers = []
+            voiceReflectionDraft = ""
+            voiceReflectionStatus = nil
+        }
     }
 
     @ViewBuilder
@@ -177,6 +185,10 @@ struct MacScreenView: View {
         }
         if screen == .circleDetail, let circle = appState.circleDetail {
             return circle.placementReason
+        }
+        if screen == .communityMembers, let community = selectedCommunity {
+            let count = communityMemberCount(for: community)
+            return "\(count) member\(count == 1 ? "" : "s") · Private"
         }
         guard screen == .meetOverview, state.isSignedIn else { return screen.subtitle }
         if let name = state.profile?.basicInfo?.name {
@@ -417,6 +429,7 @@ struct MacScreenView: View {
             .foregroundStyle(.white.opacity(0.88))
             Spacer(minLength: 4)
             Button("Join meetup") {
+                appState.activeCallMeetingId = meeting.id
                 navigate?(.meetVideoCall)
             }
             .font(MacType.button)
@@ -442,168 +455,31 @@ struct MacScreenView: View {
 
     // MARK: - 21. meetVideoCall
 
+    private var activeCallMeeting: Meeting? {
+        if let id = appState.activeCallMeetingId {
+            return appState.upcomingMeetings.first(where: { $0.id == id }) ?? appState.upcomingMeetings.first
+        }
+        return appState.upcomingMeetings.first
+    }
+
     private var meetVideoCall: some View {
-        let meeting = appState.upcomingMeetings.first
-        return VStack(alignment: .leading, spacing: 18) {
-            HStack(spacing: 16) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(meeting?.title ?? "Sunday Circle Meetup")
-                        .font(MacType.section)
-                    Text(meeting.map { LikemindedDate.full($0.scheduledAt) } ?? "Today - 7:00 PM - 8:00 PM")
-                        .font(MacType.body)
-                        .foregroundStyle(MacPalette.muted)
-                }
-                Spacer()
-                callStatus(icon: "video.fill", title: "Camera on", detail: "Everyone's camera is on")
-                callStatus(icon: "person.2", title: "\(meeting?.groupSize ?? 10) participants", detail: nil)
-            }
-
-            HStack(alignment: .top, spacing: 20) {
-                VStack(spacing: 14) {
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 2), spacing: 10) {
-                        ForEach(callParticipants.prefix(4), id: \.self) { name in
-                            callTile(name)
-                        }
-                    }
-                    callControls
-                }
-                .frame(maxWidth: .infinity)
-
-                VStack(spacing: 16) {
-                    MacPanel {
-                        HStack(spacing: 12) {
-                            ForEach(["Participants", "Agenda"], id: \.self) { panel in
-                                Button(panel) { callSidePanel = panel }
-                                    .font(MacType.button)
-                                    .foregroundStyle(callSidePanel == panel ? MacPalette.accent : MacPalette.muted)
-                                    .buttonStyle(.plain)
-                                    .accessibilityLabel(panel)
-                                    .accessibilityValue(callSidePanel == panel ? "Selected" : "Not selected")
-                            }
-                        }
-                        Divider()
-                        if callSidePanel == "Participants" {
-                            ForEach(callParticipants, id: \.self) { participant in
-                                HStack {
-                                    Text(participant)
-                                    if participant == meeting?.hostName {
-                                        MacPill(text: "Host", isSelected: true)
-                                    }
-                                    Spacer()
-                                    Image(systemName: "mic.fill")
-                                        .foregroundStyle(MacPalette.accent)
-                                }
-                                .font(MacType.body)
-                                .accessibilityLabel("\(participant) microphone on")
-                            }
-                        } else {
-                            VStack(alignment: .leading, spacing: 10) {
-                                Text("Opening check-in")
-                                Text("Share one useful signal")
-                                Text("Pick one follow-up")
-                            }
-                            .font(MacType.body)
-                        }
-                    }
-                    MacPanel {
-                        Label("A safe, respectful space", systemImage: "shield.checkered")
-                            .font(MacType.button)
-                        Text("Be present, be kind, and listen with an open heart.")
-                            .font(MacType.small)
-                            .foregroundStyle(MacPalette.muted)
-                    }
-                }
-                .frame(width: 330)
+        Group {
+            if let meeting = activeCallMeeting {
+                MacGroupVideoCallView(appState: appState, meeting: meeting, navigate: navigate)
+            } else {
+                Text("No upcoming meetup to join.")
+                    .font(MacType.body)
+                    .foregroundStyle(MacPalette.muted)
             }
         }
         .task {
             if appState.upcomingMeetings.isEmpty {
                 await appState.fetchMeetings()
             }
-        }
-    }
-
-    private var callParticipants: [String] {
-        var names = [appState.upcomingMeetings.first?.hostName, appState.profile?.basicInfo?.name]
-            .compactMap { $0 }
-        names.append(contentsOf: appState.soulmateMatches.map(\.name))
-        names.append(contentsOf: ["Arjun", "Meera", "Rohan", "Karan", "Neha"])
-        return Array(NSOrderedSet(array: names).compactMap { $0 as? String }.prefix(8))
-    }
-
-    private func callTile(_ name: String) -> some View {
-        ZStack(alignment: .bottomLeading) {
-            LinearGradient(colors: [MacPalette.sage.opacity(0.9), MacPalette.accent.opacity(0.65)], startPoint: .topLeading, endPoint: .bottomTrailing)
-            Text(String(name.prefix(1)))
-                .font(.system(size: 72, weight: .semibold, design: .serif))
-                .foregroundStyle(.white.opacity(0.75))
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            Label(name, systemImage: "cellularbars")
-                .font(MacType.button)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 6)
-                .background(.black.opacity(0.55), in: Capsule())
-                .foregroundStyle(.white)
-                .padding(12)
-        }
-        .frame(height: 210)
-        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-        .accessibilityLabel("\(name) video tile")
-    }
-
-    private var callControls: some View {
-        HStack(spacing: 22) {
-            Button("Chat") { navigate?(.messages) }
-                .buttonStyle(.bordered)
-                .accessibilityLabel("Open call chat")
-            Button("Participants") { callSidePanel = "Participants" }
-                .buttonStyle(.bordered)
-                .accessibilityLabel("Show call participants")
-            Button {
-                isCallMuted.toggle()
-            } label: {
-                Label(isCallMuted ? "Unmute mic" : "Mute mic", systemImage: isCallMuted ? "mic.slash.fill" : "mic.fill")
-                    .labelStyle(.iconOnly)
-                    .frame(width: 56, height: 56)
-                    .background(MacPalette.accent, in: Circle())
-                    .foregroundStyle(.white)
+            if appState.activeCallMeetingId == nil {
+                appState.activeCallMeetingId = appState.upcomingMeetings.first?.id
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel(isCallMuted ? "Unmute microphone" : "Mute microphone")
-            .accessibilityValue(isCallMuted ? "Muted" : "Unmuted")
-            Label("Good connection", systemImage: "cellularbars")
-                .font(MacType.button)
-                .foregroundStyle(MacPalette.ink)
-            Button("Leave") { navigate?(.meetOverview) }
-                .buttonStyle(.borderedProminent)
-                .tint(.red)
-                .accessibilityLabel("Leave meetup")
         }
-        .padding(18)
-        .frame(maxWidth: .infinity)
-        .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(MacPalette.line, lineWidth: 1))
-    }
-
-    private func callStatus(icon: String, title: String, detail: String?) -> some View {
-        Label {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(MacType.button)
-                if let detail {
-                    Text(detail)
-                        .font(MacType.small)
-                        .foregroundStyle(MacPalette.muted)
-                }
-            }
-        } icon: {
-            Image(systemName: icon)
-                .foregroundStyle(MacPalette.accent)
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
-        .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(MacPalette.line, lineWidth: 1))
     }
 
     private var availabilityPanel: some View {
@@ -1926,6 +1802,7 @@ struct MacScreenView: View {
                                 .foregroundStyle(MacPalette.ink)
                             Spacer()
                             Button("Retake voice profile") {
+                                pendingVoiceRetake = true
                                 profileOnboardingStep = 2
                                 navigate?(.profileOnboarding)
                             }
@@ -2411,7 +2288,7 @@ struct MacScreenView: View {
 
     private var communityMembers: some View {
         let community = selectedCommunity
-        let memberCount = filteredCommunityMembers.count
+        let memberCount = communityMemberCount(for: community)
         return HStack(alignment: .top, spacing: 22) {
             MacPanel(title: community?.name ?? "Community") {
                 VStack(alignment: .leading, spacing: 10) {
@@ -2982,7 +2859,7 @@ struct MacScreenView: View {
                 }
             }
             Spacer()
-            Text(item.createdAt?.prefix(10) ?? "Now")
+            Text(item.createdAt.map { notificationDateLabel($0) } ?? "Now")
                 .font(MacType.small)
                 .foregroundStyle(MacPalette.muted)
         }
@@ -3006,11 +2883,22 @@ struct MacScreenView: View {
                 }
             }
             Spacer()
-            Text(item.createdAt?.prefix(5) ?? "")
+            Text(notificationDateLabel(item.createdAt))
                 .font(MacType.small)
                 .foregroundStyle(MacPalette.muted)
         }
         .padding(8)
+    }
+
+    private func notificationDateLabel(_ iso: String?) -> String {
+        guard let iso, !iso.isEmpty else { return "Recent" }
+        return LikemindedDate.short(iso)
+    }
+
+    private func communityMemberCount(for community: Community?) -> Int {
+        let loaded = appState.communityMembers.count
+        if loaded > 0 { return loaded }
+        return community?.membersCount ?? 0
     }
 
     // MARK: - 16. profileOnboarding
@@ -3425,7 +3313,7 @@ struct MacScreenView: View {
                     .font(MacType.body)
                     .foregroundStyle(MacPalette.muted)
                 Label("Sign in with Apple", systemImage: "applelogo")
-                Label("LiveKit group meets (when scheduled)", systemImage: "video")
+                Label("LiveKit group meets", systemImage: "video")
             }
         case .appearance:
             MacPanel(title: "Appearance") {

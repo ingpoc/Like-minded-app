@@ -47,14 +47,13 @@
       "id": "retake-voice",
       "type": "button",
       "label": "Retake voice profile",
-      "expected": "Start macOS voice interview session or open dedicated voice retake flow",
+      "expected": "Navigate → profileOnboarding step 2 (voice reflection prompts), not basics-only step 1",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (retake-voice)",
+      "evidence": "2026-07-05 operator audit fix: pendingVoiceRetake + onChange(screen) opens profileVoiceStepPanel with reflection prompts.",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA-click",
-      "tested_source_hash": "c85b147b28b0e423"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "signal-cards",
@@ -87,6 +86,6 @@
     "result": "pass",
     "notes": "2026-07-05 capture vs plate 04: gender doodle portrait, 5-column signals grid, About me + Languages rows, vibe orb. Intentional: languages inferred from city until API ships field."
   },
-  "notes": "2026-07-05: retake-voice pending — label promises voice profile but macOS only opens basics onboarding.",
-  "source_hash": "c85b147b28b0e423"
+  "notes": "2026-07-05: retake-voice opens onboarding step 2 voice reflection panel (not basics step 1).",
+  "source_hash": "6ccbfbd1ab21d0b0"
 }

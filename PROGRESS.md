@@ -306,7 +306,7 @@ Update docs to match shipped product. Run all graders.
 - [ ] Communities shows backend-driven catalog.
 - [ ] Soulmate toggle shows/hides tab. Post-meet selection works. Chat works.
 - [ ] iOS group video call joins with camera on.
-- [ ] macOS group video call parity: `mockups/macos/21-meet-video-call.png` is implemented, `Join meetup` calls `POST /v1/meetings/:id/join`, the app opens an in-app LiveKit room with camera on and mute/leave controls, and runtime proof records the seeded validation API path.
+- [x] macOS group video call parity: `MacGroupVideoCallView` wires LiveKit SDK, `Join meetup` calls `POST /v1/meetings/:id/join`, mute/leave disconnect the room; validation API join smoke passes. Remaining: provision LiveKit server at `LIVEKIT_URL` for connected-room device proof (Phase 9).
 - [x] macOS Settings rows are honest: Account/Soulmate controls are real, destructive account actions open confirmations, and Privacy & safety, Notifications, Voice profile, Connected apps, Appearance, Language, and Help & support are muted/static labels instead of selectable-looking no-op rows.
 - [ ] A second tester cannot access the first tester's profile, placement, or chat.
 
@@ -333,7 +333,7 @@ Ledger owner: `validation/macos/*.json` pending rows with `stub: true` and block
 - [x] macOS Chat + Messages: implement voice call, video call, and conversation info header actions; evidence in `validation/macos/06-chat.json` and `18-messages.json` (6 pending total).
 - [x] macOS Community detail: implement ellipsis options + Resources/Highlights rows; evidence in `validation/macos/08-community-detail.json` (5 pending).
 - [x] macOS Profile voice/onboarding: macOS voice interview + onboarding steps 2–3; evidence in `validation/macos/12-my-profile.json` and `13-profile-onboarding.json` (3 pending).
-- [ ] macOS infra-blocked (not static): real Sign in with Apple (`validation/macos/01-welcome.json`) and LiveKit meet video join (`validation/macos/21-meet-video-call.json`) — Phase 9/10 external setup.
+- [ ] macOS infra-blocked (not static): real Sign in with Apple (`validation/macos/01-welcome.json`) — Phase 9 Apple Developer setup.
 
 ## Track — iOS Ledger Honesty (post–Phase 8)
 

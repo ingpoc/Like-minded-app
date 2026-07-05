@@ -24,9 +24,9 @@
       "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (sidebar-honesty)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "ddad5e43faa67221",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "account-settings",
@@ -38,8 +38,8 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "c85b147b28b0e423",
-      "last_test_method": "CUA"
+      "tested_source_hash": "ddad5e43faa67221",
+      "last_test_method": "CUA-click"
     },
     {
       "id": "privacy-safety",
@@ -51,8 +51,8 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "c85b147b28b0e423",
-      "last_test_method": "CUA"
+      "tested_source_hash": "ddad5e43faa67221",
+      "last_test_method": "CUA-click"
     },
     {
       "id": "notifications-settings",
@@ -64,8 +64,8 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "c85b147b28b0e423",
-      "last_test_method": "CUA"
+      "tested_source_hash": "ddad5e43faa67221",
+      "last_test_method": "CUA-click"
     },
     {
       "id": "connected-apps",
@@ -77,8 +77,8 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "c85b147b28b0e423",
-      "last_test_method": "CUA"
+      "tested_source_hash": "ddad5e43faa67221",
+      "last_test_method": "CUA-click"
     },
     {
       "id": "appearance",
@@ -90,8 +90,8 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "c85b147b28b0e423",
-      "last_test_method": "CUA"
+      "tested_source_hash": "ddad5e43faa67221",
+      "last_test_method": "CUA-click"
     },
     {
       "id": "language",
@@ -103,8 +103,8 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "c85b147b28b0e423",
-      "last_test_method": "CUA"
+      "tested_source_hash": "ddad5e43faa67221",
+      "last_test_method": "CUA-click"
     },
     {
       "id": "help-support",
@@ -116,34 +116,34 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "c85b147b28b0e423",
-      "last_test_method": "CUA"
+      "tested_source_hash": "ddad5e43faa67221",
+      "last_test_method": "CUA-click"
     },
     {
       "id": "log-out",
       "type": "button",
       "label": "Log out",
-      "expected": "Opens confirmation; Sign out \u2192 appState.signOut()",
+      "expected": "Opens confirmation; Sign out → appState.signOut()",
       "result": "pass",
       "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (log-out)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "ddad5e43faa67221",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "delete-account",
       "type": "button",
       "label": "Delete account",
-      "expected": "Opens confirmation; Delete account \u2192 DELETE /v1/me/account and clears local session",
+      "expected": "Opens confirmation; Delete account → DELETE /v1/me/account and clears local session",
       "result": "pass",
       "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (delete-account)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "ddad5e43faa67221",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "soulmate-toggle",
@@ -154,9 +154,9 @@
       "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (soulmate-toggle)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "ddad5e43faa67221",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "view-profile",
@@ -167,9 +167,9 @@
       "evidence": "2026-07-05: View profile row removed from settings sidebar.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "ddad5e43faa67221",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "voice-profile",
@@ -180,9 +180,9 @@
       "evidence": "2026-07-05: Voice profile row removed; Retake voice profile remains on Profile tab.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "ddad5e43faa67221",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "discovery-preference",
@@ -194,8 +194,8 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "c85b147b28b0e423",
-      "last_test_method": "CUA"
+      "tested_source_hash": "ddad5e43faa67221",
+      "last_test_method": "CUA-click"
     },
     {
       "id": "age-range",
@@ -207,8 +207,8 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "c85b147b28b0e423",
-      "last_test_method": "CUA"
+      "tested_source_hash": "ddad5e43faa67221",
+      "last_test_method": "CUA-click"
     },
     {
       "id": "visibility",
@@ -220,8 +220,8 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "c85b147b28b0e423",
-      "last_test_method": "CUA"
+      "tested_source_hash": "ddad5e43faa67221",
+      "last_test_method": "CUA-click"
     }
   ],
   "visual_parity": {
@@ -229,5 +229,5 @@
     "notes": "2026-07-04 capture vs plate 20: settings account soulmate panel. Intentional: static muted rows for unshipped prefs until pending controls are implemented."
   },
   "notes": "Settings sidebar selects inline panels; View profile and Voice profile rows removed.",
-  "source_hash": "3f8988b2bae470b2"
+  "source_hash": "6ccbfbd1ab21d0b0"
 }

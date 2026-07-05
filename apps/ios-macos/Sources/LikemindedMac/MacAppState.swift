@@ -25,6 +25,7 @@ final class MacAppState: ObservableObject {
     @Published var pastMeetings: [Meeting] = []
     @Published var isLoadingMeetings = false
     @Published var meetingError: String?
+    @Published var activeCallMeetingId: String?
     @Published var soulmateEnabled = false
     @Published var soulmatePreferences = SoulmatePreferences.defaults
     @Published var soulmatePendingSelections: [SoulmatePendingSelection] = []
@@ -415,6 +416,10 @@ final class MacAppState: ObservableObject {
         } catch {
             meetingError = "Recap note could not be saved."
         }
+    }
+
+    func joinMeeting(id: String) async throws -> LiveKitJoinToken {
+        try await client.joinMeeting(id: id)
     }
 
     func fetchSoulmateStatus() async {

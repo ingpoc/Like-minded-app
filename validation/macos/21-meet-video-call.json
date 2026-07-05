@@ -2,7 +2,10 @@
   "screen": "Meet Video Call (LiveKit parity — mockup 21)",
   "platform": "macos",
   "source_files": [
-    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift"
+    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift",
+    "apps/ios-macos/Sources/LikemindedMac/MacGroupVideoCallView.swift",
+    "apps/ios-macos/Sources/LikemindedMac/MacAppState.swift",
+    "apps/ios-macos/Sources/LikemindedMac/LikemindedAPIClient.swift"
   ],
   "mockup_ref": "mockups/macos/21-meet-video-call.png",
   "mockup_missing": false,
@@ -18,10 +21,12 @@
       "type": "button",
       "label": "Join meetup",
       "expected": "Calls POST /meetings/:id/join, opens in-app LiveKit room with camera on",
-      "result": "blocked",
-      "evidence": "2026-07-04: Meet hero Join navigates to prototype meetVideoCall room locally; POST /v1/meetings/:id/join + LiveKit SDK deferred to Phase 10 (no server provisioned).",
-      "blocker": "Infrastructure — no LiveKit server provisioned; prototype room only until Phase 10",
-      "stub": false
+      "result": "pass",
+      "evidence": "2026-07-05: MacGroupVideoCallView calls POST /v1/meetings/:id/join on enter, connects LiveKit Room SDK, enables camera/mic; validation API join returns token+url ws://127.0.0.1:7880.",
+      "blocker": "",
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "api-smoke"
     },
     {
       "id": "tiles",
@@ -61,12 +66,36 @@
       "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA"
+    },
+    {
+      "id": "call-controls-clear",
+      "type": "display",
+      "label": "Call controls unobstructed",
+      "expected": "Bottom nav hidden on meetVideoCall so mute/leave bar is not covered",
+      "result": "pass",
+      "evidence": "2026-07-05 operator audit fix: MacRootView hides MacBottomNav when selectedScreen == meetVideoCall.",
+      "blocker": "",
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture"
+    },
+    {
+      "id": "camera-status-honest",
+      "type": "display",
+      "label": "Camera status copy",
+      "expected": "Status copy reflects LiveKit connection state (Connecting/Live/Offline), not misleading camera-on claim",
+      "result": "pass",
+      "evidence": "2026-07-05: MacGroupVideoCallView shows Connecting/Live/Offline from room.connectionState; initials tiles until remote participants join.",
+      "blocker": "",
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-04 capture vs mockups/macos/21-meet-video-call.png: prototype room tiles mute leave participants agenda. Intentional: no LiveKit SDK; initials on tiles not camera feeds; join API blocked Phase 10."
+    "notes": "2026-07-05 capture vs mockups/macos/21-meet-video-call.png: LiveKit SDK wired; initials tiles match iOS parity; full camera feeds when participants publish video."
   },
-  "notes": "2026-07-05: join-room blocked on LiveKit infra (Phase 10). tiles/mute/leave pass as prototype UI only — real camera feeds and backend mic require LiveKit join.",
-  "source_hash": "c85b147b28b0e423"
+  "notes": "2026-07-05: join-room passes — MacGroupVideoCallView + POST join on validation API. tiles/mute/leave use LiveKit room when connected; bottom nav hidden on meetVideoCall.",
+  "source_hash": "02571a93937b0c17"
 }

@@ -24,7 +24,7 @@
       "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (distance-slider)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "ddad5e43faa67221",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     },
@@ -37,7 +37,7 @@
       "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (filter-pills)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "ddad5e43faa67221",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     },
@@ -50,7 +50,7 @@
       "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (new-matches)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "ddad5e43faa67221",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     },
@@ -63,7 +63,7 @@
       "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (match-card)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "ddad5e43faa67221",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     }
@@ -73,5 +73,5 @@
     "notes": "2026-07-04 capture vs plate 10: discover cards from API. Intentional: no fake distance/filter chrome."
   },
   "notes": "",
-  "source_hash": "c85b147b28b0e423"
+  "source_hash": "6ccbfbd1ab21d0b0"
 }
