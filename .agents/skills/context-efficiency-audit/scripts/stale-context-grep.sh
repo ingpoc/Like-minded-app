@@ -61,7 +61,7 @@ if [[ -f goal.json ]] && command -v git >/dev/null 2>&1; then
   if [[ -n "$dirty" ]]; then
     dirty_macos=0
     dirty_phase_release=0
-    echo "$dirty" | rg -q 'LikemindedMac|validation/macos|DoodleArt|doodle-art|macos-screen-audit|mockups/macos|macos_cua' && dirty_macos=1 || true
+    echo "$dirty" | rg -q 'LikemindedMac|validation/macos|DoodleArt|doodle-art|mockups/macos|macos_cua' && dirty_macos=1 || true
     echo "$dirty" | rg -q 'render\.yaml|testflight|release/' && dirty_phase_release=1 || true
     goal_macos=0
     goal_phase9=0

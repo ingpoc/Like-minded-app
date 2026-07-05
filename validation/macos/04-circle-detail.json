@@ -18,14 +18,14 @@
       "id": "message-circle",
       "type": "button",
       "label": "Message circle",
-      "expected": "Navigate → messages",
+      "expected": "Navigate \u2192 messages",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (message-circle)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (message-circle) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "463ac56065a7ed93",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "placement-concern",
@@ -33,12 +33,12 @@
       "label": "Placement concern",
       "expected": "POST /v1/me/circles/concern",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (placement-concern)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (placement-concern) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "463ac56065a7ed93",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "upcoming-meet",
@@ -46,18 +46,41 @@
       "label": "Upcoming circle meet row",
       "expected": "Navigate to meet flow",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (upcoming-meet)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (upcoming-meet) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "463ac56065a7ed93",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "CUA-click"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-04 capture vs plate 18: dedicated circleDetailScreen with members/social rows. Intentional: doodle hero vs scenic mockup."
+    "notes": "2026-07-05 capture vs plate 19: hero with back/fit badge/trait line, stats row, In circle + Message circle + ellipsis, About/Members/Events/Discussions/Resources tabs, three-column About/Upcoming+discussions/Moderators. Intentional: DoodleCover hero vs scenic forest mockup; backend circle name Reflective Builders vs mockup Thinkers' Room copy."
   },
   "notes": "",
-  "source_hash": "c85b147b28b0e423"
+  "source_hash": "463ac56065a7ed93",
+  "recent_screenshot_ref": "output/validation/macos-screens/circleDetail.png",
+  "ui_validation": {
+    "result": "pass",
+    "reference_mockup_ref": "mockups/macos/17-20-profile-onboarding-detail-settings.png",
+    "recent_screenshot_ref": "output/validation/macos-screens/circleDetail.png",
+    "design_ref": "DESIGN.md",
+    "last_compared_at": "2026-07-05",
+    "validated": [
+      "latest screenshot exists and was compared with reference mockup plate 19",
+      "DESIGN.md design language checked: warm canvas, calm editorial hierarchy, card system, green accents, bottom glass navigation",
+      "hero back button, fit badge, trait tags, description overlay, stats row, action pills, tab row, three-column About/Upcoming/Moderators layout",
+      "control behavior tracked separately in controls[]; CUA-click stamped message-circle, placement-concern, upcoming-meet"
+    ],
+    "pending_validation": [],
+    "requires_implementation": [],
+    "requires_fixing": [],
+    "intentional_differences": [
+      "DoodleCover thematic hero art vs scenic forest photograph in mockup",
+      "Backend seeded circle name/copy (Reflective Builders) vs mockup placeholder (The Thinkers' Room)",
+      "In circle pill vs Join circle (user already placed in circle on seeded validation profile)"
+    ],
+    "notes": "2026-07-05 rebuilt circleDetailScreen to mockup 19 layout; CUA controls pass with relaunch between Message circle and remaining actions."
+  }
 }

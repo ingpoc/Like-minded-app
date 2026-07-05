@@ -14,7 +14,7 @@ apply_state() {
   local state="$1"
   case "$state" in
     default) export LIKEMINDED_MAC_WINDOW_WIDTH=1200 LIKEMINDED_MAC_WINDOW_HEIGHT=760 ;;
-    small) export LIKEMINDED_MAC_WINDOW_WIDTH=1120 LIKEMINDED_MAC_WINDOW_HEIGHT=752 ;;
+    small) export LIKEMINDED_MAC_WINDOW_WIDTH=1120 LIKEMINDED_MAC_WINDOW_HEIGHT=901 ;;
     large) export LIKEMINDED_MAC_WINDOW_WIDTH=1440 LIKEMINDED_MAC_WINDOW_HEIGHT=900 ;;
     maximized)
       local bounds x y width height

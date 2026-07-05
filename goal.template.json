@@ -246,6 +246,7 @@
   "done_criteria": [
     "All deterministic graders pass.",
     "npm run verify:ledger-progress passes (open fail/pending/stale-blocked controls retain unchecked PROGRESS owners).",
+    "After parallel macOS UI work: npm run macos:validation-batch (or capture + sequential CUA with sole :8787 owner).",
     "Local simulator build and launch pass when local validation inputs changed.",
     "Repo-owned MVP loop surfaces are ready for later external Render, Neon, Apple, and TestFlight proof.",
     "No stale docs or config describe prototype tabs, prototype bundle id, no auth, or SQLite as the production path.",

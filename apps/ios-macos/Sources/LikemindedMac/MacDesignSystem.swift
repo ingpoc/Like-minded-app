@@ -1,5 +1,13 @@
 import SwiftUI
 
+extension View {
+    /// Suppresses the default macOS blue focus ring on click and keyboard focus
+    /// while keeping controls in the accessibility focus order (unlike `focusable(false)`).
+    func macSuppressFocusRing() -> some View {
+        focusEffectDisabled()
+    }
+}
+
 enum MacPalette {
     static let background = Color(red: 0.980, green: 0.969, blue: 0.945) // #FAF7F1 warm cream
     static let surface = Color(red: 1.0, green: 0.988, blue: 0.973)     // #FFFBF7 warm white
@@ -108,6 +116,123 @@ struct MacOrb: View {
     }
 }
 
+struct MacAgeRangeSlider: View {
+    @Binding var minAge: Int
+    @Binding var maxAge: Int
+    var bounds: ClosedRange<Int> = 18...100
+
+    private func fraction(_ age: Int) -> CGFloat {
+        CGFloat(age - bounds.lowerBound) / CGFloat(bounds.upperBound - bounds.lowerBound)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("\(bounds.lowerBound)")
+                    .font(MacType.small)
+                    .foregroundStyle(MacPalette.muted)
+                Spacer()
+                Text("\(minAge) – \(maxAge)")
+                    .font(MacType.button)
+                    .foregroundStyle(MacPalette.ink)
+                Spacer()
+                Text("\(bounds.upperBound)")
+                    .font(MacType.small)
+                    .foregroundStyle(MacPalette.muted)
+            }
+            GeometryReader { geo in
+                let width = geo.size.width
+                let lo = fraction(minAge) * width
+                let hi = fraction(maxAge) * width
+                ZStack(alignment: .leading) {
+                    Capsule()
+                        .fill(MacPalette.line)
+                        .frame(height: 5)
+                    Capsule()
+                        .fill(MacPalette.accent.opacity(0.35))
+                        .frame(width: max(hi - lo, 6), height: 5)
+                        .offset(x: lo)
+                    Circle()
+                        .fill(MacPalette.accent)
+                        .frame(width: 14, height: 14)
+                        .offset(x: lo - 7)
+                    Circle()
+                        .fill(MacPalette.accent)
+                        .frame(width: 14, height: 14)
+                        .offset(x: hi - 7)
+                }
+            }
+            .frame(height: 14)
+            Slider(
+                value: Binding(
+                    get: { Double(minAge) },
+                    set: { minAge = min(Int($0.rounded()), maxAge) }
+                ),
+                in: Double(bounds.lowerBound)...Double(maxAge),
+                step: 1
+            )
+            .tint(MacPalette.accent)
+            .accessibilityLabel("Minimum age")
+            Slider(
+                value: Binding(
+                    get: { Double(maxAge) },
+                    set: { maxAge = max(Int($0.rounded()), minAge) }
+                ),
+                in: Double(minAge)...Double(bounds.upperBound),
+                step: 1
+            )
+            .tint(MacPalette.accent)
+            .accessibilityLabel("Maximum age")
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Age range")
+        .accessibilityValue("\(minAge) to \(maxAge)")
+    }
+}
+
+struct MacRadioCard: View {
+    let title: String
+    let detail: String
+    let selected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(alignment: .top, spacing: 10) {
+                ZStack {
+                    Circle()
+                        .stroke(MacPalette.line, lineWidth: 1)
+                        .frame(width: 16, height: 16)
+                    if selected {
+                        Circle()
+                            .fill(MacPalette.accent)
+                            .frame(width: 8, height: 8)
+                    }
+                }
+                .padding(.top, 2)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(MacType.button)
+                        .foregroundStyle(MacPalette.ink)
+                    Text(detail)
+                        .font(MacType.small)
+                        .foregroundStyle(MacPalette.muted)
+                }
+            }
+            .padding(14)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(selected ? MacPalette.accent.opacity(0.45) : MacPalette.line, lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(title)
+        .accessibilityAddTraits(selected ? [.isButton, .isSelected] : .isButton)
+    }
+}
+
 struct MacHeroArt: View {
     let tone: Color
     var label: String
@@ -145,6 +270,41 @@ struct MacAvatar: View {
             .fill(color)
             .frame(width: size, height: size)
             .overlay(Text(initials).font(.system(size: size * 0.38, weight: .medium, design: .serif)).foregroundStyle(MacPalette.accent))
+    }
+}
+
+/// Photo-led profile portrait — circular art with soft sage glow rings (plate 09).
+struct MacProfilePortrait: View {
+    let assetName: String
+    var size: CGFloat = 108
+
+    var body: some View {
+        ZStack {
+            ForEach(0..<4, id: \.self) { index in
+                Circle()
+                    .stroke(MacPalette.sage.opacity(0.42 - Double(index) * 0.08), lineWidth: 1.5)
+                    .frame(width: size + CGFloat(index) * 20, height: size + CGFloat(index) * 20)
+            }
+            Circle()
+                .fill(
+                    RadialGradient(
+                        colors: [MacPalette.sage.opacity(0.55), MacPalette.accent.opacity(0.12), .clear],
+                        center: .center,
+                        startRadius: size * 0.15,
+                        endRadius: size * 0.78
+                    )
+                )
+                .frame(width: size * 1.4, height: size * 1.4)
+            Image(assetName)
+                .resizable()
+                .scaledToFill()
+                .frame(width: size, height: size)
+                .clipShape(Circle())
+                .overlay(Circle().stroke(Color.white.opacity(0.92), lineWidth: 2))
+                .shadow(color: MacPalette.accent.opacity(0.28), radius: 14, y: 5)
+        }
+        .frame(width: size + 56, height: size + 56)
+        .accessibilityHidden(true)
     }
 }
 

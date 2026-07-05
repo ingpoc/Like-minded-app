@@ -104,7 +104,7 @@ struct DoodleCover: View {
             Image(assetName)
                 .resizable()
                 .scaledToFill()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .frame(maxWidth: .infinity, minHeight: height, maxHeight: height, alignment: .top)
                 .clipped()
             switch scrimStyle {
             case .none:
@@ -140,6 +140,7 @@ struct DoodleCover: View {
                 }
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .frame(height: height)
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
         .accessibilityHidden(true)

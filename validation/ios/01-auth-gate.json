@@ -7,7 +7,7 @@
     "apps/ios-macos/Sources/Shared/GoogleSignInSupport.swift",
     "apps/ios-macos/Sources/Shared/WalletSignInSupport.swift"
   ],
-  "mockup_ref": "mockups/ios/01-04-onboarding-voice-meet-soulmate.png",
+  "mockup_ref": "mockups/ios/27-auth-login.png",
   "mockup_missing": false,
   "entry_points": [
     "App launch when no signed-in session"
@@ -83,7 +83,7 @@
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-05 capture output/validation/ios-screens/auth-gate.png vs mockups/ios/01-04-onboarding-voice-meet-soulmate.png: Likeminded hero, three promise rows, Sign in with Apple, Google/MetaMask/Solflare parity with macOS welcome. Intentional: montage includes onboarding steps not on auth gate."
+    "notes": "2026-07-05 dedicated mockup mockups/ios/27-auth-login.png (was montage panel 01). Capture vs dedicated: single auth gate with Google/MetaMask/Solflare buttons."
   },
   "notes": "",
   "source_hash": "66b5a8a6b09cc392"

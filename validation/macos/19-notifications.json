@@ -19,10 +19,10 @@
       "label": "All/Unread/Mentions pills",
       "expected": "Filter notification list",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (notif-filter-pills)",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (notif-filter-pills) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "bfecd0dc132580bf",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     },
@@ -32,10 +32,10 @@
       "label": "Mark all as read",
       "expected": "Mark all notifications read in view",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (mark-all-read)",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (mark-all-read) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "bfecd0dc132580bf",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     },
@@ -45,10 +45,10 @@
       "label": "All/Circles/Communities pills",
       "expected": "Filter activity list",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (activity-filter-pills)",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (activity-filter-pills) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "bfecd0dc132580bf",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     },
@@ -58,10 +58,10 @@
       "label": "Refresh notifications",
       "expected": "fetchNotifications from backend",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (refresh)",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (refresh) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "bfecd0dc132580bf",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     },
@@ -71,18 +71,41 @@
       "label": "Notification/activity rows",
       "expected": "Navigate by kind (meet/messages/communities)",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (rows)",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (rows) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "bfecd0dc132580bf",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-04 capture vs plate 16: activity filters refresh. Intentional: avatar density from seed not mockup montage."
+    "notes": "2026-07-05 capture vs plate 16: equal-width Notifications + Activity split panels, filter pills, Today/Earlier + This week sections, Stay in the loop footer, gear settings affordance. Intentional: seeded roster copy and avatar initials vs mockup montage photos."
   },
   "notes": "",
-  "source_hash": "c85b147b28b0e423"
+  "source_hash": "bfecd0dc132580bf",
+  "recent_screenshot_ref": "output/validation/macos-screens/notifications.png",
+  "ui_validation": {
+    "result": "pass",
+    "reference_mockup_ref": "mockups/macos/13-16-community-members-event-messages-activity.png",
+    "recent_screenshot_ref": "output/validation/macos-screens/notifications.png",
+    "design_ref": "DESIGN.md",
+    "last_compared_at": "2026-07-05",
+    "validated": [
+      "latest screenshot exists and was compared with reference mockup plate 16",
+      "DESIGN.md design language checked: warm canvas, calm editorial hierarchy, card system, green accents, bottom glass navigation",
+      "equal-width split Notifications and Activity panels with section headers, filter pills, row cards, Mark all as read, Stay in the loop + Refresh footer",
+      "control behavior tracked separately in controls[]; CUA-click reproof stamped at source_hash bfecd0dc132580bf"
+    ],
+    "pending_validation": [],
+    "requires_implementation": [],
+    "requires_fixing": [],
+    "intentional_differences": [
+      "Seeded notification and activity copy from validation API vs mockup montage names and dates",
+      "Activity filter pills All/Circles/Communities (ledger controls) vs mockup All activity/My activity labels",
+      "Refresh button retained for backend fetch control vs mockup Enable notifications desktop prompt"
+    ],
+    "notes": "2026-07-05 rebuilt notifications screen to mockup 16 split-panel layout; fixed activity community titles via notifications API join lookup."
+  }
 }

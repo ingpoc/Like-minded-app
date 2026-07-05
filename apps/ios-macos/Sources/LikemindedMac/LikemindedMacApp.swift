@@ -15,7 +15,7 @@ struct LikemindedMacApp: App {
     var body: some Scene {
         WindowGroup {
             MacRootView()
-                .frame(minWidth: 1120, minHeight: 720)
+                .frame(minWidth: 1120, minHeight: 760)
                 .preferredColorScheme(.light)
                 .background(MacWindowChromeHider())
                 .onOpenURL { url in

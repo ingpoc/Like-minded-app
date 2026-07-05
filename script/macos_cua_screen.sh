@@ -137,14 +137,23 @@ case "$SCREEN" in
     ;;
   circleDetail)
     click_label "Message circle"
+    LIKEMINDED_VALIDATION_USER="${LIKEMINDED_VALIDATION_USER:-validation-priya}" \
+    LIKEMINDED_VALIDATION_NAME="${LIKEMINDED_VALIDATION_NAME:-Priya Shah}" \
+      "$ROOT/script/run_macos_manual_validation.sh" "$SCREEN" >/dev/null
+    sleep 5
+    cua_bind
+    click_label "Circle options"
     click_label "This does not feel like my circle"
+    click_label "Upcoming circle meet row" optional
     ;;
   settingsSoulmate)
     click_label "Account" optional
     click_label "Privacy & safety" optional
     click_label "Notifications" optional
-    click_label "Soulmate" optional
     click_label "Help & support" optional
+    click_label "Soulmate" optional
+    click_label "Visible in discover" optional
+    click_label "Visible only after both like" optional
     click_label "Save preferences"
     ;;
   circlesRoom)
@@ -152,9 +161,10 @@ case "$SCREEN" in
     click_label "Open Reflective Builders circle" optional || click_label "reflective builders" optional
     ;;
   communitiesBrowse)
-    type_field "Search communities" "jazz" optional
+    type_field "Search communities" "design" optional
     click_label "Trending communities filter" optional || click_label "Trending" optional
-    click_label "Open Jazz Music community" optional || click_label "jazz music" optional
+    click_label "Create a community" optional
+    click_label "Open Design Circle community" optional || click_label "design circle" optional
     ;;
   notifications)
     click_label "Unread notifications filter" optional || click_label "Unread" optional
@@ -173,7 +183,7 @@ case "$SCREEN" in
     ;;
   profileOnboarding)
     click_label "Voice profile step" optional
-    click_label "Join first circle step" optional
+    click_label "Join your first circle step" optional || click_label "Join first circle step" optional
     click_label "Continue"
     ;;
   myProfile)
@@ -210,21 +220,22 @@ case "$SCREEN" in
     type_field "Search members" "priya" optional
     ;;
   chat)
-    click_label "Open conversation with Gurusharan Gupta" optional || click_label "gurusharan" optional
+    click_label "Open conversation with Arjun" optional || click_label "Open conversation with Meera" optional
+    type_field "Search conversations" "arjun" optional
+    type_field "Message input" "CUA validation ping" optional
+    click_label "Send" optional
     click_label "Voice call" optional
     click_label "Video call" optional
     click_label "Conversation info" optional
-    snap 120 | python3 -c "import json,sys
-for e in json.load(sys.stdin).get('elements',[]):
-  if e.get('role') in ('AXTextField','AXButton') and ('message' in (e.get('label') or '').lower() or 'send' in (e.get('label') or '').lower()):
-    print(e.get('element_index'), e.get('role'), repr(e.get('label')))"
     ;;
   messages)
-    click_label "Open conversation with Gurusharan Gupta" optional || click_label "gurusharan" optional
+    click_label "Open conversation with Ananya" optional || click_label "Open conversation with Meera" optional
+    type_field "Search messages" "ananya" optional
+    type_field "Message input" "CUA validation ping" optional
+    click_label "Send" optional
     click_label "Voice call" optional
     click_label "Video call" optional
     click_label "Conversation info" optional
-    click_label "Find matches" optional
     ;;
   *)
     echo "No scripted clicks for $SCREEN (snapshot only)"

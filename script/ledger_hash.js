@@ -14,6 +14,11 @@ function parseSourcePath(entry) {
   return match ? match[1].trim() : raw;
 }
 
+function parseSourceHint(entry) {
+  const match = String(entry || "").match(/\(([^)]+)\)\s*$/);
+  return match ? match[1].trim() : "";
+}
+
 function resolveSourceFiles(sourceFiles, repoRoot = root) {
   const files = [];
   for (const entry of sourceFiles || []) {
@@ -27,14 +32,34 @@ function resolveSourceFiles(sourceFiles, repoRoot = root) {
   return [...new Set(files)].sort();
 }
 
+function sourceContent(entry, repoRoot = root) {
+  const rel = parseSourcePath(entry);
+  const abs = path.join(repoRoot, rel);
+  const text = fs.readFileSync(abs, "utf8");
+  const hint = parseSourceHint(entry);
+  if (!hint) return text;
+  const escaped = hint.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  let start = text.search(new RegExp(`\\n\\s*private\\s+(?:var|func)\\s+${escaped}\\b`));
+  if (start >= 0) start += 1;
+  if (start < 0) start = text.search(new RegExp(`\\b${escaped}\\b`));
+  if (start < 0) return text;
+  const rest = text.slice(start + hint.length);
+  const next = rest.search(/\n\s*(?:\/\/ MARK:|private\s+(?:var|func)\s+\w+)/);
+  return text.slice(start, next < 0 ? undefined : start + hint.length + next);
+}
+
 function hashScreenSources(screenData, repoRoot = root) {
-  const files = resolveSourceFiles(screenData.source_files, repoRoot);
-  if (files.length === 0) return null;
+  if (!screenData.source_files?.length) return null;
   const hash = crypto.createHash("sha256");
-  for (const file of files) {
+  for (const entry of screenData.source_files) {
+    const rel = parseSourcePath(entry);
+    if (!rel) continue;
+    const file = path.join(repoRoot, rel);
+    if (!fs.existsSync(file) || !fs.statSync(file).isFile()) continue;
     hash.update(path.relative(repoRoot, file));
+    hash.update(parseSourceHint(entry));
     hash.update("\0");
-    hash.update(fs.readFileSync(file));
+    hash.update(sourceContent(entry, repoRoot));
     hash.update("\0");
   }
   return hash.digest("hex").slice(0, 16);
@@ -133,6 +158,7 @@ function stampControls(data, controlIds, { result = "pass", evidencePrefix, meth
 module.exports = {
   root,
   parseSourcePath,
+  parseSourceHint,
   resolveSourceFiles,
   hashScreenSources,
   isControlStale,

@@ -4,8 +4,8 @@
   "source_files": [
     "apps/ios-macos/Sources/LikemindedApp/Views/ProfilePrototypeView.swift"
   ],
-  "mockup_ref": null,
-  "mockup_missing": true,
+  "mockup_ref": "mockups/ios/29-profile-concern.png",
+  "mockup_missing": false,
   "entry_points": [
     "Auto-routed here from Circles concern button"
   ],

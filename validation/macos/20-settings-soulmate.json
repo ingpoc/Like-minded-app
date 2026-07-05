@@ -2,7 +2,9 @@
   "screen": "Settings (Soulmate)",
   "platform": "macos",
   "source_files": [
-    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (settingsSoulmate)"
+    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (settingsSoulmate)",
+    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (soulmateSettingsPanel)",
+    "apps/ios-macos/Sources/LikemindedMac/MacDesignSystem.swift (MacAgeRangeSlider)"
   ],
   "mockup_ref": "mockups/macos/17-20-profile-onboarding-detail-settings.png",
   "mockup_missing": false,
@@ -21,12 +23,12 @@
       "label": "Settings sidebar (honest static styling)",
       "expected": "Unshipped rows use muted Planned/detail labels; no fake selectable chrome",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (sidebar-honesty)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (sidebar-honesty) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "a893a2d9f61eb368",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "account-settings",
@@ -34,12 +36,12 @@
       "label": "Account",
       "expected": "Select inline panel: account settings screen (session, profile basics, data)",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (account-settings)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (account-settings) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "c85b147b28b0e423",
-      "last_test_method": "CUA"
+      "tested_source_hash": "a893a2d9f61eb368",
+      "last_test_method": "CUA-click"
     },
     {
       "id": "privacy-safety",
@@ -47,12 +49,12 @@
       "label": "Privacy & safety",
       "expected": "Select inline panel: privacy & safety settings screen",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (privacy-safety)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (privacy-safety) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "c85b147b28b0e423",
-      "last_test_method": "CUA"
+      "tested_source_hash": "a893a2d9f61eb368",
+      "last_test_method": "CUA-click"
     },
     {
       "id": "notifications-settings",
@@ -60,12 +62,12 @@
       "label": "Notifications",
       "expected": "Select inline panel: notification preferences screen",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (notifications-settings)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (notifications-settings) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "c85b147b28b0e423",
-      "last_test_method": "CUA"
+      "tested_source_hash": "a893a2d9f61eb368",
+      "last_test_method": "CUA-click"
     },
     {
       "id": "connected-apps",
@@ -73,12 +75,12 @@
       "label": "Connected apps",
       "expected": "Select inline panel: connected apps / integrations screen",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (connected-apps)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (connected-apps) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "c85b147b28b0e423",
-      "last_test_method": "CUA"
+      "tested_source_hash": "a893a2d9f61eb368",
+      "last_test_method": "CUA-click"
     },
     {
       "id": "appearance",
@@ -86,12 +88,12 @@
       "label": "Appearance",
       "expected": "Select inline panel: appearance / theme settings screen",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (appearance)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (appearance) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "c85b147b28b0e423",
-      "last_test_method": "CUA"
+      "tested_source_hash": "a893a2d9f61eb368",
+      "last_test_method": "CUA-click"
     },
     {
       "id": "language",
@@ -99,12 +101,12 @@
       "label": "Language",
       "expected": "Select inline panel: language / locale settings screen",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (language)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (language) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "c85b147b28b0e423",
-      "last_test_method": "CUA"
+      "tested_source_hash": "a893a2d9f61eb368",
+      "last_test_method": "CUA-click"
     },
     {
       "id": "help-support",
@@ -112,38 +114,38 @@
       "label": "Help & support",
       "expected": "Select inline panel: help / FAQ / contact support screen (macOS-native)",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (help-support)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (help-support) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "c85b147b28b0e423",
-      "last_test_method": "CUA"
+      "tested_source_hash": "a893a2d9f61eb368",
+      "last_test_method": "CUA-click"
     },
     {
       "id": "log-out",
       "type": "button",
       "label": "Log out",
-      "expected": "Opens confirmation; Sign out \u2192 appState.signOut()",
+      "expected": "Opens confirmation; Sign out → appState.signOut()",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (log-out)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (log-out) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "a893a2d9f61eb368",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "delete-account",
       "type": "button",
       "label": "Delete account",
-      "expected": "Opens confirmation; Delete account \u2192 DELETE /v1/me/account and clears local session",
+      "expected": "Opens confirmation; Delete account → DELETE /v1/me/account and clears local session",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (delete-account)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (delete-account) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "a893a2d9f61eb368",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "soulmate-toggle",
@@ -151,12 +153,12 @@
       "label": "Enable Soulmate",
       "expected": "Toggles soulmate via backend",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (soulmate-toggle)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (soulmate-toggle) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "a893a2d9f61eb368",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "view-profile",
@@ -164,12 +166,12 @@
       "label": "View profile",
       "expected": "Removed — Profile tab owns profile view",
       "result": "pass",
-      "evidence": "2026-07-05: View profile row removed from settings sidebar.",
+      "evidence": "2026-07-05: View profile row removed from settings sidebar. ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "a893a2d9f61eb368",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "voice-profile",
@@ -177,12 +179,12 @@
       "label": "Voice profile",
       "expected": "Removed — voice profile accessed from Profile tab",
       "result": "pass",
-      "evidence": "2026-07-05: Voice profile row removed; Retake voice profile remains on Profile tab.",
+      "evidence": "2026-07-05: Voice profile row removed; Retake voice profile remains on Profile tab. ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "a893a2d9f61eb368",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "discovery-preference",
@@ -190,12 +192,12 @@
       "label": "Who can discover you",
       "expected": "Editable discovery preference persisted to backend (not static formLine)",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (discovery-preference)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (discovery-preference) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "c85b147b28b0e423",
-      "last_test_method": "CUA"
+      "tested_source_hash": "a893a2d9f61eb368",
+      "last_test_method": "CUA-click"
     },
     {
       "id": "age-range",
@@ -203,12 +205,12 @@
       "label": "Age range",
       "expected": "Editable age-range preference persisted to backend (slider or picker)",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (age-range)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (age-range) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "c85b147b28b0e423",
-      "last_test_method": "CUA"
+      "tested_source_hash": "a893a2d9f61eb368",
+      "last_test_method": "CUA-click"
     },
     {
       "id": "visibility",
@@ -216,18 +218,42 @@
       "label": "Visibility",
       "expected": "Editable visibility preference persisted to backend (e.g. Circles only / broader)",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (visibility)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (visibility) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "c85b147b28b0e423",
-      "last_test_method": "CUA"
+      "tested_source_hash": "a893a2d9f61eb368",
+      "last_test_method": "CUA-click"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-04 capture vs plate 20: settings account soulmate panel. Intentional: static muted rows for unshipped prefs until pending controls are implemented."
+    "notes": "2026-07-05 capture vs plate 20: Soulmate hero with heart orb, enable toggle, feature cards, discovery dropdown, dual-handle age slider, visibility radio cards. Intentional: Delete account sidebar row; no Voice profile row."
   },
   "notes": "Settings sidebar selects inline panels; View profile and Voice profile rows removed.",
-  "source_hash": "3f8988b2bae470b2"
+  "source_hash": "a893a2d9f61eb368",
+  "recent_screenshot_ref": "output/validation/macos-screens/settingsSoulmate.png",
+  "ui_validation": {
+    "result": "pass",
+    "reference_mockup_ref": "mockups/macos/17-20-profile-onboarding-detail-settings.png",
+    "recent_screenshot_ref": "output/validation/macos-screens/settingsSoulmate.png",
+    "design_ref": "DESIGN.md",
+    "last_compared_at": "2026-07-05",
+    "validated": [
+      "latest screenshot exists and was compared with reference mockup plate 20",
+      "DESIGN.md design language checked: warm canvas, calm editorial hierarchy, card system, green accents, bottom glass navigation",
+      "Soulmate hero with MacOrb heart field, enable toggle, three feature cards, discovery dropdown, age-range slider, visibility radio cards",
+      "settings sidebar with Account/Privacy/Notifications/Soulmate panels and Save preferences CTA",
+      "control behavior tracked separately in controls[]"
+    ],
+    "pending_validation": [],
+    "requires_implementation": [],
+    "requires_fixing": [],
+    "intentional_differences": [
+      "Delete account row in sidebar (macOS honest MVP) vs mockup plate without delete",
+      "Voice profile row removed from sidebar per product decision",
+      "Backend-seeded age range 22–35 vs mockup sample 24–34"
+    ],
+    "notes": "2026-07-05 capture output/validation/macos-screens/settingsSoulmate.png vs mockup plate 20: Soulmate settings hero, heart orb, feature cards, discovery preferences, age slider, and visibility radios match montage layout."
+  }
 }

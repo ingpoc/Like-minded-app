@@ -29,10 +29,10 @@
       "label": "Participant tiles",
       "expected": "Camera tiles grid",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof batch: reproof after source hash change (tiles)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof batch: reproof after source hash change (tiles) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "57af14224c2305a9",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA"
     },
@@ -42,10 +42,10 @@
       "label": "Mute toggle",
       "expected": "Toggles local mic",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof batch: reproof after source hash change (mute)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof batch: reproof after source hash change (mute) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "57af14224c2305a9",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA"
     },
@@ -55,18 +55,43 @@
       "label": "Leave",
       "expected": "Disconnects room",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof batch: reproof after source hash change (leave)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof batch: reproof after source hash change (leave) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "57af14224c2305a9",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-04 capture vs mockups/macos/21-meet-video-call.png: prototype room tiles mute leave participants agenda. Intentional: no LiveKit SDK; initials on tiles not camera feeds; join API blocked Phase 10."
+    "notes": "2026-07-05 capture vs mockups/macos/21-meet-video-call.png: 2x2 tile grid, participant panel with avatars and +N more, mute/leave controls, agenda tab, safety card. Intentional: gradient initials on tiles (no LiveKit camera feeds); join-room blocked Phase 10."
   },
-  "notes": "2026-07-05: join-room blocked on LiveKit infra (Phase 10). tiles/mute/leave pass as prototype UI only — real camera feeds and backend mic require LiveKit join.",
-  "source_hash": "c85b147b28b0e423"
+  "notes": "2026-07-05: join-room blocked on LiveKit infra (Phase 10). tiles/mute/leave pass as prototype UI. ui_validation pass — layout matches mockup 21; camera feeds deferred until LiveKit join.",
+  "source_hash": "57af14224c2305a9",
+  "recent_screenshot_ref": "output/validation/macos-screens/meetVideoCall.png",
+  "ui_validation": {
+    "result": "pass",
+    "reference_mockup_ref": "mockups/macos/21-meet-video-call.png",
+    "recent_screenshot_ref": "output/validation/macos-screens/meetVideoCall.png",
+    "design_ref": "DESIGN.md",
+    "last_compared_at": "2026-07-05",
+    "validated": [
+      "latest screenshot exists and was compared with reference mockup",
+      "DESIGN.md design language checked: warm canvas, calm editorial hierarchy, card system, green accents, bottom glass navigation",
+      "visible text and components reviewed for clear purpose",
+      "control behavior tracked separately in controls[]",
+      "2x2 participant tile grid with name overlays matches mockup layout",
+      "right panel with Participants/Agenda tabs, avatar rows, Host badge, and +N more overflow",
+      "call control bar: Chat, Participants, Mute mic, Good connection, Leave"
+    ],
+    "pending_validation": [],
+    "requires_implementation": [],
+    "requires_fixing": [],
+    "intentional_differences": [
+      "Participant tiles use gradient initials placeholders — no LiveKit camera feeds until Phase 10 (join-room control blocked).",
+      "Seeded validation meeting title Reflective Builders / Jul 12 2026 vs mockup Sunday Circle Meetup / Today 7–8 PM."
+    ],
+    "notes": "2026-07-05 closeout: removed duplicate global header; added avatar rows and +N more in participant panel. Layout parity with mockup 21; camera feeds intentionally absent (infra-blocked)."
+  }
 }

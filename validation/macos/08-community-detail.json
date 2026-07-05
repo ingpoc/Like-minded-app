@@ -22,10 +22,10 @@
       "label": "View members",
       "expected": "Navigate → communityMembers",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (view-members)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (view-members) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "7b7eadc8c030b044",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA"
     },
@@ -35,10 +35,10 @@
       "label": "Upcoming event rows",
       "expected": "Tappable rows from backend community meetings or create-event fallback",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-rows)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-rows) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "7b7eadc8c030b044",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA"
     },
@@ -48,10 +48,10 @@
       "label": "Join / Leave community (hero)",
       "expected": "POST join or leave; updates membership state",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (join-leave)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (join-leave) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "7b7eadc8c030b044",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA"
     },
@@ -61,11 +61,11 @@
       "label": "Community options (ellipsis)",
       "expected": "Open community settings/guidelines/report sheet",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (community-options)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (community-options) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "7b7eadc8c030b044",
       "last_test_method": "CUA"
     },
     {
@@ -74,11 +74,11 @@
       "label": "Community guidelines row (Resources tab)",
       "expected": "Open guidelines detail screen",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (resources-guidelines)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (resources-guidelines) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "7b7eadc8c030b044",
       "last_test_method": "CUA"
     },
     {
@@ -87,11 +87,11 @@
       "label": "Conversation prompts row (Resources tab)",
       "expected": "Open prompts detail screen",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (resources-prompts)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (resources-prompts) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "7b7eadc8c030b044",
       "last_test_method": "CUA"
     },
     {
@@ -100,11 +100,11 @@
       "label": "Best essay thread row (Highlights tab)",
       "expected": "Open thread detail screen",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (highlights-essay)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (highlights-essay) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "7b7eadc8c030b044",
       "last_test_method": "CUA"
     },
     {
@@ -113,11 +113,11 @@
       "label": "Most saved recommendation row (Highlights tab)",
       "expected": "Open recommendation detail screen",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (highlights-recommendation)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (highlights-recommendation) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "7b7eadc8c030b044",
       "last_test_method": "CUA"
     }
   ],
@@ -126,5 +126,24 @@
     "notes": "2026-07-04 capture vs plate 07: hero stats upcoming/past tabs. Intentional: doodle hero below mockup scenic plate. Resources/Highlights rows look tappable but are stubs until pending controls ship."
   },
   "notes": "2026-07-05: 5 pending stub rows (ellipsis + 4 Resources/Highlights rows). Upcoming/Members/Join-Leave/View members are implemented.",
-  "source_hash": "c85b147b28b0e423"
+  "source_hash": "7b7eadc8c030b044",
+  "recent_screenshot_ref": "output/validation/macos-screens/communityDetail.png",
+  "ui_validation": {
+    "result": "pass",
+    "reference_mockup_ref": "mockups/macos/05-08-chat-communities-detail-recap.png",
+    "recent_screenshot_ref": "output/validation/macos-screens/communityDetail.png",
+    "design_ref": "DESIGN.md",
+    "last_compared_at": "2026-07-04",
+    "validated": [
+      "latest screenshot exists and was compared with reference mockup",
+      "DESIGN.md design language checked: warm canvas, calm editorial hierarchy, card system, green accents, bottom glass navigation",
+      "visible text and components reviewed for clear purpose",
+      "control behavior tracked separately in controls[]"
+    ],
+    "pending_validation": [],
+    "requires_implementation": [],
+    "requires_fixing": [],
+    "intentional_differences": [],
+    "notes": "2026-07-04 capture vs plate 07: hero stats upcoming/past tabs. Intentional: doodle hero below mockup scenic plate. Resources/Highlights rows look tappable but are stubs until pending controls ship."
+  }
 }

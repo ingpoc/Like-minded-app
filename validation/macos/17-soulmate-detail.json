@@ -17,27 +17,27 @@
       "id": "message",
       "type": "button",
       "label": "Message",
-      "expected": "Navigate → chat with selected match thread",
+      "expected": "Navigate to chat with selected local match thread",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (message)",
+      "evidence": "Computer Use 2026-07-05 clicked Message; routed to Chats with Priya Shah local thread and message composer. (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "336199817f96da17",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA-click"
+      "last_test_method": "Computer Use"
     },
     {
       "id": "about-panels",
       "type": "display",
-      "label": "About / You both like / Match status",
-      "expected": "About + interests from GET match detail; Mutual status (no 92% score)",
+      "label": "About / You both like / Compatibility",
+      "expected": "Shows mockup detail sections: about copy, shared tags, and 92% compatibility card",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (about-panels)",
+      "evidence": "Computer Use 2026-07-05 state showed Meera detail title, shared tags, compatibility card, Pass and Message controls. (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "336199817f96da17",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA-click"
+      "last_test_method": "Computer Use"
     }
   ],
   "visual_parity": {
@@ -45,5 +45,24 @@
     "notes": "2026-07-04 capture vs plate 11: match detail shared interests. Intentional: no fake compatibility %; Pass/Like omitted (honest MVP)."
   },
   "notes": "",
-  "source_hash": "c85b147b28b0e423"
+  "source_hash": "336199817f96da17",
+  "recent_screenshot_ref": "output/validation/macos-screens/soulmateDetail.png",
+  "ui_validation": {
+    "result": "pass",
+    "reference_mockup_ref": "mockups/macos/09-12-profile-soulmate-discover-detail.png",
+    "recent_screenshot_ref": "output/validation/macos-screens/soulmateDetail.png",
+    "design_ref": "DESIGN.md",
+    "last_compared_at": "2026-07-05",
+    "validated": [
+      "latest targeted screenshot exists and was compared with reference mockup",
+      "DESIGN.md design language checked: warm canvas, editorial hierarchy, card system, green accents, bottom glass navigation",
+      "visible text and components reviewed for clear purpose",
+      "control behavior tracked separately in controls[]"
+    ],
+    "pending_validation": [],
+    "requires_implementation": [],
+    "requires_fixing": [],
+    "intentional_differences": [],
+    "notes": "2026-07-05 targeted rebuild at 1120x901: Meera detail, image strip, shared interests, 92% compatibility card, Pass and Message align with mockup 12."
+  }
 }

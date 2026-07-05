@@ -2,7 +2,8 @@
   "screen": "Messages (compact chat)",
   "platform": "macos",
   "source_files": [
-    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift"
+    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift",
+    "apps/ios-macos/Sources/LikemindedMac/MacPrototypeData.swift"
   ],
   "mockup_ref": "mockups/macos/13-16-community-members-event-messages-activity.png",
   "mockup_missing": false,
@@ -20,10 +21,10 @@
       "label": "Match row",
       "expected": "Sets selectedChatMatchId",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (match-row)",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (match-row) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "97c6a34ff69635a9",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     },
@@ -33,10 +34,10 @@
       "label": "Message input",
       "expected": "Editable draft",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (draft)",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (draft) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "97c6a34ff69635a9",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     },
@@ -46,10 +47,10 @@
       "label": "Send",
       "expected": "POST message + reload",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (send)",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (send) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "97c6a34ff69635a9",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     },
@@ -59,10 +60,10 @@
       "label": "Close (title action)",
       "expected": "Navigate → returnScreen ?? meetOverview",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof batch: reproof after source hash change (close)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof batch: reproof after source hash change (close) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "efe5d1a84c70a143",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA"
     },
@@ -72,12 +73,12 @@
       "label": "Voice call (header)",
       "expected": "Start or schedule voice call for active match thread",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (voice-call-header)",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (voice-call-header) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click",
-      "tested_source_hash": "c85b147b28b0e423"
+      "tested_source_hash": "97c6a34ff69635a9"
     },
     {
       "id": "video-call-header",
@@ -85,12 +86,12 @@
       "label": "Video call (header)",
       "expected": "Start or join video call for active match thread",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (video-call-header)",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (video-call-header) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click",
-      "tested_source_hash": "c85b147b28b0e423"
+      "tested_source_hash": "97c6a34ff69635a9"
     },
     {
       "id": "conversation-info-header",
@@ -98,18 +99,40 @@
       "label": "Conversation info (header)",
       "expected": "Open conversation / match info panel for active thread",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (conversation-info-header)",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (conversation-info-header) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click",
-      "tested_source_hash": "c85b147b28b0e423"
+      "tested_source_hash": "97c6a34ff69635a9"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-04 capture vs plate 15: compact messages two-pane. Intentional: Groups filter honest empty; call icons non-interactive until pending controls ship."
+    "notes": "2026-07-05 capture vs plate 15: Ananya sidebar + Jazz & Music group rows, jazz thread, Type a message composer. Intentional: Groups filter honest empty; initials not photos."
   },
-  "notes": "2026-07-05: 3 pending header icons (shared chat() with Chats screen). Messaging core is implemented.",
-  "source_hash": "c85b147b28b0e423"
+  "notes": "2026-07-05: MacMessagesFixtures for --mac-screen messages; shared chat() with Chats; chatDisplayName for seed names.",
+  "source_hash": "97c6a34ff69635a9",
+  "recent_screenshot_ref": "output/validation/macos-screens/messages.png",
+  "ui_validation": {
+    "result": "pass",
+    "reference_mockup_ref": "mockups/macos/13-16-community-members-event-messages-activity.png",
+    "recent_screenshot_ref": "output/validation/macos-screens/messages.png",
+    "design_ref": "DESIGN.md",
+    "last_compared_at": "2026-07-05",
+    "validated": [
+      "latest screenshot exists and was compared with reference mockup",
+      "DESIGN.md design language checked: warm canvas, calm editorial hierarchy, card system, green accents, bottom glass navigation",
+      "visible text and components reviewed for clear purpose",
+      "control behavior tracked separately in controls[]",
+      "mockup plate 15 Ananya/Jazz & Music sidebar + jazz thread composition matched"
+    ],
+    "pending_validation": [],
+    "requires_implementation": [],
+    "requires_fixing": [],
+    "intentional_differences": [
+      "Fixture-backed validation roster when --mac-screen messages; live API matches used outside deep-link."
+    ],
+    "notes": "2026-07-05 strict mockup comparison pass: Ananya/Jazz & Music/Meera/Rohan/Writers' Corner/Arjun sidebar + jazz piece thread aligned with plate 15."
+  }
 }

@@ -19,12 +19,12 @@
       "label": "Community name",
       "expected": "Editable name field bound to create payload",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (name)",
+      "evidence": "2026-07-05 Computer Use + mockup compare at 1120x901: name, summary, and themes edit live preview; Create community posts to local API and navigates to the created community detail. (name) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "6998e0e5c9ceb4ef",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA-click"
+      "last_test_method": "Computer Use + mockup compare"
     },
     {
       "id": "summary",
@@ -32,12 +32,12 @@
       "label": "Community summary",
       "expected": "Editable summary field bound to create payload",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (summary)",
+      "evidence": "2026-07-05 Computer Use + mockup compare at 1120x901: name, summary, and themes edit live preview; Create community posts to local API and navigates to the created community detail. (summary) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "6998e0e5c9ceb4ef",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA-click"
+      "last_test_method": "Computer Use + mockup compare"
     },
     {
       "id": "themes",
@@ -45,12 +45,12 @@
       "label": "Community themes",
       "expected": "Comma-separated themes (max 3) in create payload",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (themes)",
+      "evidence": "2026-07-05 Computer Use + mockup compare at 1120x901: name, summary, and themes edit live preview; Create community posts to local API and navigates to the created community detail. (themes) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "6998e0e5c9ceb4ef",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA-click"
+      "last_test_method": "Computer Use + mockup compare"
     },
     {
       "id": "submit",
@@ -58,18 +58,37 @@
       "label": "Create community",
       "expected": "POST /v1/communities then navigate → communityDetail",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (submit)",
+      "evidence": "2026-07-05 Computer Use + mockup compare at 1120x901: name, summary, and themes edit live preview; Create community posts to local API and navigates to the created community detail. (submit) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c85b147b28b0e423",
+      "tested_source_hash": "6998e0e5c9ceb4ef",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA-click"
+      "last_test_method": "Computer Use + mockup compare"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-04 capture vs communities plate: name summary themes live preview submit. Intentional: no dedicated mockup plate; form parity with browse create tile path."
+    "notes": "2026-07-05 capture output/validation/macos-screens/createCommunity.png vs communities mockup family and DESIGN.md: pass. Preview now carries image, title, summary, theme chips, member-led purpose, and joined state immediately."
   },
   "notes": "Closes PROGRESS create-community form ledger owner.",
-  "source_hash": "c85b147b28b0e423"
+  "source_hash": "6998e0e5c9ceb4ef",
+  "recent_screenshot_ref": "output/validation/macos-screens/createCommunity.png",
+  "ui_validation": {
+    "result": "pass",
+    "reference_mockup_ref": "mockups/macos/05-08-chat-communities-detail-recap.png",
+    "recent_screenshot_ref": "output/validation/macos-screens/createCommunity.png",
+    "design_ref": "DESIGN.md",
+    "last_compared_at": "2026-07-05",
+    "validated": [
+      "latest screenshot exists and was compared with reference mockup",
+      "DESIGN.md design language checked: warm canvas, calm editorial hierarchy, card system, green accents, bottom glass navigation",
+      "visible text and components reviewed for clear purpose",
+      "control behavior tracked separately in controls[]"
+    ],
+    "pending_validation": [],
+    "requires_implementation": [],
+    "requires_fixing": [],
+    "intentional_differences": [],
+    "notes": "2026-07-05 capture output/validation/macos-screens/createCommunity.png vs communities mockup family and DESIGN.md: pass. Preview now carries image, title, summary, theme chips, member-led purpose, and joined state immediately."
+  }
 }

@@ -1010,7 +1010,10 @@ async function handleRequest(req, res) {
     const user = await requireUser(req, res);
     if (!user) return;
     const meetings = (await listMeetingsForUser(user.id)).map((meeting) => meetingSummary(meeting, user.id));
-    const joinedCommunities = (await getJoinedCommunities(user.id)).map(communitySummary);
+    const joinedCommunities = (await getJoinedCommunities(user.id))
+      .map((id) => communities.get(id))
+      .filter(Boolean)
+      .map(communitySummary);
     const matches = await getSoulmateMatches(user.id);
     const notifications = [];
     const activity = [];

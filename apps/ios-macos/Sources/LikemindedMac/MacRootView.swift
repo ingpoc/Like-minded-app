@@ -63,6 +63,7 @@ struct MacRootView: View {
             }
         }
         .foregroundStyle(MacPalette.ink)
+        .macSuppressFocusRing()
         .task {
             await appState.signInForLocalValidationIfNeeded()
             await appState.validateStoredAppleCredentialIfNeeded()
@@ -95,6 +96,11 @@ struct MacRootView: View {
         }
         .onChange(of: appState.soulmateEnabled) { _, enabled in
             if !enabled, selectedScreen.tab == .soulmate {
+                let deepLink = MacPrototypeScreen.initial
+                if ProcessInfo.processInfo.arguments.contains("--mac-screen"),
+                   deepLink.tab == .soulmate {
+                    return
+                }
                 selectedScreen = .myProfile
             }
         }

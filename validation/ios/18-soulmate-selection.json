@@ -4,8 +4,8 @@
   "source_files": [
     "apps/ios-macos/Sources/LikemindedApp/Views/SoulmateView.swift (SoulmateSelectionDialog)"
   ],
-  "mockup_ref": null,
-  "mockup_missing": true,
+  "mockup_ref": "mockups/ios/30-soulmate-selection.png",
+  "mockup_missing": false,
   "entry_points": [
     "Past meet detail Select connections",
     "Soulmate Post-meet selection"
