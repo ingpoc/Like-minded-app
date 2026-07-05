@@ -22,7 +22,7 @@ const root = path.resolve(__dirname, "..");
 const PLATFORM_OWNERS = {
   ios: /Track — iOS Ledger Honesty|validation\/ios|Leave circle|past-meet row|iOS ledger closeout/i,
   macos:
-    /Track — macOS Visual Parity|validation\/macos|macOS profile honesty|macOS soulmate|macOS community members|Re-CUA|Manual proofs — \*\*macOS\*\*|create-community form ledger|macOS validation ledgers|macOS visual parity/i
+    /Track — macOS Visual Parity|Track — macOS Unimplemented|validation\/macos|macOS profile honesty|macOS soulmate|macOS community members|macOS Settings static|macOS Chat header|macOS infra-blocked|Re-CUA|Manual proofs — \*\*macOS\*\*|create-community form ledger|macOS validation ledgers|macOS visual parity/i
 };
 
 const TRACK_LABELS = {

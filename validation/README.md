@@ -9,7 +9,7 @@
 | Platform | Screens | Controls | Pass | Fail | Blocked | Pending | Flagged stubs |
 |---|---|---|---|---|---|---|---|
 | iOS  | 23 | 76 | 44 | 6 | 5 | 21 | 6 |
-| macOS | 22 | 83 | 78 | 0 | 5 | 0 | 0 |
+| macOS | 22 | 94 | 79 | 0 | 2 | 13 | 13 |
 
 _Index regenerated from on-disk JSON._
 
@@ -50,7 +50,7 @@ _Index regenerated from on-disk JSON._
 | 3 | [Circles Room](macos/03-circles-room.json) | `mockups/macos/01-04-auth-meet-circles-profile.png` | 2 | pass |
 | 4 | [Circle Detail](macos/04-circle-detail.json) | `mockups/macos/17-20-profile-onboarding-detail-settings.png` | 3 | pass |
 | 5 | [Profile Edit (living profile read-only)](macos/05-profile-edit.json) | `mockups/macos/09-12-profile-soulmate-discover-detail.png` | 3 | pass |
-| 6 | [Chat (Chats, compact:false)](macos/06-chat.json) | `mockups/macos/05-08-chat-communities-detail-recap.png` | 4 | pass |
+| 6 | [Chat (Chats, compact:false)](macos/06-chat.json) | `mockups/macos/05-08-chat-communities-detail-recap.png` | 7 | partial |
 | 7 | [Communities Browse](macos/07-communities-browse.json) | `mockups/macos/05-08-chat-communities-detail-recap.png` | 4 | pass |
 | 8 | [Community Detail](macos/08-community-detail.json) | `mockups/macos/05-08-chat-communities-detail-recap.png` | 2 | pass |
 | 9 | [Community Members](macos/09-community-members.json) | `mockups/macos/13-16-community-members-event-messages-activity.png` | 4 | pass |
@@ -64,7 +64,7 @@ _Index regenerated from on-disk JSON._
 | 17 | [Soulmate Detail](macos/17-soulmate-detail.json) | `mockups/macos/09-12-profile-soulmate-discover-detail.png` | 2 | pass |
 | 18 | [Messages (compact chat)](macos/18-messages.json) | `mockups/macos/13-16-community-members-event-messages-activity.png` | 4 | pass |
 | 19 | [Notifications + Activity](macos/19-notifications.json) | `mockups/macos/13-16-community-members-event-messages-activity.png` | 5 | pass |
-| 20 | [Settings (Soulmate)](macos/20-settings-soulmate.json) | `mockups/macos/17-20-profile-onboarding-detail-settings.png` | 8 | pass |
+| 20 | [Settings (Soulmate)](macos/20-settings-soulmate.json) | `mockups/macos/17-20-profile-onboarding-detail-settings.png` | 16 | partial |
 | 21 | [Meet Video Call (LiveKit parity — mockup 21)](macos/21-meet-video-call.json) | `mockups/macos/21-meet-video-call.png` | 4 | partial |
 | 22 | [Create Community](macos/22-create-community.json) | `mockups/macos/05-08-chat-communities-detail-recap.png` | 4 | pass |
 

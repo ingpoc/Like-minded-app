@@ -20,7 +20,7 @@
       "expected": "Calls POST /meetings/:id/join, opens in-app LiveKit room with camera on",
       "result": "blocked",
       "evidence": "2026-07-04: Meet hero Join navigates to prototype meetVideoCall room locally; POST /v1/meetings/:id/join + LiveKit SDK deferred to Phase 10 (no server provisioned).",
-      "blocker": "No LiveKit server provisioned; macOS parity is Phase 10 unchecked",
+      "blocker": "Infrastructure — no LiveKit server provisioned; prototype room only until Phase 10",
       "stub": false
     },
     {
@@ -67,6 +67,6 @@
     "result": "pass",
     "notes": "2026-07-04 capture vs mockups/macos/21-meet-video-call.png: prototype room tiles mute leave participants agenda. Intentional: no LiveKit SDK; initials on tiles not camera feeds; join API blocked Phase 10."
   },
-  "notes": "Prototype room reachable via --mac-screen meetVideoCall and Meet Join meetup; LiveKit API join remains Phase 10.",
+  "notes": "2026-07-05: join-room blocked on LiveKit infra (Phase 10). tiles/mute/leave pass as prototype UI only — real camera feeds and backend mic require LiveKit join.",
   "source_hash": "342bb6ef2d9f07fb"
 }

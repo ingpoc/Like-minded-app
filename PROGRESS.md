@@ -160,6 +160,7 @@ Meetup flow: RSVP, AI scheduling, group formation, host selection, in-app group 
 - [x] Create `scoreCommunityHost(participantProfiles)` in `scheduling.js` — score each participant: `openness` > 0.7 (+1), `agreeableness` > 0.6 (+1), `extraversion` 0.4-0.8 (+1), `communicationStyle.primary == "warm"` (+1), `neuroticism` < 0.5 (+1), `socialEnergy` high/medium (+1), dominance low (+1). Highest score = host. Tiebreak: more meetups attended.
 - [x] Gender balance: pull `basicInfo.gender` from each participant's profile. Male + Female pools. Interleave into groups: 5 males + 5 females per group of 10. Non-binary / prefer-not-to-say: place freely without gender constraint.
 - [x] Leftover handling: if RSVP count % 10 != 0 and remainder < 6, skip the remainder group. If remainder >= 6, create a smaller group.
+
 ## Phase 6 — Soulmate + Chat
 
 Opt-in matching: post-meet selection, mutual matches, interest profile view, in-app chat.
@@ -322,6 +323,14 @@ Parallel to Phase 9; not a numbered phase. Owner: `docs/references/macos-screen-
 - [x] macOS create-community form ledger: `validation/macos/22-create-community.json` controls for name/summary/themes/submit driven to pass with CUA.
 - [x] macOS visual parity vs `mockups/macos/` and per-screen refs in `docs/references/macos-screen-audit.md`; regenerate `output/validation/macos-screens/` via `npm run verify:macos-screens` after UI polish.
 - [x] macOS create event layout parity vs `mockups/macos/22-create-event.png` at default, smaller, and maximized window sizes with traffic lights visible.
+
+## Track — macOS Unimplemented Controls (static UI)
+
+Ledger owner: `validation/macos/*.json` pending rows with `stub: true` and blocker `Not implemented`. Static row = no screen on click.
+
+- [ ] macOS Settings: implement 7 sidebar nav rows (Account, Privacy & safety, Notifications, Connected apps, Appearance, Language, Help & support) and 3 Soulmate preference editors (discovery, age range, visibility); evidence in `validation/macos/20-settings-soulmate.json` (10 pending).
+- [ ] macOS Chat: implement voice call, video call, and conversation info header actions; evidence in `validation/macos/06-chat.json` (3 pending).
+- [ ] macOS infra-blocked (not static): real Sign in with Apple (`validation/macos/01-welcome.json`) and LiveKit meet video join (`validation/macos/21-meet-video-call.json`) — Phase 9/10 external setup.
 
 ## Track — iOS Ledger Honesty (post–Phase 8)
 
