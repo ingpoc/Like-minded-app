@@ -39,6 +39,13 @@ struct RootView: View {
                         }
                     }
                 }
+                .onChange(of: appState.requestedTab) { _, tab in
+                    guard let tab else { return }
+                    withAnimation(.interactive) {
+                        selection = tab
+                    }
+                    appState.requestedTab = nil
+                }
             } else {
                 AuthGateView()
             }

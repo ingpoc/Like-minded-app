@@ -1,0 +1,53 @@
+{
+  "screen": "Community Members",
+  "platform": "ios",
+  "source_files": [
+    "apps/ios-macos/Sources/LikemindedApp/Views/CommunitiesPrototypeView.swift (CommunityMembersView)"
+  ],
+  "mockup_ref": "mockups/ios/17-20-profile-community-settings.png",
+  "mockup_missing": false,
+  "entry_points": [
+    "Community Detail → Members tab → View members"
+  ],
+  "backend_dependencies": [
+    "GET /v1/communities/:id/members"
+  ],
+  "controls": [
+    {
+      "id": "search",
+      "type": "text",
+      "label": "Search members",
+      "expected": "Filters roster by name/gender",
+      "result": "pass",
+      "evidence": "2026-07-05 iOS macOS parity P0: CommunityMembersView search field filters filteredMembers.",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "filter-pills",
+      "type": "display",
+      "label": "Member count label",
+      "expected": "Header subtitle and roster badge use same loaded member count from API",
+      "result": "pass",
+      "evidence": "2026-07-05 iOS macOS parity P0: memberCount drives ScreenContainer subtitle and roster badge.",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "member-rows",
+      "type": "display",
+      "label": "Member rows",
+      "expected": "Display-only roster from API",
+      "result": "pass",
+      "evidence": "2026-07-05 iOS macOS parity P0: ForEach filteredMembers from fetchCommunityMembers.",
+      "blocker": "",
+      "stub": false
+    }
+  ],
+  "visual_parity": {
+    "result": "pass",
+    "notes": "2026-07-05 mobile layout mirrors macOS communityMembers controls with stacked FeatureCards."
+  },
+  "notes": "Parity with validation/macos/09-community-members.json.",
+  "source_hash": ""
+}

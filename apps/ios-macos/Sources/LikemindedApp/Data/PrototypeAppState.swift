@@ -28,6 +28,8 @@ final class PrototypeAppState: ObservableObject {
     @Published var joinedCommunities: [Community] = []
     @Published var isLoadingCommunities = false
     @Published var communityError: String?
+    @Published var communityMembers: [CommunityMember] = []
+    @Published var isLoadingCommunityMembers = false
     @Published var circles: [PlacementCircle] = []
     @Published var joinedCircles: [PlacementCircle] = []
     @Published var isLoadingCircles = false
@@ -42,9 +44,12 @@ final class PrototypeAppState: ObservableObject {
     @Published var soulmateMatches: [SoulmateMatch] = []
     @Published var soulmateError: String?
     @Published var isLoadingSoulmate = false
+    @Published var soulmatePreferences = SoulmatePreferences.defaults
     @Published var notifications: [NotificationItem] = []
     @Published var activityItems: [NotificationItem] = []
     @Published var notificationError: String?
+    @Published var readNotificationIds: Set<String> = []
+    @Published var requestedTab: AppTab?
 
     private let voiceClient = RealtimeVoiceClient()
 
@@ -413,6 +418,55 @@ final class PrototypeAppState: ObservableObject {
         loadError = nil
     }
 
+    @discardableResult
+    func updateProfileBasics(
+        name: String,
+        city: String,
+        gender: Gender?,
+        dateOfBirth: String?,
+        pincode: String?
+    ) async -> Bool {
+        guard isSignedIn else { return false }
+        let existing = basicInfo ?? slice?.profile.basicInfo
+        let update = BasicInfoUpdate(
+            name: name.trimmingCharacters(in: .whitespacesAndNewlines),
+            gender: (gender ?? existing?.gender)?.rawValue,
+            dateOfBirth: dateOfBirth ?? existing?.dateOfBirth,
+            city: city.trimmingCharacters(in: .whitespacesAndNewlines),
+            pincode: pincode ?? existing?.pincode
+        )
+        do {
+            let profile = try await client.updateProfile(basicInfo: update)
+            if let info = profile.basicInfo {
+                basicInfo = info
+            }
+            loadError = nil
+            return true
+        } catch {
+            loadError = "Profile could not be saved."
+            return false
+        }
+    }
+
+    @discardableResult
+    func refreshProfileFromReflection(_ answers: [String]) async -> Bool {
+        guard isSignedIn else { return false }
+        isSynthesizingPlacement = true
+        defer { isSynthesizingPlacement = false }
+        do {
+            let result = try await client.createProfileFromInterview(
+                interviewTranscript: answers.joined(separator: "\n"),
+                reflectionAnswers: answers
+            )
+            applyProfileResult(result, source: "Voice profile refreshed")
+            loadError = nil
+            return true
+        } catch {
+            loadError = "Voice profile refresh could not be saved."
+            return false
+        }
+    }
+
     private func createProfileFromInterview(transcript: String) async {
         let transcript = transcript.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !transcript.isEmpty else { return }
@@ -526,6 +580,44 @@ final class PrototypeAppState: ObservableObject {
         }
     }
 
+    func fetchCommunityMembers(id: String) async {
+        isLoadingCommunityMembers = true
+        defer { isLoadingCommunityMembers = false }
+        do {
+            communityMembers = try await client.fetchCommunityMembers(id: id)
+            communityError = nil
+        } catch {
+            communityMembers = []
+            communityError = "Community members could not be loaded."
+        }
+    }
+
+    func createMeeting(
+        kind: String,
+        targetId: String,
+        title: String,
+        scheduledAt: String,
+        location: String,
+        details: String
+    ) async -> Meeting? {
+        do {
+            let meeting = try await client.createMeeting(
+                kind: kind,
+                targetId: targetId,
+                title: title,
+                scheduledAt: scheduledAt,
+                location: location,
+                details: details
+            )
+            await fetchMeetings()
+            meetingError = nil
+            return meeting
+        } catch {
+            meetingError = "Event could not be created."
+            return nil
+        }
+    }
+
     func fetchMeetings() async {
         guard isSignedIn else { return }
         isLoadingMeetings = true
@@ -580,6 +672,10 @@ final class PrototypeAppState: ObservableObject {
         }
     }
 
+    func markNotificationsRead() {
+        readNotificationIds = Set(notifications.map(\.id))
+    }
+
     func fetchSoulmateStatus() async {
         guard isSignedIn else { return }
         isLoadingSoulmate = true
@@ -588,6 +684,7 @@ final class PrototypeAppState: ObservableObject {
             let status = try await client.fetchSoulmateStatus()
             soulmateEnabled = status.enabled
             soulmatePendingSelections = status.pendingSelections
+            soulmatePreferences = status.preferences ?? .defaults
             soulmateMatches = try await client.fetchSoulmateMatches()
             soulmateError = nil
         } catch {
@@ -604,6 +701,17 @@ final class PrototypeAppState: ObservableObject {
             await fetchSoulmateStatus()
         } catch {
             soulmateError = "Soulmate preference could not be saved."
+        }
+    }
+
+    func saveSoulmatePreferences(_ preferences: SoulmatePreferences) async -> Bool {
+        do {
+            soulmatePreferences = try await client.setSoulmatePreferences(preferences)
+            soulmateError = nil
+            return true
+        } catch {
+            soulmateError = "Soulmate preferences could not be saved."
+            return false
         }
     }
 

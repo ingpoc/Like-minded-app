@@ -2,158 +2,310 @@ import SwiftUI
 
 struct OnboardingView: View {
     @EnvironmentObject private var appState: PrototypeAppState
-    @State private var step = 0
+    @State private var step = 1
     @State private var name = ""
     @State private var gender: Gender = .preferNotToSay
     @State private var dateOfBirth = Date()
     @State private var city = ""
     @State private var pincode = ""
+    @State private var basicsStatus: String?
+    @State private var isSavingBasics = false
+    @State private var voicePromptIndex = 0
+    @State private var voiceDraft = ""
+    @State private var voiceAnswers: [String] = []
+    @State private var voiceStatus: String?
+    @State private var isSavingVoice = false
 
-    private let steps = 5
+    private let voiceReflectionPrompts = [
+        "What has felt most energizing in your social life lately?",
+        "How do you prefer to open up with new people?",
+        "What topics or hobbies could you talk about for hours?"
+    ]
 
     var body: some View {
-        FeatureCard(title: "Start profile", eyebrow: "Onboarding") {
+        FeatureCard(title: cardTitle, eyebrow: "Onboarding") {
             VStack(alignment: .leading, spacing: 18) {
-                progressDots
-
-                TabView(selection: $step) {
-                    fieldStep("Name") {
-                        TextField("Your name", text: $name)
-                            .textFieldStyle(.roundedBorder)
-                            .accessibilityLabel("Your name")
-                    }
-                    .tag(0)
-
-                    fieldStep("Gender") {
-                        VStack(spacing: 10) {
-                            ForEach(Gender.allCases) { option in
-                                Button {
-                                    gender = option
-                                } label: {
-                                    HStack {
-                                        Text(option.label)
-                                        Spacer()
-                                        if gender == option {
-                                            Image(systemName: "checkmark.circle.fill")
-                                        }
-                                    }
-                                    .font(PrototypeTypography.body)
-                                    .foregroundStyle(PrototypePalette.ink)
-                                    .padding(12)
-                                    .background(gender == option ? PrototypePalette.accent.opacity(0.14) : PrototypePalette.background)
-                                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                                }
-                                .buttonStyle(.plain)
-                                .accessibilityLabel(option.label)
-                            }
-                        }
-                        .accessibilityElement(children: .contain)
-                        .accessibilityLabel("Gender cards")
-                    }
-                    .tag(1)
-
-                    fieldStep("Date of birth") {
-                        DatePicker("", selection: $dateOfBirth, displayedComponents: .date)
-                            .datePickerStyle(.wheel)
-                            .labelsHidden()
-                            .accessibilityLabel("Date of birth wheel")
-                            .padding(8)
-                            .background(PrototypePalette.background)
-                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                    }
-                    .tag(2)
-
-                    fieldStep("City") {
-                        TextField("City", text: $city)
-                            .textFieldStyle(.roundedBorder)
-                            .accessibilityLabel("City")
-                    }
-                    .tag(3)
-
-                    fieldStep("Pincode") {
-                        TextField("Pincode", text: $pincode)
-                            .keyboardType(.numberPad)
-                            .textFieldStyle(.roundedBorder)
-                            .accessibilityLabel("Pincode numeric")
-                    }
-                    .tag(4)
-                }
-                .tabViewStyle(.page(indexDisplayMode: .never))
-                .frame(minHeight: 250)
-
-                Button {
-                    advance()
-                } label: {
-                    PrimaryActionButton(title: actionTitle, systemImage: "arrow.right")
-                }
-                .buttonStyle(.plain)
-                .disabled(!canContinue || appState.isStartingVoice)
-                .accessibilityLabel(step == steps - 1 ? "Start voice profile" : "Continue")
+                stepSidebar
+                stepContent
             }
         }
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
-    }
-
-    private var actionTitle: String {
-        if step == steps - 1, appState.isStartingVoice {
-            return "Opening voice profile"
-        }
-        return step == steps - 1 ? "Start voice profile" : "Continue"
-    }
-
-    private var progressDots: some View {
-        HStack(spacing: 6) {
-            ForEach(0..<steps, id: \.self) { index in
-                Capsule()
-                    .fill(index <= step ? PrototypePalette.accent : PrototypePalette.subink.opacity(0.18))
-                    .frame(width: index == step ? 24 : 8, height: 8)
-                    .animation(.spring(response: 0.38, dampingFraction: 0.82), value: step)
+        .task {
+            seedDraftsFromAppState()
+            if appState.isSignedIn {
+                await appState.loadCurrentPlacement()
+                await appState.fetchCircles()
             }
         }
-        .accessibilityLabel("Progress dots")
     }
 
-    private func fieldStep<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(title)
+    private var cardTitle: String {
+        switch step {
+        case 2: return "Voice profile"
+        case 3: return "Join your first circle"
+        default: return "About you"
+        }
+    }
+
+    private var stepSidebar: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            stepRow(number: "1", title: "About you", selected: step == 1)
+            stepRow(number: "2", title: "Voice profile", selected: step == 2)
+            stepRow(number: "3", title: "Join first circle", selected: step == 3)
+            Label("Your privacy, always — we never share your data without permission.", systemImage: "shield")
+                .font(PrototypeTypography.caption)
+                .foregroundStyle(PrototypePalette.subink)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.top, 4)
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Onboarding steps")
+    }
+
+    @ViewBuilder
+    private var stepContent: some View {
+        switch step {
+        case 2:
+            voiceStep
+        case 3:
+            joinCircleStep
+        default:
+            basicsStep
+        }
+    }
+
+    private var basicsStep: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text("Share a bit about yourself.")
+                .font(PrototypeTypography.caption)
+                .foregroundStyle(PrototypePalette.subink)
+
+            TextField("Your name", text: $name)
+                .textFieldStyle(.roundedBorder)
+                .accessibilityLabel("What should we call you?")
+
+            TextField("City", text: $city)
+                .textFieldStyle(.roundedBorder)
+                .accessibilityLabel("Where are you based?")
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Gender")
+                    .font(PrototypeTypography.metadata)
+                    .foregroundStyle(PrototypePalette.ink)
+                HStack(spacing: 8) {
+                    ForEach(Gender.allCases) { option in
+                        Button(option.label) {
+                            gender = option
+                        }
+                        .font(PrototypeTypography.metadata)
+                        .foregroundStyle(gender == option ? .white : PrototypePalette.ink)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(gender == option ? PrototypePalette.accent : PrototypePalette.background)
+                        .clipShape(Capsule(style: .continuous))
+                        .overlay(Capsule().stroke(PrototypePalette.rule, lineWidth: gender == option ? 0 : 1))
+                        .buttonStyle(.plain)
+                        .accessibilityLabel(option.label)
+                    }
+                }
+            }
+
+            DatePicker("Date of birth", selection: $dateOfBirth, displayedComponents: .date)
+                .datePickerStyle(.compact)
+                .accessibilityLabel("Date of birth")
+
+            TextField("Pincode", text: $pincode)
+                .keyboardType(.numberPad)
+                .textFieldStyle(.roundedBorder)
+                .accessibilityLabel("Pincode numeric")
+
+            if let basicsStatus {
+                Text(basicsStatus)
+                    .font(PrototypeTypography.caption)
+                    .foregroundStyle(PrototypePalette.subink)
+            }
+
+            Button {
+                Task { await saveBasicsAndContinue() }
+            } label: {
+                PrimaryActionButton(title: isSavingBasics ? "Saving…" : "Continue", systemImage: "arrow.right")
+            }
+            .buttonStyle(.plain)
+            .disabled(isSavingBasics || name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || city.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || pincode.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            .accessibilityLabel("Continue")
+        }
+    }
+
+    private var voiceStep: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text("Answer a few reflection prompts to build your private profile signals.")
+                .font(PrototypeTypography.caption)
+                .foregroundStyle(PrototypePalette.subink)
+
+            Text(voiceReflectionPrompts[voicePromptIndex])
                 .font(PrototypeTypography.sectionTitle)
                 .foregroundStyle(PrototypePalette.ink)
-            content()
-            Spacer(minLength: 0)
-        }
-        .padding(.top, 6)
-    }
+                .fixedSize(horizontal: false, vertical: true)
 
-    private var canContinue: Bool {
-        switch step {
-        case 0:
-            return !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        case 3:
-            return !city.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        case 4:
-            return !pincode.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        default:
-            return true
-        }
-    }
+            TextField("Your answer", text: $voiceDraft, axis: .vertical)
+                .lineLimit(2...5)
+                .textFieldStyle(.roundedBorder)
+                .accessibilityLabel("Your answer")
 
-    private func advance() {
-        if step < steps - 1 {
-            withAnimation(.spring(response: 0.38, dampingFraction: 0.82)) {
-                step += 1
+            if let voiceStatus {
+                Text(voiceStatus)
+                    .font(PrototypeTypography.caption)
+                    .foregroundStyle(PrototypePalette.subink)
             }
-            return
-        }
 
+            HStack(spacing: 12) {
+                if voicePromptIndex > 0 {
+                    Button("Back") {
+                        voicePromptIndex -= 1
+                        voiceDraft = voiceAnswers.indices.contains(voicePromptIndex)
+                            ? voiceAnswers[voicePromptIndex]
+                            : ""
+                    }
+                    .buttonStyle(.bordered)
+                }
+
+                Button(isSavingVoice ? "Saving…" : voicePromptIndex == voiceReflectionPrompts.count - 1 ? "Save voice profile" : "Next prompt") {
+                    Task { await advanceVoiceReflection() }
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(PrototypePalette.accent)
+                .disabled(isSavingVoice || voiceDraft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            }
+        }
+    }
+
+    private var joinCircleStep: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text("Review your placement and open circles to finish onboarding.")
+                .font(PrototypeTypography.caption)
+                .foregroundStyle(PrototypePalette.subink)
+
+            if let placement = appState.slice?.placement {
+                let circle = placement.primaryCircle
+                formLine("Suggested circle", value: circle.name)
+                formLine("Fit", value: circle.fitLabel)
+                Text(circle.placementReason)
+                    .font(PrototypeTypography.body)
+                    .foregroundStyle(PrototypePalette.subink)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else {
+                Text("Complete the voice profile step to generate a placement suggestion.")
+                    .font(PrototypeTypography.body)
+                    .foregroundStyle(PrototypePalette.subink)
+            }
+
+            Button {
+                appState.requestedTab = .circles
+            } label: {
+                PrimaryActionButton(title: "Open circles", systemImage: "person.2")
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Join first circle")
+        }
+    }
+
+    private func stepRow(number: String, title: String, selected: Bool) -> some View {
+        Button {
+            withAnimation(.spring(response: 0.38, dampingFraction: 0.82)) {
+                step = Int(number) ?? 1
+            }
+        } label: {
+            HStack(spacing: 12) {
+                ZStack {
+                    Circle()
+                        .fill(selected ? PrototypePalette.accent : PrototypePalette.background)
+                        .frame(width: 28, height: 28)
+                    Text(number)
+                        .font(PrototypeTypography.metadata.weight(.bold))
+                        .foregroundStyle(selected ? .white : PrototypePalette.subink)
+                }
+                Text(title)
+                    .font(PrototypeTypography.bodyStrong)
+                    .foregroundStyle(selected ? PrototypePalette.accent : PrototypePalette.ink)
+            }
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("\(title) step")
+    }
+
+    private func formLine(_ label: String, value: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label.uppercased())
+                .font(PrototypeTypography.eyebrow)
+                .foregroundStyle(PrototypePalette.accent)
+            Text(value)
+                .font(PrototypeTypography.bodyStrong)
+                .foregroundStyle(PrototypePalette.ink)
+        }
+    }
+
+    private func seedDraftsFromAppState() {
+        let info = appState.slice?.profile.basicInfo ?? appState.basicInfo
+        name = info?.name ?? ""
+        city = info?.city ?? ""
+        gender = info?.gender ?? .preferNotToSay
+        pincode = info?.pincode ?? ""
+        if let dob = info?.dateOfBirth, let parsed = LikemindedDate.parse(dob) {
+            dateOfBirth = parsed
+        }
+        if info != nil, step == 1 {
+            // keep user on step 1 until they continue
+        }
+    }
+
+    private func saveBasicsAndContinue() async {
+        isSavingBasics = true
+        basicsStatus = nil
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
-        appState.completeOnboarding(BasicInfo(
-            name: name.trimmingCharacters(in: .whitespacesAndNewlines),
+        let saved = await appState.updateProfileBasics(
+            name: name,
+            city: city,
             gender: gender,
             dateOfBirth: formatter.string(from: dateOfBirth),
-            city: city.trimmingCharacters(in: .whitespacesAndNewlines),
-            pincode: pincode.trimmingCharacters(in: .whitespacesAndNewlines)
-        ))
-        Task { await appState.startVoiceSession() }
+            pincode: pincode
+        )
+        isSavingBasics = false
+        if saved {
+            basicsStatus = "Saved"
+            withAnimation(.spring(response: 0.38, dampingFraction: 0.82)) {
+                step = 2
+            }
+        } else {
+            basicsStatus = appState.loadError ?? "Profile could not be saved."
+        }
+    }
+
+    private func advanceVoiceReflection() async {
+        let trimmed = voiceDraft.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        if voiceAnswers.count > voicePromptIndex {
+            voiceAnswers[voicePromptIndex] = trimmed
+        } else {
+            voiceAnswers.append(trimmed)
+        }
+        if voicePromptIndex < voiceReflectionPrompts.count - 1 {
+            voicePromptIndex += 1
+            voiceDraft = voiceAnswers.indices.contains(voicePromptIndex)
+                ? voiceAnswers[voicePromptIndex]
+                : ""
+            return
+        }
+        isSavingVoice = true
+        let saved = await appState.refreshProfileFromReflection(voiceAnswers)
+        isSavingVoice = false
+        if saved {
+            voiceStatus = "Voice profile refreshed."
+            withAnimation(.spring(response: 0.38, dampingFraction: 0.82)) {
+                step = 3
+            }
+        } else {
+            voiceStatus = appState.loadError ?? "Voice profile could not be saved."
+        }
     }
 }

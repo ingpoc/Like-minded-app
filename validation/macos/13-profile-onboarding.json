@@ -31,8 +31,8 @@
     {
       "id": "form-lines",
       "type": "text",
-      "label": "Name, city, gender fields",
-      "expected": "Editable fields seeded from profile; gender pills selectable",
+      "label": "Name, city, gender, DOB, pincode fields",
+      "expected": "Editable fields seeded from profile; gender pills; DOB picker; pincode",
       "result": "pass",
       "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (form-lines)",
       "blocker": "",
@@ -45,7 +45,7 @@
       "id": "continue",
       "type": "button",
       "label": "Continue",
-      "expected": "PATCH basicInfo then navigate → profileSignals",
+      "expected": "PATCH basicInfo then advance to voice profile step (step 2)",
       "result": "pass",
       "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (continue)",
       "blocker": "",
@@ -85,6 +85,6 @@
     "result": "pass",
     "notes": "2026-07-04 capture vs plate 17: basics onboarding continue. Intentional: birthday picker deferred; interests from voice not mockup chips."
   },
-  "notes": "2026-07-05: steps 2–3 pending (voice profile + join circle are labels only). Step 1 basics + Continue are implemented.",
+  "notes": "2026-07-05: uniform 3-step onboarding with DOB/pincode on step 1; Continue advances to voice step.",
   "source_hash": "c85b147b28b0e423"
 }

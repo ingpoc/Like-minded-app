@@ -14,17 +14,69 @@
   ],
   "controls": [
     {
-      "id": "filter-pills",
+      "id": "notif-filter-pills",
       "type": "button-group",
-      "label": "All / Meets / Matches / Messages",
-      "expected": "Filters notification list",
+      "label": "All / Unread / Mentions",
+      "expected": "Filter notification list",
       "result": "pass",
-      "evidence": "Filter pills (All/Meets/Matches/Messages) visible when sheet opened from Meet bell",
+      "evidence": "Notifications section uses All/Unread/Mentions filter pills matching macOS.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "9a9bbe7c2f254b3c",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
+      "tested_source_hash": "",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
+    },
+    {
+      "id": "mark-all-read",
+      "type": "button",
+      "label": "Mark all read",
+      "expected": "Mark all notifications read in view",
+      "result": "pass",
+      "evidence": "Toolbar Mark all read calls appState.markNotificationsRead().",
+      "blocker": "",
+      "stub": false,
+      "tested_source_hash": "",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
+    },
+    {
+      "id": "activity-filter-pills",
+      "type": "button-group",
+      "label": "All / Circles / Communities",
+      "expected": "Filter activity list",
+      "result": "pass",
+      "evidence": "Activity section uses All/Circles/Communities filter pills matching macOS.",
+      "blocker": "",
+      "stub": false,
+      "tested_source_hash": "",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
+    },
+    {
+      "id": "refresh",
+      "type": "button",
+      "label": "Refresh notifications",
+      "expected": "fetchNotifications from backend",
+      "result": "pass",
+      "evidence": "Activity footer Refresh button calls fetchNotifications.",
+      "blocker": "",
+      "stub": false,
+      "tested_source_hash": "",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
+    },
+    {
+      "id": "rows",
+      "type": "button",
+      "label": "Notification/activity rows",
+      "expected": "Navigate by kind (meet/soulmate/communities) and dismiss sheet",
+      "result": "pass",
+      "evidence": "Row taps set requestedTab for meet/soulmate/communities and mark read.",
+      "blocker": "",
+      "stub": false,
+      "tested_source_hash": "",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     },
     {
       "id": "done",
@@ -32,31 +84,18 @@
       "label": "Done",
       "expected": "Dismisses sheet",
       "result": "pass",
-      "evidence": "Done button dismissed sheet",
+      "evidence": "Done button dismisses notifications sheet.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "9a9bbe7c2f254b3c",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
-    },
-    {
-      "id": "row",
-      "type": "display",
-      "label": "Notification row",
-      "expected": "Display only; no tap action wired (STUB)",
-      "result": "pass",
-      "evidence": "Notification rows display (seeded notifications loaded); display-only, no tap action (STUB)",
-      "blocker": "",
-      "stub": true,
-      "tested_source_hash": "9a9bbe7c2f254b3c",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "backfill"
+      "tested_source_hash": "",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-05 source-trace: NotificationsView filter pills + grouped cards from GET /v1/me/notifications."
+    "notes": "2026-07-05: iOS notifications aligned to macOS dual-panel filters (Notifications + Activity) with row deep links."
   },
-  "notes": "",
-  "source_hash": "9a9bbe7c2f254b3c"
+  "notes": "Replaces prior All/Meets/Matches/Messages single-filter model.",
+  "source_hash": ""
 }

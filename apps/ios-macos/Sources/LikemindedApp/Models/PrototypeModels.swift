@@ -16,15 +16,15 @@ enum AppTab: String, CaseIterable, Identifiable {
     var systemImage: String {
         switch self {
         case .meet:
-            return "person.2.video"
+            return "house"
         case .circles:
-            return "door.left.hand.open"
+            return "person.2"
         case .communities:
-            return "person.2.badge.gearshape"
+            return "rectangle.3.group"
         case .profile:
-            return "person.crop.circle"
+            return "person"
         case .soulmate:
-            return "heart.circle"
+            return "heart"
         }
     }
 }
@@ -104,6 +104,19 @@ struct MeetingsResponse: Decodable {
     let past: [Meeting]
 }
 
+struct MeetingResponse: Decodable {
+    let meeting: Meeting
+}
+
+struct CreateMeetingRequest: Encodable {
+    let kind: String
+    let targetId: String
+    let title: String
+    let scheduledAt: String
+    let location: String
+    let details: String
+}
+
 struct LiveKitJoinToken: Decodable {
     let token: String
     let url: String
@@ -137,6 +150,48 @@ struct CommunityMembersResponse: Decodable {
 struct SoulmateStatus: Decodable {
     let enabled: Bool
     let pendingSelections: [SoulmatePendingSelection]
+    let preferences: SoulmatePreferences?
+}
+
+struct SoulmatePreferences: Codable, Equatable {
+    var discovery: String
+    var ageMin: Int
+    var ageMax: Int
+    var visibility: String
+
+    static let defaults = SoulmatePreferences(
+        discovery: "circles_extended",
+        ageMin: 22,
+        ageMax: 35,
+        visibility: "circles_only"
+    )
+
+    var discoveryLabel: String {
+        switch discovery {
+        case "circles": return "People in my circles"
+        case "communities": return "People in my communities"
+        default: return "People in my circles + circle of circles"
+        }
+    }
+
+    var visibilityLabel: String {
+        switch visibility {
+        case "circles_communities": return "Circles and communities"
+        case "matches_only": return "Mutual matches only"
+        default: return "Circles only"
+        }
+    }
+
+    var ageRangeLabel: String {
+        "\(ageMin)–\(ageMax)"
+    }
+}
+
+struct SoulmatePreferencesRequest: Encodable {
+    let discovery: String
+    let ageMin: Int
+    let ageMax: Int
+    let visibility: String
 }
 
 struct SoulmatePendingSelection: Decodable, Identifiable {
@@ -265,9 +320,37 @@ struct APIUser: Decodable {
     let fullName: String?
 }
 
+struct UserProfile: Decodable, Equatable {
+    let profileId: String
+    let profileSummary: String?
+    let signals: ProfileSignals
+    let basicInfo: BasicInfo?
+    let interests: [Interest]
+    let synthesizedAt: String?
+}
+
+struct UserProfileResponse: Decodable {
+    let profile: UserProfile
+}
+
 struct ProfileUpdateRequest: Encodable {
     let reflectionSummary: String?
     let signals: ProfileSignals?
+    let basicInfo: BasicInfoUpdate?
+
+    init(reflectionSummary: String? = nil, signals: ProfileSignals? = nil, basicInfo: BasicInfoUpdate? = nil) {
+        self.reflectionSummary = reflectionSummary
+        self.signals = signals
+        self.basicInfo = basicInfo
+    }
+}
+
+struct BasicInfoUpdate: Encodable, Equatable {
+    var name: String?
+    var gender: String?
+    var dateOfBirth: String?
+    var city: String?
+    var pincode: String?
 }
 
 struct BasicInfo: Codable, Equatable {

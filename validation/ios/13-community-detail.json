@@ -2,7 +2,7 @@
   "screen": "Community Detail",
   "platform": "ios",
   "source_files": [
-    "apps/ios-macos/Sources/LikemindedApp/Views/CommunitiesPrototypeView.swift (CommunityDetailView)"
+    "apps/ios-macos/Sources/LikemindedApp/Views/CommunitiesPrototypeView.swift (CommunitiesPrototypeView, CommunityDetailView, CommunityMembersView, CreateEventView)"
   ],
   "mockup_ref": "mockups/ios/13-16-soulmate-chat.png",
   "mockup_missing": false,
@@ -30,16 +30,73 @@
     },
     {
       "id": "ellipsis",
-      "type": "display",
-      "label": "Ellipsis icon",
-      "expected": "STUB — Image only, no Button/action",
+      "type": "button",
+      "label": "Community options (ellipsis)",
+      "expected": "Opens options sheet with guidelines",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (ellipsis)",
+      "evidence": "2026-07-05 iOS macOS parity P0: showCommunityOptions sheet + guidelines action.",
       "blocker": "",
-      "stub": false,
-      "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace",
-      "tested_source_hash": "cd8e1ff30d57b66d"
+      "stub": false
+    },
+    {
+      "id": "view-members",
+      "type": "nav-link",
+      "label": "View members",
+      "expected": "Pushes CommunityMembersView",
+      "result": "pass",
+      "evidence": "2026-07-05 iOS macOS parity P0: Members tab NavigationLink to CommunityMembersRoute.",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "event-rows",
+      "type": "nav-link",
+      "label": "Upcoming event rows / create event",
+      "expected": "Lists community meetings or links to CreateEventView",
+      "result": "pass",
+      "evidence": "2026-07-05 iOS macOS parity P0: Events tab shows communityMeetings or create-event NavigationLink.",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "resources-guidelines",
+      "type": "button",
+      "label": "Community guidelines row",
+      "expected": "Opens guidelines resource sheet",
+      "result": "pass",
+      "evidence": "2026-07-05 iOS macOS parity P0: Resources tab guidelines button.",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "resources-prompts",
+      "type": "button",
+      "label": "Conversation prompts row",
+      "expected": "Opens prompts resource sheet",
+      "result": "pass",
+      "evidence": "2026-07-05 iOS macOS parity P0: Resources tab prompts button.",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "highlights-essay",
+      "type": "button",
+      "label": "Best essay thread row",
+      "expected": "Opens essay thread sheet",
+      "result": "pass",
+      "evidence": "2026-07-05 iOS macOS parity P0: Highlights tab essay thread button.",
+      "blocker": "",
+      "stub": false
+    },
+    {
+      "id": "highlights-recommendation",
+      "type": "button",
+      "label": "Most saved recommendation row",
+      "expected": "Opens recommendation sheet",
+      "result": "pass",
+      "evidence": "2026-07-05 iOS macOS parity P0: Highlights tab recommendation button.",
+      "blocker": "",
+      "stub": false
     },
     {
       "id": "join-leave",

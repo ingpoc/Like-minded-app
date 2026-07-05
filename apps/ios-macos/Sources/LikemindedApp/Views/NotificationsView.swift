@@ -3,7 +3,9 @@ import SwiftUI
 struct NotificationsView: View {
     @EnvironmentObject private var appState: PrototypeAppState
     @Environment(\.dismiss) private var dismiss
-    @State private var filter: NotificationFilter = .all
+    @State private var notificationFilter = "All"
+    @State private var activityFilter = "All"
+    @State private var statusMessage: String?
 
     var body: some View {
         NavigationStack {
@@ -12,15 +14,8 @@ struct NotificationsView: View {
                     if appState.notifications.isEmpty && appState.activityItems.isEmpty {
                         emptyState
                     } else {
-                        filterPills
-
-                        if !filteredNotifications.isEmpty {
-                            section("Notifications", items: filteredNotifications)
-                        }
-
-                        if !appState.activityItems.isEmpty {
-                            section("Activity", items: appState.activityItems)
-                        }
+                        notificationsSection
+                        activitySection
                     }
                 }
                 .padding(20)
@@ -30,8 +25,16 @@ struct NotificationsView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") { dismiss() }
+                    HStack(spacing: 12) {
+                        Button("Mark all read") {
+                            appState.markNotificationsRead()
+                            statusMessage = "All notifications marked read."
+                        }
                         .foregroundStyle(PrototypePalette.accent)
+                        .accessibilityLabel("Mark all notifications as read")
+                        Button("Done") { dismiss() }
+                            .foregroundStyle(PrototypePalette.accent)
+                    }
                 }
             }
             .task {
@@ -59,79 +62,184 @@ struct NotificationsView: View {
         .padding(.top, 60)
     }
 
-    private var filterPills: some View {
+    private var notificationsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("NOTIFICATIONS")
+                .font(PrototypeTypography.eyebrow)
+                .foregroundStyle(PrototypePalette.accent)
+
+            filterPills(selection: $notificationFilter, options: ["All", "Unread", "Mentions"])
+
+            if filteredNotifications.isEmpty {
+                Text(appState.notificationError ?? "No notifications in this filter.")
+                    .font(PrototypeTypography.caption)
+                    .foregroundStyle(PrototypePalette.subink)
+                    .padding(.vertical, 8)
+            } else {
+                VStack(spacing: 10) {
+                    ForEach(filteredNotifications) { item in
+                        Button {
+                            openNotification(item)
+                        } label: {
+                            NotificationRow(item: item, isUnread: !appState.readNotificationIds.contains(item.id))
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel(item.title)
+                    }
+                }
+            }
+        }
+    }
+
+    private var activitySection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("ACTIVITY")
+                .font(PrototypeTypography.eyebrow)
+                .foregroundStyle(PrototypePalette.accent)
+
+            filterPills(selection: $activityFilter, options: ["All", "Circles", "Communities"])
+
+            if filteredActivityItems.isEmpty {
+                Text("No activity in this filter.")
+                    .font(PrototypeTypography.caption)
+                    .foregroundStyle(PrototypePalette.subink)
+                    .padding(.vertical, 8)
+            } else {
+                VStack(spacing: 10) {
+                    ForEach(filteredActivityItems) { item in
+                        Button {
+                            openActivityItem(item)
+                        } label: {
+                            ActivityRow(item: item)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel(item.title)
+                    }
+                }
+            }
+
+            HStack(spacing: 14) {
+                Image(systemName: "bell")
+                    .font(.title2)
+                    .foregroundStyle(PrototypePalette.accent)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Stay in the loop")
+                        .font(PrototypeTypography.bodyStrong)
+                    Text("Refresh pulls the latest backend notifications and activity.")
+                        .font(PrototypeTypography.caption)
+                        .foregroundStyle(PrototypePalette.subink)
+                }
+                Spacer()
+                Button("Refresh") {
+                    Task {
+                        await appState.fetchNotifications()
+                        statusMessage = "Notifications refreshed from backend."
+                    }
+                }
+                .font(PrototypeTypography.metadata.weight(.semibold))
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(PrototypePalette.accent)
+                .foregroundStyle(.white)
+                .clipShape(Capsule(style: .continuous))
+                .buttonStyle(.plain)
+                .accessibilityLabel("Refresh notifications")
+            }
+            .padding(.top, 8)
+
+            if let statusMessage {
+                Text(statusMessage)
+                    .font(PrototypeTypography.caption)
+                    .foregroundStyle(PrototypePalette.subink)
+            }
+        }
+    }
+
+    private func filterPills(selection: Binding<String>, options: [String]) -> some View {
         HStack(spacing: 10) {
-            ForEach(NotificationFilter.allCases) { option in
+            ForEach(options, id: \.self) { option in
                 Button {
-                    withAnimation(.interactive) { filter = option }
+                    withAnimation(.interactive) { selection.wrappedValue = option }
                 } label: {
-                    Text(option.title)
+                    Text(option)
                         .font(PrototypeTypography.metadata)
-                        .foregroundStyle(filter == option ? .white : PrototypePalette.ink)
+                        .foregroundStyle(selection.wrappedValue == option ? .white : PrototypePalette.ink)
                         .padding(.horizontal, 14)
                         .padding(.vertical, 9)
-                        .background(filter == option ? PrototypePalette.actionGradient : LinearGradient(colors: [Color.black.opacity(0.05)], startPoint: .top, endPoint: .bottom))
+                        .background(selection.wrappedValue == option ? PrototypePalette.actionGradient : LinearGradient(colors: [Color.black.opacity(0.05)], startPoint: .top, endPoint: .bottom))
                         .clipShape(Capsule(style: .continuous))
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel("\(option) filter")
             }
             Spacer()
         }
     }
 
     private var filteredNotifications: [NotificationItem] {
-        switch filter {
-        case .all: return appState.notifications
-        case .meets: return appState.notifications.filter { $0.kind == "meeting" }
-        case .matches: return appState.notifications.filter { $0.kind == "soulmate" || $0.kind == "match" }
-        case .messages: return appState.notifications.filter { $0.kind == "chat" || $0.kind == "message" }
-        }
-    }
-
-    @ViewBuilder
-    private func section(_ title: String, items: [NotificationItem]) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(title.uppercased())
-                .font(PrototypeTypography.eyebrow)
-                .foregroundStyle(PrototypePalette.accent)
-
-            VStack(spacing: 10) {
-                ForEach(items) { item in
-                    NotificationRow(item: item)
-                }
+        appState.notifications.filter { item in
+            switch notificationFilter {
+            case "Unread":
+                return !appState.readNotificationIds.contains(item.id)
+            case "Mentions":
+                return item.kind == "mention"
+            default:
+                return true
             }
         }
     }
-}
 
-private enum NotificationFilter: String, CaseIterable, Identifiable {
-    case all
-    case meets
-    case matches
-    case messages
-
-    var id: String { rawValue }
-
-    var title: String {
-        switch self {
-        case .all: return "All"
-        case .meets: return "Meets"
-        case .matches: return "Matches"
-        case .messages: return "Messages"
+    private var filteredActivityItems: [NotificationItem] {
+        appState.activityItems.filter { item in
+            switch activityFilter {
+            case "Circles":
+                return item.kind == "meeting" || item.title.localizedCaseInsensitiveContains("circle")
+            case "Communities":
+                return item.kind == "community"
+            default:
+                return true
+            }
         }
+    }
+
+    private func openNotification(_ item: NotificationItem) {
+        appState.readNotificationIds.insert(item.id)
+        switch item.kind {
+        case "meeting":
+            appState.requestedTab = .meet
+        case "soulmate", "message", "chat":
+            appState.requestedTab = .soulmate
+        default:
+            break
+        }
+        dismiss()
+    }
+
+    private func openActivityItem(_ item: NotificationItem) {
+        switch item.kind {
+        case "meeting":
+            appState.requestedTab = .meet
+        case "community":
+            appState.requestedTab = .communities
+        default:
+            break
+        }
+        dismiss()
     }
 }
 
 private struct NotificationRow: View {
     let item: NotificationItem
+    let isUnread: Bool
 
     private var icon: String {
         switch item.kind {
+        case "mention": return "at"
         case "meeting": return "calendar"
         case "community": return "rectangle.3.group"
         case "soulmate", "match": return "heart"
         case "chat", "message": return "bubble.right"
-        default: return "sparkle"
+        default: return "bell"
         }
     }
 
@@ -139,6 +247,53 @@ private struct NotificationRow: View {
         HStack(alignment: .top, spacing: 14) {
             Image(systemName: icon)
                 .font(.system(size: 18, weight: .regular))
+                .foregroundStyle(PrototypePalette.accent)
+                .frame(width: 40, height: 40)
+                .background(PrototypePalette.accentSoft)
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(item.title)
+                    .font(PrototypeTypography.bodyStrong)
+                    .foregroundStyle(PrototypePalette.ink)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                if let detail = item.detail, !detail.isEmpty {
+                    Text(detail)
+                        .font(PrototypeTypography.caption)
+                        .foregroundStyle(PrototypePalette.subink)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+
+            Spacer()
+
+            if isUnread {
+                Circle()
+                    .fill(PrototypePalette.accent)
+                    .frame(width: 8, height: 8)
+            }
+
+            if let createdAt = item.createdAt {
+                Text(LikemindedDate.short(createdAt))
+                    .font(PrototypeTypography.metadata)
+                    .foregroundStyle(PrototypePalette.subink)
+            }
+        }
+        .padding(14)
+        .background(PrototypePalette.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+    }
+}
+
+private struct ActivityRow: View {
+    let item: NotificationItem
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 14) {
+            Text(String(item.title.prefix(1)))
+                .font(PrototypeTypography.bodyStrong)
                 .foregroundStyle(PrototypePalette.accent)
                 .frame(width: 40, height: 40)
                 .background(PrototypePalette.accentSoft)
@@ -171,5 +326,4 @@ private struct NotificationRow: View {
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
     }
-
 }
