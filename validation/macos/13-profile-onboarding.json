@@ -53,12 +53,32 @@
       "tested_source_hash": "342bb6ef2d9f07fb",
       "last_tested_at": "2026-07-04",
       "last_test_method": "screen-capture"
+    },
+    {
+      "id": "voice-profile-step",
+      "type": "button",
+      "label": "Voice profile (onboarding step 2)",
+      "expected": "Navigate to macOS voice interview / Realtime session screen",
+      "result": "pending",
+      "evidence": "2026-07-05 source audit: step 2 is display-only stepRow; screen only implements About you basics; copy says voice retakes are iOS.",
+      "blocker": "Not implemented — progress label only, no voice flow",
+      "stub": true
+    },
+    {
+      "id": "join-circle-step",
+      "type": "button",
+      "label": "Join first circle (onboarding step 3)",
+      "expected": "Navigate to circle placement / join flow as onboarding step 3",
+      "result": "pending",
+      "evidence": "2026-07-05 source audit: step 3 is display-only stepRow; Continue saves basics and goes to profileSignals, skipping circle join step.",
+      "blocker": "Not implemented — progress label only",
+      "stub": true
     }
   ],
   "visual_parity": {
     "result": "pass",
     "notes": "2026-07-04 capture vs plate 17: basics onboarding continue. Intentional: birthday picker deferred; interests from voice not mockup chips."
   },
-  "notes": "",
+  "notes": "2026-07-05: steps 2–3 pending (voice profile + join circle are labels only). Step 1 basics + Continue are implemented.",
   "source_hash": "342bb6ef2d9f07fb"
 }

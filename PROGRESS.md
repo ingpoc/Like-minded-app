@@ -326,10 +326,12 @@ Parallel to Phase 9; not a numbered phase. Owner: `docs/references/macos-screen-
 
 ## Track — macOS Unimplemented Controls (static UI)
 
-Ledger owner: `validation/macos/*.json` pending rows with `stub: true` and blocker `Not implemented`. Static row = no screen on click.
+Ledger owner: `validation/macos/*.json` pending rows with `stub: true` and blocker `Not implemented`. Rollup index: `validation/macos-unimplemented-inventory.json`. Static row = no screen on click.
 
 - [ ] macOS Settings: implement 7 sidebar nav rows (Account, Privacy & safety, Notifications, Connected apps, Appearance, Language, Help & support) and 3 Soulmate preference editors (discovery, age range, visibility); evidence in `validation/macos/20-settings-soulmate.json` (10 pending).
-- [ ] macOS Chat: implement voice call, video call, and conversation info header actions; evidence in `validation/macos/06-chat.json` (3 pending).
+- [ ] macOS Chat + Messages: implement voice call, video call, and conversation info header actions; evidence in `validation/macos/06-chat.json` and `18-messages.json` (6 pending total).
+- [ ] macOS Community detail: implement ellipsis options + Resources/Highlights rows; evidence in `validation/macos/08-community-detail.json` (5 pending).
+- [ ] macOS Profile voice/onboarding: macOS voice interview + onboarding steps 2–3; evidence in `validation/macos/12-my-profile.json` and `13-profile-onboarding.json` (3 pending).
 - [ ] macOS infra-blocked (not static): real Sign in with Apple (`validation/macos/01-welcome.json`) and LiveKit meet video join (`validation/macos/21-meet-video-call.json`) — Phase 9/10 external setup.
 
 ## Track — iOS Ledger Honesty (post–Phase 8)

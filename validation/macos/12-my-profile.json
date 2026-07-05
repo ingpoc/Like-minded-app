@@ -47,14 +47,11 @@
       "id": "retake-voice",
       "type": "button",
       "label": "Retake voice profile",
-      "expected": "Navigate → profileOnboarding (basics edit; voice retake is iOS)",
-      "result": "pass",
-      "evidence": "2026-07-04 mockup parity: Retake voice profile in signals header → profileOnboarding.",
-      "blocker": "",
-      "stub": false,
-      "tested_source_hash": null,
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "expected": "Start macOS voice interview session or open dedicated voice retake flow",
+      "result": "pending",
+      "evidence": "2026-07-05 source audit: button navigates to profileOnboarding basics form only; Mac copy states voice retakes are iOS. No OpenAI Realtime voice session on macOS.",
+      "blocker": "Not implemented — routes to basics edit, not voice interview",
+      "stub": true
     },
     {
       "id": "signal-cards",
@@ -87,5 +84,5 @@
     "result": "pass",
     "notes": "2026-07-04 capture vs plate 04: profile card signals interests vibe. Intentional: initials avatar; no languages row (API gap)."
   },
-  "notes": ""
+  "notes": "2026-07-05: retake-voice pending — label promises voice profile but macOS only opens basics onboarding."
 }
