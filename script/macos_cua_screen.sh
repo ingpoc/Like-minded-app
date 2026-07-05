@@ -95,7 +95,7 @@ curl -fsS "http://127.0.0.1:${PORT:-8787}/health" >/dev/null || {
 LIKEMINDED_VALIDATION_USER="${LIKEMINDED_VALIDATION_USER:-validation-priya}" \
 LIKEMINDED_VALIDATION_NAME="${LIKEMINDED_VALIDATION_NAME:-Priya Shah}" \
   "$ROOT/script/run_macos_manual_validation.sh" "$SCREEN" >/dev/null
-sleep 2
+sleep 5
 
 cua_bind
 echo "screen=$SCREEN pid=$PID wid=$WID app=$MACOS_CANONICAL_APP"
@@ -107,6 +107,9 @@ for e in json.load(sys.stdin).get('elements',[]):
 case "$SCREEN" in
   communityDetail)
     click_label "Members"
+    click_label "community options" || true
+    click_label "Resources"
+    click_label "community guidelines" || true
     click_label "View members"
     ;;
   circleDetail)
@@ -114,6 +117,12 @@ case "$SCREEN" in
     click_label "does not feel"
     ;;
   settingsSoulmate)
+    click_label "account" || true
+    click_label "privacy" || true
+    click_label "notifications" || true
+    click_label "soulmate" || true
+    click_label "help" || true
+    click_label "save preferences" || true
     click_label "voice profile" || true
     ;;
   circlesRoom)
@@ -140,12 +149,21 @@ case "$SCREEN" in
     type_field "Location" "Test Hall" || true
     click_label "create event" || true
     ;;
-  meetOverview)
-    click_label "sunday circle meetup not available"
-    click_label "sunday circle meetup available"
+  profileOnboarding)
+    click_label "voice profile" || true
+    click_label "join first circle" || true
+    click_label "continue"
     ;;
   myProfile)
     click_label "share profile"
+    click_label "retake voice profile" || true
+    ;;
+  meetOverview)
+    click_label "join meetup" || true
+    click_label "saturday community meetup available" || true
+    click_label "saturday community meetup not available" || true
+    click_label "sunday circle meetup not available"
+    click_label "sunday circle meetup available"
     ;;
   createCommunity)
     click_label "create community"
@@ -174,14 +192,19 @@ case "$SCREEN" in
     ;;
   chat)
     click_label "gurusharan" || click_label "g, "
+    click_label "voice call" || true
+    click_label "video call" || true
+    click_label "conversation info" || true
     snap 55 | python3 -c "import json,sys
 for e in json.load(sys.stdin).get('elements',[]):
-  role=e.get('role'); label=(e.get('label') or '').lower()
-  if role in ('AXTextField','AXButton') and ('message' in label or 'send' in label or 'arrow' in label):
-    print(e.get('element_index'), role, repr(e.get('label')))"
+  if e.get('role') in ('AXTextField','AXButton') and ('message' in (e.get('label') or '').lower() or 'send' in (e.get('label') or '').lower()):
+    print(e.get('element_index'), e.get('role'), repr(e.get('label')))"
     ;;
   messages)
     click_label "gurusharan" || click_label "g, "
+    click_label "voice call" || true
+    click_label "video call" || true
+    click_label "conversation info" || true
     click_label "close"
     ;;
   *)
@@ -192,25 +215,27 @@ esac
 # Stamp tested_source_hash for controls exercised by this screen's CUA script.
 STAMP_CONTROLS=""
 case "$SCREEN" in
-  communityDetail) STAMP_CONTROLS="view-members" ;;
-  circleDetail) STAMP_CONTROLS="message-circle,placement-concern" ;;
+  meetOverview) STAMP_CONTROLS="join-meetup,rsvp-sat-yes,rsvp-sat-no,rsvp-sun-yes,rsvp-sun-no,past-row" ;;
+  communityDetail) STAMP_CONTROLS="view-members,event-rows,join-leave,community-options,resources-guidelines,resources-prompts,highlights-essay,highlights-recommendation" ;;
+  circleDetail) STAMP_CONTROLS="message-circle,placement-concern,upcoming-meet" ;;
   circlesRoom) STAMP_CONTROLS="concern-btn,circle-card" ;;
-  communitiesBrowse) STAMP_CONTROLS="search,filter-pills,community-card" ;;
-  notifications) STAMP_CONTROLS="notif-filter-pills,mark-all-read,refresh,rows" ;;
+  communitiesBrowse) STAMP_CONTROLS="search,filter-pills,create-card,community-card" ;;
+  communityMembers) STAMP_CONTROLS="sidebar-nav,search,filter-pills,member-rows" ;;
+  notifications) STAMP_CONTROLS="notif-filter-pills,mark-all-read,activity-filter-pills,refresh,rows" ;;
   meetRecap) STAMP_CONTROLS="recap-note,save-note,message-match" ;;
-  createEvent) STAMP_CONTROLS="event-fields,create-event" ;;
-  meetOverview) STAMP_CONTROLS="rsvp-sun-yes,rsvp-sun-no" ;;
-  myProfile) STAMP_CONTROLS="share-profile" ;;
+  createEvent) STAMP_CONTROLS="event-type-meetup,event-type-listening-session,event-type-jam-session,event-fields,add-cover,add-tags,create-event,bottom-nav,traffic-lights" ;;
+  profileOnboarding) STAMP_CONTROLS="step-rows,form-lines,continue,voice-profile-step,join-circle-step" ;;
+  profileEdit) STAMP_CONTROLS="comm-pills,trait-sliders,save" ;;
+  soulmateOverview) STAMP_CONTROLS="enable-toggle,how-it-works" ;;
+  soulmateDiscover) STAMP_CONTROLS="distance-slider,filter-pills,new-matches,match-card" ;;
+  soulmateDetail) STAMP_CONTROLS="message,about-panels" ;;
+  settingsSoulmate) STAMP_CONTROLS="sidebar-honesty,account-settings,privacy-safety,notifications-settings,connected-apps,appearance,language,help-support,log-out,delete-account,soulmate-toggle,view-profile,voice-profile,discovery-preference,age-range,visibility" ;;
+  meetVideoCall) STAMP_CONTROLS="tiles,mute,leave" ;;
+  myProfile) STAMP_CONTROLS="share-profile,edit-profile,retake-voice,signal-cards,interest-tags" ;;
   createCommunity) STAMP_CONTROLS="name,summary,themes,submit" ;;
-  profileOnboarding) STAMP_CONTROLS="continue" ;;
   profileSignals) STAMP_CONTROLS="share-profile" ;;
-  profileEdit) STAMP_CONTROLS="save" ;;
-  soulmateOverview) STAMP_CONTROLS="how-it-works" ;;
-  soulmateDiscover) STAMP_CONTROLS="new-matches,match-card" ;;
-  soulmateDetail) STAMP_CONTROLS="message" ;;
-  communityMembers) STAMP_CONTROLS="search,member-rows" ;;
-  chat) STAMP_CONTROLS="match-row,draft,send" ;;
-  messages) STAMP_CONTROLS="match-row,draft,send,close" ;;
+  chat) STAMP_CONTROLS="match-row,draft,send,search,voice-call-header,video-call-header,conversation-info-header" ;;
+  messages) STAMP_CONTROLS="match-row,draft,send,search,voice-call-header,video-call-header,conversation-info-header" ;;
 esac
 
 if [[ -n "$STAMP_CONTROLS" ]]; then

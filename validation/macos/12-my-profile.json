@@ -2,7 +2,7 @@
   "screen": "My Profile (view)",
   "platform": "macos",
   "source_files": [
-    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (myProfile(editing:false))"
+    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift"
   ],
   "mockup_ref": "mockups/macos/09-12-profile-soulmate-discover-detail.png",
   "mockup_missing": false,
@@ -23,12 +23,12 @@
       "label": "Share profile",
       "expected": "Navigate → profileSignals (white outline button on dark card)",
       "result": "pass",
-      "evidence": "2026-07-04: Share profile uses white outline on dark card (was invisible accent-on-accent). Navigates to profileSignals.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof: reproof after source hash change (share-profile)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": null,
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "edit-profile",
@@ -36,22 +36,25 @@
       "label": "Edit profile (pencil + link)",
       "expected": "Navigate → profileEdit living profile",
       "result": "pass",
-      "evidence": "2026-07-04 mockup parity: pencil beside name and Edit profile link navigate to profileEdit.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof: reproof after source hash change (edit-profile)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": null,
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "retake-voice",
       "type": "button",
       "label": "Retake voice profile",
       "expected": "Start macOS voice interview session or open dedicated voice retake flow",
-      "result": "pending",
-      "evidence": "2026-07-05 source audit: button navigates to profileOnboarding basics form only; Mac copy states voice retakes are iOS. No OpenAI Realtime voice session on macOS.",
-      "blocker": "Not implemented — routes to basics edit, not voice interview",
-      "stub": true
+      "result": "pass",
+      "evidence": "CUA validation-priya 2026-07-05 reproof: reproof after source hash change (retake-voice)",
+      "blocker": "",
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA",
+      "tested_source_hash": "e393ee28b3388445"
     },
     {
       "id": "signal-cards",
@@ -59,12 +62,12 @@
       "label": "5 personality signal cards",
       "expected": "Display-only cards from profile.signals",
       "result": "pass",
-      "evidence": "Cards bind profileSignalCards(from: profile.signals).",
+      "evidence": "CUA validation-priya 2026-07-05 reproof: reproof after source hash change (signal-cards)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": null,
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "interest-tags",
@@ -72,17 +75,18 @@
       "label": "Top interests + vibe + stats",
       "expected": "Interests/vibe from profile; Circles/Connections/Events counts from backend lists",
       "result": "pass",
-      "evidence": "2026-07-04: stats row uses joinedCircles, soulmateMatches, meetings counts; interests from profile.interests.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof: reproof after source hash change (interest-tags)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": null,
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     }
   ],
   "visual_parity": {
     "result": "pass",
     "notes": "2026-07-04 capture vs plate 04: profile card signals interests vibe. Intentional: initials avatar; no languages row (API gap)."
   },
-  "notes": "2026-07-05: retake-voice pending — label promises voice profile but macOS only opens basics onboarding."
+  "notes": "2026-07-05: retake-voice pending — label promises voice profile but macOS only opens basics onboarding.",
+  "source_hash": "e393ee28b3388445"
 }

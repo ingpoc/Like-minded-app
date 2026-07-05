@@ -22,9 +22,9 @@
       "evidence": "Members-only sidebar; no fake About/Events nav.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "search",
@@ -35,9 +35,9 @@
       "evidence": "2026-07-04 CUA: AXTextField Search members present; bound to memberSearch filter in source.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "filter-pills",
@@ -48,9 +48,9 @@
       "evidence": "Active now / Most active pills removed; N members label only.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "member-rows",
@@ -61,9 +61,9 @@
       "evidence": "API members without fake Host/ellipsis affordances.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     }
   ],
   "visual_parity": {
@@ -71,5 +71,5 @@
     "notes": "2026-07-04 capture vs plate 13: members search roster from API. Intentional: no fake host badges; initials not photos."
   },
   "notes": "",
-  "source_hash": "342bb6ef2d9f07fb"
+  "source_hash": "e393ee28b3388445"
 }

@@ -26,6 +26,7 @@ final class MacAppState: ObservableObject {
     @Published var isLoadingMeetings = false
     @Published var meetingError: String?
     @Published var soulmateEnabled = false
+    @Published var soulmatePreferences = SoulmatePreferences.defaults
     @Published var soulmatePendingSelections: [SoulmatePendingSelection] = []
     @Published var soulmateMatches: [SoulmateMatch] = []
     @Published var soulmateError: String?
@@ -367,6 +368,7 @@ final class MacAppState: ObservableObject {
         do {
             let status = try await client.fetchSoulmateStatus()
             soulmateEnabled = status.enabled
+            soulmatePreferences = status.preferences ?? .defaults
             soulmatePendingSelections = status.pendingSelections
             soulmateMatches = try await client.fetchSoulmateMatches()
             var previews: [String: ChatMessage] = [:]
@@ -395,6 +397,52 @@ final class MacAppState: ObservableObject {
             await fetchSoulmateStatus()
         } catch {
             soulmateError = "Soulmate preference could not be saved."
+        }
+    }
+
+    func saveSoulmatePreferences(_ preferences: SoulmatePreferences) async -> Bool {
+        do {
+            soulmatePreferences = try await client.setSoulmatePreferences(preferences)
+            soulmateError = nil
+            return true
+        } catch {
+            soulmateError = "Discovery preferences could not be saved."
+            return false
+        }
+    }
+
+    func submitFeedback(rating: Int, message: String) async -> Bool {
+        do {
+            try await client.submitFeedback(
+                profileId: profile?.profileId,
+                placementId: placement?.placementId,
+                rating: rating,
+                message: message,
+                appVersion: "LikemindedMac 0.1.0"
+            )
+            return true
+        } catch {
+            loadError = "Support note could not be sent."
+            return false
+        }
+    }
+
+    func refreshProfileFromReflection(_ answers: [String]) async -> Bool {
+        guard isSignedIn else { return false }
+        isLoading = true
+        defer { isLoading = false }
+        do {
+            let result = try await client.createProfileFromInterview(
+                interviewTranscript: answers.joined(separator: "\n"),
+                reflectionAnswers: answers
+            )
+            placement = result
+            await loadCurrentProfile()
+            loadError = nil
+            return true
+        } catch {
+            loadError = "Voice profile refresh could not be saved."
+            return false
         }
     }
 

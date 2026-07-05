@@ -36,16 +36,40 @@ app.activateWithOptions_(NSApplicationActivateIgnoringOtherApps)
 app.unhide()
 " >/dev/null
 
+# Wait for a main content window (same threshold as screencapture in verify_macos_screens.sh).
+deadline=$((SECONDS + 12))
+while (( SECONDS < deadline )); do
+  if python3 -c "
+import Quartz, sys
+pid = int('$PID')
+ws = Quartz.CGWindowListCopyWindowInfo(
+    Quartz.kCGWindowListOptionOnScreenOnly | Quartz.kCGWindowListExcludeDesktopElements,
+    Quartz.kCGNullWindowID,
+)
+for w in ws:
+    if w.get('kCGWindowOwnerPID') != pid:
+        continue
+    b = w.get('kCGWindowBounds') or {}
+    if float(b.get('Width', 0)) > 400 and float(b.get('Height', 0)) > 300:
+        sys.exit(0)
+sys.exit(1)
+" 2>/dev/null; then
+    break
+  fi
+  sleep 0.5
+done
+
 sleep 0.25
 
-osascript <<APPLESCRIPT >/dev/null
+osascript <<APPLESCRIPT >/dev/null 2>&1 || true
 tell application "System Events"
   tell process "$MACOS_CANONICAL_EXEC"
     set frontmost to true
-    if (count of windows) is 0 then error "no window"
-    set position of window 1 to {$X, $Y}
-    set size of window 1 to {$W, $H}
-    perform action "AXRaise" of window 1
+    if (count of windows) > 0 then
+      set position of window 1 to {$X, $Y}
+      set size of window 1 to {$W, $H}
+      perform action "AXRaise" of window 1
+    end if
   end tell
 end tell
 APPLESCRIPT

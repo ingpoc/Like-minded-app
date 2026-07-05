@@ -22,12 +22,12 @@
       "label": "Join meetup (hero)",
       "expected": "Navigate → meetVideoCall (macOS prototype room; LiveKit Phase 10)",
       "result": "pass",
-      "evidence": "2026-07-04 CUA: Join Reflective Builders meetup present; prior pass via macos_cua_meet_smoke.sh.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (join-meetup)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "rsvp-sat-yes",
@@ -35,12 +35,12 @@
       "label": "Saturday Available pill",
       "expected": "POST rsvp community available=true",
       "result": "pass",
-      "evidence": "CUA AX values Selected/Not selected on community pills.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (rsvp-sat-yes)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "rsvp-sat-no",
@@ -48,12 +48,12 @@
       "label": "Saturday Not pill",
       "expected": "POST rsvp community available=false",
       "result": "pass",
-      "evidence": "CUA Saturday Community meetup not available control present.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (rsvp-sat-no)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "rsvp-sun-yes",
@@ -61,12 +61,12 @@
       "label": "Sunday Available pill",
       "expected": "POST rsvp circle available=true",
       "result": "pass",
-      "evidence": "2026-07-04 CUA: Sunday Circle meetup available clicked idx=9 Selected.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (rsvp-sun-yes)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "rsvp-sun-no",
@@ -74,12 +74,12 @@
       "label": "Sunday Not pill",
       "expected": "POST rsvp circle available=false",
       "result": "pass",
-      "evidence": "2026-07-04 CUA validation-priya: Sunday Circle meetup not available idx=10 clicked; updateMeetingRSVP(kind:circle, available:false).",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (rsvp-sun-no)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "past-row",
@@ -87,12 +87,12 @@
       "label": "Past meeting row",
       "expected": "Navigate → meetRecap",
       "result": "pass",
-      "evidence": "Past rows present (Reflective Builders, Jazz Music); prior CUA recap navigation pass.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (past-row)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     }
   ],
   "visual_parity": {
@@ -100,5 +100,5 @@
     "notes": "2026-07-04 capture vs plate 02: hero RSVP weekend panel past-meet list layout matches. Intentional: green gradient hero vs mockup wavy texture; seeded Reflective Builders title; no notification bell (activity via notifications tab)."
   },
   "notes": "",
-  "source_hash": "342bb6ef2d9f07fb"
+  "source_hash": "e393ee28b3388445"
 }

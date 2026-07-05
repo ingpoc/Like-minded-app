@@ -21,12 +21,12 @@
       "label": "Request circle placement refresh",
       "expected": "POST /v1/me/circles/concern with message",
       "result": "pass",
-      "evidence": "CUA 2026-07-04; reportCircleConcern('macOS circle concern').",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (concern-btn)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "circle-card",
@@ -34,12 +34,12 @@
       "label": "Circle cards",
       "expected": "Navigate → circleDetail",
       "result": "pass",
-      "evidence": "circleCardButton + featured circle card open circleDetail.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (circle-card)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     }
   ],
   "visual_parity": {
@@ -47,5 +47,5 @@
     "notes": "2026-07-04 capture vs plate 03: featured circle refresh card available-circles grid. Intentional: DoodleArt thematic covers vs photo landscapes; seed roster counts."
   },
   "notes": "",
-  "source_hash": "342bb6ef2d9f07fb"
+  "source_hash": "e393ee28b3388445"
 }

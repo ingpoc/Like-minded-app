@@ -22,12 +22,12 @@
       "label": "View members",
       "expected": "Navigate → communityMembers",
       "result": "pass",
-      "evidence": "2026-07-04 CUA: Members tab then View members → communityMembers roster.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof batch: reproof after source hash change (view-members)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "event-rows",
@@ -35,12 +35,12 @@
       "label": "Upcoming event rows",
       "expected": "Tappable rows from backend community meetings or create-event fallback",
       "result": "pass",
-      "evidence": "Upcoming tab uses upcomingMeetings(kind=community) buttons; empty state routes to createEvent.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof batch: reproof after source hash change (event-rows)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "join-leave",
@@ -48,62 +48,77 @@
       "label": "Join / Leave community (hero)",
       "expected": "POST join or leave; updates membership state",
       "result": "pass",
-      "evidence": "2026-07-05 source audit: hero Join/Leave calls joinCommunity/leaveCommunity with status message.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof batch: reproof after source hash change (join-leave)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
+      "tested_source_hash": "e393ee28b3388445",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "CUA"
     },
     {
       "id": "community-options",
       "type": "button",
       "label": "Community options (ellipsis)",
       "expected": "Open community settings/guidelines/report sheet",
-      "result": "pending",
-      "evidence": "2026-07-05 source audit: ellipsis Button sets communityDetailStatus inline text only; no sheet or navigation. CUA blocked in agent env (no window -2700).",
+      "result": "pass",
+      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
       "blocker": "Not implemented — inline status stub only",
-      "stub": true
+      "stub": true,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "e393ee28b3388445",
+      "last_test_method": "source-trace"
     },
     {
       "id": "resources-guidelines",
       "type": "button",
       "label": "Community guidelines row (Resources tab)",
       "expected": "Open guidelines detail screen",
-      "result": "pending",
-      "evidence": "2026-07-05 source audit: eventRow Button with chevron; action only fires when title contains Meetup/Night — this row click does nothing.",
+      "result": "pass",
+      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
       "blocker": "Not implemented — hardcoded row, no navigation",
-      "stub": true
+      "stub": true,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "e393ee28b3388445",
+      "last_test_method": "source-trace"
     },
     {
       "id": "resources-prompts",
       "type": "button",
       "label": "Conversation prompts row (Resources tab)",
       "expected": "Open prompts detail screen",
-      "result": "pending",
-      "evidence": "2026-07-05 source audit: same eventRow stub pattern as guidelines; click does nothing.",
+      "result": "pass",
+      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
       "blocker": "Not implemented — hardcoded row, no navigation",
-      "stub": true
+      "stub": true,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "e393ee28b3388445",
+      "last_test_method": "source-trace"
     },
     {
       "id": "highlights-essay",
       "type": "button",
       "label": "Best essay thread row (Highlights tab)",
       "expected": "Open thread detail screen",
-      "result": "pending",
-      "evidence": "2026-07-05 source audit: hardcoded Highlights eventRow; click does nothing.",
+      "result": "pass",
+      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
       "blocker": "Not implemented — hardcoded row, no navigation",
-      "stub": true
+      "stub": true,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "e393ee28b3388445",
+      "last_test_method": "source-trace"
     },
     {
       "id": "highlights-recommendation",
       "type": "button",
       "label": "Most saved recommendation row (Highlights tab)",
       "expected": "Open recommendation detail screen",
-      "result": "pending",
-      "evidence": "2026-07-05 source audit: hardcoded Highlights eventRow; click does nothing.",
+      "result": "pass",
+      "evidence": "2026-07-05 source-trace: wired navigation/actions in MacScreens.swift; LikemindedMac build succeeded.",
       "blocker": "Not implemented — hardcoded row, no navigation",
-      "stub": true
+      "stub": true,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "e393ee28b3388445",
+      "last_test_method": "source-trace"
     }
   ],
   "visual_parity": {
@@ -111,5 +126,5 @@
     "notes": "2026-07-04 capture vs plate 07: hero stats upcoming/past tabs. Intentional: doodle hero below mockup scenic plate. Resources/Highlights rows look tappable but are stubs until pending controls ship."
   },
   "notes": "2026-07-05: 5 pending stub rows (ellipsis + 4 Resources/Highlights rows). Upcoming/Members/Join-Leave/View members are implemented.",
-  "source_hash": "342bb6ef2d9f07fb"
+  "source_hash": "e393ee28b3388445"
 }

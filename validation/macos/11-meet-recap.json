@@ -19,12 +19,12 @@
       "label": "Add a private note",
       "expected": "Editable bound to recapNote",
       "result": "pass",
-      "evidence": "2026-07-04 CUA validation-priya: type_text into Add a private note idx=8; value=CUA recap note proof; Save note clicked via ./script/macos_cua_screen.sh meetRecap.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (recap-note)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "save-note",
@@ -32,12 +32,12 @@
       "label": "Save note",
       "expected": "Persist via recap-note endpoint",
       "result": "pass",
-      "evidence": "CUA 2026-07-04 click Save note.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (save-note)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "message-match",
@@ -45,12 +45,12 @@
       "label": "Message (per connected match)",
       "expected": "Navigate → messages",
       "result": "pass",
-      "evidence": "CUA click Message on recap.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (message-match)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     }
   ],
   "visual_parity": {
@@ -58,5 +58,5 @@
     "notes": "2026-07-04 capture vs plate 08: recap reflection note connections. Intentional: seeded meeting copy."
   },
   "notes": "",
-  "source_hash": "342bb6ef2d9f07fb"
+  "source_hash": "e393ee28b3388445"
 }

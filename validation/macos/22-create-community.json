@@ -19,12 +19,12 @@
       "label": "Community name",
       "expected": "Editable name field bound to create payload",
       "result": "pass",
-      "evidence": "2026-07-04: TextField Community name with accessibility label; required for Create community.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (name)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "summary",
@@ -32,12 +32,12 @@
       "label": "Community summary",
       "expected": "Editable summary field bound to create payload",
       "result": "pass",
-      "evidence": "2026-07-04: TextField Community summary; required for Create community.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (summary)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "themes",
@@ -45,12 +45,12 @@
       "label": "Community themes",
       "expected": "Comma-separated themes (max 3) in create payload",
       "result": "pass",
-      "evidence": "2026-07-04: Themes field splits on commas into draftCommunityThemes for POST body.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (themes)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "submit",
@@ -58,12 +58,12 @@
       "label": "Create community",
       "expected": "POST /v1/communities then navigate → communityDetail",
       "result": "pass",
-      "evidence": "2026-07-04: submitCommunity → appState.createCommunity → navigate communityDetail; disabled until name+summary non-empty.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (submit)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     }
   ],
   "visual_parity": {
@@ -71,5 +71,5 @@
     "notes": "2026-07-04 capture vs communities plate: name summary themes live preview submit. Intentional: no dedicated mockup plate; form parity with browse create tile path."
   },
   "notes": "Closes PROGRESS create-community form ledger owner.",
-  "source_hash": "342bb6ef2d9f07fb"
+  "source_hash": "e393ee28b3388445"
 }

@@ -20,12 +20,12 @@
       "label": "How matches work panel",
       "expected": "Honest copy: matches from mutual meetup selection; no distance filter",
       "result": "pass",
-      "evidence": "2026-07-04 honesty fix: distance slider and 25 km label removed; panel explains mutual selection only.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (distance-slider)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "filter-pills",
@@ -33,12 +33,12 @@
       "label": "Mutual matches heading",
       "expected": "No All/Nearby/Interests filter pills",
       "result": "pass",
-      "evidence": "2026-07-04 honesty fix: All/Nearby/Interests pills removed; Mutual matches section heading only.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (filter-pills)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "new-matches",
@@ -46,12 +46,12 @@
       "label": "New matches",
       "expected": "Calls fetchSoulmateStatus",
       "result": "pass",
-      "evidence": "2026-07-04 CUA validation-priya: New matches AXButton idx=7 clicked via ./script/macos_cua_screen.sh soulmateDiscover.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (new-matches)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     },
     {
       "id": "match-card",
@@ -59,12 +59,12 @@
       "label": "Match card",
       "expected": "Navigate → soulmateDetail with API name/meeting date (no fake location/tags)",
       "result": "pass",
-      "evidence": "2026-07-04 CUA validation-priya: Open Gurusharan Gupta match card idx=9 clicked; cards use match.name + meeting date only.",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (match-card)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "e393ee28b3388445",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "CUA"
     }
   ],
   "visual_parity": {
@@ -72,5 +72,5 @@
     "notes": "2026-07-04 capture vs plate 10: discover cards from API. Intentional: no fake distance/filter chrome."
   },
   "notes": "",
-  "source_hash": "342bb6ef2d9f07fb"
+  "source_hash": "e393ee28b3388445"
 }
