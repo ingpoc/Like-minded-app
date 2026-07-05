@@ -1,5 +1,5 @@
 {
-  "screen": "Onboarding Wizard (name → gender → DOB → city → pincode)",
+  "screen": "Profile Onboarding (3-step: About you → Voice profile → Join first circle)",
   "platform": "ios",
   "source_files": [
     "apps/ios-macos/Sources/LikemindedApp/Views/OnboardingView.swift"
@@ -8,108 +8,84 @@
   "mockup_missing": false,
   "entry_points": [
     "First launch after sign-in",
-    "Profile tab when basicInfo is nil"
+    "Profile tab when slice is nil"
   ],
   "backend_dependencies": [
-    "POST /v1/me/profile (via appState.completeOnboarding)"
+    "PATCH /v1/me/profile (basicInfo)",
+    "POST /v1/me/profile/from-interview (voice reflection)",
+    "GET /v1/me/placement"
   ],
   "controls": [
     {
-      "id": "progress-dots",
-      "type": "display",
-      "label": "Progress dots",
-      "expected": "Reflects current step",
+      "id": "step-rows",
+      "type": "button",
+      "label": "1 About you / 2 Voice profile / 3 Join first circle",
+      "expected": "Step sidebar; tap advances between onboarding steps",
       "result": "pass",
-      "evidence": "Onboarding skipped for seeded primary user (has basicInfo). Would need fresh user session to test wizard.",
+      "evidence": "OnboardingView step sidebar mirrors macOS 3-step model with selectable step rows.",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "609f27f0dc3a09e5",
+      "tested_source_hash": "",
       "last_test_method": "source-trace"
     },
     {
-      "id": "field-name",
+      "id": "form-lines",
       "type": "text",
-      "label": "Your name (step 0)",
-      "expected": "Capture name, enables Continue when non-empty",
+      "label": "Name, city, gender, DOB, pincode (step 1)",
+      "expected": "Editable fields; gender pills; DOB picker; pincode numeric",
       "result": "pass",
-      "evidence": "Onboarding skipped — seeded user has profile",
+      "evidence": "Step 1 About you panel collects name, city, gender, date of birth, and pincode.",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "609f27f0dc3a09e5",
-      "last_test_method": "source-trace"
-    },
-    {
-      "id": "field-gender",
-      "type": "button-group",
-      "label": "Gender cards (step 1)",
-      "expected": "Selects one of Male/Female/Non-binary/Prefer not to say",
-      "result": "pass",
-      "evidence": "Onboarding skipped — seeded user has profile",
-      "blocker": "",
-      "stub": false,
-      "last_tested_at": "2026-07-05",
-      "tested_source_hash": "609f27f0dc3a09e5",
-      "last_test_method": "source-trace"
-    },
-    {
-      "id": "field-dob",
-      "type": "picker",
-      "label": "Date of birth wheel (step 2)",
-      "expected": "Capture DOB",
-      "result": "pass",
-      "evidence": "Onboarding skipped — seeded user has profile",
-      "blocker": "",
-      "stub": false,
-      "last_tested_at": "2026-07-05",
-      "tested_source_hash": "609f27f0dc3a09e5",
-      "last_test_method": "source-trace"
-    },
-    {
-      "id": "field-city",
-      "type": "text",
-      "label": "City (step 3)",
-      "expected": "Capture city",
-      "result": "pass",
-      "evidence": "Onboarding skipped — seeded user has profile",
-      "blocker": "",
-      "stub": false,
-      "last_tested_at": "2026-07-05",
-      "tested_source_hash": "609f27f0dc3a09e5",
-      "last_test_method": "source-trace"
-    },
-    {
-      "id": "field-pincode",
-      "type": "text",
-      "label": "Pincode numeric (step 4)",
-      "expected": "Capture pincode (numeric)",
-      "result": "pass",
-      "evidence": "Onboarding skipped — seeded user has profile",
-      "blocker": "",
-      "stub": false,
-      "last_tested_at": "2026-07-05",
-      "tested_source_hash": "609f27f0dc3a09e5",
+      "tested_source_hash": "",
       "last_test_method": "source-trace"
     },
     {
       "id": "continue",
       "type": "button",
-      "label": "Continue / Start voice profile",
-      "expected": "Advances step; on last step saves profile and starts voice session",
+      "label": "Continue (step 1)",
+      "expected": "PATCH basicInfo then advance to voice profile step",
       "result": "pass",
-      "evidence": "Onboarding skipped — seeded user has profile",
+      "evidence": "saveBasicsAndContinue calls updateProfileBasics and advances to step 2.",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "609f27f0dc3a09e5",
+      "tested_source_hash": "",
+      "last_test_method": "source-trace"
+    },
+    {
+      "id": "voice-profile-step",
+      "type": "button",
+      "label": "Voice profile (onboarding step 2)",
+      "expected": "Reflection prompts; save creates placement via from-interview",
+      "result": "pass",
+      "evidence": "Step 2 uses three reflection prompts and refreshProfileFromReflection on save.",
+      "blocker": "",
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "",
+      "last_test_method": "source-trace"
+    },
+    {
+      "id": "join-circle-step",
+      "type": "button",
+      "label": "Open circles (onboarding step 3)",
+      "expected": "Shows placement suggestion; navigates to Circles tab",
+      "result": "pass",
+      "evidence": "Step 3 shows primary circle placement and sets requestedTab = .circles.",
+      "blocker": "",
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "",
       "last_test_method": "source-trace"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-05 capture onboarding.png vs plate 01-04: five-step wizard, progress dots, Continue/Start voice profile CTA. Intentional: single-field-per-screen vs montage collage layout."
+    "notes": "2026-07-05: iOS onboarding aligned to macOS 3-step model (About you / Voice profile / Join first circle). Intentional: single-column mobile layout vs Mac side panel."
   },
-  "notes": "",
-  "source_hash": "609f27f0dc3a09e5"
+  "notes": "Replaces prior 5-step wizard; uniform with macOS profileOnboarding flow.",
+  "source_hash": ""
 }

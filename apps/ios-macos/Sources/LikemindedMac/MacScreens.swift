@@ -81,13 +81,14 @@ struct MacScreenView: View {
     @State private var notificationStatus: String?
     @State private var notificationFilter = "All"
     @State private var activityFilter = "All"
-    @State private var readNotificationIds: Set<String> = []
     @State private var selectedSoulmateMatchId: String?
     @State private var soulmateMatchDetail: SoulmateMatchDetail?
     @State private var showAllInterests = false
     @State private var draftProfileName = ""
     @State private var draftProfileCity = ""
     @State private var draftProfileGender: Gender = .preferNotToSay
+    @State private var draftProfileDateOfBirth = Date()
+    @State private var draftProfilePincode = ""
     @State private var isSavingProfileBasics = false
     @State private var profileBasicsStatus: String?
     @State private var newCommunityName = ""
@@ -2842,7 +2843,7 @@ struct MacScreenView: View {
                     }
                 }
                 Button("Mark all as read") {
-                    readNotificationIds = Set(appState.notifications.map(\.id))
+                    appState.markNotificationsRead()
                     notificationStatus = "All notifications marked read in this view."
                 }
                     .font(MacType.small.weight(.semibold))
@@ -2920,7 +2921,7 @@ struct MacScreenView: View {
         appState.notifications.filter { item in
             switch notificationFilter {
             case "Unread":
-                return !readNotificationIds.contains(item.id)
+                return !appState.readNotificationIds.contains(item.id)
             case "Mentions":
                 return item.kind == "mention"
             default:
@@ -2943,7 +2944,7 @@ struct MacScreenView: View {
     }
 
     private func openNotification(_ item: MacNotificationItem) {
-        readNotificationIds.insert(item.id)
+        appState.readNotificationIds.insert(item.id)
         switch item.kind {
         case "meeting":
             navigate?(.meetOverview)
@@ -3086,6 +3087,15 @@ struct MacScreenView: View {
             profileField(label: "What should we call you?", text: $draftProfileName, prompt: "Your name")
             profileField(label: "Where are you based?", text: $draftProfileCity, prompt: "City")
             VStack(alignment: .leading, spacing: 7) {
+                Text("Date of birth")
+                    .font(MacType.small.weight(.semibold))
+                DatePicker("", selection: $draftProfileDateOfBirth, displayedComponents: .date)
+                    .datePickerStyle(.compact)
+                    .labelsHidden()
+                    .accessibilityLabel("Date of birth")
+            }
+            profileField(label: "Pincode", text: $draftProfilePincode, prompt: "Pincode")
+            VStack(alignment: .leading, spacing: 7) {
                 Text("Gender")
                     .font(MacType.small.weight(.semibold))
                 HStack(spacing: 8) {
@@ -3125,7 +3135,7 @@ struct MacScreenView: View {
                 .background(MacPalette.accent, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                 .foregroundStyle(.white)
                 .buttonStyle(.plain)
-                .disabled(isSavingProfileBasics || draftProfileName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                .disabled(isSavingProfileBasics || draftProfileName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || draftProfileCity.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || draftProfilePincode.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 .accessibilityLabel("Continue")
         }
         .frame(width: 450)
@@ -3248,21 +3258,29 @@ struct MacScreenView: View {
         draftProfileName = profileInfo?.name ?? ""
         draftProfileCity = profileInfo?.city ?? ""
         draftProfileGender = profileInfo?.gender ?? .preferNotToSay
+        draftProfilePincode = profileInfo?.pincode ?? ""
+        if let dob = profileInfo?.dateOfBirth, let parsed = LikemindedDate.parse(dob) {
+            draftProfileDateOfBirth = parsed
+        }
         profileBasicsStatus = nil
     }
 
     private func saveProfileBasicsAndContinue() async {
         isSavingProfileBasics = true
         profileBasicsStatus = nil
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
         let saved = await appState.updateProfileBasics(
             name: draftProfileName,
             city: draftProfileCity,
-            gender: draftProfileGender
+            gender: draftProfileGender,
+            dateOfBirth: formatter.string(from: draftProfileDateOfBirth),
+            pincode: draftProfilePincode
         )
         isSavingProfileBasics = false
         if saved {
             profileBasicsStatus = "Saved"
-            navigate?(.profileSignals)
+            profileOnboardingStep = 2
         } else {
             profileBasicsStatus = appState.loadError ?? "Profile could not be saved."
         }

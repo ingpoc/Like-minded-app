@@ -320,9 +320,37 @@ struct APIUser: Decodable {
     let fullName: String?
 }
 
+struct UserProfile: Decodable, Equatable {
+    let profileId: String
+    let profileSummary: String?
+    let signals: ProfileSignals
+    let basicInfo: BasicInfo?
+    let interests: [Interest]
+    let synthesizedAt: String?
+}
+
+struct UserProfileResponse: Decodable {
+    let profile: UserProfile
+}
+
 struct ProfileUpdateRequest: Encodable {
     let reflectionSummary: String?
     let signals: ProfileSignals?
+    let basicInfo: BasicInfoUpdate?
+
+    init(reflectionSummary: String? = nil, signals: ProfileSignals? = nil, basicInfo: BasicInfoUpdate? = nil) {
+        self.reflectionSummary = reflectionSummary
+        self.signals = signals
+        self.basicInfo = basicInfo
+    }
+}
+
+struct BasicInfoUpdate: Encodable, Equatable {
+    var name: String?
+    var gender: String?
+    var dateOfBirth: String?
+    var city: String?
+    var pincode: String?
 }
 
 struct BasicInfo: Codable, Equatable {

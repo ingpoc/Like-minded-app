@@ -37,6 +37,7 @@ final class MacAppState: ObservableObject {
     @Published var notifications: [MacNotificationItem] = []
     @Published var activityItems: [MacNotificationItem] = []
     @Published var notificationError: String?
+    @Published var readNotificationIds: Set<String> = []
 
     private var client: LikemindedAPIClient {
         LikemindedAPIClient(authToken: authSession?.token)
@@ -208,15 +209,21 @@ final class MacAppState: ObservableObject {
     }
 
     @discardableResult
-    func updateProfileBasics(name: String, city: String, gender: Gender?) async -> Bool {
+    func updateProfileBasics(
+        name: String,
+        city: String,
+        gender: Gender?,
+        dateOfBirth: String? = nil,
+        pincode: String? = nil
+    ) async -> Bool {
         guard isSignedIn else { return false }
         let existing = profile?.basicInfo
         let update = BasicInfoUpdate(
             name: name.trimmingCharacters(in: .whitespacesAndNewlines),
             gender: (gender ?? existing?.gender)?.rawValue,
-            dateOfBirth: existing?.dateOfBirth,
+            dateOfBirth: dateOfBirth ?? existing?.dateOfBirth,
             city: city.trimmingCharacters(in: .whitespacesAndNewlines),
-            pincode: existing?.pincode
+            pincode: pincode ?? existing?.pincode
         )
         do {
             profile = try await client.updateProfile(basicInfo: update)
@@ -544,6 +551,10 @@ final class MacAppState: ObservableObject {
         } catch {
             notificationError = "Notifications could not be loaded."
         }
+    }
+
+    func markNotificationsRead() {
+        readNotificationIds = Set(notifications.map(\.id))
     }
 }
 

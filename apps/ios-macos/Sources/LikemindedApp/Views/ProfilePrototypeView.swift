@@ -48,11 +48,8 @@ struct VoiceProfileView: View {
             ScreenContainer(title: "Profile", subtitle: "Who you are.") {
                 profileHeader
 
-                if appState.slice == nil, appState.basicInfo == nil {
+                if appState.slice == nil {
                     OnboardingView()
-                } else if appState.slice == nil {
-                    ProfileVoiceEmptyCard()
-                    startVoiceButton
                 } else {
                     if appState.concernFlag {
                         placementConcernCard

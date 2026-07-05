@@ -48,7 +48,8 @@ final class PrototypeAppState: ObservableObject {
     @Published var notifications: [NotificationItem] = []
     @Published var activityItems: [NotificationItem] = []
     @Published var notificationError: String?
-    @Published var notificationsReadAt: Date?
+    @Published var readNotificationIds: Set<String> = []
+    @Published var requestedTab: AppTab?
 
     private let voiceClient = RealtimeVoiceClient()
 
@@ -417,6 +418,55 @@ final class PrototypeAppState: ObservableObject {
         loadError = nil
     }
 
+    @discardableResult
+    func updateProfileBasics(
+        name: String,
+        city: String,
+        gender: Gender?,
+        dateOfBirth: String?,
+        pincode: String?
+    ) async -> Bool {
+        guard isSignedIn else { return false }
+        let existing = basicInfo ?? slice?.profile.basicInfo
+        let update = BasicInfoUpdate(
+            name: name.trimmingCharacters(in: .whitespacesAndNewlines),
+            gender: (gender ?? existing?.gender)?.rawValue,
+            dateOfBirth: dateOfBirth ?? existing?.dateOfBirth,
+            city: city.trimmingCharacters(in: .whitespacesAndNewlines),
+            pincode: pincode ?? existing?.pincode
+        )
+        do {
+            let profile = try await client.updateProfile(basicInfo: update)
+            if let info = profile.basicInfo {
+                basicInfo = info
+            }
+            loadError = nil
+            return true
+        } catch {
+            loadError = "Profile could not be saved."
+            return false
+        }
+    }
+
+    @discardableResult
+    func refreshProfileFromReflection(_ answers: [String]) async -> Bool {
+        guard isSignedIn else { return false }
+        isSynthesizingPlacement = true
+        defer { isSynthesizingPlacement = false }
+        do {
+            let result = try await client.createProfileFromInterview(
+                interviewTranscript: answers.joined(separator: "\n"),
+                reflectionAnswers: answers
+            )
+            applyProfileResult(result, source: "Voice profile refreshed")
+            loadError = nil
+            return true
+        } catch {
+            loadError = "Voice profile refresh could not be saved."
+            return false
+        }
+    }
+
     private func createProfileFromInterview(transcript: String) async {
         let transcript = transcript.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !transcript.isEmpty else { return }
@@ -623,7 +673,7 @@ final class PrototypeAppState: ObservableObject {
     }
 
     func markNotificationsRead() {
-        notificationsReadAt = Date()
+        readNotificationIds = Set(notifications.map(\.id))
     }
 
     func fetchSoulmateStatus() async {
