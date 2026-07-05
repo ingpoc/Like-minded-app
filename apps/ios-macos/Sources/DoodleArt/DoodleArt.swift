@@ -18,6 +18,17 @@ enum DoodleArt {
             return portraitDefault
         }
     }
+
+    static func portrait(forGenderString gender: String?) -> String {
+        switch gender?.lowercased() {
+        case "female":
+            return portraitFemale
+        case "male":
+            return portraitMale
+        default:
+            return portraitDefault
+        }
+    }
     static let eventJazzListening = "EventJazzListening"
     static let eventMeetup = "DoodleEventMeetup"
     static let eventJam = "DoodleEventJam"

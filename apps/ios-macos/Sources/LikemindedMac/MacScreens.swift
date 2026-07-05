@@ -2160,24 +2160,19 @@ struct MacScreenView: View {
         let meetingLabel = (detail?.meetingDate ?? match?.meetingDate).map { "Met \(LikemindedDate.short($0))" }
             ?? "Matched from a meetup"
         let gender = detail?.basicInfo.gender?.capitalized
+        let genderRaw = detail?.basicInfo.gender
         let interestLabels = detail?.interests.map(\.label) ?? []
         return HStack(alignment: .top, spacing: 24) {
-            ZStack(alignment: .center) {
-                LinearGradient(colors: [MacPalette.clay.opacity(0.8), MacPalette.accent.opacity(0.7), MacPalette.ink.opacity(0.5)], startPoint: .topLeading, endPoint: .bottomTrailing)
-                VStack(spacing: 12) {
-                    Text(String(name.prefix(1)))
-                        .font(.system(size: 64, weight: .semibold, design: .serif))
-                        .foregroundStyle(.white)
-                    Text(name)
-                        .font(.system(size: 22, weight: .semibold, design: .serif))
-                        .foregroundStyle(.white)
-                    Text(meetingLabel)
-                        .font(MacType.body)
-                        .foregroundStyle(.white.opacity(0.8))
-                }
+            VStack(spacing: 16) {
+                DoodlePortrait(assetName: DoodleArt.portrait(forGenderString: genderRaw), size: 220)
+                Text(name)
+                    .font(.system(size: 22, weight: .semibold, design: .serif))
+                    .foregroundStyle(MacPalette.ink)
+                Text(meetingLabel)
+                    .font(MacType.body)
+                    .foregroundStyle(MacPalette.muted)
             }
-            .frame(width: 360, height: 410)
-            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .frame(width: 260)
             VStack(alignment: .leading, spacing: 18) {
                 Text(name)
                     .font(.system(size: 28, weight: .semibold, design: .serif))
@@ -2325,6 +2320,7 @@ struct MacScreenView: View {
                             ForEach(filteredCommunityMembers, id: \.userId) { member in
                                 memberRow(
                                     member.name,
+                                    gender: member.gender,
                                     role: "Member" + (member.gender.map { " · \($0.capitalized)" } ?? "")
                                 )
                             }
@@ -2349,10 +2345,9 @@ struct MacScreenView: View {
         }
     }
 
-    private func memberRow(_ name: String, role: String) -> some View {
+    private func memberRow(_ name: String, gender: String?, role: String) -> some View {
         HStack(spacing: 12) {
-            MacAvatar(initials: String(name.prefix(1)))
-                .frame(width: 32, height: 32)
+            DoodlePortrait(assetName: DoodleArt.portrait(forGenderString: gender), size: 32)
             VStack(alignment: .leading, spacing: 2) {
                 Text(name)
                     .font(MacType.button)
