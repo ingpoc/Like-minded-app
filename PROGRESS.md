@@ -339,8 +339,8 @@ Ledger owner: `validation/macos/*.json` pending rows with `stub: true` and block
 
 Phase 8 marked iOS manual proofs complete, but `validation/ios/*.json` still has open fail/pending rows. Close these before claiming production-grade iOS control coverage.
 
-- [ ] iOS Leave circle: wire a real leave/placement action or remove/honestly disable the control; evidence in `validation/ios/11-circle-detail.json`.
-- [ ] iOS past-meet row navigation: fix Meet past-row → recap; evidence in `validation/ios/07-meet.json`.
+- [x] iOS Leave circle: Leave circle confirms and calls `deferPlacement` via `POST /v1/me/placement/actions`; evidence in `validation/ios/11-circle-detail.json`.
+- [x] iOS past-meet row navigation: `NavigationLink(value: Meeting)` pushes `PastMeetDetailView`; evidence in `validation/ios/07-meet.json`.
 - [ ] iOS ledger closeout: drive all `validation/ios/*.json` pending controls to pass/fail/blocked (onboarding, Sunday RSVP, past-meet detail, soulmate selection, settings rows, profile concern); JSON is status owner.
 
 ## Deferred

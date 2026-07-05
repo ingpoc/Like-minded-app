@@ -58,9 +58,7 @@ struct MeetView: View {
                     FeatureCard(title: "Past meets", eyebrow: "History") {
                         VStack(spacing: 10) {
                             ForEach(appState.pastMeetings) { meeting in
-                                NavigationLink {
-                                    PastMeetDetailView(meeting: meeting)
-                                } label: {
+                                NavigationLink(value: meeting) {
                                     PastMeetRow(meeting: meeting)
                                 }
                                 .buttonStyle(.plain)
@@ -68,6 +66,10 @@ struct MeetView: View {
                         }
                     }
                 }
+            }
+            .navigationDestination(for: Meeting.self) { meeting in
+                PastMeetDetailView(meeting: meeting)
+                    .environmentObject(appState)
             }
             .overlay(alignment: .topTrailing) {
                 Button {

@@ -202,14 +202,15 @@ struct VoiceProfileView: View {
                         .foregroundStyle(PrototypePalette.ink)
                 }
 
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .foregroundStyle(PrototypePalette.ink)
+                Spacer(minLength: 0)
             }
             .padding(16)
             .background(PrototypePalette.surface)
             .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
             .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("\(communicationReadTitle). \(communicationReadDetail)")
+            .accessibilityAddTraits(.isStaticText)
 
             VStack(spacing: 15) {
                 ForEach(profileTraits, id: \.left) { trait in

@@ -116,17 +116,6 @@ struct CirclesPrototypeView: View {
                     showCards = true
                 }
             }
-            .overlay(alignment: .topTrailing) {
-                Image(systemName: "plus")
-                    .font(PrototypeTypography.bodyStrong)
-                    .foregroundStyle(PrototypePalette.ink)
-                    .frame(width: 36, height: 36)
-                    .background(PrototypePalette.surface)
-                    .clipShape(Circle())
-                    .overlay(Circle().stroke(PrototypePalette.rule, lineWidth: 1))
-                    .padding(.top, 42)
-                    .padding(.trailing, 22)
-            }
             .toolbar(.hidden, for: .navigationBar)
             .fullScreenCover(item: $selectedCircle) { circle in
                 NavigationStack {
@@ -199,6 +188,9 @@ struct CircleDetailView: View {
     let circle: PlacementCircle
     let reasons: [String]
     let namespace: Namespace.ID
+    @State private var showLeaveConfirm = false
+    @State private var isLeavingCircle = false
+    @State private var leaveStatus: String?
 
     private var nextMeetup: Meeting? {
         appState.upcomingMeetings.first { $0.targetId == circle.id }
@@ -257,15 +249,45 @@ struct CircleDetailView: View {
 
             FeatureCard(title: "Room rhythm", eyebrow: "Format") {
                 VStack(spacing: 0) {
-                    DetailRow(icon: "person.2", title: "\(circle.membersOnline) members")
-                    DetailRow(icon: "bubble.left.and.bubble.right", title: circle.socialFormat)
+                    StaticDetailRow(icon: "person.2", title: "\(circle.membersOnline) members")
+                    StaticDetailRow(icon: "bubble.left.and.bubble.right", title: circle.socialFormat)
                 }
             }
 
-            SecondaryActionButton(title: "Leave circle", systemImage: "rectangle.portrait.and.arrow.right")
+            Button {
+                showLeaveConfirm = true
+            } label: {
+                SecondaryActionButton(title: isLeavingCircle ? "Leaving circle" : "Leave circle", systemImage: "rectangle.portrait.and.arrow.right")
+            }
+            .buttonStyle(.plain)
+            .disabled(isLeavingCircle)
+
+            if let leaveStatus {
+                Text(leaveStatus)
+                    .font(PrototypeTypography.caption)
+                    .foregroundStyle(PrototypePalette.subink)
+            }
         }
         .navigationTitle(circle.name)
         .navigationBarTitleDisplayMode(.inline)
+        .confirmationDialog(
+            "Leave this circle?",
+            isPresented: $showLeaveConfirm,
+            titleVisibility: .visible
+        ) {
+            Button("Leave circle", role: .destructive) {
+                Task {
+                    isLeavingCircle = true
+                    await appState.deferPlacement()
+                    leaveStatus = appState.loadError ?? "Circle placement deferred. Browse other circles in Circles."
+                    isLeavingCircle = false
+                    dismiss()
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This defers your current circle placement so you can explore other rooms.")
+        }
     }
 
     private var nextMeetupLabel: String {
@@ -430,6 +452,8 @@ struct CommunityDetailView: View {
     @Environment(\.dismiss) private var dismiss
     let community: Community
     let isJoined: Bool
+    @State private var showCommunityOptions = false
+    @State private var communityOptionsStatus: String?
 
     private var nextMeetup: Meeting? {
         appState.upcomingMeetings.first { $0.targetId == community.id }
@@ -472,7 +496,13 @@ struct CommunityDetailView: View {
                         }
                         .buttonStyle(.plain)
                         Spacer()
-                        Image(systemName: "ellipsis")
+                        Button {
+                            showCommunityOptions = true
+                        } label: {
+                            Image(systemName: "ellipsis")
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Community options")
                     }
                     .font(PrototypeTypography.bodyStrong)
                     .foregroundStyle(.white)
@@ -604,6 +634,38 @@ struct CommunityDetailView: View {
         }
         .background(PrototypePalette.background.ignoresSafeArea())
         .toolbar(.hidden, for: .navigationBar)
+        .sheet(isPresented: $showCommunityOptions) {
+            NavigationStack {
+                VStack(alignment: .leading, spacing: 18) {
+                    Text(community.name)
+                        .font(PrototypeTypography.sectionTitle)
+                    Text("Community options")
+                        .font(PrototypeTypography.caption)
+                        .foregroundStyle(PrototypePalette.subink)
+                    Button("View guidelines") {
+                        communityOptionsStatus = "Guidelines for \(community.name): be kind, stay curious, keep conversations constructive."
+                        showCommunityOptions = false
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(PrototypePalette.accent)
+                    if let communityOptionsStatus {
+                        Text(communityOptionsStatus)
+                            .font(PrototypeTypography.caption)
+                            .foregroundStyle(PrototypePalette.subink)
+                    }
+                    Spacer()
+                }
+                .padding(20)
+                .navigationTitle("Options")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("Done") { showCommunityOptions = false }
+                    }
+                }
+            }
+            .presentationDetents([.medium])
+        }
     }
 
     private func detailSection(_ title: String, _ body: String) -> some View {
@@ -670,7 +732,7 @@ private struct CommunityCard: View {
     }
 }
 
-private struct DetailRow: View {
+private struct StaticDetailRow: View {
     let icon: String
     let title: String
 
@@ -683,9 +745,6 @@ private struct DetailRow: View {
                 .font(PrototypeTypography.caption)
                 .foregroundStyle(PrototypePalette.ink)
             Spacer()
-            Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(PrototypePalette.subink)
         }
         .padding(.vertical, 14)
         .overlay(alignment: .bottom) {
@@ -693,5 +752,6 @@ private struct DetailRow: View {
                 .fill(PrototypePalette.rule)
                 .frame(height: 1)
         }
+        .accessibilityElement(children: .combine)
     }
 }

@@ -44,7 +44,7 @@ struct Community: Codable, Identifiable, Equatable {
     let membersCount: Int
 }
 
-struct Meeting: Codable, Identifiable, Equatable {
+struct Meeting: Codable, Identifiable, Equatable, Hashable {
     let id: String
     let kind: String
     let targetId: String
