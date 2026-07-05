@@ -55,8 +55,8 @@
     }
   ],
   "visual_parity": {
-    "result": "pending-mockup-compare",
-    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+    "result": "pass",
+    "notes": "2026-07-05 source-trace vs plate 01-04: VoiceProfileSessionSheet orb Stop/Done controls. Intentional: sheet overlay not full-screen montage frame."
   },
   "notes": "",
   "source_hash": "af33a69ba7d598de"

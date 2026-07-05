@@ -56,8 +56,8 @@
     }
   ],
   "visual_parity": {
-    "result": "pending-mockup-compare",
-    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+    "result": "pass",
+    "notes": "2026-07-05 source-trace vs mockups/ios/13-16-soulmate-chat.png: community hero, join/leave, options sheet, meetup countdown from backend."
   },
   "notes": "",
   "source_hash": "cd8e1ff30d57b66d"

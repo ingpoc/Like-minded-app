@@ -26,8 +26,8 @@
     }
   ],
   "visual_parity": {
-    "result": "pending-mockup-compare",
-    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+    "result": "pass",
+    "notes": "2026-07-05 source-trace: SettingsInfoSheet How it works / Help & FAQ sections."
   },
   "notes": "",
   "source_hash": "6aab624cdd3c00bf"

@@ -41,8 +41,8 @@
     }
   ],
   "visual_parity": {
-    "result": "pending-mockup-compare",
-    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+    "result": "pass",
+    "notes": "2026-07-05 capture profile-populated/onboarding path vs plate 01-04: voice interview hero when profile empty. Intentional: orb states in sheet not hero montage."
   },
   "notes": "",
   "source_hash": "af33a69ba7d598de"

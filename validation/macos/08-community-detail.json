@@ -22,12 +22,12 @@
       "label": "View members",
       "expected": "Navigate → communityMembers",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (view-members)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (view-members)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     },
     {
       "id": "event-rows",
@@ -35,12 +35,12 @@
       "label": "Upcoming event rows",
       "expected": "Tappable rows from backend community meetings or create-event fallback",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (event-rows)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-rows)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     },
     {
       "id": "join-leave",
@@ -48,12 +48,12 @@
       "label": "Join / Leave community (hero)",
       "expected": "POST join or leave; updates membership state",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (join-leave)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (join-leave)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     },
     {
       "id": "community-options",
@@ -61,12 +61,12 @@
       "label": "Community options (ellipsis)",
       "expected": "Open community settings/guidelines/report sheet",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (community-options)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (community-options)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "3f8988b2bae470b2",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "c85b147b28b0e423",
+      "last_test_method": "CUA"
     },
     {
       "id": "resources-guidelines",
@@ -74,12 +74,12 @@
       "label": "Community guidelines row (Resources tab)",
       "expected": "Open guidelines detail screen",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (resources-guidelines)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (resources-guidelines)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "3f8988b2bae470b2",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "c85b147b28b0e423",
+      "last_test_method": "CUA"
     },
     {
       "id": "resources-prompts",
@@ -87,12 +87,12 @@
       "label": "Conversation prompts row (Resources tab)",
       "expected": "Open prompts detail screen",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (resources-prompts)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (resources-prompts)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "3f8988b2bae470b2",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "c85b147b28b0e423",
+      "last_test_method": "CUA"
     },
     {
       "id": "highlights-essay",
@@ -100,12 +100,12 @@
       "label": "Best essay thread row (Highlights tab)",
       "expected": "Open thread detail screen",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (highlights-essay)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (highlights-essay)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "3f8988b2bae470b2",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "c85b147b28b0e423",
+      "last_test_method": "CUA"
     },
     {
       "id": "highlights-recommendation",
@@ -113,12 +113,12 @@
       "label": "Most saved recommendation row (Highlights tab)",
       "expected": "Open recommendation detail screen",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (highlights-recommendation)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (highlights-recommendation)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "3f8988b2bae470b2",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": "c85b147b28b0e423",
+      "last_test_method": "CUA"
     }
   ],
   "visual_parity": {

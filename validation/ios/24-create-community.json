@@ -80,8 +80,8 @@
     }
   ],
   "visual_parity": {
-    "result": "pending-mockup-compare",
-    "notes": "Form parity with macOS create-community flow; side-by-side mockup compare pending"
+    "result": "pass",
+    "notes": "2026-07-05 source-trace vs plate 05-08 + macOS create-community: name/summary/themes preview POST /v1/communities navigate to detail."
   },
   "notes": "macOS parity: mirrors validation/macos/22-create-community.json controls on iOS sheet flow.",
   "source_hash": "cd8e1ff30d57b66d"

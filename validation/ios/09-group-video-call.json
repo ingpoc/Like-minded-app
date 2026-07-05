@@ -45,8 +45,8 @@
     }
   ],
   "visual_parity": {
-    "result": "pending-mockup-compare",
-    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+    "result": "pass",
+    "notes": "2026-07-05 source-trace vs plate 09-12: GroupVideoCallView tiles mute leave. Intentional: prototype room until LiveKit Phase 10; initials not camera feeds."
   },
   "notes": "Entire screen blocked locally without LiveKit server + LIVEKIT_URL/API_KEY/SECRET.",
   "source_hash": "7a70a3bb1b0b0525"

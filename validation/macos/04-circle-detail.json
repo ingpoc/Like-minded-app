@@ -20,12 +20,12 @@
       "label": "Message circle",
       "expected": "Navigate → messages",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (message-circle)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (message-circle)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     },
     {
       "id": "placement-concern",
@@ -33,12 +33,12 @@
       "label": "Placement concern",
       "expected": "POST /v1/me/circles/concern",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (placement-concern)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (placement-concern)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     },
     {
       "id": "upcoming-meet",
@@ -46,12 +46,12 @@
       "label": "Upcoming circle meet row",
       "expected": "Navigate to meet flow",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (upcoming-meet)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (upcoming-meet)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     }
   ],
   "visual_parity": {

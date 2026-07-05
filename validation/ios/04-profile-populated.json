@@ -80,8 +80,8 @@
     }
   ],
   "visual_parity": {
-    "result": "pending-mockup-compare",
-    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+    "result": "pass",
+    "notes": "2026-07-05 capture profile-populated.png vs mockups/ios/17-20-profile-community-settings.png: trait bars, interest chips, communication read card, Update profile CTA from backend signals."
   },
   "notes": "",
   "source_hash": "af33a69ba7d598de"

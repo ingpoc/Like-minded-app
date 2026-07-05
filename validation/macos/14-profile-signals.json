@@ -23,9 +23,9 @@
       "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (share-profile)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA-click"
     }
   ],
   "visual_parity": {

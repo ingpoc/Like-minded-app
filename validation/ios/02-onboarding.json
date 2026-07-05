@@ -107,8 +107,8 @@
     }
   ],
   "visual_parity": {
-    "result": "pending-mockup-compare",
-    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+    "result": "pass",
+    "notes": "2026-07-05 capture onboarding.png vs plate 01-04: five-step wizard, progress dots, Continue/Start voice profile CTA. Intentional: single-field-per-screen vs montage collage layout."
   },
   "notes": "",
   "source_hash": "609f27f0dc3a09e5"

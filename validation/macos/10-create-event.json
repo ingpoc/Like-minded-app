@@ -25,12 +25,12 @@
       "label": "Meetup",
       "expected": "Selects Meetup and marks it selected in the accessibility tree",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (event-type-meetup)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-type-meetup)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "ad5c6e52de86f4cf",
+      "tested_source_hash": "c846a1873b032b68",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     },
     {
       "id": "event-type-listening-session",
@@ -38,12 +38,12 @@
       "label": "Listening Session",
       "expected": "Selects Listening Session and updates selected state",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (event-type-listening-session)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-type-listening-session)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "ad5c6e52de86f4cf",
+      "tested_source_hash": "c846a1873b032b68",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     },
     {
       "id": "event-type-jam-session",
@@ -51,12 +51,12 @@
       "label": "Jam Session",
       "expected": "Selects Jam Session and updates selected state",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (event-type-jam-session)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-type-jam-session)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "ad5c6e52de86f4cf",
+      "tested_source_hash": "c846a1873b032b68",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     },
     {
       "id": "event-fields",
@@ -64,12 +64,12 @@
       "label": "Event name, Date, Time, Location, Details",
       "expected": "Fields are editable and drive preview/create payload",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (event-fields)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-fields)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "ad5c6e52de86f4cf",
+      "tested_source_hash": "c846a1873b032b68",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     },
     {
       "id": "add-cover",
@@ -77,12 +77,12 @@
       "label": "Add cover",
       "expected": "Adds a contextual doodle cover to the preview",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (add-cover)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (add-cover)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "ad5c6e52de86f4cf",
+      "tested_source_hash": "c846a1873b032b68",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     },
     {
       "id": "add-tags",
@@ -90,12 +90,12 @@
       "label": "Add tags",
       "expected": "Adds visible event tags to preview",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (add-tags)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (add-tags)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "ad5c6e52de86f4cf",
+      "tested_source_hash": "c846a1873b032b68",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     },
     {
       "id": "create-event",
@@ -103,12 +103,12 @@
       "label": "Create event",
       "expected": "Creates a backend-persisted meeting and stays on the Create Event screen",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (create-event)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (create-event)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "ad5c6e52de86f4cf",
+      "tested_source_hash": "c846a1873b032b68",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     },
     {
       "id": "bottom-nav",
@@ -116,12 +116,12 @@
       "label": "Meet, Circles, Communities, Profile, Soulmate",
       "expected": "Bottom nav remains visible and does not cover primary Create Event controls",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (bottom-nav)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (bottom-nav)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "ad5c6e52de86f4cf",
+      "tested_source_hash": "c846a1873b032b68",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     },
     {
       "id": "traffic-lights",
@@ -129,12 +129,12 @@
       "label": "Close, minimize, full screen",
       "expected": "Native macOS traffic-light controls are visible",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (traffic-lights)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (traffic-lights)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "ad5c6e52de86f4cf",
+      "tested_source_hash": "c846a1873b032b68",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     }
   ],
   "visual_parity": {

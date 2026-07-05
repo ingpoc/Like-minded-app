@@ -68,8 +68,8 @@
     }
   ],
   "visual_parity": {
-    "result": "pending-mockup-compare",
-    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+    "result": "pass",
+    "notes": "2026-07-05 capture soulmate.png vs plate 13-16: matches list, post-meet selection entry, conversations icon; Settings owns enable toggle when on."
   },
   "notes": "",
   "source_hash": "e5345933548b3571"

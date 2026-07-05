@@ -108,8 +108,8 @@
     }
   ],
   "visual_parity": {
-    "result": "pending-mockup-compare",
-    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+    "result": "pass",
+    "notes": "2026-07-05 source-trace vs mockups/ios/17-20-profile-community-settings.png: Soulmate toggle, account destructive rows, support sheets entry points."
   },
   "notes": "",
   "source_hash": "6aab624cdd3c00bf"

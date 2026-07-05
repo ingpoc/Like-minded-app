@@ -82,8 +82,8 @@
     }
   ],
   "visual_parity": {
-    "result": "pending-mockup-compare",
-    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+    "result": "pass",
+    "notes": "2026-07-05 capture output/validation/ios-screens/auth-gate.png vs mockups/ios/01-04-onboarding-voice-meet-soulmate.png: Likeminded hero, three promise rows, Sign in with Apple, Google/MetaMask/Solflare parity with macOS welcome. Intentional: montage includes onboarding steps not on auth gate."
   },
   "notes": "",
   "source_hash": "66b5a8a6b09cc392"

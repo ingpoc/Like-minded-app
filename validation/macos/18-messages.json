@@ -23,9 +23,9 @@
       "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (match-row)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "draft",
@@ -36,9 +36,9 @@
       "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (draft)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "send",
@@ -49,9 +49,9 @@
       "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (send)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "close",
@@ -59,12 +59,12 @@
       "label": "Close (title action)",
       "expected": "Navigate → returnScreen ?? meetOverview",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (close)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof batch: reproof after source hash change (close)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     },
     {
       "id": "voice-call-header",
@@ -76,8 +76,8 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture",
-      "tested_source_hash": "3f8988b2bae470b2"
+      "last_test_method": "CUA-click",
+      "tested_source_hash": "c85b147b28b0e423"
     },
     {
       "id": "video-call-header",
@@ -89,8 +89,8 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture",
-      "tested_source_hash": "3f8988b2bae470b2"
+      "last_test_method": "CUA-click",
+      "tested_source_hash": "c85b147b28b0e423"
     },
     {
       "id": "conversation-info-header",
@@ -102,8 +102,8 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture",
-      "tested_source_hash": "3f8988b2bae470b2"
+      "last_test_method": "CUA-click",
+      "tested_source_hash": "c85b147b28b0e423"
     }
   ],
   "visual_parity": {

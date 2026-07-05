@@ -20,12 +20,12 @@
       "label": "Search communities",
       "expected": "Filters catalog by name/summary/themes",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (search)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (search)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     },
     {
       "id": "filter-pills",
@@ -33,12 +33,12 @@
       "label": "All/Trending/Nearby/New pills",
       "expected": "Filter communityFilter state",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (filter-pills)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (filter-pills)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     },
     {
       "id": "create-card",
@@ -46,12 +46,12 @@
       "label": "Create a community card",
       "expected": "Navigate → createCommunity",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (create-card)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (create-card)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     },
     {
       "id": "community-card",
@@ -59,12 +59,12 @@
       "label": "Community card",
       "expected": "Navigate → communityDetail",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (community-card)",
+      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (community-card)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3f8988b2bae470b2",
+      "tested_source_hash": "c85b147b28b0e423",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "screen-capture"
+      "last_test_method": "CUA"
     }
   ],
   "visual_parity": {

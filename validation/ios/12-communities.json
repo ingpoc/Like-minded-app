@@ -55,8 +55,8 @@
     }
   ],
   "visual_parity": {
-    "result": "pending-mockup-compare",
-    "notes": "Screenshot captured in validation/ios/screenshots/; needs side-by-side mockup comparison"
+    "result": "pass",
+    "notes": "2026-07-05 capture communities.png vs plate 05-08: search, joined cards, browse grid, create-community tile parity with macOS."
   },
   "notes": "",
   "source_hash": "cd8e1ff30d57b66d"

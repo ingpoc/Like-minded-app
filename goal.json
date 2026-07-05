@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "status": "in_progress",
+  "status": "completed",
   "purpose": "Per-session execution goal. Copy this file to goal.template.json at session start, set the current goal, and keep graders/validation/agent routing current when files or commands change.",
-  "goal": "Track — iOS Ledger Honesty: close functional pending controls, macOS/iOS parity (create community, auth, accessibility), and visual-parity-only rows.",
+  "goal": "Track — iOS/macOS visual parity closeout + macOS CUA stale reproof after social auth merge.",
   "ultimate_goal_source": "GOAL.md",
   "progress_source": "PROGRESS.md",
   "workflow_refs": [
@@ -72,6 +72,7 @@
   "agent_guardrails": [
     "Lazy context: goal:next + narrowest lane command first; stop when answered. Do not preload GOAL.md, full PROGRESS, mockups, or source trees for status questions.",
     "Lazy authoring: edit control owners (validation JSON, PROGRESS track, workflow command table) — do not add parallel docs or status tables.",
+    "Reuse validation_inventory scripts and ledger scripts before creating new ones.",
     "Before claiming phase/track/goal complete, run npm run verify:ledger-progress. Actionable fail/pending/stale-blocked controls need unchecked PROGRESS owners; JSON is sole control-status owner.",
     "When a control is fail or stub, add or keep an unchecked PROGRESS item in the same session."
   ],
@@ -117,6 +118,12 @@
       "command": "npm run reset:validation-data",
       "cost": "zero_token",
       "proves": "Validation API can attach a separate local database and seed deterministic backend data for profile, circles, communities, meetings, soulmate, and chat flows."
+    },
+    {
+      "name": "macos_screen_capture",
+      "command": "npm run verify:macos-screens",
+      "cost": "zero_token",
+      "proves": "LikemindedMac builds and every MacPrototypeScreen can be launched and captured for mockup comparison."
     },
     {
       "name": "local_simulator_validation",
@@ -213,10 +220,10 @@
     "commit_message_template": "Validate <short session goal>"
   },
   "done_criteria": [
-    "All functional iOS controls in validation/ios/*.json are pass/blocked with source-trace or runtime evidence (visual-parity rows may remain pending-mockup-compare).",
-    "iOS create-community flow matches macOS POST /v1/communities parity.",
-    "npm run verify:ledger-progress passes for iOS functional controls.",
-    "Likeminded iOS build and npm run check pass.",
+    "All iOS visual_parity rows in validation/ios/*.json stamped pass with capture/source-trace notes.",
+    "macOS stale_pass controls reproofed via npm run macos:cua-reproof (0 actionable macOS ledger rows).",
+    "npm run verify:ledger-progress passes with open_tracks none.",
+    "npm run check and Likeminded iOS build pass.",
     "Validated session changes committed with goal.json before marking completed."
   ],
   "max_iterations": 10
