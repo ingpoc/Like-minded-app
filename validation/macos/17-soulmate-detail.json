@@ -19,11 +19,11 @@
       "label": "Message",
       "expected": "Navigate → chat with selected match thread",
       "result": "pass",
-      "evidence": "2026-07-04 CUA: Message idx=7 clicked (exact label match, not Messages tab).",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (message)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_tested_at": "2026-07-05",
       "last_test_method": "screen-capture"
     },
     {
@@ -32,11 +32,11 @@
       "label": "About / You both like / Match status",
       "expected": "About + interests from GET match detail; Mutual status (no 92% score)",
       "result": "pass",
-      "evidence": "Loads SoulmateMatchDetail; Compatibility 92% replaced with Mutual panel.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (about-panels)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_tested_at": "2026-07-05",
       "last_test_method": "screen-capture"
     }
   ],
@@ -45,5 +45,5 @@
     "notes": "2026-07-04 capture vs plate 11: match detail shared interests. Intentional: no fake compatibility %; Pass/Like omitted (honest MVP)."
   },
   "notes": "",
-  "source_hash": "342bb6ef2d9f07fb"
+  "source_hash": "3f8988b2bae470b2"
 }

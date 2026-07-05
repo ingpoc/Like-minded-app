@@ -40,6 +40,8 @@ const {
   saveMeetingRecapNote,
   setSoulmateEnabled,
   isSoulmateEnabled,
+  getSoulmatePreferences,
+  setSoulmatePreferences,
   saveSoulmateSelection,
   getSoulmateMatches,
   getSoulmateMatch,
@@ -1011,8 +1013,22 @@ async function handleRequest(req, res) {
     if (!user) return;
     json(res, 200, {
       enabled: await isSoulmateEnabled(user.id),
-      pendingSelections: await pendingSoulmateSelections(user.id)
+      pendingSelections: await pendingSoulmateSelections(user.id),
+      preferences: await getSoulmatePreferences(user.id)
     });
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname === "/v1/me/soulmate/preferences") {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    try {
+      const body = await readJsonBody(req);
+      const preferences = await setSoulmatePreferences(user.id, body);
+      json(res, 200, { status: "updated", preferences });
+    } catch (error) {
+      json(res, 400, { error: "invalid_soulmate_preferences", message: error.message });
+    }
     return;
   }
 

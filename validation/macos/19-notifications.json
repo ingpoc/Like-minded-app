@@ -19,11 +19,11 @@
       "label": "All/Unread/Mentions pills",
       "expected": "Filter notification list",
       "result": "pass",
-      "evidence": "CUA Unread filter toggles Selected state.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (notif-filter-pills)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_tested_at": "2026-07-05",
       "last_test_method": "screen-capture"
     },
     {
@@ -32,11 +32,11 @@
       "label": "Mark all as read",
       "expected": "Mark all notifications read in view",
       "result": "pass",
-      "evidence": "Local readNotificationIds set; status message shown.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (mark-all-read)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_tested_at": "2026-07-05",
       "last_test_method": "screen-capture"
     },
     {
@@ -45,11 +45,11 @@
       "label": "All/Circles/Communities pills",
       "expected": "Filter activity list",
       "result": "pass",
-      "evidence": "Activity filter buttons with accessibility values.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (activity-filter-pills)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_tested_at": "2026-07-05",
       "last_test_method": "screen-capture"
     },
     {
@@ -58,11 +58,11 @@
       "label": "Refresh notifications",
       "expected": "fetchNotifications from backend",
       "result": "pass",
-      "evidence": "Renamed from misleading Enable; CUA Refresh click.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (refresh)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_tested_at": "2026-07-05",
       "last_test_method": "screen-capture"
     },
     {
@@ -71,11 +71,11 @@
       "label": "Notification/activity rows",
       "expected": "Navigate by kind (meet/messages/communities)",
       "result": "pass",
-      "evidence": "Rows are Buttons with openNotification/openActivityItem.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (rows)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_tested_at": "2026-07-05",
       "last_test_method": "screen-capture"
     }
   ],
@@ -84,5 +84,5 @@
     "notes": "2026-07-04 capture vs plate 16: activity filters refresh. Intentional: avatar density from seed not mockup montage."
   },
   "notes": "",
-  "source_hash": "342bb6ef2d9f07fb"
+  "source_hash": "3f8988b2bae470b2"
 }

@@ -276,6 +276,16 @@ async function expectStatus(status, pathname, options) {
 
     const soulmateStatus = await expectStatus(200, "/v1/me/soulmate/status", { method: "GET", token: scheduledUsers[0].sessionToken });
     assert.equal(soulmateStatus.enabled, true);
+    assert.ok(soulmateStatus.preferences, "soulmate status must include preferences");
+    assert.equal(soulmateStatus.preferences.visibility, "circles_only");
+    const updatedPrefs = await expectStatus(200, "/v1/me/soulmate/preferences", {
+      method: "POST",
+      token: scheduledUsers[0].sessionToken,
+      body: { discovery: "communities", ageMin: 24, ageMax: 34, visibility: "matches_only" }
+    });
+    assert.equal(updatedPrefs.preferences.discovery, "communities");
+    assert.equal(updatedPrefs.preferences.ageMin, 24);
+    assert.equal(updatedPrefs.preferences.visibility, "matches_only");
     assert.ok(soulmateStatus.pendingSelections.some((selection) => selection.meetingId === upcoming.upcoming[0].id), "soulmate status must expose pending meetup selection");
 
     const firstPick = await expectStatus(200, "/v1/me/soulmate/select", {

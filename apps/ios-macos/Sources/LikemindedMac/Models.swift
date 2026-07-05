@@ -139,6 +139,48 @@ struct LiveKitJoinToken: Decodable {
 struct SoulmateStatus: Decodable {
     let enabled: Bool
     let pendingSelections: [SoulmatePendingSelection]
+    let preferences: SoulmatePreferences?
+}
+
+struct SoulmatePreferences: Codable, Equatable {
+    var discovery: String
+    var ageMin: Int
+    var ageMax: Int
+    var visibility: String
+
+    static let defaults = SoulmatePreferences(
+        discovery: "circles_extended",
+        ageMin: 22,
+        ageMax: 35,
+        visibility: "circles_only"
+    )
+
+    var discoveryLabel: String {
+        switch discovery {
+        case "circles": return "People in my circles"
+        case "communities": return "People in my communities"
+        default: return "People in my circles + circle of circles"
+        }
+    }
+
+    var visibilityLabel: String {
+        switch visibility {
+        case "circles_communities": return "Circles and communities"
+        case "matches_only": return "Mutual matches only"
+        default: return "Circles only"
+        }
+    }
+
+    var ageRangeLabel: String {
+        "\(ageMin)–\(ageMax)"
+    }
+}
+
+struct SoulmatePreferencesRequest: Encodable {
+    let discovery: String
+    let ageMin: Int
+    let ageMax: Int
+    let visibility: String
 }
 
 struct SoulmatePendingSelection: Decodable, Identifiable {

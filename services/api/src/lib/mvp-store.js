@@ -161,6 +161,10 @@ async function migrateMvpStore() {
       created_at TIMESTAMPTZ NOT NULL DEFAULT now()
     );
   `);
+  await getPool().query(`
+    ALTER TABLE soulmate_users
+    ADD COLUMN IF NOT EXISTS preferences JSONB NOT NULL DEFAULT '{"discovery":"circles_extended","ageMin":22,"ageMax":35,"visibility":"circles_only"}'::jsonb;
+  `);
 }
 
 async function upsertAppleUser({ appleSub, email, fullName }) {
@@ -493,28 +497,104 @@ async function saveMeetingRecapNote(userId, meetingId, note) {
   return next.recapNotes[userId];
 }
 
+const DEFAULT_SOULMATE_PREFERENCES = {
+  discovery: "circles_extended",
+  ageMin: 22,
+  ageMax: 35,
+  visibility: "circles_only"
+};
+
+function normalizeSoulmatePreferences(raw = {}) {
+  const discoveryOptions = new Set(["circles", "circles_extended", "communities"]);
+  const visibilityOptions = new Set(["circles_only", "circles_communities", "matches_only"]);
+  const ageMin = Math.max(18, Math.min(80, Number(raw.ageMin ?? DEFAULT_SOULMATE_PREFERENCES.ageMin)));
+  const ageMax = Math.max(ageMin, Math.min(80, Number(raw.ageMax ?? DEFAULT_SOULMATE_PREFERENCES.ageMax)));
+  return {
+    discovery: discoveryOptions.has(raw.discovery) ? raw.discovery : DEFAULT_SOULMATE_PREFERENCES.discovery,
+    ageMin,
+    ageMax,
+    visibility: visibilityOptions.has(raw.visibility) ? raw.visibility : DEFAULT_SOULMATE_PREFERENCES.visibility
+  };
+}
+
+async function getSoulmateUserRecord(userId) {
+  if (isPostgres) {
+    const result = await getPool().query(
+      "SELECT enabled, preferences FROM soulmate_users WHERE user_id = $1",
+      [userId]
+    );
+    const row = result.rows[0];
+    if (!row) {
+      return { enabled: false, preferences: { ...DEFAULT_SOULMATE_PREFERENCES } };
+    }
+    return {
+      enabled: Boolean(row.enabled),
+      preferences: normalizeSoulmatePreferences(row.preferences || {})
+    };
+  }
+  const record = readLocalStore().soulmateUsers[userId];
+  if (!record) {
+    return { enabled: false, preferences: { ...DEFAULT_SOULMATE_PREFERENCES } };
+  }
+  return {
+    enabled: Boolean(record.enabled),
+    preferences: normalizeSoulmatePreferences(record.preferences || {})
+  };
+}
+
 async function setSoulmateEnabled(userId, enabled) {
   if (isPostgres) {
     await getPool().query(
-      `INSERT INTO soulmate_users (user_id, enabled, updated_at)
-       VALUES ($1, $2, now())
+      `INSERT INTO soulmate_users (user_id, enabled, preferences, updated_at)
+       VALUES ($1, $2, $3::jsonb, now())
        ON CONFLICT (user_id) DO UPDATE SET enabled = EXCLUDED.enabled, updated_at = now()`,
-      [userId, enabled]
+      [userId, enabled, JSON.stringify(DEFAULT_SOULMATE_PREFERENCES)]
     );
     return enabled;
   }
   const store = readLocalStore();
-  store.soulmateUsers[userId] = { user_id: userId, enabled, updated_at: new Date().toISOString() };
+  const existing = store.soulmateUsers[userId] || {};
+  store.soulmateUsers[userId] = {
+    user_id: userId,
+    enabled,
+    preferences: normalizeSoulmatePreferences(existing.preferences),
+    updated_at: new Date().toISOString()
+  };
   writeLocalStore(store);
   return enabled;
 }
 
 async function isSoulmateEnabled(userId) {
+  const record = await getSoulmateUserRecord(userId);
+  return record.enabled;
+}
+
+async function getSoulmatePreferences(userId) {
+  const record = await getSoulmateUserRecord(userId);
+  return record.preferences;
+}
+
+async function setSoulmatePreferences(userId, preferences) {
+  const normalized = normalizeSoulmatePreferences(preferences);
   if (isPostgres) {
-    const result = await getPool().query("SELECT enabled FROM soulmate_users WHERE user_id = $1", [userId]);
-    return result.rows[0]?.enabled || false;
+    await getPool().query(
+      `INSERT INTO soulmate_users (user_id, enabled, preferences, updated_at)
+       VALUES ($1, false, $2::jsonb, now())
+       ON CONFLICT (user_id) DO UPDATE SET preferences = EXCLUDED.preferences, updated_at = now()`,
+      [userId, JSON.stringify(normalized)]
+    );
+    return normalized;
   }
-  return readLocalStore().soulmateUsers[userId]?.enabled || false;
+  const store = readLocalStore();
+  const existing = store.soulmateUsers[userId] || { user_id: userId, enabled: false };
+  store.soulmateUsers[userId] = {
+    ...existing,
+    user_id: userId,
+    preferences: normalized,
+    updated_at: new Date().toISOString()
+  };
+  writeLocalStore(store);
+  return normalized;
 }
 
 function matchIdFor(meetingId, userAId, userBId) {
@@ -761,6 +841,8 @@ module.exports = {
   saveMeetingRecapNote,
   setSoulmateEnabled,
   isSoulmateEnabled,
+  getSoulmatePreferences,
+  setSoulmatePreferences,
   saveSoulmateSelection,
   getSoulmateMatches,
   getSoulmateMatch,

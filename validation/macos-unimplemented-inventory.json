@@ -1,0 +1,78 @@
+{
+  "platform": "macos",
+  "audit_date": "2026-07-05",
+  "audit_method": "source-trace + LikemindedMac build; static stub controls implemented in MacScreens.swift",
+  "status_owner": "Per-control result in validation/macos/<screen>.json — this file is a rollup index only",
+  "totals": {
+    "pending_static_or_stub": 0,
+    "blocked_infra": 2,
+    "screens_with_gaps": 2
+  },
+  "categories": [
+    {
+      "category": "settings_nav_and_prefs",
+      "screen_file": "20-settings-soulmate.json",
+      "pending_count": 0,
+      "status": "closed",
+      "control_ids": [
+        "account-settings",
+        "privacy-safety",
+        "notifications-settings",
+        "connected-apps",
+        "appearance",
+        "language",
+        "help-support",
+        "discovery-preference",
+        "age-range",
+        "visibility"
+      ]
+    },
+    {
+      "category": "chat_header_chrome",
+      "screen_files": ["06-chat.json", "18-messages.json"],
+      "pending_count": 0,
+      "status": "closed",
+      "control_ids": [
+        "voice-call-header",
+        "video-call-header",
+        "conversation-info-header"
+      ]
+    },
+    {
+      "category": "community_detail_stub_rows",
+      "screen_file": "08-community-detail.json",
+      "pending_count": 0,
+      "status": "closed",
+      "control_ids": [
+        "community-options",
+        "resources-guidelines",
+        "resources-prompts",
+        "highlights-essay",
+        "highlights-recommendation"
+      ]
+    },
+    {
+      "category": "profile_voice_and_onboarding",
+      "screen_files": ["12-my-profile.json", "13-profile-onboarding.json"],
+      "pending_count": 0,
+      "status": "closed",
+      "control_ids": [
+        "retake-voice",
+        "voice-profile-step",
+        "join-circle-step"
+      ]
+    },
+    {
+      "category": "infra_blocked_not_static",
+      "screen_files": ["01-welcome.json", "21-meet-video-call.json"],
+      "blocked_count": 2,
+      "control_ids": ["sign-in-apple", "join-room"],
+      "note": "Buttons exist; blocked on Apple ID creds and LiveKit server (Phase 9/10)"
+    }
+  ],
+  "verification_commands": [
+    "npm run ledger:open",
+    "npm run verify:ledger-progress",
+    "./script/macos_cua_static_audit.sh"
+  ]
+}

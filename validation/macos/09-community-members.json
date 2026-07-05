@@ -19,11 +19,11 @@
       "label": "Members section sidebar",
       "expected": "Honest Members-only section label",
       "result": "pass",
-      "evidence": "Members-only sidebar; no fake About/Events nav.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (sidebar-nav)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_tested_at": "2026-07-05",
       "last_test_method": "screen-capture"
     },
     {
@@ -32,11 +32,11 @@
       "label": "Search members",
       "expected": "Filters filteredCommunityMembers by name/gender",
       "result": "pass",
-      "evidence": "2026-07-04 CUA: AXTextField Search members present; bound to memberSearch filter in source.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (search)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_tested_at": "2026-07-05",
       "last_test_method": "screen-capture"
     },
     {
@@ -45,11 +45,11 @@
       "label": "Member count label",
       "expected": "Display-only member count",
       "result": "pass",
-      "evidence": "Active now / Most active pills removed; N members label only.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (filter-pills)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_tested_at": "2026-07-05",
       "last_test_method": "screen-capture"
     },
     {
@@ -58,11 +58,11 @@
       "label": "Member rows",
       "expected": "Display-only roster from API",
       "result": "pass",
-      "evidence": "API members without fake Host/ellipsis affordances.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (member-rows)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_tested_at": "2026-07-05",
       "last_test_method": "screen-capture"
     }
   ],
@@ -71,5 +71,5 @@
     "notes": "2026-07-04 capture vs plate 13: members search roster from API. Intentional: no fake host badges; initials not photos."
   },
   "notes": "",
-  "source_hash": "342bb6ef2d9f07fb"
+  "source_hash": "3f8988b2bae470b2"
 }

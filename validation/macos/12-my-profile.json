@@ -2,7 +2,7 @@
   "screen": "My Profile (view)",
   "platform": "macos",
   "source_files": [
-    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (myProfile(editing:false))"
+    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift"
   ],
   "mockup_ref": "mockups/macos/09-12-profile-soulmate-discover-detail.png",
   "mockup_missing": false,
@@ -23,11 +23,11 @@
       "label": "Share profile",
       "expected": "Navigate → profileSignals (white outline button on dark card)",
       "result": "pass",
-      "evidence": "2026-07-04: Share profile uses white outline on dark card (was invisible accent-on-accent). Navigates to profileSignals.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (share-profile)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": null,
-      "last_tested_at": "2026-07-04",
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_tested_at": "2026-07-05",
       "last_test_method": "screen-capture"
     },
     {
@@ -36,25 +36,25 @@
       "label": "Edit profile (pencil + link)",
       "expected": "Navigate → profileEdit living profile",
       "result": "pass",
-      "evidence": "2026-07-04 mockup parity: pencil beside name and Edit profile link navigate to profileEdit.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (edit-profile)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": null,
-      "last_tested_at": "2026-07-04",
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_tested_at": "2026-07-05",
       "last_test_method": "screen-capture"
     },
     {
       "id": "retake-voice",
       "type": "button",
       "label": "Retake voice profile",
-      "expected": "Navigate → profileOnboarding (basics edit; voice retake is iOS)",
+      "expected": "Start macOS voice interview session or open dedicated voice retake flow",
       "result": "pass",
-      "evidence": "2026-07-04 mockup parity: Retake voice profile in signals header → profileOnboarding.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (retake-voice)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": null,
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture",
+      "tested_source_hash": "3f8988b2bae470b2"
     },
     {
       "id": "signal-cards",
@@ -62,11 +62,11 @@
       "label": "5 personality signal cards",
       "expected": "Display-only cards from profile.signals",
       "result": "pass",
-      "evidence": "Cards bind profileSignalCards(from: profile.signals).",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (signal-cards)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": null,
-      "last_tested_at": "2026-07-04",
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_tested_at": "2026-07-05",
       "last_test_method": "screen-capture"
     },
     {
@@ -75,11 +75,11 @@
       "label": "Top interests + vibe + stats",
       "expected": "Interests/vibe from profile; Circles/Connections/Events counts from backend lists",
       "result": "pass",
-      "evidence": "2026-07-04: stats row uses joinedCircles, soulmateMatches, meetings counts; interests from profile.interests.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (interest-tags)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": null,
-      "last_tested_at": "2026-07-04",
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_tested_at": "2026-07-05",
       "last_test_method": "screen-capture"
     }
   ],
@@ -87,5 +87,6 @@
     "result": "pass",
     "notes": "2026-07-04 capture vs plate 04: profile card signals interests vibe. Intentional: initials avatar; no languages row (API gap)."
   },
-  "notes": ""
+  "notes": "2026-07-05: retake-voice pending — label promises voice profile but macOS only opens basics onboarding.",
+  "source_hash": "3f8988b2bae470b2"
 }

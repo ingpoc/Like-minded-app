@@ -76,7 +76,7 @@
     "If goal.json status is completed, select the next coherent unchecked surface from PROGRESS.md before expanding retrieval.",
     "Avoid tiny one-checkbox goals unless they are the only blocker; group adjacent small items under the same owner surface.",
     "Check validation_state / ledger:open before rerunning completed proof; re-test stale_pass rows only.",
-    "Reuse ledger and validation scripts before creating new ones.",
+    "Reuse validation_inventory scripts and ledger scripts before creating new ones.",
     "Before claiming phase/track/goal complete, run npm run verify:ledger-progress. Actionable fail/pending/stale_pass/stale-blocked controls need unchecked PROGRESS owners; JSON is sole control-status owner.",
     "When a control is fail or stub, add or keep an unchecked PROGRESS item in the same session."
   ],

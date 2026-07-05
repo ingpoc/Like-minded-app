@@ -20,11 +20,11 @@
       "label": "Message circle",
       "expected": "Navigate → messages",
       "result": "pass",
-      "evidence": "CUA 2026-07-04 click Message circle.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (message-circle)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_tested_at": "2026-07-05",
       "last_test_method": "screen-capture"
     },
     {
@@ -33,11 +33,11 @@
       "label": "Placement concern",
       "expected": "POST /v1/me/circles/concern",
       "result": "pass",
-      "evidence": "CUA click This does not feel like my circle (accessibility label).",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (placement-concern)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_tested_at": "2026-07-05",
       "last_test_method": "screen-capture"
     },
     {
@@ -46,11 +46,11 @@
       "label": "Upcoming circle meet row",
       "expected": "Navigate to meet flow",
       "result": "pass",
-      "evidence": "Circle detail shows backend circle meeting row when seeded.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (upcoming-meet)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_tested_at": "2026-07-05",
       "last_test_method": "screen-capture"
     }
   ],
@@ -59,5 +59,5 @@
     "notes": "2026-07-04 capture vs plate 18: dedicated circleDetailScreen with members/social rows. Intentional: doodle hero vs scenic mockup."
   },
   "notes": "",
-  "source_hash": "342bb6ef2d9f07fb"
+  "source_hash": "3f8988b2bae470b2"
 }

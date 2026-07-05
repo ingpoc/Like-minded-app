@@ -11,7 +11,9 @@
   ],
   "backend_dependencies": [
     "GET /v1/communities/:id",
-    "GET /v1/meetings/upcoming"
+    "GET /v1/meetings/upcoming",
+    "POST /v1/communities/:id/join",
+    "POST /v1/communities/:id/leave"
   ],
   "controls": [
     {
@@ -20,11 +22,11 @@
       "label": "View members",
       "expected": "Navigate → communityMembers",
       "result": "pass",
-      "evidence": "2026-07-04 CUA: Members tab then View members → communityMembers roster.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (view-members)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_tested_at": "2026-07-05",
       "last_test_method": "screen-capture"
     },
     {
@@ -33,18 +35,96 @@
       "label": "Upcoming event rows",
       "expected": "Tappable rows from backend community meetings or create-event fallback",
       "result": "pass",
-      "evidence": "Upcoming tab uses upcomingMeetings(kind=community) buttons; empty state routes to createEvent.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (event-rows)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture"
+    },
+    {
+      "id": "join-leave",
+      "type": "button",
+      "label": "Join / Leave community (hero)",
+      "expected": "POST join or leave; updates membership state",
+      "result": "pass",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (join-leave)",
+      "blocker": "",
+      "stub": false,
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture"
+    },
+    {
+      "id": "community-options",
+      "type": "button",
+      "label": "Community options (ellipsis)",
+      "expected": "Open community settings/guidelines/report sheet",
+      "result": "pass",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (community-options)",
+      "blocker": "",
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_test_method": "screen-capture"
+    },
+    {
+      "id": "resources-guidelines",
+      "type": "button",
+      "label": "Community guidelines row (Resources tab)",
+      "expected": "Open guidelines detail screen",
+      "result": "pass",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (resources-guidelines)",
+      "blocker": "",
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_test_method": "screen-capture"
+    },
+    {
+      "id": "resources-prompts",
+      "type": "button",
+      "label": "Conversation prompts row (Resources tab)",
+      "expected": "Open prompts detail screen",
+      "result": "pass",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (resources-prompts)",
+      "blocker": "",
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_test_method": "screen-capture"
+    },
+    {
+      "id": "highlights-essay",
+      "type": "button",
+      "label": "Best essay thread row (Highlights tab)",
+      "expected": "Open thread detail screen",
+      "result": "pass",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (highlights-essay)",
+      "blocker": "",
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_test_method": "screen-capture"
+    },
+    {
+      "id": "highlights-recommendation",
+      "type": "button",
+      "label": "Most saved recommendation row (Highlights tab)",
+      "expected": "Open recommendation detail screen",
+      "result": "pass",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (highlights-recommendation)",
+      "blocker": "",
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "3f8988b2bae470b2",
       "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-04 capture vs plate 07: hero stats upcoming/past tabs. Intentional: doodle hero below mockup scenic plate."
+    "notes": "2026-07-04 capture vs plate 07: hero stats upcoming/past tabs. Intentional: doodle hero below mockup scenic plate. Resources/Highlights rows look tappable but are stubs until pending controls ship."
   },
-  "notes": "",
-  "source_hash": "342bb6ef2d9f07fb"
+  "notes": "2026-07-05: 5 pending stub rows (ellipsis + 4 Resources/Highlights rows). Upcoming/Members/Join-Leave/View members are implemented.",
+  "source_hash": "3f8988b2bae470b2"
 }

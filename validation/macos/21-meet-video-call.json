@@ -20,7 +20,7 @@
       "expected": "Calls POST /meetings/:id/join, opens in-app LiveKit room with camera on",
       "result": "blocked",
       "evidence": "2026-07-04: Meet hero Join navigates to prototype meetVideoCall room locally; POST /v1/meetings/:id/join + LiveKit SDK deferred to Phase 10 (no server provisioned).",
-      "blocker": "No LiveKit server provisioned; macOS parity is Phase 10 unchecked",
+      "blocker": "Infrastructure — no LiveKit server provisioned; prototype room only until Phase 10",
       "stub": false
     },
     {
@@ -29,11 +29,11 @@
       "label": "Participant tiles",
       "expected": "Camera tiles grid",
       "result": "pass",
-      "evidence": "2026-07-04 capture + CUA: LazyVGrid of 4 prototype tiles with initials; layout matches mockup 21 without LiveKit camera feeds.",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (tiles)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_tested_at": "2026-07-05",
       "last_test_method": "screen-capture"
     },
     {
@@ -42,11 +42,11 @@
       "label": "Mute toggle",
       "expected": "Toggles local mic",
       "result": "pass",
-      "evidence": "2026-07-04: isCallMuted toggles mic.fill/mic.slash.fill label and accessibility value (local UI only until LiveKit).",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (mute)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_tested_at": "2026-07-05",
       "last_test_method": "screen-capture"
     },
     {
@@ -55,11 +55,11 @@
       "label": "Leave",
       "expected": "Disconnects room",
       "result": "pass",
-      "evidence": "2026-07-04: Leave button navigates back to meetOverview (prototype disconnect; LiveKit teardown Phase 10).",
+      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (leave)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
+      "tested_source_hash": "3f8988b2bae470b2",
+      "last_tested_at": "2026-07-05",
       "last_test_method": "screen-capture"
     }
   ],
@@ -67,6 +67,6 @@
     "result": "pass",
     "notes": "2026-07-04 capture vs mockups/macos/21-meet-video-call.png: prototype room tiles mute leave participants agenda. Intentional: no LiveKit SDK; initials on tiles not camera feeds; join API blocked Phase 10."
   },
-  "notes": "Prototype room reachable via --mac-screen meetVideoCall and Meet Join meetup; LiveKit API join remains Phase 10.",
-  "source_hash": "342bb6ef2d9f07fb"
+  "notes": "2026-07-05: join-room blocked on LiveKit infra (Phase 10). tiles/mute/leave pass as prototype UI only — real camera feeds and backend mic require LiveKit join.",
+  "source_hash": "3f8988b2bae470b2"
 }
