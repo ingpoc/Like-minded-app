@@ -45,6 +45,6 @@
     "result": "pass",
     "notes": "2026-07-04 capture vs plate 09: matches overview when soulmate enabled. Intentional: enable toggle lives in Settings only."
   },
-  "notes": "Soulmate tab is only visible when enabled, so the normal overview path never shows a second enable toggle.",
+  "notes": "Soulmate tab opens Discover directly when enabled; overview remains for --mac-screen deep-link only.",
   "source_hash": "342bb6ef2d9f07fb"
 }

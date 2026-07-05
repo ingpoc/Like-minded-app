@@ -85,7 +85,7 @@
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-04 capture vs plate 04: profile card signals interests vibe. Intentional: initials avatar; no languages row (API gap)."
+    "notes": "2026-07-05 capture vs plate 04: gender doodle portrait, 5-column signals grid, About me + Languages rows, vibe orb. Intentional: languages inferred from city until API ships field."
   },
   "notes": ""
 }

@@ -19,14 +19,14 @@
       "id": "sidebar",
       "type": "display",
       "label": "Settings sidebar rows",
-      "expected": "Displays current Account/Soulmate settings plus planned/static rows without fake tap affordances",
+      "expected": "Inline section picker only — no navigation to Profile or Voice profile pages",
       "result": "pass",
-      "evidence": "Source-trace: planned rows now render muted detail labels instead of selectable-looking no-op controls.",
+      "evidence": "2026-07-05: sidebar selects Account/Privacy/Soulmate panels inline; View profile and Voice profile rows removed.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": null,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     },
     {
       "id": "log-out",
@@ -71,27 +71,27 @@
       "id": "view-profile",
       "type": "button",
       "label": "View profile",
-      "expected": "Navigate → myProfile",
+      "expected": "Removed — Profile tab owns profile view",
       "result": "pass",
-      "evidence": "2026-07-04: Settings sidebar View profile button navigates to myProfile.",
+      "evidence": "2026-07-05: View profile row removed from settings sidebar.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": null,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     },
     {
       "id": "voice-profile",
       "type": "button",
       "label": "Voice profile",
-      "expected": "Navigate → profileOnboarding for basics edit",
+      "expected": "Removed — voice profile accessed from Profile tab",
       "result": "pass",
-      "evidence": "2026-07-04: Settings Voice profile button navigates to profileOnboarding.",
+      "evidence": "2026-07-05: Voice profile row removed from settings; Retake voice profile remains on myProfile.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "342bb6ef2d9f07fb",
-      "last_tested_at": "2026-07-04",
-      "last_test_method": "screen-capture"
+      "tested_source_hash": null,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "source-trace"
     },
     {
       "id": "age-range",

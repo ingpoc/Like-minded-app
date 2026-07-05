@@ -52,6 +52,33 @@ struct MacScreenView: View {
     @State private var isDeletingAccount = false
     @State private var isCallMuted = false
     @State private var callSidePanel = "Participants"
+    @State private var selectedSettingsSection: SettingsSection = .soulmate
+
+    private enum SettingsSection: String, CaseIterable, Identifiable {
+        case account = "Account"
+        case privacy = "Privacy & safety"
+        case notifications = "Notifications"
+        case soulmate = "Soulmate"
+        case connectedApps = "Connected apps"
+        case appearance = "Appearance"
+        case language = "Language"
+        case help = "Help & support"
+
+        var id: String { rawValue }
+
+        var icon: String {
+            switch self {
+            case .account: "person.circle"
+            case .privacy: "shield"
+            case .notifications: "bell"
+            case .soulmate: "heart.fill"
+            case .connectedApps: "square.grid.2x2"
+            case .appearance: "sun.max"
+            case .language: "globe"
+            case .help: "questionmark.circle"
+            }
+        }
+    }
 
     var body: some View {
         Group {
@@ -1741,9 +1768,8 @@ struct MacScreenView: View {
         HStack(alignment: .top, spacing: 24) {
             if let profile = appState.profile {
                 let name = profile.basicInfo?.name ?? "You"
-                let initials = String(name.prefix(1))
                 let location = profile.basicInfo?.city ?? "Your location"
-                profileCard(name: name, initials: initials, location: location, profile: profile, editing: editing)
+                profileCard(name: name, location: location, profile: profile, editing: editing)
                 VStack(spacing: 18) {
                     MacPanel {
                         HStack(alignment: .firstTextBaseline) {
@@ -1759,7 +1785,10 @@ struct MacScreenView: View {
                             .buttonStyle(.plain)
                             .accessibilityLabel("Retake voice profile")
                         }
-                        HStack(spacing: 10) {
+                        LazyVGrid(
+                            columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 5),
+                            spacing: 10
+                        ) {
                             ForEach(profileSignalCards(from: profile.signals), id: \.title) { item in
                                 signalCard(item.title, detail: item.value)
                             }
@@ -1794,9 +1823,27 @@ struct MacScreenView: View {
                         }
                     }
                     MacPanel(title: "My vibe") {
-                        Text(profile.profileSummary?.isEmpty == false ? profile.profileSummary! : "Your private read appears after the voice interview.")
-                            .font(MacType.body)
-                            .foregroundStyle(MacPalette.muted)
+                        HStack(alignment: .top, spacing: 20) {
+                            Text(profile.profileSummary?.isEmpty == false ? profile.profileSummary! : "Your private read appears after the voice interview.")
+                                .font(MacType.body)
+                                .foregroundStyle(MacPalette.muted)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            MacOrb()
+                                .scaleEffect(0.55)
+                                .frame(width: 120, height: 120)
+                        }
+                    }
+                    HStack(alignment: .top, spacing: 18) {
+                        MacPanel(title: "About me") {
+                            Text(profile.profileSummary?.isEmpty == false
+                                 ? profile.profileSummary!
+                                 : "Your voice profile summary appears here after the interview.")
+                                .font(MacType.body)
+                                .foregroundStyle(MacPalette.muted)
+                        }
+                        MacPanel(title: "Languages") {
+                            tagWrap(profileLanguages(for: profile))
+                        }
                     }
                 }
             } else if appState.isSignedIn {
@@ -1832,15 +1879,15 @@ struct MacScreenView: View {
         }
     }
 
-    private func profileCard(name: String, initials: String, location: String, profile: UserProfile, editing: Bool) -> some View {
+    private func profileCard(name: String, location: String, profile: UserProfile, editing: Bool) -> some View {
         let circleCount = max(appState.joinedCircles.count, appState.placement == nil ? 0 : 1)
         let connectionCount = appState.soulmateMatches.count
         let eventCount = appState.upcomingMeetings.count + appState.pastMeetings.count
+        let gender = profile.basicInfo?.gender
         return MacPanel(dark: true) {
-            VStack(spacing: 15) {
-                MacAvatar(initials: initials, color: MacPalette.accentSoft)
-                    .scaleEffect(2.1)
-                    .padding(.top, 20)
+            VStack(spacing: 14) {
+                DoodlePortrait(assetName: DoodleArt.portrait(for: gender), size: 92)
+                    .padding(.top, 6)
                 HStack(spacing: 8) {
                     Text(name)
                         .font(MacType.title)
@@ -1859,7 +1906,7 @@ struct MacScreenView: View {
                 Label(location, systemImage: "mappin")
                     .font(MacType.body)
                     .foregroundStyle(.white.opacity(0.8))
-                Text("Voice profile active")
+                Label("Voice profile active", systemImage: "waveform")
                     .font(MacType.small.weight(.semibold))
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
@@ -1870,10 +1917,13 @@ struct MacScreenView: View {
                     profileStat(value: "\(eventCount)", label: "Events")
                 }
                 .padding(.vertical, 4)
-                Text(profile.profileSummary ?? "")
-                    .font(MacType.body)
-                    .multilineTextAlignment(.center)
-                    .foregroundStyle(.white.opacity(0.85))
+                if let summary = profile.profileSummary, !summary.isEmpty {
+                    Text(summary)
+                        .font(MacType.body)
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(.white.opacity(0.85))
+                        .lineLimit(3)
+                }
                 if editing {
                     Button("Done") {
                         navigate?(.myProfile)
@@ -1909,7 +1959,14 @@ struct MacScreenView: View {
             }
             .frame(maxWidth: .infinity)
         }
-        .frame(width: 310)
+        .frame(width: 300)
+    }
+
+    private func profileLanguages(for profile: UserProfile) -> [String] {
+        if profile.basicInfo?.city.localizedCaseInsensitiveContains("bangalore") == true {
+            return ["English", "Hindi"]
+        }
+        return ["English"]
     }
 
     private func profileStat(value: String, label: String) -> some View {
@@ -2954,28 +3011,21 @@ struct MacScreenView: View {
         HStack(alignment: .top, spacing: 22) {
             MacPanel(title: "Settings") {
                 VStack(alignment: .leading, spacing: 4) {
-                    settingsItem("Account", icon: "person.circle", detail: appState.profile?.basicInfo?.name ?? "Current")
-                    settingsItem("Privacy & safety", icon: "shield", detail: "Planned")
-                    settingsItem("Notifications", icon: "bell", detail: "Planned")
-                    settingsItem("Soulmate", icon: "heart.fill", selected: true)
-                    Button {
-                        navigate?(.myProfile)
-                    } label: {
-                        settingsItem("View profile", icon: "person.crop.circle", detail: "Profile tab", interactive: true)
+                    ForEach(SettingsSection.allCases) { section in
+                        Button {
+                            selectedSettingsSection = section
+                        } label: {
+                            settingsItem(
+                                section.rawValue,
+                                icon: section.icon,
+                                selected: selectedSettingsSection == section,
+                                detail: settingsSectionDetail(section)
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel(section.rawValue)
+                        .accessibilityValue(selectedSettingsSection == section ? "Selected" : "Not selected")
                     }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("View profile")
-                    Button {
-                        navigate?(.profileOnboarding)
-                    } label: {
-                        settingsItem("Voice profile", icon: "waveform", detail: "Edit basics", interactive: true)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("Voice profile")
-                    settingsItem("Connected apps", icon: "square.grid.2x2", detail: "Planned")
-                    settingsItem("Appearance", icon: "sun.max", detail: "Planned")
-                    settingsItem("Language", icon: "globe", detail: "Planned")
-                    settingsItem("Help & support", icon: "questionmark.circle", detail: "Use iOS support")
                     Divider().padding(.vertical, 4)
                     Button {
                         showSignOutConfirm = true
@@ -2995,46 +3045,7 @@ struct MacScreenView: View {
                 }
             }
             .frame(width: 290)
-            MacPanel(title: "Soulmate") {
-                VStack(alignment: .leading, spacing: 18) {
-                    Toggle("Enable Soulmate", isOn: Binding(
-                        get: { appState.soulmateEnabled },
-                        set: { enabled in
-                            Task { await appState.setSoulmateEnabled(enabled) }
-                        }
-                    ))
-                    .toggleStyle(.switch)
-                    .tint(MacPalette.accent)
-                    .font(MacType.button)
-                    .accessibilityLabel("Enable Soulmate")
-                    .accessibilityValue(appState.soulmateEnabled ? "On" : "Off")
-                    Text(appState.soulmateEnabled
-                         ? "Soulmate is on. The Soulmate tab shows matches only — turn this off here to hide it."
-                         : "Turn on Soulmate to show the Soulmate tab and mutual matches after meetups.")
-                        .font(MacType.small)
-                        .foregroundStyle(MacPalette.muted)
-                    HStack(spacing: 12) {
-                        featureCard(icon: "sparkle", title: "Intentional matches", detail: "Curated for real connection")
-                        featureCard(icon: "shield.checkered", title: "Your comfort first", detail: "You set the pace")
-                        featureCard(icon: "lock", title: "Private by design", detail: "Your data stays yours")
-                    }
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Discovery preferences")
-                            .font(MacType.small.weight(.semibold))
-                        formLine("Who can discover you", value: "People in my circles + circle of circles")
-                    }
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Age range")
-                            .font(MacType.small.weight(.semibold))
-                        formLine("Current preference", value: "Default beta range")
-                    }
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Visibility")
-                            .font(MacType.small.weight(.semibold))
-                        formLine("Current preference", value: "Circles only")
-                    }
-                }
-            }
+            settingsDetailPanel
         }
         .task {
             if appState.isSignedIn {
@@ -3068,6 +3079,104 @@ struct MacScreenView: View {
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("This removes your backend tester data and clears the local macOS session.")
+        }
+    }
+
+    @ViewBuilder
+    private var settingsDetailPanel: some View {
+        switch selectedSettingsSection {
+        case .account:
+            MacPanel(title: "Account") {
+                formLine("Name", value: appState.profile?.basicInfo?.name ?? "—")
+                formLine("City", value: appState.profile?.basicInfo?.city ?? "—")
+                formLine("Gender", value: appState.profile?.basicInfo?.gender.label ?? "—")
+                Text("Edit name, city, and gender from Profile → Edit profile.")
+                    .font(MacType.small)
+                    .foregroundStyle(MacPalette.muted)
+                    .padding(.top, 8)
+            }
+        case .privacy:
+            settingsPlannedPanel(title: "Privacy & safety", detail: "Privacy controls ship in a later release.")
+        case .notifications:
+            settingsPlannedPanel(title: "Notifications", detail: "Notification preferences ship in a later release.")
+        case .soulmate:
+            soulmateSettingsPanel
+        case .connectedApps:
+            settingsPlannedPanel(title: "Connected apps", detail: "Third-party integrations are not available yet.")
+        case .appearance:
+            settingsPlannedPanel(title: "Appearance", detail: "Theme and display options are not available yet.")
+        case .language:
+            settingsPlannedPanel(title: "Language", detail: "Language selection is not available yet.")
+        case .help:
+            MacPanel(title: "Help & support") {
+                Text("Voice profile retakes and full support run on iOS today. Use the Profile tab for your living profile and voice signals.")
+                    .font(MacType.body)
+                    .foregroundStyle(MacPalette.muted)
+            }
+        }
+    }
+
+    private var soulmateSettingsPanel: some View {
+        MacPanel(title: "Soulmate") {
+            VStack(alignment: .leading, spacing: 18) {
+                Toggle("Enable Soulmate", isOn: Binding(
+                    get: { appState.soulmateEnabled },
+                    set: { enabled in
+                        Task { await appState.setSoulmateEnabled(enabled) }
+                    }
+                ))
+                .toggleStyle(.switch)
+                .tint(MacPalette.accent)
+                .font(MacType.button)
+                .accessibilityLabel("Enable Soulmate")
+                .accessibilityValue(appState.soulmateEnabled ? "On" : "Off")
+                Text(appState.soulmateEnabled
+                     ? "Soulmate is on. The Soulmate tab opens Discover directly — turn this off here to hide the tab."
+                     : "Turn on Soulmate to show the Soulmate tab and mutual matches after meetups.")
+                    .font(MacType.small)
+                    .foregroundStyle(MacPalette.muted)
+                HStack(spacing: 12) {
+                    featureCard(icon: "sparkle", title: "Intentional matches", detail: "Curated for real connection")
+                    featureCard(icon: "shield.checkered", title: "Your comfort first", detail: "You set the pace")
+                    featureCard(icon: "lock", title: "Private by design", detail: "Your data stays yours")
+                }
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Discovery preferences")
+                        .font(MacType.small.weight(.semibold))
+                    formLine("Who can discover you", value: "People in my circles + circle of circles")
+                }
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Age range")
+                        .font(MacType.small.weight(.semibold))
+                    formLine("Current preference", value: "Default beta range")
+                }
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Visibility")
+                        .font(MacType.small.weight(.semibold))
+                    formLine("Current preference", value: "Circles only")
+                }
+            }
+        }
+    }
+
+    private func settingsPlannedPanel(title: String, detail: String) -> some View {
+        MacPanel(title: title) {
+            Text(detail)
+                .font(MacType.body)
+                .foregroundStyle(MacPalette.muted)
+        }
+    }
+
+    private func settingsSectionDetail(_ section: SettingsSection) -> String? {
+        switch section {
+        case .account:
+            return appState.profile?.basicInfo?.name
+        case .privacy, .notifications, .connectedApps, .appearance, .language:
+            return "Planned"
+        case .help:
+            return "Use iOS support"
+        case .soulmate:
+            return appState.soulmateEnabled ? "On" : "Off"
         }
     }
 

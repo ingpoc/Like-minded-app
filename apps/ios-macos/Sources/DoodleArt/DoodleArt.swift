@@ -5,6 +5,19 @@ import SwiftUI
 /// UI typography is always drawn by SwiftUI over a scrim.
 enum DoodleArt {
     static let portraitDefault = "DoodlePortraitDefault"
+    static let portraitMale = "DoodlePortraitDefault"
+    static let portraitFemale = "DoodlePortraitFemale"
+
+    static func portrait(for gender: Gender?) -> String {
+        switch gender {
+        case .female:
+            return portraitFemale
+        case .male:
+            return portraitMale
+        default:
+            return portraitDefault
+        }
+    }
     static let eventJazzListening = "EventJazzListening"
     static let eventMeetup = "DoodleEventMeetup"
     static let eventJam = "DoodleEventJam"

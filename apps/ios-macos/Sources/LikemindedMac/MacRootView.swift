@@ -80,7 +80,7 @@ struct MacRootView: View {
         .onReceive(NotificationCenter.default.publisher(for: .macPrototypeSelectCircles)) { _ in selectedScreen = .circlesRoom }
         .onReceive(NotificationCenter.default.publisher(for: .macPrototypeSelectCommunities)) { _ in selectedScreen = .communitiesBrowse }
         .onReceive(NotificationCenter.default.publisher(for: .macPrototypeSelectProfile)) { _ in selectedScreen = .myProfile }
-        .onReceive(NotificationCenter.default.publisher(for: .macPrototypeSelectSoulmate)) { _ in selectedScreen = .soulmateOverview }
+        .onReceive(NotificationCenter.default.publisher(for: .macPrototypeSelectSoulmate)) { _ in selectedScreen = .soulmateDiscover }
         .onAppear {
             NSApplication.shared.activate(ignoringOtherApps: true)
         }
@@ -90,6 +90,11 @@ struct MacRootView: View {
                     return
                 }
                 selectedScreen = .meetOverview
+            }
+        }
+        .onChange(of: appState.soulmateEnabled) { _, enabled in
+            if !enabled, selectedScreen.tab == .soulmate {
+                selectedScreen = .myProfile
             }
         }
     }

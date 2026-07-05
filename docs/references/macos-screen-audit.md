@@ -24,7 +24,7 @@ Routing + evidence pointers only. **Status owner: `validation/macos/*.json`** (i
 
 ## Intentional variations (do not fail controls solely for these)
 
-Documented in git history and ledger `visual_parity.notes`. Examples: doodle covers vs photo mockups; initials not photos; chat phone/video icons muted; Mac voice retake routes to basics onboarding; tab order Communities → Soulmate → Profile.
+Documented in git history and ledger `visual_parity.notes`. Examples: doodle covers vs photo mockups; gender doodle portraits on profile; chat phone/video icons muted; Mac voice retake routes to basics onboarding; tab order Communities → Soulmate → Profile; Soulmate tab opens Discover when enabled.
 
 ## Historical
 
