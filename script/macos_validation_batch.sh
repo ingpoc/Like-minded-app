@@ -8,6 +8,7 @@ PORT="${PORT:-8787}"
 API_LOG="/tmp/likeminded-validation-batch-api.log"
 api_pid=""
 mode="both" # capture | cua | both
+STALE_ONLY=0
 
 SCREENS=(
   meetOverview
@@ -40,6 +41,7 @@ Usage: $0 [options] [screen ...]
 Runs macOS validation with a single validation API owner and sequential CUA (no port/instance fights).
 
 Options:
+  --stale-only     Only screens with stale-pass controls (from validation/macos/*.json)
   --capture-only   Run verify_macos_screens.sh only (no CUA)
   --cua-only       Sequential macos_cua_screen.sh only (API must be up; skips capture)
   --keep-api       Do not stop validation API on exit
@@ -51,6 +53,7 @@ EOF
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --stale-only) STALE_ONLY=1; shift ;;
     --capture-only) mode="capture"; shift ;;
     --cua-only) mode="cua"; shift ;;
     --keep-api) export MACOS_BATCH_KEEP_API=1; shift ;;
@@ -62,6 +65,13 @@ done
 
 if (($# > 0)); then
   SCREENS=("$@")
+elif (( STALE_ONLY == 1 )); then
+  mapfile -t SCREENS < <(node "$ROOT/script/ledger_stale_screens.js" --platform macos)
+  if ((${#SCREENS[@]} == 0)); then
+    echo "macOS stale-pass: no screens to reproof"
+    exit 0
+  fi
+  echo "macOS stale-only reproof: ${#SCREENS[@]} screen(s)" >&2
 fi
 
 cleanup() {
@@ -106,8 +116,8 @@ ensure_api() {
 if [[ "$mode" != "cua" ]]; then
   ensure_api
   (cd "$ROOT" && npm run reset:validation-data >/tmp/likeminded-validation-batch-seed.log)
-  echo "== capture all macOS screens =="
-  "$ROOT/script/verify_macos_screens.sh"
+  echo "== capture macOS screens (${#SCREENS[@]}) =="
+  "$ROOT/script/verify_macos_screens.sh" "${SCREENS[@]}"
 else
   curl -fsS "http://127.0.0.1:$PORT/health" >/dev/null || {
     echo "Start validation API first: npm run dev:api:validation" >&2

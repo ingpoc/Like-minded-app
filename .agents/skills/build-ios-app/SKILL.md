@@ -171,12 +171,15 @@ Per AGENTS.md: before claiming seamless behavior, point both apps at
    - meet video / post-meet → `09-12-...png`
    - soulmate chat → `13-16-...png`
    - profile / community / settings → `17-20-...png`
-5. For the one-shot automated capture:
+5. For automated capture of stale ledger screens after Swift edits:
+   ```
+   npm run verify:ios-screens -- --stale-only
+   ```
+   For the legacy smoke batch (no stamp): `npm run verify:ios-screens`.
+6. Quick local smoke (auth gate + tabs, not ledger reproof):
    ```
    ./script/verify_simulator_local.sh
    ```
-   Writes `output/validation/fresh-auth-gate.png`,
-   `local-dev-empty-onboarding.png`, `local-dev-auth-tabs.png`.
 
 ### Validation deep-link checklist (per screen)
 
@@ -217,6 +220,7 @@ Example locked single-screen capture:
 - Leaving the validation API on port 8787 → `verify_simulator_local.sh` will refuse to start a second one; stop the prior instance.
 - Building without the `LiveKit`/`LiveKitWebRTC` SPM packages resolving → ensure network access on first build; packages resolve into the generated project.
 - **Parallel `xcodebuild` / `simctl launch`** → SIGKILL and wrong screens; use `./script/cross_platform_validation_lock.sh` and sequential `./script/cross_platform_screen_validate.sh`.
+- **iOS stale_pass reproof** → `npm run verify:ios-screens -- --stale-only` (capture + bulk stamp); not the default smoke list.
 - **Auth gate “Could not connect”** → usually `:8787` was killed mid-seed by another agent, not a wrong plist URL.
 
 ## Related

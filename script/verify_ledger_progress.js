@@ -12,7 +12,7 @@ if (!report.ok) {
     console.error(`- ${error}`);
   }
   console.error(
-    "\nFix: add unchecked PROGRESS.md items under Track — macOS Visual Parity or Track — iOS Ledger Honesty (or fix the open validation/<platform>/*.json controls). Do not mark phase/track complete while actionable fail/pending/stale-blocked controls lack an owner."
+    "\nFix: align PROGRESS.md checkboxes with validation JSON, remove stale goal.json route_contract, and ensure open validation controls have track owners. Do not mark phase/track complete while actionable fail/pending/stale-blocked/stale_pass controls lack an owner or contradict PROGRESS."
   );
   process.exit(1);
 }

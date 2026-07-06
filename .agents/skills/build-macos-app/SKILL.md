@@ -213,18 +213,20 @@ fights produce empty AX trees and wrong screenshots).
 
 Use one orchestrated pass:
 ```
-./script/macos_validation_batch.sh
+npm run macos:validation-batch              # full closeout
+npm run macos:validation-batch -- --stale-only --cua-only   # ledger stale_pass only
+npm run macos:cua-reproof                   # alias for stale-only CUA
 ```
-Or: `npm run macos:validation-batch`
+Or: `./script/macos_validation_batch.sh` with the same flags.
 
 What it does:
 1. Sole owner of validation API on `:8787` (frees port if needed)
-2. `npm run reset:validation-data` once
-3. `./script/verify_macos_screens.sh` — all captures at 1200×760
+2. `npm run reset:validation-data` once (skipped in `--cua-only` when API already up)
+3. `./script/verify_macos_screens.sh` — captures at 1200×760 (`--stale-only` limits screen list)
 4. Sequential `./script/macos_cua_screen.sh <screen>` per prototype screen
 5. `npm run ledger:stale` summary
 
-Flags: `--capture-only`, `--cua-only`, optional screen list, `--keep-api`.
+Flags: `--stale-only`, `--capture-only`, `--cua-only`, optional screen list, `--keep-api`.
 
 **Parallel OK:** disjoint `MacScreens.swift` MARK slices per `validation/macos/*.json`.  
 **Parallel NOT OK:** capture, CUA, `reset:validation-data` mid-flight.
