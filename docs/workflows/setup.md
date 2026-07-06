@@ -29,17 +29,79 @@ APPLE_CLIENT_IDS=com.likeminded.app,com.likeminded.mac
 APPLE_REQUIRE_NONCE=1
 APPLE_AUTH_BYPASS=0
 GOOGLE_CLIENT_ID_IOS=your-ios-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_ID_MAC=your-mac-client-id.apps.googleusercontent.com
 GOOGLE_REVERSED_CLIENT_ID=com.googleusercontent.apps.your-ios-client-id
 GOOGLE_CLIENT_IDS=your-ios-client-id.apps.googleusercontent.com
 GOOGLE_AUTH_BYPASS=0
 WALLETCONNECT_PROJECT_ID=your-walletconnect-cloud-project-id
 WALLET_AUTH_BYPASS=0
+LIVEKIT_URL=wss://your-project.livekit.cloud
+LIVEKIT_API_KEY=your-livekit-api-key
+LIVEKIT_API_SECRET=your-livekit-api-secret
 ```
 
 2. Source it before running the API server:
 ```sh
 set -a && source .env.local && set +a
 ```
+
+Copy from `.env.example` if starting fresh. `GET /health` reports `livekit`, `googleAuth`, and `walletAuth` booleans so you can confirm server-side config before testing native sign-in.
+
+## Sign-in (iOS + macOS)
+
+Both natives share the same auth UI pattern: **Sign in with Apple**, **Google**, **MetaMask**, and **Solflare** (`AuthGateView` on iOS; `MacScreens` welcome on macOS). Shared implementation lives in `Sources/Shared/` (`AppleSignInSupport`, `GoogleSignInSupport`, `WalletSignInSupport`, `SocialAuthButtonsView`).
+
+| Provider | Native flow | API route |
+|----------|-------------|-----------|
+| Apple | `ASAuthorizationAppleID` / `SignInWithAppleButton` | `POST /v1/auth/apple` |
+| Google | Google Sign-In SDK → ID token | `POST /v1/auth/google` |
+| Wallet | `ASWebAuthenticationSession` → `/v1/auth/wallet/sign` page | `POST /v1/auth/wallet/challenge` + verify |
+
+**API must be running** before sign-in (`./script/run_api.sh` or `npm run dev:api:validation`). Default DEBUG base URL is `http://127.0.0.1:8787`.
+
+### Apple
+
+- iOS entitlement: `Entitlements/Likeminded.entitlements`
+- macOS entitlement: `Entitlements/LikemindedMac.entitlements`
+- Server: set `APPLE_CLIENT_IDS=com.likeminded.app,com.likeminded.mac`, `APPLE_REQUIRE_NONCE=1`, `APPLE_AUTH_BYPASS=0` for real device/TestFlight.
+- Local bypass (API only): `APPLE_AUTH_BYPASS=1` or app launch arg `--likeminded-dev-auth-bypass` with `npm run dev:api:local-auth`.
+
+### Google
+
+Set in `.env.local` (API) **and** pass into Xcode builds:
+
+```
+GOOGLE_CLIENT_ID_IOS=your-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_ID_MAC=your-mac-client-id.apps.googleusercontent.com   # optional; falls back to iOS client
+GOOGLE_REVERSED_CLIENT_ID=com.googleusercontent.apps.your-client-id
+GOOGLE_CLIENT_IDS=your-client-id.apps.googleusercontent.com
+```
+
+Native URL schemes and `GIDClientID` are in `Info/Likeminded-Info.plist` and `Info/LikemindedMac-Info.plist` (Google reversed client ID + bundle-id wallet callback). After editing `project.yml` or Info plists, run `cd apps/ios-macos && xcodegen generate`.
+
+Google OAuth redirect must include both bundle IDs in the Google Cloud console.
+
+### Wallet (MetaMask / Solflare)
+
+- Server: `WALLETCONNECT_PROJECT_ID` (WalletConnect Cloud) for the hosted sign page; `WALLET_AUTH_BYPASS=1` for local API-only testing.
+- Native callback scheme: `com.likeminded.app://auth/wallet` (iOS) and `com.likeminded.mac://auth/wallet` (macOS).
+- iOS handles wallet callbacks in `LikemindedApp.onOpenURL`; macOS in `LikemindedMacApp.onOpenURL`.
+
+## LiveKit (group video meets)
+
+Set on the API server:
+
+```
+LIVEKIT_URL=wss://your-project.livekit.cloud
+LIVEKIT_API_KEY=your-livekit-api-key
+LIVEKIT_API_SECRET=your-livekit-api-secret
+```
+
+Flow: signed-in user taps **Join meetup** → `POST /v1/meetings/:id/join` → participant token → `LiveKitMeetSession` in `Sources/Shared/LiveKitMeetSession.swift` connects the room (iOS `GroupVideoCallView`, macOS `meetVideoCall`).
+
+If LiveKit env is missing or join fails, the UI falls back to **preview tiles** and shows the error — useful for layout validation without a LiveKit Cloud project.
+
+Both `Likeminded` and `LikemindedMac` targets link the LiveKit SPM packages (`project.yml`).
 
 ## Common traps
 
@@ -110,11 +172,12 @@ Notes: `run_api.sh`/`run_validation_api.sh` use `lsof` (present on VM). `OPENAI_
 
 ## Testing the full pipeline
 
-1. Start API: `./script/run_api.sh`
-2. Build + launch: `./script/build_and_run.sh`
-3. Sign in with Apple
+1. Start API: `./script/run_api.sh` (confirm `curl -s http://127.0.0.1:8787/health` shows `"livekit":true` when video meets are needed)
+2. Build + launch: `./script/build_and_run.sh` (iOS) or build `LikemindedMac` scheme (macOS)
+3. Sign in with Apple, Google, or wallet on the auth gate
 4. In simulator/device: tap Profile → grant mic permission → speak to AI interviewer → stop
 5. App sends transcript to authenticated `/v1/discover` → personality signals + circle placement appear
+6. Optional: RSVP for a meetup, then **Join meetup** when LiveKit is configured
 
 For local API-only smoke checks without Apple services, `npm run smoke:mvp` uses `APPLE_AUTH_BYPASS=1` in an isolated child process. Do not enable `APPLE_AUTH_BYPASS` in TestFlight or production.
 

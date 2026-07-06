@@ -264,19 +264,20 @@ When adding a new deep-link screen to validation:
 - **Backend contract is `LIKEMINDED_API_BASE_URL`.** Both iOS and macOS read
   the same key from their Info.plist (`INFOPLIST_KEY_LIKEMINDED_API_BASE_URL`).
   Never hardcode a URL in the Swift client; never fork the contract per platform.
-- **No LiveKit on macOS.** The `LikemindedMac` target does not depend on
-  LiveKit/LiveKitWebRTC. The `meetVideoCall` mockup (21) is a Mac prototype
-  surface for the meet video flow without the LiveKit SDK link.
-- **Keep macOS-only SwiftUI in `Sources/LikemindedMac`.** Do not put Mac-only
-  window/toolbar/menu/sidebar layout into `Sources/LikemindedApp`.
+- **Auth gate** is the macOS welcome screen (`MacScreens.swift`):
+  Sign in with Apple + Google + MetaMask + Solflare (same shared buttons as iOS).
+  Entitlement: `Entitlements/LikemindedMac.entitlements`. URL schemes + `GIDClientID`
+  in `Info/LikemindedMac-Info.plist`. Wallet callbacks in `LikemindedMacApp.onOpenURL`.
+  `MacRootView` uses `@EnvironmentObject MacAppState` from the app entry point.
+  For validation without real Apple ID: `--likeminded-dev-auth-bypass` with
+  `npm run dev:api:local-auth`.
+- **LiveKit** on macOS: `LikemindedMac` links LiveKit SPM packages; join flow uses
+  `Sources/Shared/LiveKitMeetSession.swift` in `meetVideoCall`. Preview tiles when
+  `POST /v1/meetings/:id/join` fails (no `LIVEKIT_*` env).
+- **Keep macOS-only SwiftUI in `Sources/LikemindedMac`.** Shared auth + LiveKit
+  live in `Sources/Shared/`.
 - **Window size for validation is 1200×760** at {80,80} — match this when
   capturing for parity with `mockups/macos/`.
-- **Apple Sign-In is iOS-only** (entitlement lives at
-  `Entitlements/Likeminded.entitlements` for the iOS target). macOS uses
-  `--likeminded-dev-auth-bypass` with `dev:api:local-auth` or the validation
-  API's dev tokens.
-- **`GENERATE_INFOPLIST_FILE: YES`** — no hand-written Info.plist; configure
-  keys via `project.yml` (`INFOPLIST_KEY_*`), then regenerate.
 - **Shell-first.** No simulator tooling on this surface — use `xcodebuild`,
   `open`, `cross_platform_validation_lock.sh`, `screencapture`, `log stream`, `osascript`.
 

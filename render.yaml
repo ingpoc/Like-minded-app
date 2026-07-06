@@ -2,7 +2,7 @@ services:
   - type: web
     name: likeminded-api
     runtime: node
-    plan: starter
+    plan: free
     buildCommand: npm ci && npm run migrate:api
     startCommand: npm run dev:api
     healthCheckPath: /health

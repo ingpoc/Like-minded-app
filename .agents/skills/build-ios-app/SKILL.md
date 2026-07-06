@@ -201,16 +201,20 @@ Example locked single-screen capture:
 - **Backend contract is `LIKEMINDED_API_BASE_URL`.** Both iOS and macOS read
   the same key from their Info.plist (`INFOPLIST_KEY_LIKEMINDED_API_BASE_URL`).
   Never hardcode a URL in the Swift client; never fork the contract per platform.
-- **Auth gate** is `AuthGateView` → Apple Sign-In (`com.apple.developer.applesignin`
-  entitlement). For local dev bypass, run `npm run dev:api:local-auth` and pass
+- **Auth gate** is `AuthGateView` on iOS (`Sources/LikemindedApp/Views/AuthGateView.swift`):
+  Apple (`SignInWithAppleButton`), Google, MetaMask, and Solflare via
+  `Sources/Shared/SocialAuthButtonsView.swift`. Entitlement:
+  `Entitlements/Likeminded.entitlements`. URL schemes + `GIDClientID` in
+  `Info/Likeminded-Info.plist`. Wallet callbacks handled in `LikemindedApp.onOpenURL`.
+  For local dev bypass, run `npm run dev:api:local-auth` and pass
   `--likeminded-dev-auth-bypass`.
-- **LiveKit** is iOS-target-only (video meet). macOS does not link it. Do not
-  move LiveKit imports into shared Swift without making them macOS-safe.
-- **Keep iOS-only SwiftUI in `Sources/LikemindedApp`.** Extract shared Swift
-  into a shared target only when both `Likeminded` and `LikemindedMac` compile
-  it without platform-specific deps.
-- **`GENERATE_INFOPLIST_FILE: YES`** — there is no hand-written Info.plist;
-  configure keys via `project.yml` (`INFOPLIST_KEY_*`), then regenerate.
+- **LiveKit** group meets use `Sources/Shared/LiveKitMeetSession.swift` from
+  `GroupVideoCallView` (`MeetView.swift`). Requires `LIVEKIT_*` on the API;
+  falls back to preview tiles when join fails. macOS links the same shared session.
+- **Keep iOS-only SwiftUI in `Sources/LikemindedApp`.** Shared auth + LiveKit
+  live in `Sources/Shared/` (compiled by both targets).
+- **Info plists:** `Info/Likeminded-Info.plist` holds OAuth/wallet URL schemes;
+  other keys via `project.yml` (`INFOPLIST_KEY_*`), then `xcodegen generate`.
 
 ## Common Pitfalls
 

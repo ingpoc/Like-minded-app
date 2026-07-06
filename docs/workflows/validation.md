@@ -139,8 +139,8 @@ Lock files: `/tmp/likeminded-validation-locks/` (600s wait). macOS `--mac-screen
 ### Seed + API timing
 
 - Single owner of `:8787` during seed + capture. Stop API before seed if `reset:validation-data` fails mid-run against a live server.
-- Simulator auth gate (“Could not connect to the server”) often means `:8787` was killed by another agent — not a wrong plist URL.
-- `curl -s http://127.0.0.1:8787/health` → `dbPath` must contain `validation-db` before native capture.
+- Simulator auth gate (“Could not connect to the server”) often means `:8787` was killed by another agent — not a wrong plist URL. Real Apple/Google/wallet sign-in needs `APPLE_AUTH_BYPASS=0` and matching `GOOGLE_*` / `WALLETCONNECT_*` env; use `--likeminded-dev-auth-bypass` only for seeded capture.
+- `curl -s http://127.0.0.1:8787/health` → `dbPath` must contain `validation-db` before native capture; check `livekit`, `googleAuth`, `walletAuth` when testing those flows.
 
 ### Ledger lookup
 
