@@ -223,6 +223,7 @@ struct MacScreenView: View {
     @State private var showCommunityOptions = false
     @State private var communityResourceDetail: CommunityResourceDetail?
     @State private var appleSignInController = AppleSignInController()
+    @StateObject private var liveKitSession = LiveKitMeetSession()
     @State private var showChatCallSheet = false
     @State private var chatCallMode = "voice"
     @State private var chatActionStatus: String?
@@ -569,8 +570,19 @@ struct MacScreenView: View {
                         .foregroundStyle(MacPalette.muted)
                 }
                 Spacer()
-                callStatus(icon: "video.fill", title: "Camera on", detail: "Everyone's camera is on")
+                callStatus(
+                    icon: liveKitSession.isConnected ? "dot.radiowaves.left.and.right" : "video.fill",
+                    title: liveKitSession.statusMessage,
+                    detail: liveKitSession.isPrototypeFallback ? "Using preview tiles" : "Everyone's camera is on"
+                )
                 callStatus(icon: "person.2", title: "\(meeting?.groupSize ?? 10) participants", detail: nil)
+            }
+
+            if let error = liveKitSession.errorMessage, liveKitSession.isPrototypeFallback {
+                Text("Live room unavailable: \(error)")
+                    .font(MacType.small)
+                    .foregroundStyle(MacPalette.clay)
+                    .fixedSize(horizontal: false, vertical: true)
             }
 
             HStack(alignment: .top, spacing: 20) {
@@ -649,10 +661,25 @@ struct MacScreenView: View {
                 .frame(width: 330)
             }
         }
-        .task {
+        .task(id: appState.upcomingMeetings.first?.id) {
             if appState.upcomingMeetings.isEmpty {
                 await appState.fetchMeetings()
             }
+            await connectLiveKitIfNeeded(for: appState.upcomingMeetings.first)
+        }
+        .onDisappear {
+            Task { await liveKitSession.disconnect() }
+        }
+    }
+
+    private func connectLiveKitIfNeeded(for meeting: Meeting?) async {
+        guard let meeting else { return }
+        do {
+            let join = try await appState.joinMeeting(id: meeting.id)
+            await liveKitSession.connect(url: join.url, token: join.token)
+        } catch {
+            liveKitSession.errorMessage = error.localizedDescription
+            await liveKitSession.connect(url: "", token: "")
         }
     }
 
@@ -693,21 +720,26 @@ struct MacScreenView: View {
                 .buttonStyle(.bordered)
                 .accessibilityLabel("Show call participants")
             Button {
-                isCallMuted.toggle()
+                Task { await liveKitSession.setMuted(!liveKitSession.isMuted) }
             } label: {
-                Label(isCallMuted ? "Unmute mic" : "Mute mic", systemImage: isCallMuted ? "mic.slash.fill" : "mic.fill")
+                Label(liveKitSession.isMuted ? "Unmute mic" : "Mute mic", systemImage: liveKitSession.isMuted ? "mic.slash.fill" : "mic.fill")
                     .labelStyle(.iconOnly)
                     .frame(width: 56, height: 56)
                     .background(MacPalette.accent, in: Circle())
                     .foregroundStyle(.white)
             }
             .buttonStyle(.plain)
-            .accessibilityLabel(isCallMuted ? "Unmute microphone" : "Mute microphone")
-            .accessibilityValue(isCallMuted ? "Muted" : "Unmuted")
-            Label("Good connection", systemImage: "cellularbars")
+            .accessibilityLabel(liveKitSession.isMuted ? "Unmute microphone" : "Mute microphone")
+            .accessibilityValue(liveKitSession.isMuted ? "Muted" : "Unmuted")
+            Label(liveKitSession.isConnected ? "LiveKit connected" : "Preview room", systemImage: "cellularbars")
                 .font(MacType.button)
                 .foregroundStyle(MacPalette.ink)
-            Button("Leave") { navigate?(.meetOverview) }
+            Button("Leave") {
+                Task {
+                    await liveKitSession.disconnect()
+                    navigate?(.meetOverview)
+                }
+            }
                 .buttonStyle(.borderedProminent)
                 .tint(.red)
                 .accessibilityLabel("Leave meetup")
@@ -1788,19 +1820,6 @@ struct MacScreenView: View {
                     .padding(24)
                 }
                 .frame(height: 250)
-
-                Button {
-                    navigate?(.circlesRoom)
-                } label: {
-                    Image(systemName: "chevron.left")
-                        .font(MacType.button.weight(.semibold))
-                        .foregroundStyle(.white)
-                        .padding(10)
-                        .background(.black.opacity(0.28), in: Circle())
-                }
-                .buttonStyle(.plain)
-                .padding(16)
-                .accessibilityLabel("Back to circles")
 
                 HStack(spacing: 8) {
                     Text("In circle")

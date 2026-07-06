@@ -18,14 +18,14 @@
       "id": "message-circle",
       "type": "button",
       "label": "Message circle",
-      "expected": "Navigate \u2192 messages",
+      "expected": "Navigate → messages",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (message-circle) (hash-migrated: screen-slice source hash)",
+      "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (message-circle)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "463ac56065a7ed93",
-      "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA-click"
+      "tested_source_hash": "b4309eca4da108ba",
+      "last_tested_at": "2026-07-06",
+      "last_test_method": "local-product-loop"
     },
     {
       "id": "placement-concern",
@@ -33,12 +33,12 @@
       "label": "Placement concern",
       "expected": "POST /v1/me/circles/concern",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (placement-concern) (hash-migrated: screen-slice source hash)",
+      "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (placement-concern)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "463ac56065a7ed93",
-      "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA-click"
+      "tested_source_hash": "b4309eca4da108ba",
+      "last_tested_at": "2026-07-06",
+      "last_test_method": "local-product-loop"
     },
     {
       "id": "upcoming-meet",
@@ -46,12 +46,12 @@
       "label": "Upcoming circle meet row",
       "expected": "Navigate to meet flow",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (upcoming-meet) (hash-migrated: screen-slice source hash)",
+      "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (upcoming-meet)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "463ac56065a7ed93",
-      "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA-click"
+      "tested_source_hash": "b4309eca4da108ba",
+      "last_tested_at": "2026-07-06",
+      "last_test_method": "local-product-loop"
     }
   ],
   "visual_parity": {
@@ -59,7 +59,7 @@
     "notes": "2026-07-05 capture vs plate 19: hero with back/fit badge/trait line, stats row, In circle + Message circle + ellipsis, About/Members/Events/Discussions/Resources tabs, three-column About/Upcoming+discussions/Moderators. Intentional: DoodleCover hero vs scenic forest mockup; backend circle name Reflective Builders vs mockup Thinkers' Room copy."
   },
   "notes": "",
-  "source_hash": "463ac56065a7ed93",
+  "source_hash": "b4309eca4da108ba",
   "recent_screenshot_ref": "output/validation/macos-screens/circleDetail.png",
   "ui_validation": {
     "result": "pass",

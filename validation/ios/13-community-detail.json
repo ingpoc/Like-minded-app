@@ -22,11 +22,11 @@
       "label": "Back chevron",
       "expected": "Dismisses/pops",
       "result": "pass",
-      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (back)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (back)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "5a470c76f74bce9e",
-      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "8cedc5bf310db0c8",
+      "last_tested_at": "2026-07-06",
       "last_test_method": "screen-capture"
     },
     {
@@ -35,11 +35,11 @@
       "label": "Community options (ellipsis)",
       "expected": "Opens options sheet with guidelines",
       "result": "pass",
-      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (ellipsis)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (ellipsis)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "5a470c76f74bce9e",
-      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "8cedc5bf310db0c8",
+      "last_tested_at": "2026-07-06",
       "last_test_method": "screen-capture"
     },
     {
@@ -48,11 +48,11 @@
       "label": "View members",
       "expected": "Pushes CommunityMembersView",
       "result": "pass",
-      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (view-members)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (view-members)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "5a470c76f74bce9e",
-      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "8cedc5bf310db0c8",
+      "last_tested_at": "2026-07-06",
       "last_test_method": "screen-capture"
     },
     {
@@ -61,11 +61,11 @@
       "label": "Upcoming event rows / create event",
       "expected": "Lists community meetings or links to CreateEventView",
       "result": "pass",
-      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (event-rows)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (event-rows)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "5a470c76f74bce9e",
-      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "8cedc5bf310db0c8",
+      "last_tested_at": "2026-07-06",
       "last_test_method": "screen-capture"
     },
     {
@@ -74,11 +74,11 @@
       "label": "Community guidelines row",
       "expected": "Opens guidelines resource sheet",
       "result": "pass",
-      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (resources-guidelines)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (resources-guidelines)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "5a470c76f74bce9e",
-      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "8cedc5bf310db0c8",
+      "last_tested_at": "2026-07-06",
       "last_test_method": "screen-capture"
     },
     {
@@ -87,11 +87,11 @@
       "label": "Conversation prompts row",
       "expected": "Opens prompts resource sheet",
       "result": "pass",
-      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (resources-prompts)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (resources-prompts)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "5a470c76f74bce9e",
-      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "8cedc5bf310db0c8",
+      "last_tested_at": "2026-07-06",
       "last_test_method": "screen-capture"
     },
     {
@@ -100,11 +100,11 @@
       "label": "Best essay thread row",
       "expected": "Opens essay thread sheet",
       "result": "pass",
-      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (highlights-essay)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (highlights-essay)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "5a470c76f74bce9e",
-      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "8cedc5bf310db0c8",
+      "last_tested_at": "2026-07-06",
       "last_test_method": "screen-capture"
     },
     {
@@ -113,11 +113,11 @@
       "label": "Most saved recommendation row",
       "expected": "Opens recommendation sheet",
       "result": "pass",
-      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (highlights-recommendation)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (highlights-recommendation)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "5a470c76f74bce9e",
-      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "8cedc5bf310db0c8",
+      "last_tested_at": "2026-07-06",
       "last_test_method": "screen-capture"
     },
     {
@@ -126,11 +126,11 @@
       "label": "Join community / Leave community",
       "expected": "Toggles membership via backend; updates member count",
       "result": "pass",
-      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (join-leave)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (join-leave)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "5a470c76f74bce9e",
-      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "8cedc5bf310db0c8",
+      "last_tested_at": "2026-07-06",
       "last_test_method": "screen-capture"
     }
   ],
@@ -139,5 +139,5 @@
     "notes": "2026-07-05 capture output/validation/ios-screens/13-community-detail.png vs mockups/ios/17-20-profile-community-settings.png plate 19: Jazz & Music Community hero, stats row (members + next meetup), About, You'll fit in checklist, Upcoming/Members/Resources/Highlights tabs, upcoming row with countdown. macOS communityDetail parity: tab labels Upcoming (was Events), plate copy for jazz-music, fit-in section. Intentional: gradient hero vs mockup scenic plate; join CTA at bottom vs macOS hero pill; macOS About sidebar vs iOS inline sections."
   },
   "notes": "",
-  "source_hash": "5a470c76f74bce9e"
+  "source_hash": "8cedc5bf310db0c8"
 }

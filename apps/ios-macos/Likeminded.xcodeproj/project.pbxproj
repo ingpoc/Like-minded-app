@@ -16,6 +16,7 @@
 		1C099E485B7A23A87435717E /* DeviceIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D8F9C153E1CAAA2E1D4B53 /* DeviceIdentity.swift */; };
 		23566B8035FB78DD26018713 /* WalletSignInSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE323EA9FB8B001BE3FD724E /* WalletSignInSupport.swift */; };
 		24652FD0AE7CDCBFD6449A33 /* SocialAuthButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F92FDA4C0807BAC3C64DDC /* SocialAuthButtonsView.swift */; };
+		24B98ECCC3DD2FF590BCB942 /* LiveKitMeetSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000AE075D1E28F6F008AC04D /* LiveKitMeetSession.swift */; };
 		2DD8ACBCA63AB12436A173EC /* DoodleArt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 296DEAB93269CB0949442024 /* DoodleArt.swift */; };
 		31D1987C09EEBD76447D0DF7 /* MacPrototypeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 181BFC9B2D93330133F5C993 /* MacPrototypeData.swift */; };
 		3790F3067C86B1DF4F11FF86 /* NotificationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F51BCAB677E4C2BEAE840EE /* NotificationsView.swift */; };
@@ -26,7 +27,7 @@
 		3FC6508C115AA08A823B19CB /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71F1782CC0FAAD3C06C76E5C /* RootView.swift */; };
 		4319E06107624A793DB13545 /* AuthSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDF2490A9727FEEB417EED9F /* AuthSessionStore.swift */; };
 		4662D50BD9BFCB596D1B3824 /* DoodleArt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 296DEAB93269CB0949442024 /* DoodleArt.swift */; };
-		526F3648A81F8B47AA9EFC97 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 74692D8F905BD45EC09335FA /* GoogleSignIn */; };
+		526F3648A81F8B47AA9EFC97 /* LiveKit in Frameworks */ = {isa = PBXBuildFile; productRef = EF71AD29363DA78174557635 /* LiveKit */; };
 		537F95835B944C12426E2846 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = F6DE61824C693F67847A8C36 /* GoogleSignIn */; };
 		5BF328C460E5D74DB230A51F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E4A27335D18C85FF61CE549E /* Assets.xcassets */; };
 		5F0E79024B1B152EBBD80D88 /* LiveKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9109FD768D670024E68556DC /* LiveKit */; };
@@ -39,6 +40,7 @@
 		8298F29B28F7DBDF337EDD96 /* MacRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40664BF795D4C75998E0D941 /* MacRootView.swift */; };
 		840C9EB45DCEBC5391A5C561 /* AppleSignInSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FCE7C689C2FF701CCB18EB /* AppleSignInSupport.swift */; };
 		84146F27670847A18F01957F /* PrototypeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C716780C8187703C6E293080 /* PrototypeData.swift */; };
+		8AF3DD76F0780D1EC6B688E6 /* LiveKitMeetSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000AE075D1E28F6F008AC04D /* LiveKitMeetSession.swift */; };
 		8D27A1FA539B87B3019798C6 /* CommunitiesPrototypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF864D6E37CD7289F92855DF /* CommunitiesPrototypeView.swift */; };
 		94B8BB90A08111BEB7490EEE /* RealtimeVoiceClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70685EA3FAE20FBC4827812B /* RealtimeVoiceClient.swift */; };
 		9917E4D207930B06A316F53D /* MacDesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E35A6097677BF379E314306E /* MacDesignSystem.swift */; };
@@ -53,10 +55,13 @@
 		E4C21F153CB397BCA7E4CF65 /* MeetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7107FDFB96FB4B6E50291C /* MeetView.swift */; };
 		E5F05FF2F77CDC1BC4866782 /* PrototypeComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83237B0C66BA3537CAB89B87 /* PrototypeComponents.swift */; };
 		EA5E724579022F5894D30BCE /* MacAppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C848990D583124075A5332A9 /* MacAppState.swift */; };
+		EA9F7CA6176BED311E8CE740 /* LiveKitWebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 5C23684ECD3C73D525192988 /* LiveKitWebRTC */; };
 		F5B8DF9B8360B797123A8F3F /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99419D847C29F69421A296E7 /* Models.swift */; };
+		FEEF47DE3C0EB72A13CE2AD5 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 74692D8F905BD45EC09335FA /* GoogleSignIn */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		000AE075D1E28F6F008AC04D /* LiveKitMeetSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveKitMeetSession.swift; sourceTree = "<group>"; };
 		12C36748D06319EACF593DE7 /* LikemindedMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LikemindedMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		14190A43716DF2A52AB8F7DD /* LikemindedAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikemindedAPIClient.swift; sourceTree = "<group>"; };
 		181BFC9B2D93330133F5C993 /* MacPrototypeData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacPrototypeData.swift; sourceTree = "<group>"; };
@@ -102,7 +107,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				526F3648A81F8B47AA9EFC97 /* GoogleSignIn in Frameworks */,
+				526F3648A81F8B47AA9EFC97 /* LiveKit in Frameworks */,
+				EA9F7CA6176BED311E8CE740 /* LiveKitWebRTC in Frameworks */,
+				FEEF47DE3C0EB72A13CE2AD5 /* GoogleSignIn in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -133,6 +140,7 @@
 				D7FCE7C689C2FF701CCB18EB /* AppleSignInSupport.swift */,
 				7B055E6A70526D0FD3D6B7C5 /* GoogleSignInSupport.swift */,
 				63D2CC8991B9726CA6E09FED /* LikemindedPrivacyPolicy.swift */,
+				000AE075D1E28F6F008AC04D /* LiveKitMeetSession.swift */,
 				85F92FDA4C0807BAC3C64DDC /* SocialAuthButtonsView.swift */,
 				CE323EA9FB8B001BE3FD724E /* WalletSignInSupport.swift */,
 			);
@@ -260,6 +268,8 @@
 			);
 			name = LikemindedMac;
 			packageProductDependencies = (
+				EF71AD29363DA78174557635 /* LiveKit */,
+				5C23684ECD3C73D525192988 /* LiveKitWebRTC */,
 				74692D8F905BD45EC09335FA /* GoogleSignIn */,
 			);
 			productName = LikemindedMac;
@@ -297,6 +307,9 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					243BAC188F1EBCA2009DA9DC = {
+						ProvisioningStyle = Automatic;
+					};
 					7EDE60F74566683E3AA458E5 = {
 						ProvisioningStyle = Automatic;
 					};
@@ -363,6 +376,7 @@
 				9991EE71916006E89457B6E5 /* LikemindedAPIClient.swift in Sources */,
 				638037123B69B011D78BF5A7 /* LikemindedApp.swift in Sources */,
 				C0779A3AF07F111E9FD05005 /* LikemindedPrivacyPolicy.swift in Sources */,
+				24B98ECCC3DD2FF590BCB942 /* LiveKitMeetSession.swift in Sources */,
 				0F0F08547C69AA374756B919 /* LiveKitTokenProvider.swift in Sources */,
 				E4C21F153CB397BCA7E4CF65 /* MeetView.swift in Sources */,
 				3790F3067C86B1DF4F11FF86 /* NotificationsView.swift in Sources */,
@@ -391,6 +405,7 @@
 				132444A82981B36C69EF5C56 /* LikemindedAPIClient.swift in Sources */,
 				00C5C47C4D3A69486DC493D3 /* LikemindedMacApp.swift in Sources */,
 				CFE0601D6BF86208DE3761F3 /* LikemindedPrivacyPolicy.swift in Sources */,
+				8AF3DD76F0780D1EC6B688E6 /* LiveKitMeetSession.swift in Sources */,
 				EA5E724579022F5894D30BCE /* MacAppState.swift in Sources */,
 				9917E4D207930B06A316F53D /* MacDesignSystem.swift in Sources */,
 				31D1987C09EEBD76447D0DF7 /* MacPrototypeData.swift in Sources */,
@@ -467,6 +482,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Entitlements/LikemindedMac.entitlements;
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"\"";
 				GENERATE_INFOPLIST_FILE = YES;
@@ -527,6 +544,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Entitlements/LikemindedMac.Debug.entitlements;
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"\"";
 				GENERATE_INFOPLIST_FILE = YES;
@@ -713,12 +732,22 @@
 			package = 6BB75A61C4F513F69EAB14AF /* XCRemoteSwiftPackageReference "webrtc-xcframework" */;
 			productName = LiveKitWebRTC;
 		};
+		5C23684ECD3C73D525192988 /* LiveKitWebRTC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6BB75A61C4F513F69EAB14AF /* XCRemoteSwiftPackageReference "webrtc-xcframework" */;
+			productName = LiveKitWebRTC;
+		};
 		74692D8F905BD45EC09335FA /* GoogleSignIn */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 689A899FDC3939B8B86F1633 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
 			productName = GoogleSignIn;
 		};
 		9109FD768D670024E68556DC /* LiveKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2DCF0895A65FBBB07C6CACD7 /* XCRemoteSwiftPackageReference "client-sdk-swift" */;
+			productName = LiveKit;
+		};
+		EF71AD29363DA78174557635 /* LiveKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 2DCF0895A65FBBB07C6CACD7 /* XCRemoteSwiftPackageReference "client-sdk-swift" */;
 			productName = LiveKit;

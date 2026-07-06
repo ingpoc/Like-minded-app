@@ -35,12 +35,12 @@
       "label": "Continue with Google",
       "expected": "POST /v1/auth/google with id token; creates session",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05: SocialAuthButtonsView + GoogleSignInSupport wired; visible on capture output/validation/ios-screens/auth-gate.png",
+      "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (sign-in-google)",
       "blocker": "",
       "stub": false,
-      "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace",
-      "tested_source_hash": "f3287fe0dc502783"
+      "last_tested_at": "2026-07-06",
+      "last_test_method": "screen-capture",
+      "tested_source_hash": "583ad0c62cb62278"
     },
     {
       "id": "sign-in-metamask",
@@ -48,12 +48,12 @@
       "label": "Continue with MetaMask",
       "expected": "Wallet challenge + verify flow; creates session",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05: WalletSignInSupport + SocialAuthButtonsView; visible on auth-gate capture",
+      "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (sign-in-metamask)",
       "blocker": "",
       "stub": false,
-      "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace",
-      "tested_source_hash": "f3287fe0dc502783"
+      "last_tested_at": "2026-07-06",
+      "last_test_method": "screen-capture",
+      "tested_source_hash": "583ad0c62cb62278"
     },
     {
       "id": "sign-in-solflare",
@@ -61,12 +61,12 @@
       "label": "Continue with Solflare",
       "expected": "Wallet challenge + verify flow; creates session",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05: WalletSignInSupport + SocialAuthButtonsView; visible on auth-gate capture",
+      "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (sign-in-solflare)",
       "blocker": "",
       "stub": false,
-      "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace",
-      "tested_source_hash": "f3287fe0dc502783"
+      "last_tested_at": "2026-07-06",
+      "last_test_method": "screen-capture",
+      "tested_source_hash": "583ad0c62cb62278"
     },
     {
       "id": "promise-rows",
@@ -74,12 +74,12 @@
       "label": "Voice profile / Private by design / Circle placement rows",
       "expected": "Display-only promise copy",
       "result": "pass",
-      "evidence": "2026-07-05 capture vs mockups/ios/27-auth-login.png: three promise rows + lock footer match. macOS mapped screen: --mac-screen welcome (validation/macos/01-welcome.json).",
+      "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (promise-rows)",
       "blocker": "",
       "stub": false,
-      "last_tested_at": "2026-07-05",
-      "tested_source_hash": "f3287fe0dc502783",
-      "last_test_method": "visual-compare"
+      "last_tested_at": "2026-07-06",
+      "tested_source_hash": "583ad0c62cb62278",
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
@@ -87,5 +87,5 @@
     "notes": "2026-07-05 capture output/validation/ios-screens/auth-gate.png vs mockups/ios/27-auth-login.png: Likeminded wordmark, Meet the right people / In the right room hero, three promise rows (Voice profile / Private by design / Circle placement), Sign in with Apple + Google/MetaMask/Solflare, lock footer. Intentional: SF Symbol provider icons vs mockup brand logos. macOS parity copy aligned in MacScreens welcome (2026-07-05); macOS recapture blocked by parallel LikemindedMac workers — rerun welcome capture solo."
   },
   "notes": "Cross-platform map: iOS 01-auth-gate → macOS --mac-screen welcome (+ --likeminded-validation-welcome for signed-in layout hold). Launch unsigned: --likeminded-reset-auth-session only (iOS simctl / macOS open). Dev user: validation-gurusharan / Gurusharan Gupta.",
-  "source_hash": "f3287fe0dc502783"
+  "source_hash": "583ad0c62cb62278"
 }

@@ -438,6 +438,69 @@ extension View {
             )
         )
     }
+
+    func prototypeBackNavigation(label: String = "Back") -> some View {
+        overlay(alignment: .topLeading) {
+            PrototypeBackButton(label: label)
+                .padding(.leading, 20)
+                .padding(.top, 12)
+        }
+    }
+}
+
+struct PrototypeBackButton: View {
+    enum Style {
+        case surface
+        case overlay
+    }
+
+    @Environment(\.dismiss) private var dismiss
+    let label: String
+    let style: Style
+    let action: (() -> Void)?
+
+    init(label: String = "Back", style: Style = .surface, action: (() -> Void)? = nil) {
+        self.label = label
+        self.style = style
+        self.action = action
+    }
+
+    var body: some View {
+        Button {
+            if let action {
+                action()
+            } else {
+                dismiss()
+            }
+        } label: {
+            Image(systemName: "chevron.left")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(foregroundColor)
+                .frame(width: 44, height: 44)
+                .background(backgroundColor)
+                .clipShape(Circle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(label)
+    }
+
+    private var foregroundColor: Color {
+        switch style {
+        case .surface:
+            return PrototypePalette.ink
+        case .overlay:
+            return .white
+        }
+    }
+
+    private var backgroundColor: Color {
+        switch style {
+        case .surface:
+            return PrototypePalette.surface
+        case .overlay:
+            return Color.black.opacity(0.28)
+        }
+    }
 }
 
 struct PrototypeAgeRangeSlider: View {

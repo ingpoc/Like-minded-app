@@ -31,7 +31,7 @@
 | Backend route | `services/api/src/server.js` family | Native UI docs |
 | Phase N | `npm run phase:preflight -- N` | Entire phase history |
 | Claim track/goal done | `npm run verify:ledger-progress` | — |
-| macOS CUA (one screen) | `./script/macos_audit_prepare.sh` → `./script/macos_cua_screen.sh <screen>` |
+| macOS CUA (one screen) | `macos_cua_preflight.sh` → `macos_audit_prepare.sh` → `macos_cua_screen.sh <screen>` |
 | macOS post-parallel / stale | `npm run macos:validation-batch` (full) or `npm run macos:cua-reproof` when `ledger:stale` shows macOS `stale_pass` only |
 
 `./script/project_context.sh query --task "…"`: **only** if `goal:next` is insufficient, `decision_count > 0`, or boundary/decision-graph work. **Skip when zero decisions.**

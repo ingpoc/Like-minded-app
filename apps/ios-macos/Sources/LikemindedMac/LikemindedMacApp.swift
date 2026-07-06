@@ -6,6 +6,8 @@ import GoogleSignIn
 
 @main
 struct LikemindedMacApp: App {
+    @StateObject private var appState = MacAppState()
+
     init() {
         Task { @MainActor in
             GoogleSignInSupport.configureIfNeeded()
@@ -15,6 +17,7 @@ struct LikemindedMacApp: App {
     var body: some Scene {
         WindowGroup {
             MacRootView()
+                .environmentObject(appState)
                 .frame(minWidth: 1120, minHeight: 760)
                 .preferredColorScheme(.light)
                 .background(MacWindowChromeHider())
@@ -22,6 +25,16 @@ struct LikemindedMacApp: App {
                     #if canImport(GoogleSignIn)
                     _ = GIDSignIn.sharedInstance.handle(url)
                     #endif
+                    if let callback = WalletSignInSupport.parseCallbackURL(url) {
+                        Task {
+                            let response = AppleAuthResponse(
+                                user: APIUser(id: callback.userId, email: nil, fullName: callback.fullName),
+                                sessionToken: callback.sessionToken,
+                                expiresIn: 60 * 60 * 24 * 30
+                            )
+                            await appState.completeWalletSignIn(response)
+                        }
+                    }
                 }
         }
         .defaultSize(width: 1200, height: 760)
@@ -52,47 +65,6 @@ struct LikemindedMacApp: App {
                 }
                 .keyboardShortcut("5", modifiers: .command)
             }
-        }
-    }
-}
-
-extension Notification.Name {
-    static let macPrototypeSelectMeet = Notification.Name("macPrototypeSelectMeet")
-    static let macPrototypeSelectCircles = Notification.Name("macPrototypeSelectCircles")
-    static let macPrototypeSelectCommunities = Notification.Name("macPrototypeSelectCommunities")
-    static let macPrototypeSelectProfile = Notification.Name("macPrototypeSelectProfile")
-    static let macPrototypeSelectSoulmate = Notification.Name("macPrototypeSelectSoulmate")
-}
-
-private struct MacWindowChromeHider: NSViewRepresentable {
-    func makeNSView(context: Context) -> NSView {
-        let view = NSView()
-        DispatchQueue.main.async {
-            configure(view.window)
-        }
-        return view
-    }
-
-    func updateNSView(_ nsView: NSView, context: Context) {
-        DispatchQueue.main.async {
-            configure(nsView.window)
-        }
-    }
-
-    private func configure(_ window: NSWindow?) {
-        guard let window else { return }
-        window.titleVisibility = .hidden
-        window.titlebarAppearsTransparent = true
-        window.isMovableByWindowBackground = true
-        window.styleMask.insert(.fullSizeContentView)
-        window.standardWindowButton(.closeButton)?.isHidden = false
-        window.standardWindowButton(.miniaturizeButton)?.isHidden = false
-        window.standardWindowButton(.zoomButton)?.isHidden = false
-        window.minSize = NSSize(width: 1120, height: 760)
-        let target = NSSize(width: 1200, height: 760)
-        if window.frame.width < 400 || window.frame.height < 400 {
-            window.setContentSize(target)
-            window.center()
         }
     }
 }

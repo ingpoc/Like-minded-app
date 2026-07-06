@@ -32,6 +32,13 @@ assertIncludes("apps/ios-macos/Entitlements/Likeminded.entitlements", entitlemen
 const macEntitlements = read("apps/ios-macos/Entitlements/LikemindedMac.entitlements");
 assertIncludes("apps/ios-macos/Entitlements/LikemindedMac.entitlements", macEntitlements, "com.apple.developer.applesignin");
 assertIncludes("apps/ios-macos/project.yml", project, "CODE_SIGN_ENTITLEMENTS: Entitlements/LikemindedMac.entitlements");
+assertIncludes("apps/ios-macos/project.yml", project, "CODE_SIGN_ENTITLEMENTS: Entitlements/LikemindedMac.Debug.entitlements");
+
+const macDebugEntitlements = read("apps/ios-macos/Entitlements/LikemindedMac.Debug.entitlements");
+assertNotIncludes("apps/ios-macos/Entitlements/LikemindedMac.Debug.entitlements", macDebugEntitlements, "com.apple.developer.applesignin");
+
+assertIncludes("apps/ios-macos/Info/Likeminded-Info.plist", read("apps/ios-macos/Info/Likeminded-Info.plist"), "GIDClientID");
+assertIncludes("apps/ios-macos/Info/LikemindedMac-Info.plist", read("apps/ios-macos/Info/LikemindedMac-Info.plist"), "com.likeminded.mac");
 
 const apiClient = read("apps/ios-macos/Sources/LikemindedApp/Data/LikemindedAPIClient.swift");
 assertIncludes("LikemindedAPIClient.swift", apiClient, "https://likeminded-api.onrender.com");
@@ -75,7 +82,12 @@ for (const key of [
   "APPLE_MAC_BUNDLE_ID=com.likeminded.mac",
   "APPLE_CLIENT_IDS=com.likeminded.app,com.likeminded.mac",
   "APPLE_REQUIRE_NONCE=1",
-  "APPLE_AUTH_BYPASS=0"
+  "APPLE_AUTH_BYPASS=0",
+  "GOOGLE_CLIENT_ID_IOS=",
+  "GOOGLE_CLIENT_ID_MAC=",
+  "GOOGLE_REVERSED_CLIENT_ID=",
+  "GOOGLE_CLIENT_IDS=",
+  "WALLETCONNECT_PROJECT_ID="
 ]) {
   assertIncludes(".env.example", envExample, key);
 }
@@ -92,6 +104,10 @@ assertNotIncludes("script/build_and_run.sh", buildScript, "com.likeminded.protot
 const packageJson = read("package.json");
 assertIncludes("package.json", packageJson, "verify:simulator-local");
 assertIncludes("package.json", packageJson, "verify:external-preflight");
+
+const setupDoc = read("docs/workflows/setup.md");
+assertIncludes("docs/workflows/setup.md", setupDoc, "LiveKitMeetSession");
+assertIncludes("docs/workflows/setup.md", setupDoc, "GOOGLE_REVERSED_CLIENT_ID");
 
 const validation = read("docs/workflows/validation.md");
 assertIncludes("docs/workflows/validation.md", validation, "npm run verify:simulator-local");

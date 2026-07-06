@@ -27,7 +27,19 @@ APPLE_AUTH_BYPASS=0
 ```sh
 npm run verify:release-config
 npm run smoke:mvp
+npm run verify:local-product-loop
+npm run verify:google-auth-config
+npm run deploy:render-preflight
 npm run verify:external-preflight
 ```
+
+## Operator workflows
+
+| Phase | Doc |
+|-------|-----|
+| 2 — Google Sign-In | [`docs/workflows/google-oauth-setup.md`](../docs/workflows/google-oauth-setup.md) |
+| 3 — Render + Neon | [`docs/workflows/render-neon-deploy.md`](../docs/workflows/render-neon-deploy.md) |
+| 4 — LiveKit | [`docs/workflows/livekit-setup.md`](../docs/workflows/livekit-setup.md) |
+| 5 — TestFlight | [`docs/workflows/testflight-operator-checklist.md`](../docs/workflows/testflight-operator-checklist.md) |
 
 `npm run smoke:mvp` uses a local isolated store. `npm run verify:external-preflight` is expected to fail until `release/testflight-evidence.json` is copied from `release/testflight-evidence.template.json` and filled after real Render/Neon/Apple/TestFlight proof.

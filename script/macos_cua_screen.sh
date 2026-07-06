@@ -1,109 +1,53 @@
 #!/usr/bin/env bash
-# Computer Use pass for a single macOS screen: launch → focus → snap/click by label.
+# Ledger CUA pass: launch screen → frame window → click/type via macos-cua.py.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # shellcheck source=macos_canonical_app.sh
 source "$ROOT/script/macos_canonical_app.sh"
 
 SCREEN="${1:?screen name, e.g. communityDetail}"
-CUA="${CUA_DRIVER:-$HOME/.local/bin/cua-driver}"
-PID=""
-WID=""
+MACOS_CUA_PY="${MACOS_CUA_PY:-$HOME/.agents/skills/macos-cua/scripts/macos-cua.py}"
+CUA_APP="Likeminded"
 CLICK_OK=0
 CLICK_MISS=0
 
-cua_bind() {
-  local json
-  json="$("$ROOT/script/macos_cua_focus_window.sh")"
-  eval "$(python3 -c "import json,sys; d=json.load(sys.stdin); print(f'export PID={d[\"pid\"]} WID={d[\"window_id\"]}')" <<<"$json")"
-}
-
-snap() {
-  cua_bind
-  "$CUA" call get_window_state "{\"pid\":$PID,\"window_id\":$WID,\"max_elements\":${1:-120},\"mode\":\"som\"}" 2>/dev/null
-}
-
-find_field() {
-  local needle="$1"
-  snap 120 | python3 -c "import json,sys
-n=sys.argv[1].lower()
-els=[e for e in json.load(sys.stdin).get('elements',[]) if e.get('role') in ('AXTextField','AXTextArea')]
-exact=[e for e in els if (e.get('label') or '').lower()==n]
-if exact:
-  print(exact[0]['element_index']); raise SystemExit
-cands=[e for e in els if n in (e.get('label') or '').lower()]
-cands.sort(key=lambda e: len(e.get('label') or ''), reverse=True)
-if cands:
-  print(cands[0]['element_index'])
-" "$needle"
+cua() {
+  python3 "$MACOS_CUA_PY" "$@"
 }
 
 click_label() {
   local needle="$1"
   local optional="${2:-}"
-  local idx
-  idx=$(snap 120 | python3 -c "import json,sys
-n=sys.argv[1].lower()
-roles={'AXButton','AXCheckBox','AXRadioButton','AXLink','AXPopUpButton','AXMenuButton'}
-els=[e for e in json.load(sys.stdin).get('elements',[]) if e.get('role') in roles]
-exact=[e for e in els if (e.get('label') or '').lower()==n]
-if exact:
-  print(exact[0]['element_index']); raise SystemExit
-cands=[e for e in els if n in (e.get('label') or '').lower()]
-cands.sort(key=lambda e: len(e.get('label') or ''), reverse=True)
-if cands:
-  print(cands[0]['element_index'])
-" "$needle")
-  if [[ -z "$idx" ]]; then
-    echo "MISSING: $needle"
-    if [[ "$optional" != "optional" ]]; then
-      CLICK_MISS=$((CLICK_MISS + 1))
-    fi
+  local out ok
+  out="$(cua click-label "$CUA_APP" "$needle" --max 120 2>&1)" || true
+  ok="$(python3 -c "import json,sys; print('yes' if json.loads(sys.stdin.read()).get('ok') else 'no')" <<<"$out" 2>/dev/null || echo no)"
+  if [[ "$ok" == "yes" ]]; then
+    echo "OK click '$needle'"
+    CLICK_OK=$((CLICK_OK + 1))
     return 0
   fi
-  cua_bind
-  "$CUA" call click "{\"pid\":$PID,\"window_id\":$WID,\"element_index\":$idx}" 2>/dev/null | head -1
-  sleep 0.7
-  echo "OK click '$needle' idx=$idx"
-  CLICK_OK=$((CLICK_OK + 1))
+  echo "MISSING: $needle"
+  if [[ "$optional" != "optional" ]]; then
+    CLICK_MISS=$((CLICK_MISS + 1))
+  fi
 }
 
 type_field() {
   local label="$1"
   local text="$2"
   local optional="${3:-}"
-  local idx
-  idx=$(find_field "$label")
-  if [[ -z "$idx" ]]; then
-    echo "MISSING field: $label"
-    if [[ "$optional" != "optional" ]]; then
-      CLICK_MISS=$((CLICK_MISS + 1))
-    fi
-    return 0
-  fi
-  cua_bind
-  "$CUA" call click "{\"pid\":$PID,\"window_id\":$WID,\"element_index\":$idx}" 2>/dev/null | head -1
-  sleep 0.4
-  "$CUA" call press_key "{\"pid\":$PID,\"window_id\":$WID,\"key\":\"a\",\"modifier\":[\"cmd\"]}" 2>/dev/null | head -1 || true
-  sleep 0.2
-  "$CUA" call type_text "{\"pid\":$PID,\"window_id\":$WID,\"element_index\":$idx,\"text\":\"$text\"}" 2>/dev/null | head -1
-  sleep 0.5
-  local value
-  value=$(snap 120 | python3 -c "import json,sys
-idx=int(sys.argv[1])
-for e in json.load(sys.stdin).get('elements',[]):
-  if e.get('element_index')==idx:
-    print(e.get('value') or ''); break
-" "$idx")
-  echo "OK type '$label' idx=$idx value=$(printf '%q' "$value")"
-  if [[ "$value" == *"$text"* ]]; then
+  local out ok
+  out="$(cua type-label "$CUA_APP" "$label" "$text" --max 120 2>&1)" || true
+  ok="$(python3 -c "import json,sys; print('yes' if json.loads(sys.stdin.read()).get('ok') else 'no')" <<<"$out" 2>/dev/null || echo no)"
+  if [[ "$ok" == "yes" ]]; then
+    echo "OK type '$label'"
     CLICK_OK=$((CLICK_OK + 1))
     return 0
   fi
+  echo "MISSING field: $label"
   if [[ "$optional" != "optional" ]]; then
     CLICK_MISS=$((CLICK_MISS + 1))
   fi
-  return 0
 }
 
 curl -fsS "http://127.0.0.1:${PORT:-8787}/health" >/dev/null || {
@@ -111,18 +55,26 @@ curl -fsS "http://127.0.0.1:${PORT:-8787}/health" >/dev/null || {
   exit 1
 }
 
+"$ROOT/script/macos_cua_preflight.sh"
+
 LIKEMINDED_VALIDATION_USER="${LIKEMINDED_VALIDATION_USER:-validation-gurusharan}" \
 LIKEMINDED_VALIDATION_NAME="${LIKEMINDED_VALIDATION_NAME:-Gurusharan Gupta}" \
   "$ROOT/script/run_macos_manual_validation.sh" "$SCREEN" >/dev/null
 sleep 5
 
-cua_bind
-echo "screen=$SCREEN pid=$PID wid=$WID app=$MACOS_CANONICAL_APP"
-snap 120 | python3 -c "import json,sys
-roles={'AXButton','AXCheckBox','AXRadioButton','AXLink','AXPopUpButton','AXMenuButton'}
-for e in json.load(sys.stdin).get('elements',[]):
-  if e.get('role') in roles and (e.get('label') or '').strip():
-    print(e['element_index'], repr(e.get('label')), e.get('value',''))"
+"$ROOT/script/macos_cua_focus_window.sh" >/dev/null
+cua reset >/dev/null 2>&1 || true
+cua focus "$CUA_APP" >/dev/null 2>&1 || true
+
+echo "screen=$SCREEN app=$CUA_APP"
+cua list-buttons "$CUA_APP" --max 120 | python3 -c "
+import json,sys
+for line in sys.stdin:
+    line=line.strip()
+    if not line: continue
+    e=json.loads(line)
+    print(e['index'], repr(e.get('label')), e.get('value',''))
+"
 
 case "$SCREEN" in
   communityDetail)
@@ -141,7 +93,8 @@ case "$SCREEN" in
     LIKEMINDED_VALIDATION_NAME="${LIKEMINDED_VALIDATION_NAME:-Gurusharan Gupta}" \
       "$ROOT/script/run_macos_manual_validation.sh" "$SCREEN" >/dev/null
     sleep 5
-    cua_bind
+    "$ROOT/script/macos_cua_focus_window.sh" >/dev/null
+    cua focus "$CUA_APP" >/dev/null 2>&1 || true
     click_label "Circle options"
     click_label "This does not feel like my circle"
     click_label "Upcoming circle meet row" optional
@@ -242,7 +195,6 @@ esac
 
 echo "cua_click_summary ok=$CLICK_OK miss=$CLICK_MISS"
 
-# Stamp tested_source_hash only when required CUA clicks succeeded (avoid launch-only false-green).
 STAMP_CONTROLS=""
 case "$SCREEN" in
   meetOverview) STAMP_CONTROLS="join-meetup,rsvp-sat-yes,rsvp-sat-no,rsvp-sun-yes,rsvp-sun-no,past-row" ;;

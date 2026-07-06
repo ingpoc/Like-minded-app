@@ -15,6 +15,11 @@ enum GoogleSignInSupport {
     }
 
     static var clientID: String? {
+        #if os(macOS)
+        if let env = ProcessInfo.processInfo.environment["GOOGLE_CLIENT_ID_MAC"], !env.isEmpty {
+            return env
+        }
+        #endif
         if let env = ProcessInfo.processInfo.environment["GOOGLE_CLIENT_ID_IOS"], !env.isEmpty {
             return env
         }

@@ -207,29 +207,14 @@ screencapture -x -l "$(python3 -c 'import Quartz; \
 
 ## Post-parallel validation batch
 
-After **parallel** UI work across multiple ledger screens, do **not** run CUA or
-capture from multiple agents at once (port `:8787` and `LikemindedMac` instance
-fights produce empty AX trees and wrong screenshots).
+After parallel UI work, run **one** sequential pass (no concurrent CUA/capture):
 
-Use one orchestrated pass:
+```bash
+npm run macos:validation-batch              # full
+npm run macos:cua-reproof                   # stale-pass CUA only
 ```
-npm run macos:validation-batch              # full closeout
-npm run macos:validation-batch -- --stale-only --cua-only   # ledger stale_pass only
-npm run macos:cua-reproof                   # alias for stale-only CUA
-```
-Or: `./script/macos_validation_batch.sh` with the same flags.
 
-What it does:
-1. Sole owner of validation API on `:8787` (frees port if needed)
-2. `npm run reset:validation-data` once (skipped in `--cua-only` when API already up)
-3. `./script/verify_macos_screens.sh` — captures at 1200×760 (`--stale-only` limits screen list)
-4. Sequential `./script/macos_cua_screen.sh <screen>` per prototype screen
-5. `npm run ledger:stale` summary
-
-Flags: `--stale-only`, `--capture-only`, `--cua-only`, optional screen list, `--keep-api`.
-
-**Parallel OK:** disjoint `MacScreens.swift` MARK slices per `validation/macos/*.json`.  
-**Parallel NOT OK:** capture, CUA, `reset:validation-data` mid-flight.
+Sequential `macos_cua_screen.sh` per screen; uses `macos-cua.py` (`click-label` / `type-label`). Preflight: `macos_cua_preflight.sh`.
 
 ## Validation fixtures contract (`--mac-screen` deep links)
 
@@ -247,7 +232,7 @@ is set and API data is empty or validation needs plate copy.
 When adding a new deep-link screen to validation:
 1. Add fixture block if plate copy ≠ seeded API shape
 2. Document in ledger `intentional_differences`
-3. Wire `macos_cua_screen.sh` click labels to `accessibilityLabel` strings
+3. Wire `accessibilityLabel` strings to labels in `macos_cua_screen.sh` (see `~/.agents/skills/macos-cua/references/AppInstructions/LikemindedMac.md`)
 
 ## Per-screen validation checklist
 
@@ -264,19 +249,20 @@ When adding a new deep-link screen to validation:
 - **Backend contract is `LIKEMINDED_API_BASE_URL`.** Both iOS and macOS read
   the same key from their Info.plist (`INFOPLIST_KEY_LIKEMINDED_API_BASE_URL`).
   Never hardcode a URL in the Swift client; never fork the contract per platform.
-- **No LiveKit on macOS.** The `LikemindedMac` target does not depend on
-  LiveKit/LiveKitWebRTC. The `meetVideoCall` mockup (21) is a Mac prototype
-  surface for the meet video flow without the LiveKit SDK link.
-- **Keep macOS-only SwiftUI in `Sources/LikemindedMac`.** Do not put Mac-only
-  window/toolbar/menu/sidebar layout into `Sources/LikemindedApp`.
+- **Auth gate** is the macOS welcome screen (`MacScreens.swift`):
+  Sign in with Apple + Google + MetaMask + Solflare (same shared buttons as iOS).
+  Entitlement: `Entitlements/LikemindedMac.entitlements`. URL schemes + `GIDClientID`
+  in `Info/LikemindedMac-Info.plist`. Wallet callbacks in `LikemindedMacApp.onOpenURL`.
+  `MacRootView` uses `@EnvironmentObject MacAppState` from the app entry point.
+  For validation without real Apple ID: `--likeminded-dev-auth-bypass` with
+  `npm run dev:api:local-auth`.
+- **LiveKit** on macOS: `LikemindedMac` links LiveKit SPM packages; join flow uses
+  `Sources/Shared/LiveKitMeetSession.swift` in `meetVideoCall`. Preview tiles when
+  `POST /v1/meetings/:id/join` fails (no `LIVEKIT_*` env).
+- **Keep macOS-only SwiftUI in `Sources/LikemindedMac`.** Shared auth + LiveKit
+  live in `Sources/Shared/`.
 - **Window size for validation is 1200×760** at {80,80} — match this when
   capturing for parity with `mockups/macos/`.
-- **Apple Sign-In is iOS-only** (entitlement lives at
-  `Entitlements/Likeminded.entitlements` for the iOS target). macOS uses
-  `--likeminded-dev-auth-bypass` with `dev:api:local-auth` or the validation
-  API's dev tokens.
-- **`GENERATE_INFOPLIST_FILE: YES`** — no hand-written Info.plist; configure
-  keys via `project.yml` (`INFOPLIST_KEY_*`), then regenerate.
 - **Shell-first.** No simulator tooling on this surface — use `xcodebuild`,
   `open`, `cross_platform_validation_lock.sh`, `screencapture`, `log stream`, `osascript`.
 

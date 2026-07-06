@@ -46,11 +46,14 @@ export LIKEMINDED_VALIDATION_NAME="Gurusharan Gupta"
 | macOS post-parallel batch | `npm run macos:validation-batch` (full capture + CUA) |
 | macOS / iOS stale reproof | `npm run macos:validation-batch -- --stale-only --cua-only` · `npm run verify:ios-screens -- --stale-only` · `npm run validation:wave2-reproof` |
 | iOS simulator | `npm run verify:simulator-local` |
+| Local product loop | `npm run verify:local-product-loop` |
+| Google OAuth readiness | `npm run verify:google-auth-config` |
+| Render deploy preflight | `npm run deploy:render-preflight` |
 | **One screen capture (locked)** | `./script/cross_platform_screen_validate.sh --screen <id> --platform ios\|both` |
 | iOS batch captures | `npm run verify:ios-screens` (default list) or `--stale-only` for ledger-driven reproof |
 | Seeded API | `npm run dev:api:validation` |
 | Reset seed | `npm run reset:validation-data` |
-| macOS CUA (one screen) | `./script/macos_audit_prepare.sh` → `./script/macos_cua_screen.sh <screen>` |
+| macOS CUA (one screen) | `macos_cua_preflight.sh` → `macos_audit_prepare.sh` → `macos_cua_screen.sh <screen>` |
 | Stale screen list | `node script/ledger_stale_screens.js --platform ios\|macos` |
 | macOS minimum window | `./script/macos_audit_window_matrix.sh small` = 1120×901 |
 | Phase checklist | `npm run phase:preflight -- <N>` |
@@ -89,7 +92,7 @@ See § Parallel screen validation for locks and two-wave model. iOS single-scree
 
 | Situation | Command |
 |-----------|---------|
-| One screen, API up | `macos_audit_prepare.sh <screen>` → `macos_cua_screen.sh <screen>` |
+| One screen, API up | `macos_cua_preflight.sh` → `macos_audit_prepare.sh <screen>` → `macos_cua_screen.sh <screen>` |
 | After parallel UI edits (full macOS closeout) | `npm run macos:validation-batch` |
 | Captures only | `npm run verify:macos-screens` |
 | Stale controls only (macOS) | `npm run macos:cua-reproof` (= `--stale-only --cua-only`) |
@@ -139,8 +142,8 @@ Lock files: `/tmp/likeminded-validation-locks/` (600s wait). macOS `--mac-screen
 ### Seed + API timing
 
 - Single owner of `:8787` during seed + capture. Stop API before seed if `reset:validation-data` fails mid-run against a live server.
-- Simulator auth gate (“Could not connect to the server”) often means `:8787` was killed by another agent — not a wrong plist URL.
-- `curl -s http://127.0.0.1:8787/health` → `dbPath` must contain `validation-db` before native capture.
+- Simulator auth gate (“Could not connect to the server”) often means `:8787` was killed by another agent — not a wrong plist URL. Real Apple/Google/wallet sign-in needs `APPLE_AUTH_BYPASS=0` and matching `GOOGLE_*` / `WALLETCONNECT_*` env; use `--likeminded-dev-auth-bypass` only for seeded capture.
+- `curl -s http://127.0.0.1:8787/health` → `dbPath` must contain `validation-db` before native capture; check `livekit`, `googleAuth`, `walletAuth` when testing those flows.
 
 ### Ledger lookup
 
@@ -159,7 +162,7 @@ Use full ledger id: `npm run ledger:screen -- --platform ios --screen 22-setting
 - Put **`--mac-screen <name>` before other launch flags** (order-sensitive; wrong order → no capturable window).
 - Auth welcome: **no** dev bypass; `--likeminded-reset-auth-session --mac-screen welcome --likeminded-validation-welcome`.
 - Settings how-it-works: `--mac-screen settingsSoulmate --mac-settings-pane howItWorks` only (dual `--likeminded-start-settings-info` + pane can yield 0 windows).
-- Capture by **PID window id** (`macos_cua_focus_window.sh`), not first “Likeminded*” window on screen.
+- Capture by **PID window id** (`macos_cua_focus_window.sh`). Run `macos_cua_preflight.sh` if `cua-driver` calls timeout.
 
 ## Delegated verification
 

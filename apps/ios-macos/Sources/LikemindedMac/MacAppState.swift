@@ -504,6 +504,10 @@ final class MacAppState: ObservableObject {
         }
     }
 
+    func joinMeeting(id: String) async throws -> LiveKitJoinToken {
+        try await client.joinMeeting(id: id)
+    }
+
     func fetchSoulmateStatus() async {
         guard isSignedIn else { return }
         isLoadingSoulmate = true

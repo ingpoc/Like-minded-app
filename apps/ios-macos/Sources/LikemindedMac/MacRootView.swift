@@ -2,7 +2,7 @@ import AppKit
 import SwiftUI
 
 struct MacRootView: View {
-    @StateObject private var appState = MacAppState()
+    @EnvironmentObject private var appState: MacAppState
     @State private var selectedScreen: MacPrototypeScreen = Self.bootstrappedScreen()
 
     private static func bootstrappedScreen() -> MacPrototypeScreen {
@@ -63,9 +63,8 @@ struct MacRootView: View {
                         VStack(spacing: 18) {
                             MacScreenView(screen: displayedScreen, appState: appState) { destination in
                                 guard !macScreenDeepLinkLocked else { return }
-                                if destination == .messages {
-                                    returnScreen = selectedScreen
-                                }
+                                guard destination != selectedScreen else { return }
+                                returnScreen = selectedScreen
                                 selectedScreen = destination
                             }
                             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
@@ -87,6 +86,18 @@ struct MacRootView: View {
                         selectedScreen = tab.primaryScreen
                     }
                     .padding(.bottom, 18)
+                }
+            }
+            .overlay(alignment: .topLeading) {
+                if appState.isSignedIn,
+                   displayedScreen != .welcome,
+                   returnScreen != nil,
+                   !macScreenDeepLinkLocked {
+                    MacBackButton {
+                        navigateBack()
+                    }
+                    .padding(.top, 18)
+                    .padding(.leading, 28)
                 }
             }
             .overlay(alignment: .topTrailing) {
@@ -157,7 +168,12 @@ struct MacRootView: View {
             applyMacScreenDeepLinkIfNeeded()
         }
         .onChange(of: appState.isSignedIn) { _, isSignedIn in
-            guard isSignedIn else { return }
+            if !isSignedIn {
+                guard !macScreenDeepLinkLocked else { return }
+                selectedScreen = .welcome
+                returnScreen = nil
+                return
+            }
             if let macScreenDeepLink {
                 selectedScreen = macScreenDeepLink
                 return
@@ -211,17 +227,21 @@ struct MacRootView: View {
 
     private func performTitleAction() {
         switch selectedScreen {
-        case .settingsSoulmate:
-            selectedScreen = .myProfile
-        case .messages:
-            selectedScreen = returnScreen ?? .meetOverview
-            returnScreen = nil
+        case .settingsSoulmate, .messages:
+            navigateBack()
         case .myProfile:
+            returnScreen = selectedScreen
             selectedScreen = .settingsSoulmate
         default:
             returnScreen = selectedScreen
             selectedScreen = .messages
         }
+    }
+
+    private func navigateBack() {
+        guard let returnScreen else { return }
+        selectedScreen = returnScreen
+        self.returnScreen = nil
     }
 
 }
@@ -257,5 +277,6 @@ struct MacBottomNav: View {
 
 #Preview {
     MacRootView()
+        .environmentObject(MacAppState())
         .frame(width: 1200, height: 760)
 }
