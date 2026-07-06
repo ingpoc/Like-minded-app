@@ -10,6 +10,7 @@
 		00C5C47C4D3A69486DC493D3 /* LikemindedMacApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7700EF7A1FAAF31D9ACEF8F4 /* LikemindedMacApp.swift */; };
 		0306E5047E58AB8F66830636 /* AppleSignInSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FCE7C689C2FF701CCB18EB /* AppleSignInSupport.swift */; };
 		0F0F08547C69AA374756B919 /* LiveKitTokenProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A931FF701084ED1753234F3A /* LiveKitTokenProvider.swift */; };
+		0F7497EFAC0CD06A96238A40 /* AuthAppleSignInButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE27F2E2DF0BD86E2ED6C93 /* AuthAppleSignInButton.swift */; };
 		132444A82981B36C69EF5C56 /* LikemindedAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14190A43716DF2A52AB8F7DD /* LikemindedAPIClient.swift */; };
 		1434DA300C4A5A2400A859A3 /* PrototypeModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8C121E18E6BF523CE92D82 /* PrototypeModels.swift */; };
 		16F14684399DFC422A77AF87 /* GoogleSignInSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B055E6A70526D0FD3D6B7C5 /* GoogleSignInSupport.swift */; };
@@ -26,6 +27,7 @@
 		3D96591126672068AD6125E9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E4A27335D18C85FF61CE549E /* Assets.xcassets */; };
 		3FC6508C115AA08A823B19CB /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71F1782CC0FAAD3C06C76E5C /* RootView.swift */; };
 		4319E06107624A793DB13545 /* AuthSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDF2490A9727FEEB417EED9F /* AuthSessionStore.swift */; };
+		44A886C6EBCAB7C51DC6BB24 /* AuthTermsFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3263A357DE2335A1968309C8 /* AuthTermsFooter.swift */; };
 		4662D50BD9BFCB596D1B3824 /* DoodleArt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 296DEAB93269CB0949442024 /* DoodleArt.swift */; };
 		526F3648A81F8B47AA9EFC97 /* LiveKit in Frameworks */ = {isa = PBXBuildFile; productRef = EF71AD29363DA78174557635 /* LiveKit */; };
 		537F95835B944C12426E2846 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = F6DE61824C693F67847A8C36 /* GoogleSignIn */; };
@@ -35,7 +37,10 @@
 		676E4A1C5FC17EE494C1AB2F /* AuthGateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B0C51AF9D64677B65F8D49A /* AuthGateView.swift */; };
 		6817D124A01EACB3443E418A /* GoogleSignInSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B055E6A70526D0FD3D6B7C5 /* GoogleSignInSupport.swift */; };
 		6BC67532CE7285221B1396E7 /* SoulmateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75383C5F7FE5874C6F987690 /* SoulmateView.swift */; };
+		6E02709B4705A28920582AFA /* AuthBrandMark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 740CEE630B4E824C07E91448 /* AuthBrandMark.swift */; };
+		7012F56E90C9A8C4AD653736 /* AuthTermsFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3263A357DE2335A1968309C8 /* AuthTermsFooter.swift */; };
 		70256BE1244F839DCABB128C /* WalletSignInSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE323EA9FB8B001BE3FD724E /* WalletSignInSupport.swift */; };
+		73DDAF3BEE6DBF7B8E4626AB /* AuthAppleSignInButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE27F2E2DF0BD86E2ED6C93 /* AuthAppleSignInButton.swift */; };
 		7CB71404A390802C745BF8F1 /* MacScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = F693CC73A97F4BA64FD34B2D /* MacScreens.swift */; };
 		8298F29B28F7DBDF337EDD96 /* MacRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40664BF795D4C75998E0D941 /* MacRootView.swift */; };
 		840C9EB45DCEBC5391A5C561 /* AppleSignInSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FCE7C689C2FF701CCB18EB /* AppleSignInSupport.swift */; };
@@ -56,6 +61,7 @@
 		E5F05FF2F77CDC1BC4866782 /* PrototypeComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83237B0C66BA3537CAB89B87 /* PrototypeComponents.swift */; };
 		EA5E724579022F5894D30BCE /* MacAppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C848990D583124075A5332A9 /* MacAppState.swift */; };
 		EA9F7CA6176BED311E8CE740 /* LiveKitWebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 5C23684ECD3C73D525192988 /* LiveKitWebRTC */; };
+		EC2377C78BA3D60350D3ABAF /* AuthBrandMark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 740CEE630B4E824C07E91448 /* AuthBrandMark.swift */; };
 		F5B8DF9B8360B797123A8F3F /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99419D847C29F69421A296E7 /* Models.swift */; };
 		FEEF47DE3C0EB72A13CE2AD5 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 74692D8F905BD45EC09335FA /* GoogleSignIn */; };
 /* End PBXBuildFile section */
@@ -68,6 +74,7 @@
 		296DEAB93269CB0949442024 /* DoodleArt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoodleArt.swift; sourceTree = "<group>"; };
 		2B0C51AF9D64677B65F8D49A /* AuthGateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthGateView.swift; sourceTree = "<group>"; };
 		2E4CC542091C9D3F04D1DE21 /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
+		3263A357DE2335A1968309C8 /* AuthTermsFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthTermsFooter.swift; sourceTree = "<group>"; };
 		40664BF795D4C75998E0D941 /* MacRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacRootView.swift; sourceTree = "<group>"; };
 		43D8F9C153E1CAAA2E1D4B53 /* DeviceIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceIdentity.swift; sourceTree = "<group>"; };
 		4895BAF5408C8A7CEDEB5EC3 /* CircleCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleCard.swift; sourceTree = "<group>"; };
@@ -78,6 +85,7 @@
 		704749A39D4B879E03561B1B /* LikemindedApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikemindedApp.swift; sourceTree = "<group>"; };
 		70685EA3FAE20FBC4827812B /* RealtimeVoiceClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeVoiceClient.swift; sourceTree = "<group>"; };
 		71F1782CC0FAAD3C06C76E5C /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		740CEE630B4E824C07E91448 /* AuthBrandMark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthBrandMark.swift; sourceTree = "<group>"; };
 		75383C5F7FE5874C6F987690 /* SoulmateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoulmateView.swift; sourceTree = "<group>"; };
 		75C0F95C041A6C7D0D328202 /* ProfilePrototypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePrototypeView.swift; sourceTree = "<group>"; };
 		7700EF7A1FAAF31D9ACEF8F4 /* LikemindedMacApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikemindedMacApp.swift; sourceTree = "<group>"; };
@@ -99,6 +107,7 @@
 		E11E3DAEAEA4F6D6B35D2D32 /* SettingsPrototypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPrototypeView.swift; sourceTree = "<group>"; };
 		E35A6097677BF379E314306E /* MacDesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacDesignSystem.swift; sourceTree = "<group>"; };
 		E4A27335D18C85FF61CE549E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		EBE27F2E2DF0BD86E2ED6C93 /* AuthAppleSignInButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAppleSignInButton.swift; sourceTree = "<group>"; };
 		F693CC73A97F4BA64FD34B2D /* MacScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacScreens.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -138,6 +147,9 @@
 			isa = PBXGroup;
 			children = (
 				D7FCE7C689C2FF701CCB18EB /* AppleSignInSupport.swift */,
+				EBE27F2E2DF0BD86E2ED6C93 /* AuthAppleSignInButton.swift */,
+				740CEE630B4E824C07E91448 /* AuthBrandMark.swift */,
+				3263A357DE2335A1968309C8 /* AuthTermsFooter.swift */,
 				7B055E6A70526D0FD3D6B7C5 /* GoogleSignInSupport.swift */,
 				63D2CC8991B9726CA6E09FED /* LikemindedPrivacyPolicy.swift */,
 				000AE075D1E28F6F008AC04D /* LiveKitMeetSession.swift */,
@@ -365,8 +377,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				840C9EB45DCEBC5391A5C561 /* AppleSignInSupport.swift in Sources */,
+				73DDAF3BEE6DBF7B8E4626AB /* AuthAppleSignInButton.swift in Sources */,
+				6E02709B4705A28920582AFA /* AuthBrandMark.swift in Sources */,
 				676E4A1C5FC17EE494C1AB2F /* AuthGateView.swift in Sources */,
 				4319E06107624A793DB13545 /* AuthSessionStore.swift in Sources */,
+				44A886C6EBCAB7C51DC6BB24 /* AuthTermsFooter.swift in Sources */,
 				379D8BA56E5821E1680248E7 /* CircleCard.swift in Sources */,
 				8D27A1FA539B87B3019798C6 /* CommunitiesPrototypeView.swift in Sources */,
 				B6865DD6F294D8C495E0F118 /* CustomTabBar.swift in Sources */,
@@ -400,6 +415,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				0306E5047E58AB8F66830636 /* AppleSignInSupport.swift in Sources */,
+				0F7497EFAC0CD06A96238A40 /* AuthAppleSignInButton.swift in Sources */,
+				EC2377C78BA3D60350D3ABAF /* AuthBrandMark.swift in Sources */,
+				7012F56E90C9A8C4AD653736 /* AuthTermsFooter.swift in Sources */,
 				2DD8ACBCA63AB12436A173EC /* DoodleArt.swift in Sources */,
 				6817D124A01EACB3443E418A /* GoogleSignInSupport.swift in Sources */,
 				132444A82981B36C69EF5C56 /* LikemindedAPIClient.swift in Sources */,

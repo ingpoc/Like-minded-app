@@ -112,7 +112,7 @@
     "notes": "2026-07-05 capture vs plate 15: Ananya sidebar + Jazz & Music group rows, jazz thread, Type a message composer. Intentional: Groups filter honest empty; initials not photos."
   },
   "notes": "2026-07-05: MacMessagesFixtures for --mac-screen messages; shared chat() with Chats; chatDisplayName for seed names.",
-  "source_hash": "538e3a81936254d6",
+  "source_hash": "7a7a5a21e1f1449f",
   "recent_screenshot_ref": "output/validation/macos-screens/messages.png",
   "ui_validation": {
     "result": "pass",
