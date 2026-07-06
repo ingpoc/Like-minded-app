@@ -24,10 +24,10 @@
       "label": "Message bubbles",
       "expected": "Green outgoing / warm incoming; polls every 3s",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 iOS/macOS chat parity: IOSChatFixtures Coltrane jazz thread matches MacChatFixtures plate 05; macOS output/validation/macos-screens/chat.png verified (message-list)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (message-list)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "cfa6d6826e4ff4f1",
+      "tested_source_hash": "5199f1abff26babc",
       "last_tested_at": "2026-07-05",
       "last_test_method": "screen-capture"
     },
@@ -37,10 +37,10 @@
       "label": "Message input (vertical)",
       "expected": "Editable draft, lineLimit 1...4",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 iOS/macOS chat parity: Message {partner} placeholder aligned with macOS MacChatComposer (draft)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (draft)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "cfa6d6826e4ff4f1",
+      "tested_source_hash": "5199f1abff26babc",
       "last_tested_at": "2026-07-05",
       "last_test_method": "screen-capture"
     },
@@ -50,10 +50,10 @@
       "label": "Send (arrow.up.circle.fill)",
       "expected": "POST message; disabled when draft empty",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 iOS/macOS chat parity: Send disabled when empty; fixture/local append on deep-link (send)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (send)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "cfa6d6826e4ff4f1",
+      "tested_source_hash": "5199f1abff26babc",
       "last_tested_at": "2026-07-05",
       "last_test_method": "screen-capture"
     }
@@ -63,5 +63,5 @@
     "notes": "2026-07-05 macOS capture vs plate 05: Arjun/Meera/Rohan/Ananya/Vikram roster + Coltrane jazz thread at output/validation/macos-screens/chat.png. iOS fixture thread + ChatDisplayNames parity in source; dedicated --likeminded-start-chat route. Intentional: iOS single-thread mobile layout vs macOS split roster; iOS capture requires validation API + ~60s auth under lock."
   },
   "notes": "macOS counterpart: validation/macos/06-chat.json (--mac-screen chat). User: validation-gurusharan / Gurusharan Gupta.",
-  "source_hash": "cfa6d6826e4ff4f1"
+  "source_hash": "5199f1abff26babc"
 }

@@ -147,23 +147,22 @@ case "$SCREEN" in
     click_label "Upcoming circle meet row" optional
     ;;
   settingsSoulmate)
+    click_label "Soulmate" optional
     click_label "Account" optional
     click_label "Privacy & safety" optional
     click_label "Notifications" optional
     click_label "Help & support" optional
-    click_label "Soulmate" optional
     click_label "Visible in discover" optional
     click_label "Visible only after both like" optional
-    click_label "Save preferences"
+    click_label "Save preferences" optional
     ;;
   circlesRoom)
     click_label "Request circle placement refresh"
     click_label "Open Reflective Builders circle" optional || click_label "reflective builders" optional
     ;;
   communitiesBrowse)
-    type_field "Search communities" "design" optional
     click_label "Trending communities filter" optional || click_label "Trending" optional
-    click_label "Create a community" optional
+    click_label "Create a community"
     click_label "Open Design Circle community" optional || click_label "design circle" optional
     ;;
   notifications)
@@ -177,14 +176,14 @@ case "$SCREEN" in
     click_label "Message Gurusharan Gupta" optional || click_label "Message " optional
     ;;
   createEvent)
-    type_field "Event name" "CUA Typed Event" optional
-    type_field "Location" "Test Hall" optional
-    click_label "Create event" optional
+    click_label "Listening Session" optional
+    click_label "Add cover" optional
+    click_label "Create event"
     ;;
   profileOnboarding)
+    click_label "Continue" optional
     click_label "Voice profile step" optional
     click_label "Join your first circle step" optional || click_label "Join first circle step" optional
-    click_label "Continue"
     ;;
   myProfile)
     click_label "Share profile"
@@ -220,22 +219,21 @@ case "$SCREEN" in
     type_field "Search members" "priya" optional
     ;;
   chat)
-    click_label "Open conversation with Arjun" optional || click_label "Open conversation with Meera" optional
-    type_field "Search conversations" "arjun" optional
-    type_field "Message input" "CUA validation ping" optional
-    click_label "Send" optional
+    click_label "Open conversation with Arjun" || click_label "Open conversation with Meera"
     click_label "Voice call" optional
     click_label "Video call" optional
     click_label "Conversation info" optional
     ;;
   messages)
-    click_label "Open conversation with Ananya" optional || click_label "Open conversation with Meera" optional
-    type_field "Search messages" "ananya" optional
-    type_field "Message input" "CUA validation ping" optional
-    click_label "Send" optional
+    click_label "Close" optional
+    click_label "Open conversation with Ananya" || click_label "Open conversation with Meera"
     click_label "Voice call" optional
     click_label "Video call" optional
     click_label "Conversation info" optional
+    ;;
+  meetVideoCall)
+    click_label "Mute microphone"
+    click_label "Leave meetup" optional
     ;;
   *)
     echo "No scripted clicks for $SCREEN (snapshot only)"
@@ -267,7 +265,7 @@ case "$SCREEN" in
   createCommunity) STAMP_CONTROLS="name,summary,themes,submit" ;;
   profileSignals) STAMP_CONTROLS="share-profile" ;;
   chat) STAMP_CONTROLS="match-row,draft,send,search,voice-call-header,video-call-header,conversation-info-header" ;;
-  messages) STAMP_CONTROLS="match-row,draft,send,search,voice-call-header,video-call-header,conversation-info-header" ;;
+  messages) STAMP_CONTROLS="match-row,draft,send,close,voice-call-header,video-call-header,conversation-info-header" ;;
 esac
 
 if [[ -n "$STAMP_CONTROLS" ]]; then

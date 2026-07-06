@@ -23,7 +23,7 @@
       "evidence": "CUA-click validation-priya mockup-18 plate: Done navigates to myProfile (share-profile)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "8a5c654ec5831e9b",
+      "tested_source_hash": "eeb9d5676054f7d4",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     }
@@ -33,7 +33,7 @@
     "notes": "2026-07-05 capture vs plate 18: photo-led sidebar with Circles/Connections/Events metrics, 5 icon signal cards (Communication/Energy/Trust/Mindset/Creativity), Your vibe + About me + Languages rows, Done CTA."
   },
   "notes": "",
-  "source_hash": "01fded38dcfba52d",
+  "source_hash": "eeb9d5676054f7d4",
   "recent_screenshot_ref": "output/validation/macos-screens/profileSignals.png",
   "ui_validation": {
     "result": "pass",

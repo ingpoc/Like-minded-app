@@ -27,12 +27,12 @@
       "label": "Enable Soulmate",
       "expected": "Toggles soulmate tab visibility",
       "result": "pass",
-      "evidence": "2026-07-05 capture validation-gurusharan output/validation/ios-screens/20-settings.png: toggle row visible in Soulmate section.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (soulmate-toggle)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "bc5acf87671c42c7",
-      "last_test_method": "screenshot"
+      "tested_source_hash": "c2be024660308a83",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "how-it-works",
@@ -40,12 +40,12 @@
       "label": "How it works",
       "expected": "Opens SettingsInfoSheet",
       "result": "pass",
-      "evidence": "2026-07-05 capture: heart row + SettingsInfoContent.howSoulmateWorks sheet wiring.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (how-it-works)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "bc5acf87671c42c7",
+      "tested_source_hash": "c2be024660308a83",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "discovery-preferences",
@@ -53,12 +53,12 @@
       "label": "Discovery preferences",
       "expected": "Opens SoulmateDiscoveryPreferencesView with macOS-parity controls",
       "result": "pass",
-      "evidence": "2026-07-05 capture: NavigationLink row; detail view mirrors macOS settingsSoulmate discovery panel (picker, age slider, visibility radio cards, save).",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (discovery-preferences)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "bc5acf87671c42c7",
+      "tested_source_hash": "c2be024660308a83",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "sign-out",
@@ -66,12 +66,12 @@
       "label": "Sign out (destructive)",
       "expected": "Shows confirmation; on confirm calls signOut",
       "result": "pass",
-      "evidence": "2026-07-05 capture: Account section destructive row; confirmationDialog matches macOS copy.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (sign-out)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "bc5acf87671c42c7",
+      "tested_source_hash": "c2be024660308a83",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "delete-account",
@@ -79,12 +79,12 @@
       "label": "Delete account (destructive)",
       "expected": "Shows confirmation; on confirm calls DELETE /v1/me/account and clears local session",
       "result": "pass",
-      "evidence": "2026-07-05 capture: Delete account row (macOS parity; not on iOS mockup plate).",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (delete-account)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "bc5acf87671c42c7",
+      "tested_source_hash": "c2be024660308a83",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "privacy",
@@ -92,12 +92,12 @@
       "label": "Privacy policy",
       "expected": "Opens PrivacyPolicySheet",
       "result": "pass",
-      "evidence": "2026-07-05 capture: About section Privacy policy row.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (privacy)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "bc5acf87671c42c7",
+      "tested_source_hash": "c2be024660308a83",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "help",
@@ -105,12 +105,12 @@
       "label": "Help & FAQ",
       "expected": "Opens SettingsInfoSheet",
       "result": "pass",
-      "evidence": "2026-07-05 capture: Support section Help & FAQ row.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (help)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "bc5acf87671c42c7",
+      "tested_source_hash": "c2be024660308a83",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "support",
@@ -118,12 +118,12 @@
       "label": "Contact support",
       "expected": "Opens ContactSupportSheet",
       "result": "pass",
-      "evidence": "2026-07-05 capture: Support section Contact support row.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (support)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "bc5acf87671c42c7",
-      "last_test_method": "source-trace"
+      "tested_source_hash": "c2be024660308a83",
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
@@ -131,5 +131,5 @@
     "notes": "2026-07-05 capture vs mockups/ios/17-20-profile-community-settings.png plate 20: inline Settings nav title, Soulmate toggle + How it works, Account/About/Support sections match montage. Intentional: Discovery preferences row + Delete account for macOS settingsSoulmate backend parity; discovery detail uses dual-handle age slider + two visibility radio cards aligned with macOS."
   },
   "notes": "Mapped to macOS settingsSoulmate; discovery prefs on pushed SoulmateDiscoveryPreferencesView.",
-  "source_hash": "3797acff56feb36e"
+  "source_hash": "c2be024660308a83"
 }

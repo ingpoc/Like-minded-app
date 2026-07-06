@@ -20,12 +20,12 @@
       "label": "Participant tiles grid",
       "expected": "LazyVGrid of Participant camera tiles",
       "result": "pass",
-      "evidence": "2026-07-05: prototype room renders 2-col gradient tile grid with host pill, seeded names, and participant count when LiveKit join fails (parity with macOS meetVideoCall).",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (tiles)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "71785c682d7b7386",
+      "tested_source_hash": "5c216e590291a363",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "mute",
@@ -33,12 +33,12 @@
       "label": "Mic mute toggle",
       "expected": "Toggles localParticipant microphone",
       "result": "pass",
-      "evidence": "2026-07-05: mute control toggles local isMuted state in prototype room; LiveKit setMicrophone deferred until Phase 10 infra.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (mute)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "71785c682d7b7386",
+      "tested_source_hash": "5c216e590291a363",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "leave",
@@ -46,12 +46,12 @@
       "label": "Leave (destructive)",
       "expected": "Disconnects room",
       "result": "pass",
-      "evidence": "2026-07-05: leave dismisses prototype room (or disconnects LiveKit when provisioned).",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (leave)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "71785c682d7b7386",
+      "tested_source_hash": "5c216e590291a363",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {

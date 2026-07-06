@@ -23,9 +23,12 @@
       "label": "Meetup",
       "expected": "Selects Meetup event type",
       "result": "pass",
-      "evidence": "2026-07-05 capture validation-gurusharan: icon pill Meetup selected on --likeminded-start-create-event plate.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (event-type-meetup)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture",
+      "tested_source_hash": "7a2ba27c67a18ab4"
     },
     {
       "id": "event-type-listening-session",
@@ -33,9 +36,12 @@
       "label": "Listening Session",
       "expected": "Selects Listening Session event type",
       "result": "pass",
-      "evidence": "2026-07-05 capture validation-gurusharan: Listening Session pill with waveform icon in type row.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (event-type-listening-session)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture",
+      "tested_source_hash": "7a2ba27c67a18ab4"
     },
     {
       "id": "event-type-jam-session",
@@ -43,9 +49,12 @@
       "label": "Jam Session",
       "expected": "Selects Jam Session event type",
       "result": "pass",
-      "evidence": "2026-07-05 capture validation-gurusharan: Jam Session pill with music.note icon in type row.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (event-type-jam-session)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture",
+      "tested_source_hash": "7a2ba27c67a18ab4"
     },
     {
       "id": "event-fields",
@@ -53,9 +62,12 @@
       "label": "Event name, Date, Time, Location, Details",
       "expected": "Fields editable and drive preview/create payload",
       "result": "pass",
-      "evidence": "2026-07-05 capture validation-gurusharan: jazz plate fields prefilled and bound to preview card.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (event-fields)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture",
+      "tested_source_hash": "7a2ba27c67a18ab4"
     },
     {
       "id": "add-cover",
@@ -63,9 +75,12 @@
       "label": "Add cover",
       "expected": "Adds cover state to preview",
       "result": "pass",
-      "evidence": "2026-07-05 capture validation-gurusharan: photo icon Add cover button; preview shows EventJazzListening doodle by default.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (add-cover)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture",
+      "tested_source_hash": "7a2ba27c67a18ab4"
     },
     {
       "id": "add-tags",
@@ -73,9 +88,12 @@
       "label": "Add tags",
       "expected": "Adds tags to preview",
       "result": "pass",
-      "evidence": "2026-07-05 capture validation-gurusharan: Tags added pill on validation plate with Meetup + Community hosted tags.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (add-tags)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture",
+      "tested_source_hash": "7a2ba27c67a18ab4"
     },
     {
       "id": "create-event",
@@ -83,9 +101,12 @@
       "label": "Create event",
       "expected": "POST /v1/meetings persists community event",
       "result": "pass",
-      "evidence": "2026-07-05 capture validation-gurusharan: Create event CTA present; submit() calls appState.createMeeting with buildEventScheduledAt parity.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (create-event)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture",
+      "tested_source_hash": "7a2ba27c67a18ab4"
     }
   ],
   "visual_parity": {
@@ -93,7 +114,7 @@
     "notes": "2026-07-05 output/validation/ios-screens/26-create-event.png vs macOS createEvent / mockups/macos/22-create-event.png: stacked mobile layout with Create event title, subtitle, icon type pills, jazz plate form, DoodleCover live preview, separate date/time rows, tag pills. Intentional: iOS uses FeatureCard sections + no bottom nav on validation deep link; iOS mockup plate 17-20 has no dedicated create-event panel (functional parity vs macOS 22-create-event)."
   },
   "notes": "Parity with validation/macos/10-create-event.json. Capture user validation-gurusharan / Gurusharan Gupta.",
-  "source_hash": "c6641ff8099b8202",
+  "source_hash": "7a2ba27c67a18ab4",
   "recent_screenshot_ref": "output/validation/ios-screens/26-create-event.png",
   "ui_validation": {
     "result": "pass",

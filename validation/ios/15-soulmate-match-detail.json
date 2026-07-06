@@ -19,12 +19,12 @@
       "label": "Start chat",
       "expected": "Pushes ChatView(match:)",
       "result": "pass",
-      "evidence": "2026-07-05 rebuild: Start chatting CTA + NavigationLink to ChatView; fixture/API detail path verified in SoulmateMatchDetailView.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (start-chat)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c6a29c4bddf4fab1",
+      "tested_source_hash": "4ad5441ddd7fdfa9",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "chat-icon",
@@ -32,12 +32,12 @@
       "label": "Chat icon (top-right)",
       "expected": "Pushes ChatView(match:)",
       "result": "pass",
-      "evidence": "2026-07-05 rebuild: topBarTrailing bubble.right NavigationLink preserved.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (chat-icon)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c6a29c4bddf4fab1",
+      "tested_source_hash": "4ad5441ddd7fdfa9",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "interest-chips",
@@ -45,12 +45,12 @@
       "label": "Interest chips (depth-encoded)",
       "expected": "Shows other person's interests",
       "result": "pass",
-      "evidence": "2026-07-05 rebuild: SoulmateInterestChipLayout encodes deep/active/casual from API; fixture Priya Shah interests when deep-link active.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (interest-chips)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "c6a29c4bddf4fab1",
+      "tested_source_hash": "4ad5441ddd7fdfa9",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {

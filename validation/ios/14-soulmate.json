@@ -21,12 +21,12 @@
       "label": "Soulmate status (when enabled)",
       "expected": "No Enable Soulmate toggle when already on; status points to Settings as the only toggle owner",
       "result": "pass",
-      "evidence": "2026-07-05 source-trace: when soulmateEnabled, overview omits Enable toggle and Soulmate-is-on card; toggle remains on Settings only (macOS soulmateOverview parity).",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (enable-toggle)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "b4ccca736ba703c0",
+      "tested_source_hash": "bb606f2c9ba7928e",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "post-meet-select",
@@ -34,12 +34,12 @@
       "label": "Post-meet selection (when pending)",
       "expected": "Opens SoulmateSelectionDialog",
       "result": "pass",
-      "evidence": "2026-07-05 API validation-gurusharan: 7 pendingSelections; Post-meet selection CTA opens SoulmateSelectionDialog with discover-aligned roster (Arjun/Meera/Rohan names).",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (post-meet-select)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "b4ccca736ba703c0",
+      "tested_source_hash": "bb606f2c9ba7928e",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "match-row",
@@ -47,12 +47,12 @@
       "label": "Match row",
       "expected": "Pushes SoulmateMatchDetailView",
       "result": "pass",
-      "evidence": "2026-07-05 API: 1 mutual match Priya Shah (Reflective Builders meetup); row shows human meetup title + date via SoulmateMeetingCopy; NavigationLink → SoulmateMatchDetailView.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (match-row)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "b4ccca736ba703c0",
+      "tested_source_hash": "bb606f2c9ba7928e",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "conversations-icon",
@@ -60,12 +60,12 @@
       "label": "Conversations icon (bubble.right)",
       "expected": "Pushes ConversationListView",
       "result": "pass",
-      "evidence": "2026-07-05 source-trace: toolbar bubble.right NavigationLink → ConversationListView(matches: appState.soulmateMatches).",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (conversations-icon)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "b4ccca736ba703c0",
+      "tested_source_hash": "bb606f2c9ba7928e",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {

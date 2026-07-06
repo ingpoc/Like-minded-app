@@ -24,7 +24,7 @@
       "evidence": "CUA-click validation-priya 2026-07-05 profileOnboarding mockup-17 (step-rows)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "d76ddbe8718f8d2f",
+      "tested_source_hash": "988706f7b71cb99e",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     },
@@ -37,7 +37,7 @@
       "evidence": "CUA-click validation-priya 2026-07-05 profileOnboarding mockup-17 (form-lines)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "d76ddbe8718f8d2f",
+      "tested_source_hash": "988706f7b71cb99e",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     },
@@ -50,7 +50,7 @@
       "evidence": "CUA-click validation-priya 2026-07-05 profileOnboarding mockup-17 (continue)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "d76ddbe8718f8d2f",
+      "tested_source_hash": "988706f7b71cb99e",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     },
@@ -64,7 +64,7 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "d76ddbe8718f8d2f",
+      "tested_source_hash": "988706f7b71cb99e",
       "last_test_method": "CUA-click"
     },
     {
@@ -77,7 +77,7 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "d76ddbe8718f8d2f",
+      "tested_source_hash": "988706f7b71cb99e",
       "last_test_method": "CUA-click"
     }
   ],
@@ -86,7 +86,7 @@
     "notes": "2026-07-05 capture vs plate 17: serif hero, 3-step sidebar with subtitles, About-you card with avatar, name/city/birthday fields, selectable interest chips, Continue arrow, orb annotation. Intentional: gender/pincode collected via PATCH defaults not shown; seeded name/city/birthday vs mockup sample copy."
   },
   "notes": "2026-07-05: mockup-17 onboarding basics — interest chips, step subtitles, birthday field; Continue advances to voice step.",
-  "source_hash": "0d2137a4948f99f5",
+  "source_hash": "988706f7b71cb99e",
   "recent_screenshot_ref": "output/validation/macos-screens/profileOnboarding.png",
   "ui_validation": {
     "result": "pass",

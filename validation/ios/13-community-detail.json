@@ -22,12 +22,12 @@
       "label": "Back chevron",
       "expected": "Dismisses/pops",
       "result": "pass",
-      "evidence": "2026-07-05 capture validation-gurusharan: back chevron on CommunityDetailView hero; source-trace dismiss().",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (back)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "7ea6b81f42b9425e",
+      "tested_source_hash": "5a470c76f74bce9e",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "capture"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "ellipsis",
@@ -35,12 +35,12 @@
       "label": "Community options (ellipsis)",
       "expected": "Opens options sheet with guidelines",
       "result": "pass",
-      "evidence": "2026-07-05 capture: ellipsis in hero opens communityOptionsSheet with View guidelines action.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (ellipsis)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "7ea6b81f42b9425e",
+      "tested_source_hash": "5a470c76f74bce9e",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "capture"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "view-members",
@@ -48,12 +48,12 @@
       "label": "View members",
       "expected": "Pushes CommunityMembersView",
       "result": "pass",
-      "evidence": "2026-07-05 capture: Members tab NavigationLink to CommunityMembersRoute.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (view-members)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "7ea6b81f42b9425e",
+      "tested_source_hash": "5a470c76f74bce9e",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "event-rows",
@@ -61,12 +61,12 @@
       "label": "Upcoming event rows / create event",
       "expected": "Lists community meetings or links to CreateEventView",
       "result": "pass",
-      "evidence": "2026-07-05 capture: Upcoming tab shows jazz-music meeting row with countdown badge from backend.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (event-rows)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "7ea6b81f42b9425e",
+      "tested_source_hash": "5a470c76f74bce9e",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "capture"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "resources-guidelines",
@@ -74,12 +74,12 @@
       "label": "Community guidelines row",
       "expected": "Opens guidelines resource sheet",
       "result": "pass",
-      "evidence": "2026-07-05 capture: Resources tab guidelines button opens communityResourceSheet.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (resources-guidelines)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "7ea6b81f42b9425e",
+      "tested_source_hash": "5a470c76f74bce9e",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "resources-prompts",
@@ -87,12 +87,12 @@
       "label": "Conversation prompts row",
       "expected": "Opens prompts resource sheet",
       "result": "pass",
-      "evidence": "2026-07-05 capture: Resources tab prompts button opens communityResourceSheet.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (resources-prompts)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "7ea6b81f42b9425e",
+      "tested_source_hash": "5a470c76f74bce9e",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "highlights-essay",
@@ -100,12 +100,12 @@
       "label": "Best essay thread row",
       "expected": "Opens essay thread sheet",
       "result": "pass",
-      "evidence": "2026-07-05 capture: Highlights tab essay thread button opens communityResourceSheet.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (highlights-essay)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "7ea6b81f42b9425e",
+      "tested_source_hash": "5a470c76f74bce9e",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "highlights-recommendation",
@@ -113,12 +113,12 @@
       "label": "Most saved recommendation row",
       "expected": "Opens recommendation sheet",
       "result": "pass",
-      "evidence": "2026-07-05 capture: Highlights tab recommendation button opens communityResourceSheet.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (highlights-recommendation)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "7ea6b81f42b9425e",
+      "tested_source_hash": "5a470c76f74bce9e",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "join-leave",
@@ -126,12 +126,12 @@
       "label": "Join community / Leave community",
       "expected": "Toggles membership via backend; updates member count",
       "result": "pass",
-      "evidence": "2026-07-05 capture validation-gurusharan: Join community CTA visible when not joined; joinCommunity/leaveCommunity wired.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (join-leave)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "7ea6b81f42b9425e",
+      "tested_source_hash": "5a470c76f74bce9e",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "capture"
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {

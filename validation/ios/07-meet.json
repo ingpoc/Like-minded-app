@@ -21,12 +21,12 @@
       "label": "Bell icon (top-right)",
       "expected": "Opens NotificationsView sheet; badge shows unread",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 meetOverview parity: bell overlay unchanged (hash 1d696e577d4a8948)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (bell)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "1d696e577d4a8948",
+      "tested_source_hash": "190064b2d223df8d",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "rsvp-sat-yes",
@@ -34,12 +34,12 @@
       "label": "Saturday Available",
       "expected": "POST rsvp community available=true",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 meetOverview parity: RSVPCard community toggle (hash 1d696e577d4a8948)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (rsvp-sat-yes)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "1d696e577d4a8948",
+      "tested_source_hash": "190064b2d223df8d",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "rsvp-sat-no",
@@ -47,12 +47,12 @@
       "label": "Saturday Not",
       "expected": "POST rsvp community available=false",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 meetOverview parity: RSVPCard community toggle (hash 1d696e577d4a8948)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (rsvp-sat-no)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "1d696e577d4a8948",
+      "tested_source_hash": "190064b2d223df8d",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "rsvp-sun-yes",
@@ -60,12 +60,12 @@
       "label": "Sunday Available",
       "expected": "POST rsvp circle available=true",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 meetOverview parity: RSVPCard circle toggle (hash 1d696e577d4a8948)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (rsvp-sun-yes)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "1d696e577d4a8948",
-      "last_test_method": "source-trace"
+      "tested_source_hash": "190064b2d223df8d",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "rsvp-sun-no",
@@ -73,12 +73,12 @@
       "label": "Sunday Not",
       "expected": "POST rsvp circle available=false",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 meetOverview parity: RSVPCard circle toggle (hash 1d696e577d4a8948)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (rsvp-sun-no)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "1d696e577d4a8948",
-      "last_test_method": "source-trace"
+      "tested_source_hash": "190064b2d223df8d",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "join-upcoming",
@@ -99,12 +99,12 @@
       "label": "Past meet row",
       "expected": "Pushes PastMeetDetailView",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 meetOverview parity: Past meets FeatureCard rows (hash 1d696e577d4a8948)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (past-row)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "1d696e577d4a8948",
-      "last_test_method": "source-trace"
+      "tested_source_hash": "190064b2d223df8d",
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {

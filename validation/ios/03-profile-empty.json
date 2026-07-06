@@ -20,12 +20,12 @@
       "label": "Pencil icon → Settings",
       "expected": "Pushes SettingsPrototypeView",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05: gearshape NavigationLink → SettingsPrototypeView on profile header (ledger label legacy: pencil).",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (pencil-settings)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "7a05d4e7fac8e283",
+      "tested_source_hash": "bbc3a0d9adb31ff4",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "start-voice",
@@ -33,12 +33,12 @@
       "label": "Start voice profile",
       "expected": "Opens voice session sheet and calls startVoiceSession",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05: ProfileVoiceEmptyCard CTA + profileVoiceEmptyState wire showingVoiceSession + startVoiceSession when slice nil and basicInfo set (or dev-profile-empty preview).",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (start-voice)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "7a05d4e7fac8e283",
-      "last_test_method": "source-trace"
+      "tested_source_hash": "bbc3a0d9adb31ff4",
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {

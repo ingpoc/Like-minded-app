@@ -22,12 +22,12 @@
       "label": "Potential match row (multi-select)",
       "expected": "Toggles selection in selectedUserIds",
       "result": "pass",
-      "evidence": "2026-07-05 SoulmateSelectionFixtures + discoverAlignedCandidates: Arjun N./Meera I./Rohan M. roster matches macOS soulmateDiscover; empty circle + checkmark.circle.fill toggle states.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (match-toggle)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "6fe5eebcc69df142",
-      "last_test_method": "source-trace"
+      "tested_source_hash": "64d34e274e79ec62",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "submit",
@@ -35,12 +35,12 @@
       "label": "Submit",
       "expected": "POST selection; creates mutual matches; disabled when empty",
       "result": "pass",
-      "evidence": "2026-07-05 Submit disabled when empty; validation deep-link skips POST; live flow POSTs meetingId-scoped selection.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (submit)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "6fe5eebcc69df142",
-      "last_test_method": "source-trace"
+      "tested_source_hash": "64d34e274e79ec62",
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {

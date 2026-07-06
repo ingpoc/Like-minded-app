@@ -26,7 +26,7 @@
       "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (sidebar-honesty) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "a893a2d9f61eb368",
+      "tested_source_hash": "f20a736df43bcfaa",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     },
@@ -40,7 +40,7 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "a893a2d9f61eb368",
+      "tested_source_hash": "f20a736df43bcfaa",
       "last_test_method": "CUA-click"
     },
     {
@@ -53,7 +53,7 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "a893a2d9f61eb368",
+      "tested_source_hash": "f20a736df43bcfaa",
       "last_test_method": "CUA-click"
     },
     {
@@ -66,7 +66,7 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "a893a2d9f61eb368",
+      "tested_source_hash": "f20a736df43bcfaa",
       "last_test_method": "CUA-click"
     },
     {
@@ -79,7 +79,7 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "a893a2d9f61eb368",
+      "tested_source_hash": "f20a736df43bcfaa",
       "last_test_method": "CUA-click"
     },
     {
@@ -92,7 +92,7 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "a893a2d9f61eb368",
+      "tested_source_hash": "f20a736df43bcfaa",
       "last_test_method": "CUA-click"
     },
     {
@@ -105,7 +105,7 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "a893a2d9f61eb368",
+      "tested_source_hash": "f20a736df43bcfaa",
       "last_test_method": "CUA-click"
     },
     {
@@ -118,7 +118,7 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "a893a2d9f61eb368",
+      "tested_source_hash": "f20a736df43bcfaa",
       "last_test_method": "CUA-click"
     },
     {
@@ -130,7 +130,7 @@
       "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (log-out) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "a893a2d9f61eb368",
+      "tested_source_hash": "f20a736df43bcfaa",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     },
@@ -143,7 +143,7 @@
       "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (delete-account) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "a893a2d9f61eb368",
+      "tested_source_hash": "f20a736df43bcfaa",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     },
@@ -156,7 +156,7 @@
       "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (soulmate-toggle) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "a893a2d9f61eb368",
+      "tested_source_hash": "f20a736df43bcfaa",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     },
@@ -169,7 +169,7 @@
       "evidence": "2026-07-05: View profile row removed from settings sidebar. ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "a893a2d9f61eb368",
+      "tested_source_hash": "f20a736df43bcfaa",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     },
@@ -182,7 +182,7 @@
       "evidence": "2026-07-05: Voice profile row removed; Retake voice profile remains on Profile tab. ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "a893a2d9f61eb368",
+      "tested_source_hash": "f20a736df43bcfaa",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     },
@@ -196,7 +196,7 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "a893a2d9f61eb368",
+      "tested_source_hash": "f20a736df43bcfaa",
       "last_test_method": "CUA-click"
     },
     {
@@ -209,7 +209,7 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "a893a2d9f61eb368",
+      "tested_source_hash": "f20a736df43bcfaa",
       "last_test_method": "CUA-click"
     },
     {
@@ -222,7 +222,7 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "a893a2d9f61eb368",
+      "tested_source_hash": "f20a736df43bcfaa",
       "last_test_method": "CUA-click"
     }
   ],
@@ -231,7 +231,7 @@
     "notes": "2026-07-05 capture vs plate 20: Soulmate hero with heart orb, enable toggle, feature cards, discovery dropdown, dual-handle age slider, visibility radio cards. Intentional: Delete account sidebar row; no Voice profile row."
   },
   "notes": "Settings sidebar selects inline panels; View profile and Voice profile rows removed.",
-  "source_hash": "cddf6d49d6f6274f",
+  "source_hash": "f20a736df43bcfaa",
   "recent_screenshot_ref": "output/validation/macos-screens/settingsSoulmate.png",
   "ui_validation": {
     "result": "pass",

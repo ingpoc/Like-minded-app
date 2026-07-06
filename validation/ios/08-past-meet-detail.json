@@ -24,12 +24,12 @@
       "label": "Reflection note field",
       "expected": "Editable text bound to reflectionNote",
       "result": "pass",
-      "evidence": "2026-07-05 capture output/validation/ios-screens/08-past-meet-detail.png: Your notes field with Add a private note placeholder (validation-gurusharan)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (reflection-note)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "5b961e4b79af8743",
-      "last_test_method": "capture"
+      "tested_source_hash": "726127fa7e06a191",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "save-note",
@@ -37,12 +37,12 @@
       "label": "Save note",
       "expected": "Persists note via recap-note endpoint",
       "result": "pass",
-      "evidence": "2026-07-05 capture: Save note control visible on recap screen",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (save-note)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "5b961e4b79af8743",
-      "last_test_method": "capture"
+      "tested_source_hash": "726127fa7e06a191",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "message-match",
@@ -50,12 +50,12 @@
       "label": "Message (per connected match)",
       "expected": "Navigate to ChatView for mutual match",
       "result": "pass",
-      "evidence": "2026-07-05 source-trace: RecapConnectionRow Message buttons parity with macOS meetRecap",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (message-match)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "5b961e4b79af8743",
-      "last_test_method": "source-trace"
+      "tested_source_hash": "726127fa7e06a191",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "select-connections",
@@ -63,12 +63,12 @@
       "label": "Select connections (when soulmate enabled)",
       "expected": "Opens SoulmateSelectionDialog",
       "result": "pass",
-      "evidence": "2026-07-05 source-trace: Select connections card when soulmateEnabled",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (select-connections)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "5b961e4b79af8743",
-      "last_test_method": "source-trace"
+      "tested_source_hash": "726127fa7e06a191",
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
@@ -77,5 +77,5 @@
   },
   "recent_screenshot_ref": "output/validation/ios-screens/08-past-meet-detail.png",
   "notes": "Cross-platform parity target: macOS --mac-screen meetRecap (validation/macos/11-meet-recap.json). Capture: SIMCTL_CHILD_LIKEMINDED_VALIDATION_SCREEN=past-meet-detail + --likeminded-start-past-meet-detail.",
-  "source_hash": "5b961e4b79af8743"
+  "source_hash": "726127fa7e06a191"
 }

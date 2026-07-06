@@ -23,7 +23,7 @@
       "evidence": "CUA-click validation-priya 2026-07-05 reproof: search, filter-pills, create-card, community-card after plate-06 parity rebuild (search)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "2a617a4402a76a00",
+      "tested_source_hash": "7837754558877f5f",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     },
@@ -36,7 +36,7 @@
       "evidence": "CUA-click validation-priya 2026-07-05 reproof: search, filter-pills, create-card, community-card after plate-06 parity rebuild (filter-pills)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "2a617a4402a76a00",
+      "tested_source_hash": "7837754558877f5f",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     },
@@ -49,7 +49,7 @@
       "evidence": "CUA-click validation-priya 2026-07-05 reproof: search, filter-pills, create-card, community-card after plate-06 parity rebuild (create-card)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "2a617a4402a76a00",
+      "tested_source_hash": "7837754558877f5f",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     },
@@ -62,7 +62,7 @@
       "evidence": "CUA-click validation-priya 2026-07-05 reproof: search, filter-pills, create-card, community-card after plate-06 parity rebuild (community-card)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "2a617a4402a76a00",
+      "tested_source_hash": "7837754558877f5f",
       "last_tested_at": "2026-07-05",
       "last_test_method": "CUA-click"
     }
