@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "label": "Log out",
+  "element": 15,
+  "coords": {
+    "x": 2735.9999961853027,
+    "y": 946.0
+  },
+  "cursor_coords": {
+    "x": 175.99999618530273,
+    "y": 659.0
+  },
+  "move": {
+    "raw": "Agent cursor 'macos-cua' moved to (176.0, 659.0)."
+  },
+  "result": {
+    "effect": "unverifiable",
+    "path": "ax",
+    "verified": false
+  },
+  "method": "agent-cursor+driver-click"
+}

@@ -341,11 +341,13 @@ struct ProfileUpdateRequest: Encodable {
     let reflectionSummary: String?
     let signals: ProfileSignals?
     let basicInfo: BasicInfoUpdate?
+    let interests: [Interest]?
 
-    init(reflectionSummary: String? = nil, signals: ProfileSignals? = nil, basicInfo: BasicInfoUpdate? = nil) {
+    init(reflectionSummary: String? = nil, signals: ProfileSignals? = nil, basicInfo: BasicInfoUpdate? = nil, interests: [Interest]? = nil) {
         self.reflectionSummary = reflectionSummary
         self.signals = signals
         self.basicInfo = basicInfo
+        self.interests = interests
     }
 }
 
@@ -362,7 +364,8 @@ struct BasicInfo: Codable, Equatable {
     let gender: Gender
     let dateOfBirth: String
     let city: String
-    let pincode: String
+    /// Omitted on draft profiles until the user sets one; API PATCH may not echo pincode.
+    let pincode: String?
 }
 
 enum Gender: String, Codable, CaseIterable, Identifiable {
@@ -441,6 +444,46 @@ struct ProfileSignals: Codable, Equatable {
     struct CommunicationStyle: Codable, Equatable {
         var primary: String? = nil
         var pace: Double = 0.5
+
+        init(primary: String? = nil, pace: Double = 0.5) {
+            self.primary = primary
+            self.pace = pace
+        }
+
+        init(from decoder: Decoder) throws {
+            let c = try decoder.container(keyedBy: CodingKeys.self)
+            primary = try c.decodeIfPresent(String.self, forKey: .primary)
+            pace = try c.decodeIfPresent(Double.self, forKey: .pace) ?? 0.5
+        }
+    }
+
+    init(
+        bigFive: BigFive = BigFive(),
+        attachment: String? = nil,
+        socialEnergy: String? = nil,
+        communicationStyle: CommunicationStyle? = nil,
+        trustPattern: String? = nil,
+        humorStyle: String? = nil,
+        conflictStyle: String? = nil
+    ) {
+        self.bigFive = bigFive
+        self.attachment = attachment
+        self.socialEnergy = socialEnergy
+        self.communicationStyle = communicationStyle
+        self.trustPattern = trustPattern
+        self.humorStyle = humorStyle
+        self.conflictStyle = conflictStyle
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        bigFive = try c.decodeIfPresent(BigFive.self, forKey: .bigFive) ?? BigFive()
+        attachment = try c.decodeIfPresent(String.self, forKey: .attachment)
+        socialEnergy = try c.decodeIfPresent(String.self, forKey: .socialEnergy)
+        communicationStyle = try c.decodeIfPresent(CommunicationStyle.self, forKey: .communicationStyle)
+        trustPattern = try c.decodeIfPresent(String.self, forKey: .trustPattern)
+        humorStyle = try c.decodeIfPresent(String.self, forKey: .humorStyle)
+        conflictStyle = try c.decodeIfPresent(String.self, forKey: .conflictStyle)
     }
 }
 

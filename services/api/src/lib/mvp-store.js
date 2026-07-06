@@ -278,9 +278,51 @@ async function getUserById(id) {
   return rowToUser(readLocalStore().users[id]);
 }
 
+function mergeProfileInterests(existing = [], incoming = []) {
+  const byLabel = new Map();
+  for (const item of [...existing, ...incoming]) {
+    if (!item || typeof item.label !== "string") continue;
+    const label = item.label.trim();
+    if (!label) continue;
+    byLabel.set(label.toLowerCase(), {
+      area: typeof item.area === "string" && item.area.trim() ? item.area.trim() : "general",
+      label,
+      depth: ["casual", "active", "deep"].includes(item.depth) ? item.depth : "active"
+    });
+  }
+  return Array.from(byLabel.values()).slice(0, 10);
+}
+
+/** Apply discover/voice synthesis onto the user's current profile instead of replacing it. */
+function mergeProfileWithDiscovery(existing, discovered) {
+  if (!existing || typeof existing !== "object") return discovered;
+  if (!discovered || typeof discovered !== "object") return existing;
+  const existingBasic = existing.basicInfo && typeof existing.basicInfo === "object" ? existing.basicInfo : {};
+  const discoveredBasic = discovered.basicInfo && typeof discovered.basicInfo === "object" ? discovered.basicInfo : {};
+  return {
+    ...existing,
+    ...discovered,
+    profileId: existing.profileId,
+    basicInfo: { ...existingBasic, ...discoveredBasic },
+    interests: mergeProfileInterests(existing.interests, discovered.interests),
+    signals: discovered.signals || existing.signals,
+    hiddenSignals: discovered.hiddenSignals || existing.hiddenSignals,
+    profileSummary: discovered.profileSummary || existing.profileSummary,
+    sourceInput: discovered.sourceInput || existing.sourceInput,
+    synthesizedAt: discovered.synthesizedAt || existing.synthesizedAt,
+    concernFlag: Object.prototype.hasOwnProperty.call(discovered, "concernFlag")
+      ? discovered.concernFlag
+      : existing.concernFlag,
+    placementConcern: discovered.placementConcern ?? existing.placementConcern,
+    deviceId: discovered.deviceId || existing.deviceId
+  };
+}
+
 async function saveProfilePlacement({ userId, profile, placement, transcript }) {
   const now = new Date().toISOString();
-  const profileData = JSON.stringify(profile);
+  const existing = await getLatestProfile(userId);
+  const profileToSave = mergeProfileWithDiscovery(existing, profile);
+  const profileData = JSON.stringify(profileToSave);
   const placementData = JSON.stringify(placement);
   if (isPostgres) {
     const client = await getPool().connect();
@@ -288,16 +330,16 @@ async function saveProfilePlacement({ userId, profile, placement, transcript }) 
       await client.query("BEGIN");
       await client.query(
         "INSERT INTO profiles (id, user_id, data, created_at) VALUES ($1, $2, $3::jsonb, now()) ON CONFLICT (id) DO UPDATE SET data = EXCLUDED.data",
-        [profile.profileId, userId, profileData]
+        [profileToSave.profileId, userId, profileData]
       );
       const placed = await client.query(
         "INSERT INTO placements (user_id, profile_id, data, user_state, created_at, updated_at) VALUES ($1, $2, $3::jsonb, $4, now(), now()) RETURNING id",
-        [userId, profile.profileId, placementData, placement.userState || "proposed"]
+        [userId, profileToSave.profileId, placementData, placement.userState || "proposed"]
       );
       if (transcript) {
         await client.query(
           "INSERT INTO transcripts (user_id, profile_id, content, created_at) VALUES ($1, $2, $3, now())",
-          [userId, profile.profileId, transcript]
+          [userId, profileToSave.profileId, transcript]
         );
       }
       await client.query("COMMIT");
@@ -311,13 +353,24 @@ async function saveProfilePlacement({ userId, profile, placement, transcript }) 
   }
 
   const store = readLocalStore();
-  store.profiles = store.profiles.filter((row) => row.id !== profile.profileId);
-  store.profiles.push({ id: profile.profileId, user_id: userId, data: profile, created_at: now });
+  const existingRow = store.profiles.find(
+    (row) => row.user_id === userId && row.id === profileToSave.profileId
+  );
+  if (existingRow) {
+    existingRow.data = profileToSave;
+  } else {
+    store.profiles.push({
+      id: profileToSave.profileId,
+      user_id: userId,
+      data: profileToSave,
+      created_at: now
+    });
+  }
   const placementId = String(store.placements.reduce((max, row) => Math.max(max, Number(row.id) || 0), 0) + 1);
   store.placements.push({
     id: placementId,
     user_id: userId,
-    profile_id: profile.profileId,
+    profile_id: profileToSave.profileId,
     data: placement,
     user_state: placement.userState || "proposed",
     created_at: now,
@@ -325,10 +378,16 @@ async function saveProfilePlacement({ userId, profile, placement, transcript }) 
   });
   if (transcript) {
     const transcriptId = String(store.transcripts.reduce((max, row) => Math.max(max, Number(row.id) || 0), 0) + 1);
-    store.transcripts.push({ id: transcriptId, user_id: userId, profile_id: profile.profileId, content: transcript, created_at: now });
+    store.transcripts.push({
+      id: transcriptId,
+      user_id: userId,
+      profile_id: profileToSave.profileId,
+      content: transcript,
+      created_at: now
+    });
   }
   writeLocalStore(store);
-  return { placementId };
+  return { placementId, profile: profileToSave };
 }
 
 async function getLatestProfile(userId) {
@@ -362,7 +421,10 @@ async function getLatestPlacement(userId) {
 }
 
 async function updateLatestProfile(userId, updates) {
-  const profile = await getLatestProfile(userId);
+  let profile = await getLatestProfile(userId);
+  if (!profile && updates.basicInfo) {
+    profile = await ensureDraftProfile(userId);
+  }
   if (!profile) return null;
   if (updates.signals) profile.signals = updates.signals;
   if (Object.prototype.hasOwnProperty.call(updates, "concernFlag")) profile.concernFlag = !!updates.concernFlag;
@@ -385,6 +447,9 @@ async function updateLatestProfile(userId, updates) {
     if (profile.profile?.reflection) profile.profile.reflection.summary = updates.reflectionSummary;
     profile.reflection = { ...(profile.reflection || {}), summary: updates.reflectionSummary };
     profile.profileSummary = updates.reflectionSummary;
+  }
+  if (Array.isArray(updates.interests)) {
+    profile.interests = mergeProfileInterests(profile.interests, updates.interests);
   }
   const data = JSON.stringify(profile);
   if (isPostgres) {
@@ -903,6 +968,36 @@ function rowToPlacement(row) {
   if (!row) return null;
   const data = typeof row.data === "string" ? JSON.parse(row.data) : row.data;
   return { id: String(row.id), profileId: row.profile_id, placement: data };
+}
+
+function newProfileId() {
+  return `profile-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+async function ensureDraftProfile(userId) {
+  const existing = await getLatestProfile(userId);
+  if (existing) return existing;
+  const now = new Date().toISOString();
+  const profile = {
+    profileId: newProfileId(),
+    basicInfo: {},
+    signals: {},
+    interests: [],
+    profileSummary: "",
+    synthesizedAt: now
+  };
+  const profileData = JSON.stringify(profile);
+  if (isPostgres) {
+    await getPool().query(
+      "INSERT INTO profiles (id, user_id, data, created_at) VALUES ($1, $2, $3::jsonb, now())",
+      [profile.profileId, userId, profileData]
+    );
+  } else {
+    const store = readLocalStore();
+    store.profiles.push({ id: profile.profileId, user_id: userId, data: profile, created_at: now });
+    writeLocalStore(store);
+  }
+  return profile;
 }
 
 module.exports = {

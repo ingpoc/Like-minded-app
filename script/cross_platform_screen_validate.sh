@@ -300,12 +300,62 @@ resolve_ios_simulator() {
   echo "$id"
 }
 
+IOS_APP_PATH="$ROOT/.build/ios-simulator/Build/Products/Debug-iphonesimulator/Likeminded.app"
+IOS_SOURCE_ROOT="$ROOT/apps/ios-macos"
+
+ios_app_exec() {
+  if [[ -x "$IOS_APP_PATH/Likeminded" ]]; then
+    echo "$IOS_APP_PATH/Likeminded"
+  elif [[ -x "$IOS_APP_PATH/Contents/MacOS/Likeminded" ]]; then
+    echo "$IOS_APP_PATH/Contents/MacOS/Likeminded"
+  fi
+}
+
+ios_needs_build() {
+  if [[ "${LIKEMINDED_SKIP_IOS_BUILD:-0}" == "1" ]]; then
+    return 1
+  fi
+  if [[ "${LIKEMINDED_FORCE_IOS_BUILD:-0}" == "1" ]]; then
+    return 0
+  fi
+  local exec_path
+  exec_path="$(ios_app_exec || true)"
+  if [[ -z "$exec_path" ]]; then
+    return 0
+  fi
+  local newest_source binary_mtime
+  newest_source="$(
+    find "$IOS_SOURCE_ROOT/Sources/LikemindedApp" "$IOS_SOURCE_ROOT/project.yml" \
+      -type f \( -name '*.swift' -o -name 'project.yml' \) -print0 2>/dev/null \
+      | xargs -0 stat -f '%m' 2>/dev/null | sort -rn | head -1
+  )"
+  binary_mtime="$(stat -f '%m' "$exec_path" 2>/dev/null || echo 0)"
+  if [[ -n "$newest_source" && "$newest_source" -gt "$binary_mtime" ]]; then
+    return 0
+  fi
+  return 1
+}
+
+ios_capture_wait_for_screen() {
+  local ledger_id="$1"
+  local wait="${IOS_CAPTURE_WAIT:-15}"
+  case "$ledger_id" in
+    16-chat|chat)
+      if (( wait < 30 )); then
+        wait=30
+      fi
+      ;;
+  esac
+  echo "$wait"
+}
+
 ios_sim_launch_and_capture() {
   local sim_id="$1"
   local outfile="$2"
-  shift 2
+  local wait="$3"
+  shift 3
   xcrun simctl launch --terminate-running-process "$sim_id" "$BUNDLE_ID" "$@" >/dev/null
-  sleep "$IOS_CAPTURE_WAIT"
+  sleep "$wait"
   xcrun simctl io "$sim_id" screenshot "$outfile"
 }
 
@@ -321,21 +371,34 @@ validate_ios_screen() {
 
   echo "iOS validate screen=$SCREEN slug=$slug args=${args[*]}" >&2
 
-  local sim_id
+  local sim_id capture_wait
   sim_id="$(resolve_ios_simulator)"
+  capture_wait="$(ios_capture_wait_for_screen "$SCREEN")"
 
-  "$LOCK" with_lock xcodebuild-ios bash -c "
-    set -euo pipefail
-    '$ROOT/script/build_and_run.sh' build > /tmp/likeminded-ios-build-\$\$.log 2>&1
-  "
+  if ios_needs_build; then
+    "$LOCK" with_lock xcodebuild-ios bash -c "
+      set -euo pipefail
+      '$ROOT/script/build_and_run.sh' build > /tmp/likeminded-ios-build-\$\$.log 2>&1
+    "
+  else
+    if [[ "${LIKEMINDED_SKIP_IOS_BUILD:-0}" == "1" ]]; then
+      echo "iOS build skipped (LIKEMINDED_SKIP_IOS_BUILD=1)" >&2
+    else
+      echo "iOS build skipped (fresh binary at $(ios_app_exec))" >&2
+    fi
+    "$LOCK" with_lock xcodebuild-ios bash -c "
+      set -euo pipefail
+      '$ROOT/script/build_and_run.sh' install > /tmp/likeminded-ios-install-\$\$.log 2>&1
+    "
+  fi
 
   "$LOCK" with_lock ios-sim bash -c "
     set -euo pipefail
     BUNDLE_ID='$(printf '%q' "$BUNDLE_ID")'
     SIMULATOR_ID='$(printf '%q' "$sim_id")'
-    IOS_CAPTURE_WAIT='$(printf '%q' "$IOS_CAPTURE_WAIT")'
+    CAPTURE_WAIT='$(printf '%q' "$capture_wait")'
     $(declare -f ios_sim_launch_and_capture)
-    ios_sim_launch_and_capture \"\$SIMULATOR_ID\" $(printf '%q' "$outfile") $(printf ' %q' "${args[@]}")
+    ios_sim_launch_and_capture \"\$SIMULATOR_ID\" $(printf '%q' "$outfile") \"\$CAPTURE_WAIT\" $(printf ' %q' "${args[@]}")
   "
 
   local size

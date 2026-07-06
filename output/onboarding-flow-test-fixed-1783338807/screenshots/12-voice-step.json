@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "label": "Voice profile step",
+  "element": 7,
+  "coords": {
+    "x": 2760.5,
+    "y": 670.5
+  },
+  "cursor_coords": {
+    "x": 200.5,
+    "y": 383.5
+  },
+  "move": {
+    "raw": "Agent cursor 'macos-cua' moved to (200.5, 383.5)."
+  },
+  "result": {
+    "effect": "unverifiable",
+    "path": "ax",
+    "verified": false
+  },
+  "method": "agent-cursor+driver-click"
+}

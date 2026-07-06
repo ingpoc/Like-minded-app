@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "label": "Meet",
+  "element": 2,
+  "coords": {
+    "x": 3045.75,
+    "y": 1111.5
+  },
+  "cursor_coords": {
+    "x": 485.75,
+    "y": 824.5
+  },
+  "move": {
+    "raw": "Agent cursor 'macos-cua' moved to (485.8, 824.5)."
+  },
+  "result": {
+    "effect": "unverifiable",
+    "path": "ax",
+    "verified": false
+  },
+  "method": "agent-cursor+driver-click"
+}

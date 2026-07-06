@@ -24,11 +24,11 @@
       "label": "Conversation row",
       "expected": "Pushes ChatView for that match",
       "result": "pass",
-      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (conv-row)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (conv-row)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "9a1886c398674713",
-      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "3c6b5ff3bf73815f",
+      "last_tested_at": "2026-07-06",
       "last_test_method": "screen-capture"
     }
   ],
@@ -37,5 +37,5 @@
     "notes": "2026-07-05 capture output/validation/ios-screens/17-conversations.png vs mockups/ios/13-16-soulmate-chat.png: CHATS header, avatar initials, display name (Meera), last-message preview, today timestamp. Intentional: single live match for validation-gurusharan vs montage multi-row plate; macOS messages deep-link uses MacMessagesFixtures for plate 15."
   },
   "notes": "macOS cross-ref: validation/macos/18-messages.json (--mac-screen messages). Live API roster for validation-gurusharan: 1 mutual match (Priya Shah → Meera via ChatDisplayNames) with seeded jazz thread preview on both platforms.",
-  "source_hash": "9a1886c398674713"
+  "source_hash": "3c6b5ff3bf73815f"
 }

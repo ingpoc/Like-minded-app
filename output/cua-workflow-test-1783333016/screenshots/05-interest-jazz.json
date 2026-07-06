@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "label": "Jazz",
+  "element": 15,
+  "coords": {
+    "x": 3216.0,
+    "y": 954.5
+  },
+  "cursor_coords": {
+    "x": 656.0,
+    "y": 667.5
+  },
+  "move": {
+    "raw": "Agent cursor 'macos-cua' moved to (656.0, 667.5)."
+  },
+  "result": {
+    "effect": "unverifiable",
+    "path": "ax",
+    "verified": false
+  },
+  "method": "agent-cursor+driver-click"
+}

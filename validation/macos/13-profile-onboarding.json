@@ -25,8 +25,8 @@
       "blocker": "",
       "stub": false,
       "tested_source_hash": "988706f7b71cb99e",
-      "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA-click"
+      "last_tested_at": "2026-07-06",
+      "last_test_method": "CUA-integration"
     },
     {
       "id": "form-lines",
@@ -38,8 +38,8 @@
       "blocker": "",
       "stub": false,
       "tested_source_hash": "988706f7b71cb99e",
-      "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA-click"
+      "last_tested_at": "2026-07-06",
+      "last_test_method": "CUA-integration"
     },
     {
       "id": "continue",
@@ -51,8 +51,8 @@
       "blocker": "",
       "stub": false,
       "tested_source_hash": "988706f7b71cb99e",
-      "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA-click"
+      "last_tested_at": "2026-07-06",
+      "last_test_method": "CUA-integration"
     },
     {
       "id": "voice-profile-step",
@@ -63,9 +63,9 @@
       "evidence": "CUA-click validation-priya 2026-07-05 profileOnboarding mockup-17 (voice-profile-step)",
       "blocker": "",
       "stub": false,
-      "last_tested_at": "2026-07-05",
+      "last_tested_at": "2026-07-06",
       "tested_source_hash": "988706f7b71cb99e",
-      "last_test_method": "CUA-click"
+      "last_test_method": "CUA-integration"
     },
     {
       "id": "join-circle-step",
@@ -76,9 +76,9 @@
       "evidence": "CUA-click validation-priya 2026-07-05 profileOnboarding mockup-17 (join-circle-step)",
       "blocker": "",
       "stub": false,
-      "last_tested_at": "2026-07-05",
+      "last_tested_at": "2026-07-06",
       "tested_source_hash": "988706f7b71cb99e",
-      "last_test_method": "CUA-click"
+      "last_test_method": "CUA-integration"
     }
   ],
   "visual_parity": {

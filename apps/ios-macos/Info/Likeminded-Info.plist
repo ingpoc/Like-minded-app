@@ -18,19 +18,5 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
-	<key>GIDClientID</key>
-	<string>$(GOOGLE_CLIENT_ID_IOS)</string>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>$(GOOGLE_REVERSED_CLIENT_ID)</string>
-				<string>com.likeminded.app</string>
-			</array>
-		</dict>
-	</array>
 </dict>
 </plist>

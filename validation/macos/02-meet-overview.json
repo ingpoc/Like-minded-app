@@ -25,9 +25,9 @@
       "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (join-meetup) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "f89b65cf0c544efd",
-      "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "tested_source_hash": "3853db5a868359d5",
+      "last_tested_at": "2026-07-06",
+      "last_test_method": "CUA-click"
     },
     {
       "id": "rsvp-sat-yes",
@@ -38,9 +38,9 @@
       "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (rsvp-sat-yes) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "f89b65cf0c544efd",
-      "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "tested_source_hash": "3853db5a868359d5",
+      "last_tested_at": "2026-07-06",
+      "last_test_method": "CUA-click"
     },
     {
       "id": "rsvp-sat-no",
@@ -51,9 +51,9 @@
       "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (rsvp-sat-no) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "f89b65cf0c544efd",
-      "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "tested_source_hash": "3853db5a868359d5",
+      "last_tested_at": "2026-07-06",
+      "last_test_method": "CUA-click"
     },
     {
       "id": "rsvp-sun-yes",
@@ -64,9 +64,9 @@
       "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (rsvp-sun-yes) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "f89b65cf0c544efd",
-      "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "tested_source_hash": "3853db5a868359d5",
+      "last_tested_at": "2026-07-06",
+      "last_test_method": "CUA-click"
     },
     {
       "id": "rsvp-sun-no",
@@ -77,9 +77,9 @@
       "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (rsvp-sun-no) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "f89b65cf0c544efd",
-      "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "tested_source_hash": "3853db5a868359d5",
+      "last_tested_at": "2026-07-06",
+      "last_test_method": "CUA-click"
     },
     {
       "id": "past-row",
@@ -90,9 +90,9 @@
       "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (past-row) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "f89b65cf0c544efd",
-      "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA"
+      "tested_source_hash": "3853db5a868359d5",
+      "last_tested_at": "2026-07-06",
+      "last_test_method": "CUA-click"
     }
   ],
   "visual_parity": {
@@ -100,7 +100,7 @@
     "notes": "2026-07-04 capture vs plate 02: hero RSVP weekend panel past-meet list layout matches. Intentional: green gradient hero vs mockup wavy texture; seeded Reflective Builders title; no notification bell (activity via notifications tab)."
   },
   "notes": "",
-  "source_hash": "f89b65cf0c544efd",
+  "source_hash": "3853db5a868359d5",
   "recent_screenshot_ref": "output/validation/macos-screens/meetOverview.png",
   "ui_validation": {
     "result": "pass",

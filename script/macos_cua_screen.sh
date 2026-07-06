@@ -4,22 +4,19 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # shellcheck source=macos_canonical_app.sh
 source "$ROOT/script/macos_canonical_app.sh"
+# shellcheck source=macos_cua_helpers.sh
+source "$ROOT/script/macos_cua_helpers.sh"
 
 SCREEN="${1:?screen name, e.g. communityDetail}"
-MACOS_CUA_PY="${MACOS_CUA_PY:-$HOME/.agents/skills/macos-cua/scripts/macos-cua.py}"
-CUA_APP="Likeminded"
 CLICK_OK=0
 CLICK_MISS=0
-
-cua() {
-  python3 "$MACOS_CUA_PY" "$@"
-}
 
 click_label() {
   local needle="$1"
   local optional="${2:-}"
+  local max="${3:-$MACOS_CUA_MAX}"
   local out ok
-  out="$(cua click-label "$CUA_APP" "$needle" --max 120 2>&1)" || true
+  out="$(cua click-label-pointer "$CUA_APP" "$needle" --max "$max" 2>&1)" || true
   ok="$(python3 -c "import json,sys; print('yes' if json.loads(sys.stdin.read()).get('ok') else 'no')" <<<"$out" 2>/dev/null || echo no)"
   if [[ "$ok" == "yes" ]]; then
     echo "OK click '$needle'"
@@ -37,7 +34,7 @@ type_field() {
   local text="$2"
   local optional="${3:-}"
   local out ok
-  out="$(cua type-label "$CUA_APP" "$label" "$text" --max 120 2>&1)" || true
+  out="$(cua type-label "$CUA_APP" "$label" "$text" --max "$MACOS_CUA_MAX" 2>&1)" || true
   ok="$(python3 -c "import json,sys; print('yes' if json.loads(sys.stdin.read()).get('ok') else 'no')" <<<"$out" 2>/dev/null || echo no)"
   if [[ "$ok" == "yes" ]]; then
     echo "OK type '$label'"
@@ -60,14 +57,12 @@ curl -fsS "http://127.0.0.1:${PORT:-8787}/health" >/dev/null || {
 LIKEMINDED_VALIDATION_USER="${LIKEMINDED_VALIDATION_USER:-validation-gurusharan}" \
 LIKEMINDED_VALIDATION_NAME="${LIKEMINDED_VALIDATION_NAME:-Gurusharan Gupta}" \
   "$ROOT/script/run_macos_manual_validation.sh" "$SCREEN" >/dev/null
-sleep 5
+macos_wait_main_window 25
 
-"$ROOT/script/macos_cua_focus_window.sh" >/dev/null
-cua reset >/dev/null 2>&1 || true
-cua focus "$CUA_APP" >/dev/null 2>&1 || true
+macos_cua_session_start
 
 echo "screen=$SCREEN app=$CUA_APP"
-cua list-buttons "$CUA_APP" --max 120 | python3 -c "
+cua list-buttons "$CUA_APP" --max "$MACOS_CUA_MAX" | python3 -c "
 import json,sys
 for line in sys.stdin:
     line=line.strip()
@@ -92,9 +87,8 @@ case "$SCREEN" in
     LIKEMINDED_VALIDATION_USER="${LIKEMINDED_VALIDATION_USER:-validation-gurusharan}" \
     LIKEMINDED_VALIDATION_NAME="${LIKEMINDED_VALIDATION_NAME:-Gurusharan Gupta}" \
       "$ROOT/script/run_macos_manual_validation.sh" "$SCREEN" >/dev/null
-    sleep 5
-    "$ROOT/script/macos_cua_focus_window.sh" >/dev/null
-    cua focus "$CUA_APP" >/dev/null 2>&1 || true
+    macos_wait_main_window 20
+    macos_cua_session_start
     click_label "Circle options"
     click_label "This does not feel like my circle"
     click_label "Upcoming circle meet row" optional
@@ -108,6 +102,10 @@ case "$SCREEN" in
     click_label "Visible in discover" optional
     click_label "Visible only after both like" optional
     click_label "Save preferences" optional
+    click_label "Log out" optional "$MACOS_CUA_MAX_MODAL"
+    cua_dismiss_modal
+    click_label "Delete account" optional "$MACOS_CUA_MAX_MODAL"
+    cua_dismiss_modal
     ;;
   circlesRoom)
     click_label "Request circle placement refresh"
@@ -185,8 +183,8 @@ case "$SCREEN" in
     click_label "Conversation info" optional
     ;;
   meetVideoCall)
-    click_label "Mute microphone"
-    click_label "Leave meetup" optional
+    click_label "Mute microphone" "" "$MACOS_CUA_MAX_MODAL"
+    click_label "Leave meetup" "" "$MACOS_CUA_MAX_MODAL"
     ;;
   *)
     echo "No scripted clicks for $SCREEN (snapshot only)"

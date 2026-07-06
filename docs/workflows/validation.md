@@ -153,6 +153,7 @@ Use full ledger id: `npm run ledger:screen -- --platform ios --screen 22-setting
 
 - Target one simulator UDID from `./script/build_and_run.sh` — not `booted` when multiple simulators are running.
 - Prefer build-only + explicit `simctl launch` with validation args; `./script/build_and_run.sh run` auto-launches without deep links.
+- `verify:ios-screens` builds **once** then sets `LIKEMINDED_SKIP_IOS_BUILD=1` per screen; single `validate:screen` auto-skips xcodebuild when `.build/ios-simulator/.../Likeminded.app` is fresh (still installs to sim) — `LIKEMINDED_FORCE_IOS_BUILD=1` to force rebuild.
 - Wait **15–60s** after launch for dev-auth before screenshot.
 - When `simctl` drops `--likeminded-start-*` args, use `LIKEMINDED_VALIDATION_SCREEN` UserDefaults fallback (see `build-ios-app` skill).
 
@@ -163,6 +164,7 @@ Use full ledger id: `npm run ledger:screen -- --platform ios --screen 22-setting
 - Auth welcome: **no** dev bypass; `--likeminded-reset-auth-session --mac-screen welcome --likeminded-validation-welcome`.
 - Settings how-it-works: `--mac-screen settingsSoulmate --mac-settings-pane howItWorks` only (dual `--likeminded-start-settings-info` + pane can yield 0 windows).
 - Capture by **PID window id** (`macos_cua_focus_window.sh`). Run `macos_cua_preflight.sh` if `cua-driver` calls timeout.
+- **Multi-monitor:** defaults in `macos_cua_preflight.sh` (`MACOS_CUA_DISPLAY=DELL`, `MACOS_CUA_LOCAL_COORDS=1`). Align: `macos_cua_focus_window.sh`. Contract: `~/.agents/skills/macos-cua/references/displays.md`.
 
 ## Delegated verification
 

@@ -1,0 +1,1633 @@
+{
+  "users": {
+    "usr_b0e04f2197dfbf6f758f8215": {
+      "id": "usr_b0e04f2197dfbf6f758f8215",
+      "apple_sub": "dev-95a4848169919d9b",
+      "google_sub": null,
+      "wallet_address": null,
+      "wallet_chain": null,
+      "auth_provider": "apple",
+      "email": "tester@likeminded.local",
+      "full_name": "Flow Tester",
+      "created_at": "2026-07-06T08:16:14.571Z",
+      "updated_at": "2026-07-06T08:16:14.571Z"
+    },
+    "usr_1879bcf2fa6e296bee3140d8": {
+      "id": "usr_1879bcf2fa6e296bee3140d8",
+      "apple_sub": "dev-d3a0ed1b311d8e98",
+      "google_sub": null,
+      "wallet_address": null,
+      "wallet_chain": null,
+      "auth_provider": "apple",
+      "email": "tester@likeminded.local",
+      "full_name": "Debug User",
+      "created_at": "2026-07-06T08:18:45.118Z",
+      "updated_at": "2026-07-06T08:18:45.118Z"
+    },
+    "usr_b640b10398d6e35b3eb0e96c": {
+      "id": "usr_b640b10398d6e35b3eb0e96c",
+      "apple_sub": "dev-461771ec7ecff4b6",
+      "google_sub": null,
+      "wallet_address": null,
+      "wallet_chain": null,
+      "auth_provider": "apple",
+      "email": "tester@likeminded.local",
+      "full_name": "Debug User",
+      "created_at": "2026-07-06T08:18:59.398Z",
+      "updated_at": "2026-07-06T08:18:59.398Z"
+    },
+    "usr_6859f94c81d611870884158a": {
+      "id": "usr_6859f94c81d611870884158a",
+      "apple_sub": "dev-fc56e1c423c36ad3",
+      "google_sub": null,
+      "wallet_address": null,
+      "wallet_chain": null,
+      "auth_provider": "apple",
+      "email": "tester@likeminded.local",
+      "full_name": "Flow Tester",
+      "created_at": "2026-07-06T08:20:01.282Z",
+      "updated_at": "2026-07-06T08:20:01.282Z"
+    },
+    "usr_b989000bd0b191c09ee49d08": {
+      "id": "usr_b989000bd0b191c09ee49d08",
+      "apple_sub": "dev-da555ea973c352e6",
+      "google_sub": null,
+      "wallet_address": null,
+      "wallet_chain": null,
+      "auth_provider": "apple",
+      "email": "tester@likeminded.local",
+      "full_name": "Flow Tester",
+      "created_at": "2026-07-06T08:24:19.029Z",
+      "updated_at": "2026-07-06T08:24:19.029Z"
+    },
+    "usr_57c2e021121592fb8af77b10": {
+      "id": "usr_57c2e021121592fb8af77b10",
+      "apple_sub": "dev-e2b289cf9369d1d2",
+      "google_sub": null,
+      "wallet_address": null,
+      "wallet_chain": null,
+      "auth_provider": "apple",
+      "email": "tester@likeminded.local",
+      "full_name": "Flow Tester",
+      "created_at": "2026-07-06T08:24:39.650Z",
+      "updated_at": "2026-07-06T08:24:39.650Z"
+    },
+    "usr_557a62f161d980b14d9d5b70": {
+      "id": "usr_557a62f161d980b14d9d5b70",
+      "apple_sub": "dev-31e50c8a577bccbe",
+      "google_sub": null,
+      "wallet_address": null,
+      "wallet_chain": null,
+      "auth_provider": "apple",
+      "email": "tester@likeminded.local",
+      "full_name": "Flow Tester",
+      "created_at": "2026-07-06T08:44:36.335Z",
+      "updated_at": "2026-07-06T08:44:36.335Z"
+    },
+    "usr_4b33c6767cd19c04b94a3bb5": {
+      "id": "usr_4b33c6767cd19c04b94a3bb5",
+      "apple_sub": "dev-0bcb094a409a188d",
+      "google_sub": null,
+      "wallet_address": null,
+      "wallet_chain": null,
+      "auth_provider": "apple",
+      "email": "tester@likeminded.local",
+      "full_name": "Win Check",
+      "created_at": "2026-07-06T08:51:45.834Z",
+      "updated_at": "2026-07-06T08:51:45.834Z"
+    },
+    "usr_7344f8ca630af7f098f68320": {
+      "id": "usr_7344f8ca630af7f098f68320",
+      "apple_sub": "dev-0ef929fb7ae05de8",
+      "google_sub": null,
+      "wallet_address": null,
+      "wallet_chain": null,
+      "auth_provider": "apple",
+      "email": "tester@likeminded.local",
+      "full_name": "Flow Tester",
+      "created_at": "2026-07-06T08:52:31.788Z",
+      "updated_at": "2026-07-06T08:52:31.788Z"
+    },
+    "usr_2b870f38cd6ece59cf8be0f8": {
+      "id": "usr_2b870f38cd6ece59cf8be0f8",
+      "apple_sub": "dev-1c13418feec0bbee",
+      "google_sub": null,
+      "wallet_address": null,
+      "wallet_chain": null,
+      "auth_provider": "apple",
+      "email": "tester@likeminded.local",
+      "full_name": "Cursor Shot",
+      "created_at": "2026-07-06T08:54:13.195Z",
+      "updated_at": "2026-07-06T08:54:13.195Z"
+    },
+    "usr_864a0e2651d34651c5f691f8": {
+      "id": "usr_864a0e2651d34651c5f691f8",
+      "apple_sub": "dev-02453b1aff6f6f62",
+      "google_sub": null,
+      "wallet_address": null,
+      "wallet_chain": null,
+      "auth_provider": "apple",
+      "email": "tester@likeminded.local",
+      "full_name": "Cursor Fix",
+      "created_at": "2026-07-06T09:06:00.690Z",
+      "updated_at": "2026-07-06T09:06:00.690Z"
+    },
+    "usr_25fdd3aaac3f7e8869f450be": {
+      "id": "usr_25fdd3aaac3f7e8869f450be",
+      "apple_sub": "dev-78e0ea86b5082ce4",
+      "google_sub": null,
+      "wallet_address": null,
+      "wallet_chain": null,
+      "auth_provider": "apple",
+      "email": "tester@likeminded.local",
+      "full_name": "Fix",
+      "created_at": "2026-07-06T09:07:57.296Z",
+      "updated_at": "2026-07-06T09:07:57.296Z"
+    },
+    "usr_4fa5c9784dfc1a4b17507c20": {
+      "id": "usr_4fa5c9784dfc1a4b17507c20",
+      "apple_sub": "dev-abda29a0f9dd30ce",
+      "google_sub": null,
+      "wallet_address": null,
+      "wallet_chain": null,
+      "auth_provider": "apple",
+      "email": "tester@likeminded.local",
+      "full_name": "Local Coords",
+      "created_at": "2026-07-06T09:10:40.179Z",
+      "updated_at": "2026-07-06T09:10:40.179Z"
+    },
+    "usr_4eba4c0db8707b25177f3192": {
+      "id": "usr_4eba4c0db8707b25177f3192",
+      "apple_sub": "dev-8e77709772ec396d",
+      "google_sub": null,
+      "wallet_address": null,
+      "wallet_chain": null,
+      "auth_provider": "apple",
+      "email": "tester@likeminded.local",
+      "full_name": "CUA Tester",
+      "created_at": "2026-07-06T09:28:19.610Z",
+      "updated_at": "2026-07-06T09:28:19.610Z"
+    },
+    "usr_b1e18b231bdae66701e0f71e": {
+      "id": "usr_b1e18b231bdae66701e0f71e",
+      "apple_sub": "dev-ac5c4e4821dacd2c",
+      "google_sub": null,
+      "wallet_address": null,
+      "wallet_chain": null,
+      "auth_provider": "apple",
+      "email": "tester@likeminded.local",
+      "full_name": "CUA Tester",
+      "created_at": "2026-07-06T09:51:34.940Z",
+      "updated_at": "2026-07-06T09:51:34.940Z"
+    },
+    "usr_5561c1bf2705820ce8c236de": {
+      "id": "usr_5561c1bf2705820ce8c236de",
+      "apple_sub": "dev-624f383e1c85d893",
+      "google_sub": null,
+      "wallet_address": null,
+      "wallet_chain": null,
+      "auth_provider": "apple",
+      "email": "tester@likeminded.local",
+      "full_name": "CUA Tester",
+      "created_at": "2026-07-06T09:52:41.335Z",
+      "updated_at": "2026-07-06T09:52:41.335Z"
+    },
+    "usr_6fbe500742d498ef1aa5285f": {
+      "id": "usr_6fbe500742d498ef1aa5285f",
+      "apple_sub": "dev-3a3591a733c33334",
+      "google_sub": null,
+      "wallet_address": null,
+      "wallet_chain": null,
+      "auth_provider": "apple",
+      "email": "tester@likeminded.local",
+      "full_name": "CUA Tester",
+      "created_at": "2026-07-06T09:57:18.875Z",
+      "updated_at": "2026-07-06T10:00:07.620Z"
+    },
+    "usr_64d9cbe23c7870ee77a2a0d9": {
+      "id": "usr_64d9cbe23c7870ee77a2a0d9",
+      "apple_sub": "dev-2717904f871fec89",
+      "google_sub": null,
+      "wallet_address": null,
+      "wallet_chain": null,
+      "auth_provider": "apple",
+      "email": "tester@likeminded.local",
+      "full_name": "CUA Tester",
+      "created_at": "2026-07-06T10:06:36.204Z",
+      "updated_at": "2026-07-06T10:09:42.974Z"
+    }
+  },
+  "profiles": [
+    {
+      "id": "profile-mr8y7qhq-0rqjqn",
+      "user_id": "usr_1879bcf2fa6e296bee3140d8",
+      "data": {
+        "profileId": "profile-mr8y7qhq-0rqjqn",
+        "signals": {
+          "bigFive": {
+            "openness": 0.86,
+            "conscientiousness": 0.52,
+            "extraversion": 0.34,
+            "agreeableness": 0.72,
+            "neuroticism": 0.28
+          },
+          "attachment": "secure-leaning",
+          "socialEnergy": "low-to-moderate",
+          "communicationStyle": {
+            "primary": null,
+            "pace": 0.5
+          },
+          "trustPattern": "opens slowly after sensing depth and safety",
+          "humorStyle": "subtle, warm, likely dry/observational",
+          "conflictStyle": "gentle, prefers understanding before disagreement"
+        },
+        "basicInfo": null,
+        "interests": [
+          {
+            "area": "music",
+            "label": "Jazz",
+            "depth": "deep"
+          },
+          {
+            "area": "conversation",
+            "label": "Deep conversation",
+            "depth": "deep"
+          },
+          {
+            "area": "reading",
+            "label": "Books",
+            "depth": "deep"
+          },
+          {
+            "area": "travel",
+            "label": "Travel",
+            "depth": "active"
+          }
+        ],
+        "hiddenSignals": {
+          "shyness": 0.66,
+          "languageComfort": null,
+          "warmth": 0.74,
+          "vulnerabilityOpenness": 0.61,
+          "dominanceTendency": 0.21,
+          "energyTrajectory": "starts reserved, becomes expansive once comfortable"
+        },
+        "sourceInput": {
+          "reflectionAnswers": [],
+          "interviewExcerpt": "I love jazz and deep conversations. I open up slowly with thoughtful questions. I could talk for hours about books and travel."
+        },
+        "profileSummary": "A reflective, bookish person who prefers warm depth over quick connection. Likely to thrive in calm spaces where conversation unfolds gradually and curiosity is welcomed.",
+        "synthesizedAt": "2026-07-06T08:18:50.462Z",
+        "deviceId": ""
+      },
+      "created_at": "2026-07-06T08:18:50.462Z"
+    },
+    {
+      "id": "profile-mr8yjvuk-kc3ol7",
+      "user_id": "usr_57c2e021121592fb8af77b10",
+      "data": {
+        "profileId": "profile-mr8yjvuk-kc3ol7",
+        "signals": {
+          "bigFive": {
+            "openness": 0.92,
+            "conscientiousness": 0.56,
+            "extraversion": 0.48,
+            "agreeableness": 0.81,
+            "neuroticism": 0.22
+          },
+          "attachment": "secure",
+          "socialEnergy": "moderate",
+          "communicationStyle": {
+            "primary": null,
+            "pace": 0.5
+          },
+          "trustPattern": "builds trust slowly through questions, stories, and shared depth",
+          "humorStyle": "wry, cultured, light but not performative",
+          "conflictStyle": "calm, reflective, prefers clarity and mutual understanding"
+        },
+        "basicInfo": null,
+        "interests": [
+          {
+            "area": "conversation",
+            "label": "Deep conversation",
+            "depth": "deep"
+          },
+          {
+            "area": "culture",
+            "label": "Jazz",
+            "depth": "deep"
+          },
+          {
+            "area": "literature",
+            "label": "Books",
+            "depth": "deep"
+          },
+          {
+            "area": "urbanism",
+            "label": "How cities shape culture",
+            "depth": "deep"
+          },
+          {
+            "area": "hosting",
+            "label": "Small dinner parties",
+            "depth": "active"
+          }
+        ],
+        "hiddenSignals": {
+          "shyness": 0.44,
+          "languageComfort": null,
+          "warmth": 0.79,
+          "vulnerabilityOpenness": 0.72,
+          "dominanceTendency": 0.28,
+          "energyTrajectory": "rises in intimate settings and sustained one-to-one or small-group dialogue"
+        },
+        "sourceInput": {
+          "reflectionAnswers": [
+            "Hosting small dinner parties and deep conversations energizes me most.",
+            "aI open up by asking thoughtful questions and sharing stories gradually.",
+            "aI could talk for hours about jazz, books, and how cities shape culture."
+          ],
+          "interviewExcerpt": "Hosting small dinner parties and deep conversations energizes me most.\naI open up by asking thoughtful questions and sharing stories gradually.\naI could talk for hours about jazz, books, and how cities shape culture."
+        },
+        "profileSummary": "An introspective, culturally curious person who prefers intimate settings, slow trust, and conversation that moves beyond surface-level topics.",
+        "synthesizedAt": "2026-07-06T08:28:17.276Z",
+        "deviceId": ""
+      },
+      "created_at": "2026-07-06T08:28:17.277Z"
+    },
+    {
+      "id": "profile-mr91n75q-oib251",
+      "user_id": "usr_5561c1bf2705820ce8c236de",
+      "data": {
+        "profileId": "profile-mr91n75q-oib251",
+        "signals": {
+          "bigFive": {
+            "openness": 0.84,
+            "conscientiousness": 0.62,
+            "extraversion": 0.7,
+            "agreeableness": 0.78,
+            "neuroticism": 0.32
+          },
+          "attachment": "secure",
+          "socialEnergy": "warm_steady",
+          "communicationStyle": {
+            "primary": null,
+            "pace": 0.5
+          },
+          "trustPattern": "slow_to_shallow_fast_to_deep",
+          "humorStyle": "witty_gentle",
+          "conflictStyle": "direct_but_kind"
+        },
+        "basicInfo": null,
+        "interests": [
+          {
+            "area": "social_gathering",
+            "label": "Hosting small dinner parties",
+            "depth": "active"
+          },
+          {
+            "area": "conversation",
+            "label": "Thoughtful questions and deep listening",
+            "depth": "deep"
+          },
+          {
+            "area": "music",
+            "label": "Jazz",
+            "depth": "deep"
+          },
+          {
+            "area": "reading",
+            "label": "Books and literary conversation",
+            "depth": "deep"
+          }
+        ],
+        "hiddenSignals": {
+          "shyness": 0.28,
+          "languageComfort": null,
+          "warmth": 0.84,
+          "vulnerabilityOpenness": 0.72,
+          "dominanceTendency": 0.34,
+          "energyTrajectory": "rises_with_intimacy"
+        },
+        "sourceInput": {
+          "reflectionAnswers": [
+            "Hosting small dinner parties energizes me.",
+            "aI open up by asking thoughtful questions.",
+            "aI could talk for hours about jazz and books."
+          ],
+          "interviewExcerpt": "Hosting small dinner parties energizes me.\naI open up by asking thoughtful questions.\naI could talk for hours about jazz and books."
+        },
+        "profileSummary": "A warm, curious conversationalist who enjoys creating intimate settings, asking thoughtful questions, and staying engaged in rich, bookish conversation.",
+        "synthesizedAt": "2026-07-06T09:54:50.750Z",
+        "deviceId": ""
+      },
+      "created_at": "2026-07-06T09:54:50.751Z"
+    },
+    {
+      "id": "profile-mr91t5cd-id9pqs",
+      "user_id": "usr_6fbe500742d498ef1aa5285f",
+      "data": {
+        "profileId": "profile-mr91t5cd-id9pqs",
+        "signals": {
+          "bigFive": {
+            "openness": 0.91,
+            "conscientiousness": 0.63,
+            "extraversion": 0.76,
+            "agreeableness": 0.84,
+            "neuroticism": 0.28
+          },
+          "attachment": "secure",
+          "socialEnergy": "warm and moderate-high",
+          "communicationStyle": {
+            "primary": null,
+            "pace": 0.5
+          },
+          "trustPattern": "opens through shared interests and respectful curiosity; trust builds through depth",
+          "humorStyle": "wry, cultured, gentle",
+          "conflictStyle": "direct but considerate, prefers understanding over escalation"
+        },
+        "basicInfo": null,
+        "interests": [
+          {
+            "area": "hosting",
+            "label": "small dinner parties",
+            "depth": "active"
+          },
+          {
+            "area": "conversation",
+            "label": "thoughtful questions and deep dialogue",
+            "depth": "active"
+          },
+          {
+            "area": "music",
+            "label": "jazz",
+            "depth": "deep"
+          },
+          {
+            "area": "reading",
+            "label": "books",
+            "depth": "deep"
+          }
+        ],
+        "hiddenSignals": {
+          "shyness": 0.31,
+          "languageComfort": null,
+          "warmth": 0.88,
+          "vulnerabilityOpenness": 0.67,
+          "dominanceTendency": 0.39,
+          "energyTrajectory": "rises with good company and rich topics, then sustains at a steady warm level"
+        },
+        "sourceInput": {
+          "reflectionAnswers": [
+            "Hosting small dinner parties energizes me.",
+            "aI open up by asking thoughtful questions.",
+            "aI could talk for hours about jazz and books."
+          ],
+          "interviewExcerpt": "Hosting small dinner parties energizes me.\naI open up by asking thoughtful questions.\naI could talk for hours about jazz and books."
+        },
+        "profileSummary": "A warm, intellectually curious host who builds connection through thoughtful questions, shared taste, and relaxed, lingering conversation.",
+        "synthesizedAt": "2026-07-06T09:59:28.333Z",
+        "deviceId": ""
+      },
+      "created_at": "2026-07-06T09:59:28.334Z"
+    },
+    {
+      "id": "profile-mr9253iq-xjtkux",
+      "user_id": "usr_64d9cbe23c7870ee77a2a0d9",
+      "data": {
+        "profileId": "profile-mr9253iq-xjtkux",
+        "signals": {
+          "bigFive": {
+            "openness": 0.91,
+            "conscientiousness": 0.68,
+            "extraversion": 0.66,
+            "agreeableness": 0.84,
+            "neuroticism": 0.24
+          },
+          "attachment": "secure",
+          "socialEnergy": "warm-medium",
+          "communicationStyle": {
+            "primary": null,
+            "pace": 0.5
+          },
+          "trustPattern": "opens through thoughtful questions and shared interests",
+          "humorStyle": "dry-witty, music-and-book adjacent",
+          "conflictStyle": "calm, respectful, prefers discussion over escalation"
+        },
+        "basicInfo": null,
+        "interests": [
+          {
+            "area": "hosting",
+            "label": "Small dinner parties",
+            "depth": "active"
+          },
+          {
+            "area": "conversation",
+            "label": "Thoughtful questions",
+            "depth": "deep"
+          },
+          {
+            "area": "music",
+            "label": "Jazz",
+            "depth": "deep"
+          },
+          {
+            "area": "reading",
+            "label": "Books",
+            "depth": "deep"
+          }
+        ],
+        "hiddenSignals": {
+          "shyness": 0.32,
+          "languageComfort": null,
+          "warmth": 0.83,
+          "vulnerabilityOpenness": 0.7,
+          "dominanceTendency": 0.31,
+          "energyTrajectory": "starts gently, becomes expansive with trust and shared interests"
+        },
+        "sourceInput": {
+          "reflectionAnswers": [
+            "Hosting small dinner parties energizes me.",
+            "aI open up by asking thoughtful questions.",
+            "aI could talk for hours about jazz and books."
+          ],
+          "interviewExcerpt": "Hosting small dinner parties energizes me.\naI open up by asking thoughtful questions.\naI could talk for hours about jazz and books."
+        },
+        "profileSummary": "Warm, curious, and socially intentional. They come alive in intimate settings with real conversation, especially when the topic can wander into music, books, and meaning.",
+        "synthesizedAt": "2026-07-06T10:08:45.842Z",
+        "deviceId": ""
+      },
+      "created_at": "2026-07-06T10:08:45.842Z"
+    }
+  ],
+  "placements": [
+    {
+      "id": "1",
+      "user_id": "usr_1879bcf2fa6e296bee3140d8",
+      "profile_id": "profile-mr8y7qhq-0rqjqn",
+      "data": {
+        "rule": "model-place-user-confirm",
+        "confidenceLabel": "Model fit",
+        "fitReasons": [
+          "You seem to enjoy layered conversation and slow trust, which fits a patient, bookish room.",
+          "Your love of books and long conversations aligns with recurring salon-style discussion.",
+          "You open up slowly and thoughtfully, which matches a circle that values depth over speed."
+        ],
+        "sourceReflectionSignals": [
+          "\"I love jazz and deep conversations.\"",
+          "\"I open up slowly with thoughtful questions.\"",
+          "\"I could talk for hours about books and travel.\""
+        ],
+        "primaryCircle": {
+          "id": "longform-thinkers",
+          "name": "Longform Thinkers",
+          "personalityProfile": {
+            "openness": [
+              0.8,
+              1
+            ],
+            "conscientiousness": [
+              0.5,
+              0.8
+            ],
+            "extraversion": [
+              0.2,
+              0.5
+            ],
+            "agreeableness": [
+              0.5,
+              0.8
+            ],
+            "neuroticism": [
+              0.3,
+              0.7
+            ],
+            "attachmentPreferences": [
+              "secure",
+              "avoidant"
+            ]
+          },
+          "socialEnergy": [
+            "low"
+          ],
+          "communicationStyles": [
+            "analytical",
+            "expressive"
+          ],
+          "trustPatterns": [
+            "slowTrust"
+          ],
+          "description": "Bookish, introspective people who prefer layered conversation to slow trust.",
+          "roomEnergy": "Patient, bookish, and quietly expansive.",
+          "interactionIntent": "Intellectual companionship",
+          "socialFormat": "Recurring salon",
+          "themes": [
+            "Essays",
+            "Psychology",
+            "Slow living"
+          ],
+          "meetingFormat": "Weekly reading-sharing with guided discussion"
+        },
+        "secondaryCircles": [
+          {
+            "id": "reflective-builders",
+            "name": "Reflective Builders",
+            "personalityProfile": {
+              "openness": [
+                0.7,
+                1
+              ],
+              "conscientiousness": [
+                0.6,
+                1
+              ],
+              "extraversion": [
+                0.3,
+                0.6
+              ],
+              "agreeableness": [
+                0.6,
+                0.9
+              ],
+              "neuroticism": [
+                0.3,
+                0.6
+              ],
+              "attachmentPreferences": [
+                "secure",
+                "avoidant"
+              ]
+            },
+            "socialEnergy": [
+              "medium",
+              "low"
+            ],
+            "communicationStyles": [
+              "analytical",
+              "direct"
+            ],
+            "trustPatterns": [
+              "slowTrust",
+              "conditionalTrust"
+            ],
+            "description": "A small circle for people who build ambitious things without emotional shortcuts. Thoughtful, honest feedback, deep work.",
+            "roomEnergy": "Warm, thoughtful, honest feedback without performance.",
+            "interactionIntent": "Creative collaboration",
+            "socialFormat": "Micro-circle of 4-6",
+            "themes": [
+              "Founders",
+              "Meaningful work",
+              "Honest feedback"
+            ],
+            "meetingFormat": "Weekly structured check-ins with rotating facilitator"
+          },
+          {
+            "id": "grounded-nurturers",
+            "name": "Grounded Nurturers",
+            "personalityProfile": {
+              "openness": [
+                0.4,
+                0.7
+              ],
+              "conscientiousness": [
+                0.6,
+                0.9
+              ],
+              "extraversion": [
+                0.3,
+                0.6
+              ],
+              "agreeableness": [
+                0.8,
+                1
+              ],
+              "neuroticism": [
+                0.2,
+                0.5
+              ],
+              "attachmentPreferences": [
+                "secure"
+              ]
+            },
+            "socialEnergy": [
+              "medium"
+            ],
+            "communicationStyles": [
+              "warm",
+              "analytical"
+            ],
+            "trustPatterns": [
+              "slowTrust",
+              "conditionalTrust"
+            ],
+            "description": "For people who show up consistently, hold space for others, and believe in steady presence over grand gestures.",
+            "roomEnergy": "Steady, supportive, quietly joyful.",
+            "interactionIntent": "Mutual support and presence",
+            "socialFormat": "Small consistent circle",
+            "themes": [
+              "Parenting",
+              "Care work",
+              "Steady presence"
+            ],
+            "meetingFormat": "Weekly circle sharing with rotating host"
+          }
+        ],
+        "userState": "proposed",
+        "actions": {
+          "primaryAction": "Accept this circle",
+          "swapAction": "Try another circle",
+          "deferAction": "Defer for now"
+        },
+        "isNewCircle": false
+      },
+      "user_state": "proposed",
+      "created_at": "2026-07-06T08:18:50.462Z",
+      "updated_at": "2026-07-06T08:18:50.462Z"
+    },
+    {
+      "id": "2",
+      "user_id": "usr_57c2e021121592fb8af77b10",
+      "profile_id": "profile-mr8yjvuk-kc3ol7",
+      "data": {
+        "rule": "model-place-user-confirm",
+        "confidenceLabel": "Model fit",
+        "fitReasons": [
+          "Feels most energized by deep conversation and layered discussion rather than high-intensity socializing.",
+          "Opens up gradually, which fits a slow-trust, bookish room.",
+          "Drawn to jazz, books, and cities shaping culture, aligning with reflective, intellectually curious circles."
+        ],
+        "sourceReflectionSignals": [
+          "Hosting small dinner parties and deep conversations energizes me most.",
+          "I open up by asking thoughtful questions and sharing stories gradually.",
+          "I could talk for hours about jazz, books, and how cities shape culture."
+        ],
+        "primaryCircle": {
+          "id": "longform-thinkers",
+          "name": "Longform Thinkers",
+          "personalityProfile": {
+            "openness": [
+              0.8,
+              1
+            ],
+            "conscientiousness": [
+              0.5,
+              0.8
+            ],
+            "extraversion": [
+              0.2,
+              0.5
+            ],
+            "agreeableness": [
+              0.5,
+              0.8
+            ],
+            "neuroticism": [
+              0.3,
+              0.7
+            ],
+            "attachmentPreferences": [
+              "secure",
+              "avoidant"
+            ]
+          },
+          "socialEnergy": [
+            "low"
+          ],
+          "communicationStyles": [
+            "analytical",
+            "expressive"
+          ],
+          "trustPatterns": [
+            "slowTrust"
+          ],
+          "description": "Bookish, introspective people who prefer layered conversation to slow trust.",
+          "roomEnergy": "Patient, bookish, and quietly expansive.",
+          "interactionIntent": "Intellectual companionship",
+          "socialFormat": "Recurring salon",
+          "themes": [
+            "Essays",
+            "Psychology",
+            "Slow living"
+          ],
+          "meetingFormat": "Weekly reading-sharing with guided discussion"
+        },
+        "secondaryCircles": [
+          {
+            "id": "reflective-builders",
+            "name": "Reflective Builders",
+            "personalityProfile": {
+              "openness": [
+                0.7,
+                1
+              ],
+              "conscientiousness": [
+                0.6,
+                1
+              ],
+              "extraversion": [
+                0.3,
+                0.6
+              ],
+              "agreeableness": [
+                0.6,
+                0.9
+              ],
+              "neuroticism": [
+                0.3,
+                0.6
+              ],
+              "attachmentPreferences": [
+                "secure",
+                "avoidant"
+              ]
+            },
+            "socialEnergy": [
+              "medium",
+              "low"
+            ],
+            "communicationStyles": [
+              "analytical",
+              "direct"
+            ],
+            "trustPatterns": [
+              "slowTrust",
+              "conditionalTrust"
+            ],
+            "description": "A small circle for people who build ambitious things without emotional shortcuts. Thoughtful, honest feedback, deep work.",
+            "roomEnergy": "Warm, thoughtful, honest feedback without performance.",
+            "interactionIntent": "Creative collaboration",
+            "socialFormat": "Micro-circle of 4-6",
+            "themes": [
+              "Founders",
+              "Meaningful work",
+              "Honest feedback"
+            ],
+            "meetingFormat": "Weekly structured check-ins with rotating facilitator"
+          },
+          {
+            "id": "grounded-nurturers",
+            "name": "Grounded Nurturers",
+            "personalityProfile": {
+              "openness": [
+                0.4,
+                0.7
+              ],
+              "conscientiousness": [
+                0.6,
+                0.9
+              ],
+              "extraversion": [
+                0.3,
+                0.6
+              ],
+              "agreeableness": [
+                0.8,
+                1
+              ],
+              "neuroticism": [
+                0.2,
+                0.5
+              ],
+              "attachmentPreferences": [
+                "secure"
+              ]
+            },
+            "socialEnergy": [
+              "medium"
+            ],
+            "communicationStyles": [
+              "warm",
+              "analytical"
+            ],
+            "trustPatterns": [
+              "slowTrust",
+              "conditionalTrust"
+            ],
+            "description": "For people who show up consistently, hold space for others, and believe in steady presence over grand gestures.",
+            "roomEnergy": "Steady, supportive, quietly joyful.",
+            "interactionIntent": "Mutual support and presence",
+            "socialFormat": "Small consistent circle",
+            "themes": [
+              "Parenting",
+              "Care work",
+              "Steady presence"
+            ],
+            "meetingFormat": "Weekly circle sharing with rotating host"
+          }
+        ],
+        "userState": "proposed",
+        "actions": {
+          "primaryAction": "Accept this circle",
+          "swapAction": "Try another circle",
+          "deferAction": "Defer for now"
+        },
+        "isNewCircle": false
+      },
+      "user_state": "proposed",
+      "created_at": "2026-07-06T08:28:17.277Z",
+      "updated_at": "2026-07-06T08:28:17.277Z"
+    },
+    {
+      "id": "3",
+      "user_id": "usr_5561c1bf2705820ce8c236de",
+      "profile_id": "profile-mr91n75q-oib251",
+      "data": {
+        "rule": "model-place-user-confirm",
+        "confidenceLabel": "Model fit",
+        "fitReasons": [
+          "You seem to enjoy layered conversation and can happily go deep for a long time.",
+          "You like opening up with thoughtful questions, which fits a patient, reflective room.",
+          "Your warmth and hosting style suggest you create comfort without needing center stage."
+        ],
+        "sourceReflectionSignals": [
+          "Hosting small dinner parties energizes me.",
+          "I open up by asking thoughtful questions.",
+          "I could talk for hours about jazz and books."
+        ],
+        "primaryCircle": {
+          "id": "longform-thinkers",
+          "name": "Longform Thinkers",
+          "personalityProfile": {
+            "openness": [
+              0.8,
+              1
+            ],
+            "conscientiousness": [
+              0.5,
+              0.8
+            ],
+            "extraversion": [
+              0.2,
+              0.5
+            ],
+            "agreeableness": [
+              0.5,
+              0.8
+            ],
+            "neuroticism": [
+              0.3,
+              0.7
+            ],
+            "attachmentPreferences": [
+              "secure",
+              "avoidant"
+            ]
+          },
+          "socialEnergy": [
+            "low"
+          ],
+          "communicationStyles": [
+            "analytical",
+            "expressive"
+          ],
+          "trustPatterns": [
+            "slowTrust"
+          ],
+          "description": "Bookish, introspective people who prefer layered conversation to slow trust.",
+          "roomEnergy": "Patient, bookish, and quietly expansive.",
+          "interactionIntent": "Intellectual companionship",
+          "socialFormat": "Recurring salon",
+          "themes": [
+            "Essays",
+            "Psychology",
+            "Slow living"
+          ],
+          "meetingFormat": "Weekly reading-sharing with guided discussion"
+        },
+        "secondaryCircles": [
+          {
+            "id": "reflective-builders",
+            "name": "Reflective Builders",
+            "personalityProfile": {
+              "openness": [
+                0.7,
+                1
+              ],
+              "conscientiousness": [
+                0.6,
+                1
+              ],
+              "extraversion": [
+                0.3,
+                0.6
+              ],
+              "agreeableness": [
+                0.6,
+                0.9
+              ],
+              "neuroticism": [
+                0.3,
+                0.6
+              ],
+              "attachmentPreferences": [
+                "secure",
+                "avoidant"
+              ]
+            },
+            "socialEnergy": [
+              "medium",
+              "low"
+            ],
+            "communicationStyles": [
+              "analytical",
+              "direct"
+            ],
+            "trustPatterns": [
+              "slowTrust",
+              "conditionalTrust"
+            ],
+            "description": "A small circle for people who build ambitious things without emotional shortcuts. Thoughtful, honest feedback, deep work.",
+            "roomEnergy": "Warm, thoughtful, honest feedback without performance.",
+            "interactionIntent": "Creative collaboration",
+            "socialFormat": "Micro-circle of 4-6",
+            "themes": [
+              "Founders",
+              "Meaningful work",
+              "Honest feedback"
+            ],
+            "meetingFormat": "Weekly structured check-ins with rotating facilitator"
+          },
+          {
+            "id": "grounded-nurturers",
+            "name": "Grounded Nurturers",
+            "personalityProfile": {
+              "openness": [
+                0.4,
+                0.7
+              ],
+              "conscientiousness": [
+                0.6,
+                0.9
+              ],
+              "extraversion": [
+                0.3,
+                0.6
+              ],
+              "agreeableness": [
+                0.8,
+                1
+              ],
+              "neuroticism": [
+                0.2,
+                0.5
+              ],
+              "attachmentPreferences": [
+                "secure"
+              ]
+            },
+            "socialEnergy": [
+              "medium"
+            ],
+            "communicationStyles": [
+              "warm",
+              "analytical"
+            ],
+            "trustPatterns": [
+              "slowTrust",
+              "conditionalTrust"
+            ],
+            "description": "For people who show up consistently, hold space for others, and believe in steady presence over grand gestures.",
+            "roomEnergy": "Steady, supportive, quietly joyful.",
+            "interactionIntent": "Mutual support and presence",
+            "socialFormat": "Small consistent circle",
+            "themes": [
+              "Parenting",
+              "Care work",
+              "Steady presence"
+            ],
+            "meetingFormat": "Weekly circle sharing with rotating host"
+          },
+          {
+            "id": "bold-explorers",
+            "name": "Bold Explorers",
+            "personalityProfile": {
+              "openness": [
+                0.8,
+                1
+              ],
+              "conscientiousness": [
+                0.3,
+                0.6
+              ],
+              "extraversion": [
+                0.7,
+                1
+              ],
+              "agreeableness": [
+                0.4,
+                0.7
+              ],
+              "neuroticism": [
+                0.3,
+                0.5
+              ],
+              "attachmentPreferences": [
+                "secure",
+                "fastTrust"
+              ]
+            },
+            "socialEnergy": [
+              "high"
+            ],
+            "communicationStyles": [
+              "direct",
+              "expressive"
+            ],
+            "trustPatterns": [
+              "fastTrust"
+            ],
+            "description": "For people who want to try things, not just talk about trying things. High energy, low pretense.",
+            "roomEnergy": "Energetic, irreverent, action-oriented.",
+            "interactionIntent": "Adventure and shared experience",
+            "socialFormat": "Small group hangouts",
+            "themes": [
+              "Travel",
+              "Trying new things",
+              "Spontaneous plans"
+            ],
+            "meetingFormat": "Monthly in-person meetups with optional mid-week chats"
+          }
+        ],
+        "userState": "proposed",
+        "actions": {
+          "primaryAction": "Accept this circle",
+          "swapAction": "Try another circle",
+          "deferAction": "Defer for now"
+        },
+        "isNewCircle": false
+      },
+      "user_state": "proposed",
+      "created_at": "2026-07-06T09:54:50.751Z",
+      "updated_at": "2026-07-06T09:54:50.751Z"
+    },
+    {
+      "id": "4",
+      "user_id": "usr_6fbe500742d498ef1aa5285f",
+      "profile_id": "profile-mr91t5cd-id9pqs",
+      "data": {
+        "rule": "model-place-user-confirm",
+        "confidenceLabel": "Model fit",
+        "fitReasons": [
+          "You seem to come alive in slow, substantive conversation about books and jazz.",
+          "You open people up with thoughtful questions, which fits a patient, bookish circle.",
+          "Your hosting style suggests you enjoy creating a warm space where trust can deepen naturally."
+        ],
+        "sourceReflectionSignals": [
+          "Hosting small dinner parties energizes me.",
+          "I open up by asking thoughtful questions.",
+          "I could talk for hours about jazz and books."
+        ],
+        "primaryCircle": {
+          "id": "longform-thinkers",
+          "name": "Longform Thinkers",
+          "personalityProfile": {
+            "openness": [
+              0.8,
+              1
+            ],
+            "conscientiousness": [
+              0.5,
+              0.8
+            ],
+            "extraversion": [
+              0.2,
+              0.5
+            ],
+            "agreeableness": [
+              0.5,
+              0.8
+            ],
+            "neuroticism": [
+              0.3,
+              0.7
+            ],
+            "attachmentPreferences": [
+              "secure",
+              "avoidant"
+            ]
+          },
+          "socialEnergy": [
+            "low"
+          ],
+          "communicationStyles": [
+            "analytical",
+            "expressive"
+          ],
+          "trustPatterns": [
+            "slowTrust"
+          ],
+          "description": "Bookish, introspective people who prefer layered conversation to slow trust.",
+          "roomEnergy": "Patient, bookish, and quietly expansive.",
+          "interactionIntent": "Intellectual companionship",
+          "socialFormat": "Recurring salon",
+          "themes": [
+            "Essays",
+            "Psychology",
+            "Slow living"
+          ],
+          "meetingFormat": "Weekly reading-sharing with guided discussion"
+        },
+        "secondaryCircles": [
+          {
+            "id": "reflective-builders",
+            "name": "Reflective Builders",
+            "personalityProfile": {
+              "openness": [
+                0.7,
+                1
+              ],
+              "conscientiousness": [
+                0.6,
+                1
+              ],
+              "extraversion": [
+                0.3,
+                0.6
+              ],
+              "agreeableness": [
+                0.6,
+                0.9
+              ],
+              "neuroticism": [
+                0.3,
+                0.6
+              ],
+              "attachmentPreferences": [
+                "secure",
+                "avoidant"
+              ]
+            },
+            "socialEnergy": [
+              "medium",
+              "low"
+            ],
+            "communicationStyles": [
+              "analytical",
+              "direct"
+            ],
+            "trustPatterns": [
+              "slowTrust",
+              "conditionalTrust"
+            ],
+            "description": "A small circle for people who build ambitious things without emotional shortcuts. Thoughtful, honest feedback, deep work.",
+            "roomEnergy": "Warm, thoughtful, honest feedback without performance.",
+            "interactionIntent": "Creative collaboration",
+            "socialFormat": "Micro-circle of 4-6",
+            "themes": [
+              "Founders",
+              "Meaningful work",
+              "Honest feedback"
+            ],
+            "meetingFormat": "Weekly structured check-ins with rotating facilitator"
+          },
+          {
+            "id": "grounded-nurturers",
+            "name": "Grounded Nurturers",
+            "personalityProfile": {
+              "openness": [
+                0.4,
+                0.7
+              ],
+              "conscientiousness": [
+                0.6,
+                0.9
+              ],
+              "extraversion": [
+                0.3,
+                0.6
+              ],
+              "agreeableness": [
+                0.8,
+                1
+              ],
+              "neuroticism": [
+                0.2,
+                0.5
+              ],
+              "attachmentPreferences": [
+                "secure"
+              ]
+            },
+            "socialEnergy": [
+              "medium"
+            ],
+            "communicationStyles": [
+              "warm",
+              "analytical"
+            ],
+            "trustPatterns": [
+              "slowTrust",
+              "conditionalTrust"
+            ],
+            "description": "For people who show up consistently, hold space for others, and believe in steady presence over grand gestures.",
+            "roomEnergy": "Steady, supportive, quietly joyful.",
+            "interactionIntent": "Mutual support and presence",
+            "socialFormat": "Small consistent circle",
+            "themes": [
+              "Parenting",
+              "Care work",
+              "Steady presence"
+            ],
+            "meetingFormat": "Weekly circle sharing with rotating host"
+          },
+          {
+            "id": "gentle-romantics",
+            "name": "Gentle Romantics",
+            "personalityProfile": {
+              "openness": [
+                0.7,
+                1
+              ],
+              "conscientiousness": [
+                0.3,
+                0.7
+              ],
+              "extraversion": [
+                0.3,
+                0.7
+              ],
+              "agreeableness": [
+                0.7,
+                1
+              ],
+              "neuroticism": [
+                0.5,
+                0.8
+              ],
+              "attachmentPreferences": [
+                "anxious",
+                "secure"
+              ]
+            },
+            "socialEnergy": [
+              "medium",
+              "low"
+            ],
+            "communicationStyles": [
+              "warm",
+              "expressive"
+            ],
+            "trustPatterns": [
+              "fastTrust",
+              "conditionalTrust"
+            ],
+            "description": "A consent-forward room for people exploring intimacy without rush. Emotionally brave, tender, fiercely caring.",
+            "roomEnergy": "Soft, deliberate, and emotionally careful.",
+            "interactionIntent": "Romantic exploration",
+            "socialFormat": "1:1 intros with shared reflection",
+            "themes": [
+              "Compatibility",
+              "Rituals",
+              "Care"
+            ],
+            "meetingFormat": "One deep conversation at a time, no pressure to perform"
+          }
+        ],
+        "userState": "proposed",
+        "actions": {
+          "primaryAction": "Accept this circle",
+          "swapAction": "Try another circle",
+          "deferAction": "Defer for now"
+        },
+        "isNewCircle": false
+      },
+      "user_state": "proposed",
+      "created_at": "2026-07-06T09:59:28.334Z",
+      "updated_at": "2026-07-06T09:59:28.334Z"
+    },
+    {
+      "id": "5",
+      "user_id": "usr_64d9cbe23c7870ee77a2a0d9",
+      "profile_id": "profile-mr9253iq-xjtkux",
+      "data": {
+        "rule": "model-place-user-confirm",
+        "confidenceLabel": "Model fit",
+        "fitReasons": [
+          "You seem to enjoy layered conversation and can stay engaged for a long time around ideas you love.",
+          "Your way of opening up through thoughtful questions fits a patient, bookish room where trust builds gradually.",
+          "Hosting small dinner parties suggests you like intimate, intentional gatherings rather than high-pressure social scenes."
+        ],
+        "sourceReflectionSignals": [
+          "“Hosting small dinner parties energizes me.”",
+          "“I open up by asking thoughtful questions.”",
+          "“I could talk for hours about jazz and books.”"
+        ],
+        "primaryCircle": {
+          "id": "longform-thinkers",
+          "name": "Longform Thinkers",
+          "personalityProfile": {
+            "openness": [
+              0.8,
+              1
+            ],
+            "conscientiousness": [
+              0.5,
+              0.8
+            ],
+            "extraversion": [
+              0.2,
+              0.5
+            ],
+            "agreeableness": [
+              0.5,
+              0.8
+            ],
+            "neuroticism": [
+              0.3,
+              0.7
+            ],
+            "attachmentPreferences": [
+              "secure",
+              "avoidant"
+            ]
+          },
+          "socialEnergy": [
+            "low"
+          ],
+          "communicationStyles": [
+            "analytical",
+            "expressive"
+          ],
+          "trustPatterns": [
+            "slowTrust"
+          ],
+          "description": "Bookish, introspective people who prefer layered conversation to slow trust.",
+          "roomEnergy": "Patient, bookish, and quietly expansive.",
+          "interactionIntent": "Intellectual companionship",
+          "socialFormat": "Recurring salon",
+          "themes": [
+            "Essays",
+            "Psychology",
+            "Slow living"
+          ],
+          "meetingFormat": "Weekly reading-sharing with guided discussion"
+        },
+        "secondaryCircles": [
+          {
+            "id": "grounded-nurturers",
+            "name": "Grounded Nurturers",
+            "personalityProfile": {
+              "openness": [
+                0.4,
+                0.7
+              ],
+              "conscientiousness": [
+                0.6,
+                0.9
+              ],
+              "extraversion": [
+                0.3,
+                0.6
+              ],
+              "agreeableness": [
+                0.8,
+                1
+              ],
+              "neuroticism": [
+                0.2,
+                0.5
+              ],
+              "attachmentPreferences": [
+                "secure"
+              ]
+            },
+            "socialEnergy": [
+              "medium"
+            ],
+            "communicationStyles": [
+              "warm",
+              "analytical"
+            ],
+            "trustPatterns": [
+              "slowTrust",
+              "conditionalTrust"
+            ],
+            "description": "For people who show up consistently, hold space for others, and believe in steady presence over grand gestures.",
+            "roomEnergy": "Steady, supportive, quietly joyful.",
+            "interactionIntent": "Mutual support and presence",
+            "socialFormat": "Small consistent circle",
+            "themes": [
+              "Parenting",
+              "Care work",
+              "Steady presence"
+            ],
+            "meetingFormat": "Weekly circle sharing with rotating host"
+          },
+          {
+            "id": "reflective-builders",
+            "name": "Reflective Builders",
+            "personalityProfile": {
+              "openness": [
+                0.7,
+                1
+              ],
+              "conscientiousness": [
+                0.6,
+                1
+              ],
+              "extraversion": [
+                0.3,
+                0.6
+              ],
+              "agreeableness": [
+                0.6,
+                0.9
+              ],
+              "neuroticism": [
+                0.3,
+                0.6
+              ],
+              "attachmentPreferences": [
+                "secure",
+                "avoidant"
+              ]
+            },
+            "socialEnergy": [
+              "medium",
+              "low"
+            ],
+            "communicationStyles": [
+              "analytical",
+              "direct"
+            ],
+            "trustPatterns": [
+              "slowTrust",
+              "conditionalTrust"
+            ],
+            "description": "A small circle for people who build ambitious things without emotional shortcuts. Thoughtful, honest feedback, deep work.",
+            "roomEnergy": "Warm, thoughtful, honest feedback without performance.",
+            "interactionIntent": "Creative collaboration",
+            "socialFormat": "Micro-circle of 4-6",
+            "themes": [
+              "Founders",
+              "Meaningful work",
+              "Honest feedback"
+            ],
+            "meetingFormat": "Weekly structured check-ins with rotating facilitator"
+          }
+        ],
+        "userState": "proposed",
+        "actions": {
+          "primaryAction": "Accept this circle",
+          "swapAction": "Try another circle",
+          "deferAction": "Defer for now"
+        },
+        "isNewCircle": false
+      },
+      "user_state": "proposed",
+      "created_at": "2026-07-06T10:08:45.842Z",
+      "updated_at": "2026-07-06T10:08:45.842Z"
+    }
+  ],
+  "transcripts": [
+    {
+      "id": "1",
+      "user_id": "usr_1879bcf2fa6e296bee3140d8",
+      "profile_id": "profile-mr8y7qhq-0rqjqn",
+      "content": "I love jazz and deep conversations. I open up slowly with thoughtful questions. I could talk for hours about books and travel.",
+      "created_at": "2026-07-06T08:18:50.462Z"
+    },
+    {
+      "id": "2",
+      "user_id": "usr_57c2e021121592fb8af77b10",
+      "profile_id": "profile-mr8yjvuk-kc3ol7",
+      "content": "Hosting small dinner parties and deep conversations energizes me most.\naI open up by asking thoughtful questions and sharing stories gradually.\naI could talk for hours about jazz, books, and how cities shape culture.",
+      "created_at": "2026-07-06T08:28:17.277Z"
+    },
+    {
+      "id": "3",
+      "user_id": "usr_5561c1bf2705820ce8c236de",
+      "profile_id": "profile-mr91n75q-oib251",
+      "content": "Hosting small dinner parties energizes me.\naI open up by asking thoughtful questions.\naI could talk for hours about jazz and books.",
+      "created_at": "2026-07-06T09:54:50.751Z"
+    },
+    {
+      "id": "4",
+      "user_id": "usr_6fbe500742d498ef1aa5285f",
+      "profile_id": "profile-mr91t5cd-id9pqs",
+      "content": "Hosting small dinner parties energizes me.\naI open up by asking thoughtful questions.\naI could talk for hours about jazz and books.",
+      "created_at": "2026-07-06T09:59:28.334Z"
+    },
+    {
+      "id": "5",
+      "user_id": "usr_64d9cbe23c7870ee77a2a0d9",
+      "profile_id": "profile-mr9253iq-xjtkux",
+      "content": "Hosting small dinner parties energizes me.\naI open up by asking thoughtful questions.\naI could talk for hours about jazz and books.",
+      "created_at": "2026-07-06T10:08:45.842Z"
+    }
+  ],
+  "feedback": [],
+  "communityMemberships": [
+    {
+      "user_id": "usr_4fa5c9784dfc1a4b17507c20",
+      "community_id": "longform-reading",
+      "created_at": "2026-07-06T09:20:48.149Z"
+    }
+  ],
+  "meetingRsvps": [],
+  "meetings": [],
+  "soulmateUsers": {},
+  "soulmateSelections": [],
+  "soulmateMatches": [],
+  "chatMessages": []
+}

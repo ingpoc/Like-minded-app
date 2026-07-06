@@ -25,8 +25,8 @@
       "blocker": "",
       "stub": false,
       "tested_source_hash": "e800411f65af57bd",
-      "last_tested_at": "2026-07-05",
-      "last_test_method": "Computer Use"
+      "last_tested_at": "2026-07-06",
+      "last_test_method": "CUA-click"
     },
     {
       "id": "circle-card",
@@ -38,8 +38,8 @@
       "blocker": "",
       "stub": false,
       "tested_source_hash": "e800411f65af57bd",
-      "last_tested_at": "2026-07-05",
-      "last_test_method": "Computer Use"
+      "last_tested_at": "2026-07-06",
+      "last_test_method": "CUA-click"
     }
   ],
   "visual_parity": {

@@ -88,6 +88,14 @@ case "$MODE" in
     install_only
     echo "SIMULATOR_ID=$SIMULATOR_ID"
     ;;
+  install)
+    if [[ ! -d "$APP_PATH" ]]; then
+      echo "App not built: $APP_PATH (run build first)" >&2
+      exit 1
+    fi
+    install_only
+    echo "SIMULATOR_ID=$SIMULATOR_ID"
+    ;;
   --debug|debug)
     build_app
     lldb -- "$APP_PATH/$APP_NAME"
@@ -107,7 +115,7 @@ case "$MODE" in
     verify_launch
     ;;
   *)
-    echo "usage: $0 [run|build|--debug|--logs|--telemetry|--verify]" >&2
+    echo "usage: $0 [run|build|install|--debug|--logs|--telemetry|--verify]" >&2
     exit 2
     ;;
 esac

@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "label": "Your answer",
+  "element": 10,
+  "result": {
+    "characters": 41,
+    "effect": "confirmed",
+    "path": "ax",
+    "verified": true
+  }
+}

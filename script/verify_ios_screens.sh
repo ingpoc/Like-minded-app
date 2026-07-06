@@ -67,6 +67,14 @@ fi
 export LIKEMINDED_VALIDATION_USER="${LIKEMINDED_VALIDATION_USER:-validation-gurusharan}"
 export LIKEMINDED_VALIDATION_NAME="${LIKEMINDED_VALIDATION_NAME:-Gurusharan Gupta}"
 
+LOCK="$ROOT_DIR/script/cross_platform_validation_lock.sh"
+echo "== iOS batch: one build for ${#screens[@]} screen(s) ==" >&2
+"$LOCK" with_lock xcodebuild-ios bash -c "
+  set -euo pipefail
+  '$ROOT_DIR/script/build_and_run.sh' build > /tmp/likeminded-ios-batch-build.log 2>&1
+"
+export LIKEMINDED_SKIP_IOS_BUILD=1
+
 captured=0
 failed=0
 failed_screens=()

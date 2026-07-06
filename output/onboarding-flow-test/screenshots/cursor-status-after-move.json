@@ -1,0 +1,20 @@
+{
+  "cursors": [
+    {
+      "config": {
+        "cursor_color": "#00FFFF",
+        "cursor_icon": "/Users/gurusharan/.hermes/chrome-bridge/extension/images/ocean-glow-pointer.svg",
+        "cursor_id": "macos-cua",
+        "cursor_label": null,
+        "cursor_opacity": 0.95,
+        "cursor_size": 28.0,
+        "enabled": true
+      },
+      "position": {
+        "x": 3520.0,
+        "y": 800.0
+      }
+    }
+  ],
+  "enabled": true
+}

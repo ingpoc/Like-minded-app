@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "label": "Next prompt",
+  "element": 12,
+  "coords": {
+    "x": 3142.0,
+    "y": 1296.0
+  },
+  "cursor_coords": {
+    "x": 582.0,
+    "y": 1009.0
+  },
+  "move": {
+    "raw": "Agent cursor 'macos-cua' moved to (582.0, 1009.0)."
+  },
+  "result": {
+    "effect": "unverifiable",
+    "path": "ax",
+    "verified": false
+  },
+  "method": "agent-cursor+driver-click"
+}

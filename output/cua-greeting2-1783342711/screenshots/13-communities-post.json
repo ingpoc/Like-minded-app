@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "label": "Communities",
+  "element": 3,
+  "coords": {
+    "x": 3305.75,
+    "y": 1111.5
+  },
+  "cursor_coords": {
+    "x": 745.75,
+    "y": 824.5
+  },
+  "move": {
+    "raw": "Agent cursor 'macos-cua' moved to (745.8, 824.5)."
+  },
+  "result": {
+    "effect": "unverifiable",
+    "path": "ax",
+    "verified": false
+  },
+  "method": "agent-cursor+driver-click"
+}

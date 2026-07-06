@@ -1,232 +1,118 @@
 ---
 name: build-ios-app
-description: Likeminded iOS build/run/validate skill for the SwiftUI LikemindedApp target in apps/ios-macos. Use when building, running, debugging, or screenshot-validating the iOS surface against mockups/ios — covers xcodegen, xcodebuild for iphonesimulator, simctl launch with auth-bypass args, validation-data seeding, and parity checks. Covers the project-specific placement-loop / onboarding / circles / meet / soulmate / profile flows.
+description: >-
+  Likeminded iOS build/run/validate for SwiftUI LikemindedApp (apps/ios-macos).
+  Triggers: iOS simulator, xcodebuild Likeminded, simctl launch, validate:screen,
+  verify:ios-screens, mockup parity, placement loop. Skip for macOS
+  (build-macos-app) or backend-only.
 ---
 
 # Build iOS App — Likeminded
 
-Project-specific skill for the **iOS SwiftUI surface** of the Like-minded-app:
-the `Likeminded` target in `apps/ios-macos/project.yml`, source at
-`apps/ios-macos/Sources/LikemindedApp/`.
+`Likeminded` target — source `apps/ios-macos/Sources/LikemindedApp/`. Spec: `project.yml` (never hand-edit `.xcodeproj`).
 
-## When to Use This Skill
+## When to use / skip
 
-Apply when working on the **iOS app** (`LikemindedApp`) for any of:
+**Use:** iOS SwiftUI, API wiring, simulator validation, onboarding/placement/meet/soulmate flows, LiveKit.
 
-- Building, running, or debugging the iOS target in the simulator
-- Adding or modifying SwiftUI views under `Sources/LikemindedApp/Views/`
-- Wiring the iOS client to the Node API (`LIKEMINDED_API_BASE_URL` contract)
-- Validation: capturing screenshots and comparing against `mockups/ios/`
-- Onboarding, placement loop, circles, meet video, soulmate, profile flows
-- LiveKit / Realtime voice integration (the iOS target depends on LiveKit)
-
-**Skip this skill** for backend-only changes, schema work, macOS-only layout
-(use `build-macos-app`), or non-visual infra changes — they don't need a
-simulator or mockup comparison.
+**Skip:** macOS (`build-macos-app`), backend-only, non-visual infra.
 
 ## Context (lazy)
 
-1. `npm run goal:next` + `npm run ledger:open --platform=ios` for open rows.
-2. **One** `validation/ios/<screen>.json` + `source_files` for the touched screen.
-3. One mockup from ledger `mockup_ref` — not full `mockups/ios/`.
-4. Skip `GOAL.md`, full `PROGRESS.md`, `project_context` unless boundary dispute.
+1. `npm run goal:next` — note open iOS screen or `ledger:stale`.
+2. **One** ledger: `npm run ledger:screen -- --platform ios --screen <id>` (full stem, e.g. `22-settings-info`).
+3. **One** mockup: ledger `mockup_ref` only — not `mockups/ios/` walks.
+4. Command routing: `docs/workflows/validation.md` § iOS capture hygiene.
 
-## Project Layout (iOS-relevant)
+## Workflow lanes (pick one)
+
+Do **not** improvise `simctl` capture loops. Run the script for the lane.
+
+| Lane | When | Command |
+| --- | --- | --- |
+| **Dev run** | Local debug, no ledger proof | `./script/build_and_run.sh run` (see [`references/launch-args.md`](references/launch-args.md) for deep links) |
+| **One-screen proof** | Capture + PNG after UI edit | `npm run validate:screen -- --screen <ledger-id> --platform ios` |
+| **Stale reproof batch** | Swift edits; hash mismatch | `npm run verify:ios-screens -- --stale-only` |
+| **Legacy smoke batch** | Broad capture; no ledger stamp | `npm run verify:ios-screens` |
+| **Auth/placement smoke** | Not ledger reproof | `./script/verify_simulator_local.sh` |
+
+**Optional:** MCP `ios-simulator` tools for ad-hoc debug only when the plugin is available — validation proof stays on repo scripts.
+
+## Pass signals
+
+| Layer | Pass |
+| --- | --- |
+| API | `curl -fsS http://127.0.0.1:8787/health` → `dbPath` contains `validation-db` |
+| Build | `build_and_run.sh build` or `xcodebuild … -scheme Likeminded` exit 0 |
+| Capture | PNG at `output/validation/ios-screens/<slug>.png`, size ≥ 10KB |
+| Control | Ledger `controls[].result=pass` + `tested_source_hash` = `source_hash` |
+| UI | `ui_validation.result=pass` vs ledger `mockup_ref` + `DESIGN.md` |
+| Batch | `verify:ios-screens` exit 0; `--stale-only` stamps stale rows |
+
+Mockup compare **before** claiming pass: **match** / **intentional variation** / **gap** → `visual_parity.notes`.
+
+## Iteration (phases 2–5)
+
+After any fix, rerun the **full lane** — not only the failing step.
 
 ```
-apps/ios-macos/
-  project.yml                         # XcodeGen owner — iOS + macOS targets
-  Likeminded.xcodeproj/               # generated, do NOT hand-edit
-  Entitlements/Likeminded.entitlements # Apple Sign-In entitlement
-  Sources/LikemindedApp/
-    LikemindedApp.swift               # app entry
-    Models/PrototypeModels.swift
-    Data/
-      LikemindedAPIClient.swift       # HTTP client — backend contract
-      AuthSessionStore.swift          # Apple Sign-In auth gate
-      RealtimeVoiceClient.swift       # OpenAI Realtime voice
-      LiveKitTokenProvider.swift      # meet video tokens
-      DeviceIdentity.swift
-      PrototypeAppState.swift         # placement loop state
-      PrototypeData.swift
-    Views/
-      AuthGateView.swift              # entry gate
-      OnboardingView.swift            # voice onboarding
-      RootView.swift                  # tab root
-      CustomTabBar.swift
-      CircleCard.swift, CirclesPrototypeView.swift
-      MeetView.swift                  # LiveKit meet
-      SoulmateView.swift
-      ProfilePrototypeView.swift, SettingsPrototypeView.swift
-      CommunitiesPrototypeView.swift, NotificationsView.swift
-      Shared/PrototypeComponents.swift
-mockups/ios/                          # 4 sheet-montage PNG references:
-  01-04-onboarding-voice-meet-soulmate.png
-  05-08-circles-meet-communities.png
-  09-12-meet-video-postmeet.png
-  13-16-soulmate-chat.png
-  17-20-profile-community-settings.png
+run lane → collect pass/fail + timings → failure | inefficiency → root cause → retest full → repeat
 ```
 
-Bundle id: `com.likeminded.app`. Deployment target: **iOS 18.0**. Family: `1,2`
-(iPhone + iPad). LiveKit + LiveKitWebRTC are SPM dependencies.
+| Situation | Loop |
+| --- | --- |
+| One screen | `validate:screen` until PNG + controls pass |
+| Stale batch | `verify:ios-screens -- --stale-only` until no stale_pass on touched files |
+| Wrong screen in PNG | Fix deep-link in `RootView` / launch args → full capture again |
 
-## Build / Run / Debug Workflow
+**Build skip:** `validate:screen` skips xcodebuild when the canonical `.app` exists, sources are not newer than the binary, and `LIKEMINDED_FORCE_IOS_BUILD` is unset. It still runs `build_and_run.sh install` (~2s) so the simulator gets the fresh binary. Override: `LIKEMINDED_FORCE_IOS_BUILD=1` (rebuild) or `LIKEMINDED_SKIP_IOS_BUILD=1` (skip build **and** install step — batch sets this after its one upfront build).
 
-### 0. Prerequisites
-- The API server must be running for in-app auth + placement flows. Verify:
-  ```
-  curl -s http://127.0.0.1:8787/health
-  ```
-- For realistic validation data, use the validation lane (see §Validation).
-- XcodeGen must be installed: `brew install xcodegen` (or `mint install yonaskolb/xcodegen`).
+**Stop when:** consecutive full runs pass **and** the last full iteration was **empty** (no failure, inefficiency, simplify, optimize, or automate debt — see workflow-hardening § Empty last iteration).
 
-### 1. Regenerate the Xcode project after any `project.yml` change
-```
-(cd apps/ios-macos && xcodegen generate)
-```
-Never hand-edit `Likeminded.xcodeproj`. The spec is the source of truth.
+## Preflight → build → run
 
-### 2. Build & run (preferred entrypoint)
-The repo ships a purpose-built script that handles xcodegen, simulator
-resolution, build, install, and launch:
-```
-./script/build_and_run.sh run          # default: iPhone 17 simulator
-```
-Modes accepted as the first arg:
-- `run` — build, install, launch
-- `build` — build + install only (no launch; prints `SIMULATOR_ID=` for locked capture scripts)
-- `--debug` / `debug` — build, then `lldb` into the app
-- `--logs` / `logs` — build, install, launch, stream `log stream`
-- `--telemetry` — same as logs
-- `--verify` / `verify` — build, install, launch once with
-  `--likeminded-reset-auth-session` and print launch output
+```bash
+curl -fsS http://127.0.0.1:8787/health          # or: npm run dev:api:validation + reset:validation-data
+(cd apps/ios-macos && xcodegen generate)        # after project.yml edits
 
-Override the simulator:
-```
-SIMULATOR_NAME="iPhone 16" ./script/build_and_run.sh run
+./script/build_and_run.sh build                 # prints SIMULATOR_ID=… — use explicit UDID, not booted
+./script/build_and_run.sh run                   # dev: build + install + launch (no deep links)
+
+# One-screen validation (preferred proof):
+npm run validate:screen -- --screen 07-meet --platform ios
 ```
 
-### 3. Alternative: MCP ios-simulator tools
-When the `ios-simulator` plugin is active (it is, in this session), prefer
-these MCP tools for ad-hoc work and skip the bash script:
-```
-mcp__plugin_ios-simulator__ios_discover_project   # find scheme/bundle id
-mcp__plugin_ios-simulator__ios_build_and_run      # one-shot build+install+launch
-mcp__plugin_ios-simulator__ios_screenshot         # capture current screen
-mcp__plugin_ios-simulator__ios_ui_describe        # accessibility tree
-mcp__plugin_ios-simulator__ios_ui_tap / swipe     # drive the UI
-mcp__plugin_ios-simulator__ios_logs               # filtered by bundle id
-```
-`ios_build_and_run` will auto-discover the iOS scheme (`Likeminded`) from
-`apps/ios-macos/Likeminded.xcodeproj`.
+**Deep-link capture:** use `validate:screen` — not `build_and_run.sh run` alone (auto-launches without `--likeminded-start-*`).
 
-### 4. Manual xcodebuild (last resort, when scripts/MCP can't be used)
-```
-xcodebuild \
-  -project apps/ios-macos/Likeminded.xcodeproj \
-  -scheme Likeminded \
-  -configuration Debug \
-  -sdk iphonesimulator \
-  -destination 'platform=iOS Simulator,name=iPhone 17' \
-  -derivedDataPath .build/ios-simulator \
-  build
-```
+**Logs:** `./script/build_and_run.sh logs` or `log stream --predicate 'process == "Likeminded"'`
 
-## Launch Arguments (project-specific)
+## Per-screen checklist
 
-The iOS app reads these `simctl launch` / `ios_launch_app` args for dev + validation:
-- `--likeminded-reset-auth-session` — wipe cached Apple Sign-In session
-- `--likeminded-dev-auth-bypass` — skip Apple Sign-In (local-auth API mode)
-- `--likeminded-dev-auth-token <token>` — pre-seed a profile token
-- `--likeminded-dev-auth-name "<Name>"` — pre-seed display name
-- `--likeminded-start-profile` — land on the post-auth onboarding
-- `--likeminded-dev-voice-placement` — jump to the voice placement loop
+1. Ledger JSON + `mockup_ref` + open controls
+2. `RootView` route for `--likeminded-start-*` (see [`references/capture.md`](references/capture.md))
+3. `build_and_run.sh build` or proof via `validate:screen`
+4. Compare PNG to `mockup_ref`; stamp via ledger scripts when controls proven
 
-Example (via simctl):
-```
-xcrun simctl launch --terminate-running-process booted com.likeminded.app \
-  --likeminded-reset-auth-session --likeminded-dev-auth-bypass \
-  --likeminded-dev-auth-token validation-gurusharan --likeminded-dev-auth-name "Gurusharan Gupta" \
-  --likeminded-start-profile
-```
+## Hard rules
 
-## Validation (against `mockups/ios/`)
+- **Ledger owns status** — `validation/ios/*.json`; no parallel pass/fail tables.
+- **Scripts, not improvisation** — locked `cross_platform_screen_validate.sh` for proof.
+- **Explicit simulator UDID** — from `build_and_run.sh build`; never `booted` with multiple sims.
+- **Sequential proof** — one build/capture chain at a time; `cross_platform_validation_lock.sh`.
+- **`LIKEMINDED_API_BASE_URL`** in Info.plist — never hardcode URLs in Swift.
+- **Validation data** — `npm run dev:api:validation` + `npm run reset:validation-data`.
 
-Per AGENTS.md: before claiming seamless behavior, point both apps at
-`data/validation-db` with the validation API and seeded data.
+## Progressive disclosure
 
-1. Start the validation API (uses `data/validation-db`):
-   ```
-   npm run dev:api:validation     # background
-   npm run reset:validation-data  # seed/reset
-   ```
-2. Boot simulator + build + install (steps above).
-3. Launch with the auth-bypass args above (use the seeded profile token, e.g.
-   `validation-gurusharan` / Gurusharan Gupta).
-4. Capture screenshots per flow and diff against the relevant montage in
-   `mockups/ios/`:
-   - onboarding / voice / meet / soulmate → `01-04-...png`
-   - circles / meet / communities → `05-08-...png`
-   - meet video / post-meet → `09-12-...png`
-   - soulmate chat → `13-16-...png`
-   - profile / community / settings → `17-20-...png`
-5. For automated capture of stale ledger screens after Swift edits:
-   ```
-   npm run verify:ios-screens -- --stale-only
-   ```
-   For the legacy smoke batch (no stamp): `npm run verify:ios-screens`.
-6. Quick local smoke (auth gate + tabs, not ledger reproof):
-   ```
-   ./script/verify_simulator_local.sh
-   ```
-
-### Validation deep-link checklist (per screen)
-
-When adding or fixing a ledger screen for capture:
-
-1. **`RootView` route** — every `--likeminded-start-*` flag must map to the correct tab/sheet/selection in `RootView.swift` (and `initialSelection()` when the screen is tab-adjacent, e.g. voice session on Meet).
-2. **Concern-flag bypass** — during validation launches, block the profile-concern redirect so `--likeminded-start-profile` / populated profile screens land on the intended surface.
-3. **`LIKEMINDED_VALIDATION_SCREEN` fallback** — when `simctl launch` drops args, set UserDefaults before screenshot (patterns: chat, community-members, past-meet-detail).
-4. **Explicit simulator UDID** — read from `./script/build_and_run.sh` output; never use `booted` when multiple simulators are running.
-5. **Build-only + explicit launch** — for capture, prefer `xcodebuild` + locked `simctl launch` with full arg list; `./script/build_and_run.sh run` alone auto-launches without deep links.
-6. **Post-launch wait** — 15–60s after launch for dev-auth before screenshot.
-7. **Parallel proof** — code edits per screen can run in parallel; build + capture must be **sequential** via `./script/cross_platform_screen_validate.sh --platform ios`.
-
-Example locked single-screen capture:
-```
-./script/cross_platform_screen_validate.sh --screen 16-chat --platform ios
-```
-
-- **Backend contract is `LIKEMINDED_API_BASE_URL`.** Both iOS and macOS read
-  the same key from their Info.plist (`INFOPLIST_KEY_LIKEMINDED_API_BASE_URL`).
-  Never hardcode a URL in the Swift client; never fork the contract per platform.
-- **Auth gate** is `AuthGateView` on iOS (`Sources/LikemindedApp/Views/AuthGateView.swift`):
-  Apple (`SignInWithAppleButton`), Google, MetaMask, and Solflare via
-  `Sources/Shared/SocialAuthButtonsView.swift`. Entitlement:
-  `Entitlements/Likeminded.entitlements`. URL schemes + `GIDClientID` in
-  `Info/Likeminded-Info.plist`. Wallet callbacks handled in `LikemindedApp.onOpenURL`.
-  For local dev bypass, run `npm run dev:api:local-auth` and pass
-  `--likeminded-dev-auth-bypass`.
-- **LiveKit** group meets use `Sources/Shared/LiveKitMeetSession.swift` from
-  `GroupVideoCallView` (`MeetView.swift`). Requires `LIVEKIT_*` on the API;
-  falls back to preview tiles when join fails. macOS links the same shared session.
-- **Keep iOS-only SwiftUI in `Sources/LikemindedApp`.** Shared auth + LiveKit
-  live in `Sources/Shared/` (compiled by both targets).
-- **Info plists:** `Info/Likeminded-Info.plist` holds OAuth/wallet URL schemes;
-  other keys via `project.yml` (`INFOPLIST_KEY_*`), then `xcodegen generate`.
-
-## Common Pitfalls
-
-- Editing `Likeminded.xcodeproj` directly → always edit `project.yml` and run `xcodegen generate`.
-- Forgetting to boot the simulator before `simctl install` → the script handles this; if using MCP, `ios_boot_simulator` first.
-- API not running → blank auth gate / no placement. Always `curl /health` first.
-- Leaving the validation API on port 8787 → `verify_simulator_local.sh` will refuse to start a second one; stop the prior instance.
-- Building without the `LiveKit`/`LiveKitWebRTC` SPM packages resolving → ensure network access on first build; packages resolve into the generated project.
-- **Parallel `xcodebuild` / `simctl launch`** → SIGKILL and wrong screens; use `./script/cross_platform_validation_lock.sh` and sequential `./script/cross_platform_screen_validate.sh`.
-- **iOS stale_pass reproof** → `npm run verify:ios-screens -- --stale-only` (capture + bulk stamp); not the default smoke list.
-- **Auth gate “Could not connect”** → usually `:8787` was killed mid-seed by another agent, not a wrong plist URL.
+| Load when | File |
+| --- | --- |
+| Launch / deep-link flags | [`references/launch-args.md`](references/launch-args.md) |
+| Capture routing, waits, UserDefaults fallback | [`references/capture.md`](references/capture.md) |
+| Build failed / blank PNG / API | [`references/troubleshooting.md`](references/troubleshooting.md) |
+| Source tree / LiveKit / auth | [`references/layout.md`](references/layout.md) |
+| All npm proof commands | `docs/workflows/validation.md` |
 
 ## Related
-- `build-macos-app` skill — the macOS SwiftUI surface (`LikemindedMac`).
-- AGENTS.md "Trigger Map" for the canonical validation order.
+
+- `build-macos-app` — macOS surface.
+- `AGENTS.md` — `verify:simulator-local`, `verify:ios-screens`.

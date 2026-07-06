@@ -28,9 +28,9 @@
       "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (match-row)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "85e769a83e8def9d",
+      "tested_source_hash": "15b712c80a9b29d0",
       "last_tested_at": "2026-07-06",
-      "last_test_method": "local-product-loop"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "draft",
@@ -41,9 +41,9 @@
       "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (draft)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "85e769a83e8def9d",
+      "tested_source_hash": "15b712c80a9b29d0",
       "last_tested_at": "2026-07-06",
-      "last_test_method": "local-product-loop"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "send",
@@ -54,9 +54,9 @@
       "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (send)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "85e769a83e8def9d",
+      "tested_source_hash": "15b712c80a9b29d0",
       "last_tested_at": "2026-07-06",
-      "last_test_method": "local-product-loop"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "search",
@@ -67,9 +67,9 @@
       "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (search)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "85e769a83e8def9d",
+      "tested_source_hash": "15b712c80a9b29d0",
       "last_tested_at": "2026-07-06",
-      "last_test_method": "local-product-loop"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "voice-call-header",
@@ -81,8 +81,8 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-06",
-      "last_test_method": "local-product-loop",
-      "tested_source_hash": "85e769a83e8def9d"
+      "last_test_method": "CUA-click",
+      "tested_source_hash": "15b712c80a9b29d0"
     },
     {
       "id": "video-call-header",
@@ -94,8 +94,8 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-06",
-      "last_test_method": "local-product-loop",
-      "tested_source_hash": "85e769a83e8def9d"
+      "last_test_method": "CUA-click",
+      "tested_source_hash": "15b712c80a9b29d0"
     },
     {
       "id": "conversation-info-header",
@@ -107,8 +107,8 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-06",
-      "last_test_method": "local-product-loop",
-      "tested_source_hash": "85e769a83e8def9d"
+      "last_test_method": "CUA-click",
+      "tested_source_hash": "15b712c80a9b29d0"
     }
   ],
   "visual_parity": {
@@ -116,7 +116,7 @@
     "notes": "2026-07-05 capture vs plate 05: Arjun/Meera/Rohan/Ananya/Vikram roster, jazz thread, Message Arjun composer, search/filters, header call chrome. Validation fixtures via MacChatFixtures when API roster empty."
   },
   "notes": "2026-07-05: mockup plate 05 roster + jazz thread; chatDisplayName maps seed names; MacChatFixtures for --mac-screen chat deep-link.",
-  "source_hash": "a144f70ec42818ea",
+  "source_hash": "15b712c80a9b29d0",
   "recent_screenshot_ref": "output/validation/macos-screens/chat.png",
   "ui_validation": {
     "result": "pass",

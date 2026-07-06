@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "label": "Books",
+  "element": 16,
+  "coords": {
+    "x": 3128.5,
+    "y": 954.5
+  },
+  "cursor_coords": {
+    "x": 568.5,
+    "y": 667.5
+  },
+  "move": {
+    "raw": "Agent cursor 'macos-cua' moved to (568.5, 667.5)."
+  },
+  "result": {
+    "effect": "unverifiable",
+    "path": "ax",
+    "verified": false
+  },
+  "method": "agent-cursor+driver-click"
+}

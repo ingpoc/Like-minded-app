@@ -387,7 +387,8 @@ struct OnboardingView: View {
             city: city,
             gender: gender,
             dateOfBirth: formatter.string(from: dateOfBirth),
-            pincode: pincode
+            pincode: pincode,
+            interests: Array(draftInterests).sorted()
         )
         isSavingBasics = false
         if saved {

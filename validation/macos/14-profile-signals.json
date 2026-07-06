@@ -23,9 +23,9 @@
       "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (share-profile)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "b1a8e998ffd5c321",
+      "tested_source_hash": "5f58d68c4fb27018",
       "last_tested_at": "2026-07-06",
-      "last_test_method": "local-product-loop"
+      "last_test_method": "CUA-click"
     }
   ],
   "visual_parity": {
@@ -33,7 +33,7 @@
     "notes": "2026-07-05 capture vs plate 18: photo-led sidebar with Circles/Connections/Events metrics, 5 icon signal cards (Communication/Energy/Trust/Mindset/Creativity), Your vibe + About me + Languages rows, Done CTA."
   },
   "notes": "",
-  "source_hash": "1f2a9e608823cc62",
+  "source_hash": "5f58d68c4fb27018",
   "recent_screenshot_ref": "output/validation/macos-screens/profileSignals.png",
   "ui_validation": {
     "result": "pass",

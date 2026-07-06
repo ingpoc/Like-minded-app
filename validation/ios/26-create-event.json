@@ -23,12 +23,12 @@
       "label": "Meetup",
       "expected": "Selects Meetup event type",
       "result": "pass",
-      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (event-type-meetup)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (event-type-meetup)",
       "blocker": "",
       "stub": false,
-      "last_tested_at": "2026-07-05",
+      "last_tested_at": "2026-07-06",
       "last_test_method": "screen-capture",
-      "tested_source_hash": "7a2ba27c67a18ab4"
+      "tested_source_hash": "7933a3cc883224d8"
     },
     {
       "id": "event-type-listening-session",
@@ -36,12 +36,12 @@
       "label": "Listening Session",
       "expected": "Selects Listening Session event type",
       "result": "pass",
-      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (event-type-listening-session)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (event-type-listening-session)",
       "blocker": "",
       "stub": false,
-      "last_tested_at": "2026-07-05",
+      "last_tested_at": "2026-07-06",
       "last_test_method": "screen-capture",
-      "tested_source_hash": "7a2ba27c67a18ab4"
+      "tested_source_hash": "7933a3cc883224d8"
     },
     {
       "id": "event-type-jam-session",
@@ -49,12 +49,12 @@
       "label": "Jam Session",
       "expected": "Selects Jam Session event type",
       "result": "pass",
-      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (event-type-jam-session)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (event-type-jam-session)",
       "blocker": "",
       "stub": false,
-      "last_tested_at": "2026-07-05",
+      "last_tested_at": "2026-07-06",
       "last_test_method": "screen-capture",
-      "tested_source_hash": "7a2ba27c67a18ab4"
+      "tested_source_hash": "7933a3cc883224d8"
     },
     {
       "id": "event-fields",
@@ -62,12 +62,12 @@
       "label": "Event name, Date, Time, Location, Details",
       "expected": "Fields editable and drive preview/create payload",
       "result": "pass",
-      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (event-fields)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (event-fields)",
       "blocker": "",
       "stub": false,
-      "last_tested_at": "2026-07-05",
+      "last_tested_at": "2026-07-06",
       "last_test_method": "screen-capture",
-      "tested_source_hash": "7a2ba27c67a18ab4"
+      "tested_source_hash": "7933a3cc883224d8"
     },
     {
       "id": "add-cover",
@@ -75,12 +75,12 @@
       "label": "Add cover",
       "expected": "Adds cover state to preview",
       "result": "pass",
-      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (add-cover)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (add-cover)",
       "blocker": "",
       "stub": false,
-      "last_tested_at": "2026-07-05",
+      "last_tested_at": "2026-07-06",
       "last_test_method": "screen-capture",
-      "tested_source_hash": "7a2ba27c67a18ab4"
+      "tested_source_hash": "7933a3cc883224d8"
     },
     {
       "id": "add-tags",
@@ -88,12 +88,12 @@
       "label": "Add tags",
       "expected": "Adds tags to preview",
       "result": "pass",
-      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (add-tags)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (add-tags)",
       "blocker": "",
       "stub": false,
-      "last_tested_at": "2026-07-05",
+      "last_tested_at": "2026-07-06",
       "last_test_method": "screen-capture",
-      "tested_source_hash": "7a2ba27c67a18ab4"
+      "tested_source_hash": "7933a3cc883224d8"
     },
     {
       "id": "create-event",
@@ -101,12 +101,12 @@
       "label": "Create event",
       "expected": "POST /v1/meetings persists community event",
       "result": "pass",
-      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (create-event)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (create-event)",
       "blocker": "",
       "stub": false,
-      "last_tested_at": "2026-07-05",
+      "last_tested_at": "2026-07-06",
       "last_test_method": "screen-capture",
-      "tested_source_hash": "7a2ba27c67a18ab4"
+      "tested_source_hash": "7933a3cc883224d8"
     }
   ],
   "visual_parity": {
@@ -114,7 +114,7 @@
     "notes": "2026-07-05 output/validation/ios-screens/26-create-event.png vs macOS createEvent / mockups/macos/22-create-event.png: stacked mobile layout with Create event title, subtitle, icon type pills, jazz plate form, DoodleCover live preview, separate date/time rows, tag pills. Intentional: iOS uses FeatureCard sections + no bottom nav on validation deep link; iOS mockup plate 17-20 has no dedicated create-event panel (functional parity vs macOS 22-create-event)."
   },
   "notes": "Parity with validation/macos/10-create-event.json. Capture user validation-gurusharan / Gurusharan Gupta.",
-  "source_hash": "7a2ba27c67a18ab4",
+  "source_hash": "7933a3cc883224d8",
   "recent_screenshot_ref": "output/validation/ios-screens/26-create-event.png",
   "ui_validation": {
     "result": "pass",

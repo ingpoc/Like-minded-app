@@ -3,12 +3,13 @@
   "platform": "macos",
   "source_files": [
     "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (welcome)",
+    "apps/ios-macos/Sources/LikemindedMac/MacDesignSystem.swift (MacConvergenceField)",
     "apps/ios-macos/Sources/Shared/SocialAuthButtonsView.swift",
     "apps/ios-macos/Sources/Shared/AuthAppleSignInButton.swift",
     "apps/ios-macos/Sources/Shared/AuthBrandMark.swift",
     "apps/ios-macos/Sources/Shared/AuthTermsFooter.swift"
   ],
-  "mockup_ref": "mockups/macos/23-auth-login-theme-consistent.png",
+  "mockup_ref": "mockups/macos/24-auth-login-convergence-field.png",
   "mockup_missing": false,
   "entry_points": [
     "App launch when not signed in"
@@ -28,16 +29,16 @@
       "stub": false
     }
   ],
-  "notes": "2026-07-06: welcome aligned to mockups/macos/23-auth-login-theme-consistent.png. sign-in-apple blocked on infra.",
+  "notes": "2026-07-06: welcome uses MacConvergenceField (faint interference contour art) instead of MacOrb; mockup mockups/macos/24-auth-login-convergence-field.png.",
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-06 vs mockups/macos/23-auth-login-theme-consistent.png: When you meet headline, subhead, shorter feature copy, black Apple button, white bordered social auth, Terms footer, MacOrb. Intentional: bottom nav hidden while signed out; simplified brand marks."
+    "notes": "2026-07-06 capture output/validation/macos-screens/welcome.png vs mockups/macos/24-auth-login-convergence-field.png: MacConvergenceField contour art on cream, headline/copy/auth stack unchanged. Intentional: live animation vs static mockup; grid slightly more regular than mockup plate."
   },
-  "source_hash": "04e6b0b38d97244a",
+  "source_hash": "d53d01eb9810d977",
   "recent_screenshot_ref": "output/validation/macos-screens/welcome.png",
   "ui_validation": {
     "result": "pass",
-    "reference_mockup_ref": "mockups/macos/23-auth-login-theme-consistent.png",
+    "reference_mockup_ref": "mockups/macos/24-auth-login-convergence-field.png",
     "recent_screenshot_ref": "output/validation/macos-screens/welcome.png",
     "design_ref": "DESIGN.md",
     "last_compared_at": "2026-07-06",
@@ -50,7 +51,9 @@
     "pending_validation": [],
     "requires_implementation": [],
     "requires_fixing": [],
-    "intentional_differences": [],
-    "notes": "2026-07-06 vs mockups/macos/23-auth-login-theme-consistent.png: theme-consistent welcome layout with Terms footer and white bordered social buttons."
+    "intentional_differences": [
+      "live Canvas animation vs static mockup plate"
+    ],
+    "notes": "2026-07-06 capture output/validation/macos-screens/welcome.png vs mockups/macos/24-auth-login-convergence-field.png: MacConvergenceField contour art on cream, headline/copy/auth stack unchanged. Intentional: live animation vs static mockup; grid slightly more regular than mockup plate."
   }
 }

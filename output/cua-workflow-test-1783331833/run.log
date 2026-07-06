@@ -1,0 +1,64 @@
+[manual-cua] === PHASE 1: launch + align (token=cua-manual-1783331833) ===
+[manual-cua] === tab navigation ===
+[manual-cua] screenshot output/cua-workflow-test-1783331833/screenshots/01-meet-tab.png
+[manual-cua] PASS step 1 click 'Meet' @ 485.0 824.5
+[manual-cua] screenshot output/cua-workflow-test-1783331833/screenshots/02-circles-tab.png
+[manual-cua] PASS step 2 click 'Circles' @ 615.75 824.38623046875
+[manual-cua] screenshot output/cua-workflow-test-1783331833/screenshots/03-communities-tab.png
+[manual-cua] PASS step 3 click 'Communities' @ 745.75 824.5
+[manual-cua] screenshot output/cua-workflow-test-1783331833/screenshots/04-profile-tab.png
+[manual-cua] PASS step 4 click 'Profile' @ 875.5 824.5
+[manual-cua] screenshot output/cua-workflow-test-1783331833/screenshots/05-meet-tab-return.png
+[manual-cua] PASS step 5 click 'Meet' @ 485.75 824.5
+[manual-cua] === onboarding entry ===
+[manual-cua] screenshot output/cua-workflow-test-1783331833/screenshots/06-profile-for-setup.png
+[manual-cua] PASS step 6 click 'Profile' @ 875.5 824.5
+[manual-cua] screenshot output/cua-workflow-test-1783331833/screenshots/07-start-setup.png
+[manual-cua] PASS step 7 click 'Start profile setup' @ 205.5 394.0
+[manual-cua] === onboarding basics ===
+[manual-cua] screenshot output/cua-workflow-test-1783331833/screenshots/08-name-field.png
+[manual-cua] PASS step 8 type 'What should we call you?'
+[manual-cua] screenshot output/cua-workflow-test-1783331833/screenshots/09-city-field.png
+[manual-cua] PASS step 9 type 'Where are you based?'
+[manual-cua] screenshot output/cua-workflow-test-1783331833/screenshots/10-interest-jazz.png
+[manual-cua] PASS step 10 click 'Jazz' @ 502.0 667.5
+[manual-cua] screenshot output/cua-workflow-test-1783331833/screenshots/11-interest-books.png
+[manual-cua] PASS step 11 click 'Books' @ 568.5 667.5
+[manual-cua] screenshot output/cua-workflow-test-1783331833/screenshots/12-continue-basics.png
+[manual-cua] PASS step 12 click 'Continue' @ 669.0 761.0
+[manual-cua] === voice reflection ===
+[manual-cua] screenshot output/cua-workflow-test-1783331833/screenshots/13-voice-step.png
+[manual-cua] PASS step 13 click 'Voice profile step' @ 200.5 383.5
+[manual-cua] screenshot output/cua-workflow-test-1783331833/screenshots/14-reflect-1.png
+[manual-cua] PASS step 14 type 'Your answer'
+[manual-cua] screenshot output/cua-workflow-test-1783331833/screenshots/15-next-prompt-1.png
+[manual-cua] PASS step 15 click 'Next prompt' @ 516.0 1009.0
+[manual-cua] screenshot output/cua-workflow-test-1783331833/screenshots/16-reflect-2.png
+[manual-cua] PASS step 16 type 'Your answer'
+[manual-cua] screenshot output/cua-workflow-test-1783331833/screenshots/17-next-prompt-2.png
+[manual-cua] PASS step 17 click 'Next prompt' @ 582.0 1009.0
+[manual-cua] screenshot output/cua-workflow-test-1783331833/screenshots/18-reflect-3.png
+[manual-cua] PASS step 18 type 'Your answer'
+[manual-cua] screenshot output/cua-workflow-test-1783331833/screenshots/19-save-voice.png
+[manual-cua] PASS step 19 click 'Save voice profile' @ 597.5 1009.0
+[manual-cua] === post-onboarding tabs ===
+[manual-cua] screenshot output/cua-workflow-test-1783331833/screenshots/20-circles-post.png
+[manual-cua] PASS step 20 click 'Circles' @ 615.75 824.38623046875
+[manual-cua] screenshot output/cua-workflow-test-1783331833/screenshots/21-communities-post.png
+[manual-cua] PASS step 21 click 'Communities' @ 745.75 824.5
+[manual-cua] screenshot output/cua-workflow-test-1783331833/screenshots/22-meet-post.png
+[manual-cua] PASS step 22 click 'Meet' @ 485.75 824.5
+[manual-cua] screenshot output/cua-workflow-test-1783331833/screenshots/23-profile-post.png
+[manual-cua] PASS step 23 click 'Profile' @ 875.5 824.5
+[manual-cua] === settings sign out ===
+[manual-cua] screenshot output/cua-workflow-test-1783331833/screenshots/24-settings-gear.png
+[manual-cua] PASS step 24 click 'Settings' @ 1237.0 145.0
+[manual-cua] screenshot output/cua-workflow-test-1783331833/screenshots/25-logout-menu.png
+[manual-cua] PASS step 25 click 'Log out' @ 175.99999618530273 659.0
+[manual-cua] screenshot output/cua-workflow-test-1783331833/screenshots/26-signout-confirm.png
+[manual-cua] PASS step 26 click 'Sign out' @ 739.0 515.0
+[manual-cua] screenshot output/cua-workflow-test-1783331833/screenshots/99-signed-out.png
+[manual-cua] === API placement check ===
+[manual-cua] PASS API session for cua-manual-1783331833
+[manual-cua] PASS placement exists
+[manual-cua] === SUMMARY pass=28 fail=0 token=cua-manual-1783331833 shots=output/cua-workflow-test-1783331833/screenshots ===

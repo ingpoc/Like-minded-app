@@ -1,0 +1,1 @@
+pass=26 fail=3 token=cua-manual-1783342194 shots=output/cua-greeting-1783342194/screenshots capture=failures

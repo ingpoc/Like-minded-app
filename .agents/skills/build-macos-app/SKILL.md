@@ -1,285 +1,125 @@
 ---
 name: build-macos-app
-description: Likeminded macOS build/run/validate skill for the SwiftUI LikemindedMac target in apps/ios-macos. Use when building, running, signing, or screen-validating the macOS surface against mockups/macos — covers xcodegen, xcodebuild for macOS, open with --mac-screen deep-link args, validation-data seeding, screen-capture, and parity checks across the welcome/meet/circles/profile/chat/communities/soulmate/settings flow set.
+description: >-
+  Likeminded macOS build/run/validate for SwiftUI LikemindedMac (apps/ios-macos).
+  Triggers: macOS build, xcodebuild LikemindedMac, --mac-screen validation,
+  mockup parity, macos:validation-batch, ledger screen proof. Skip for iOS
+  (build-ios-app) or backend-only.
 ---
 
 # Build macOS App — Likeminded
 
-Project-specific skill for the **macOS SwiftUI surface** of the Like-minded-app:
-the `LikemindedMac` target in `apps/ios-macos/project.yml`, source at
-`apps/ios-macos/Sources/LikemindedMac/`.
+`LikemindedMac` target — source `apps/ios-macos/Sources/LikemindedMac/`. Spec: `project.yml` (never hand-edit `.xcodeproj`).
 
-## When to Use This Skill
+## When to use / skip
 
-Apply when working on the **macOS app** (`LikemindedMac`) for any of:
+**Use:** macOS SwiftUI, API wiring, `--mac-screen` validation, mockup parity, design system.
 
-- Building, running, or debugging the macOS target natively (not Catalyst)
-- Adding or modifying SwiftUI views/scenes under `Sources/LikemindedMac/`
-- Wiring the macOS client to the Node API (`LIKEMINDED_API_BASE_URL` contract)
-- Window, toolbar, menu, sidebar layout specific to the desktop surface
-- Validation: capturing screenshots of all 20 `--mac-screen` flows and
-  comparing against `mockups/macos/`
-- macOS-specific design system / component work
-
-**Skip this skill** for iOS simulator work (use `build-ios-app`), backend-only
-changes, schema work, or non-visual infra changes — they don't need a Mac
-build or mockup comparison.
+**Skip:** iOS (`build-ios-app`), backend-only, non-visual infra.
 
 ## Context (lazy)
 
-1. `npm run goal:next` — if macOS track open, note screen from output or `ledger:stale`.
-2. **One** `validation/macos/<screen>.json` via `npm run ledger:screen` + `source_files` for the touched screen.
-3. **One** mockup from ledger `mockup_ref` — not the whole `mockups/macos/` dir.
-4. Skip `GOAL.md`, full `PROGRESS.md`, and `project_context` unless boundary dispute.
+1. `npm run goal:next` — note open macOS screen or `ledger:stale`.
+2. **One** ledger: `npm run ledger:screen -- --platform macos --screen <id>`.
+3. **One** mockup: ledger `mockup_ref` only — not `mockups/macos/` walks.
+4. Command routing detail: `docs/workflows/validation.md` § macOS proof.
 
-## Project Layout (macOS-relevant)
+## Workflow lanes (pick one)
+
+Do **not** improvise capture/CUA. Run the script for the lane.
+
+| Lane | When | Command |
+| --- | --- | --- |
+| **Dev build** | Compile / debug one screen | Preflight below → `xcodebuild` → `open --args` (see [`references/launch-args.md`](references/launch-args.md)) |
+| **One-screen proof** | Stamp controls after UI edit | `macos_cua_preflight.sh` → `macos_audit_prepare.sh <screen>` → `macos_cua_screen.sh <screen>` |
+| **Captures only** | PNG batch, no CUA | `npm run verify:macos-screens` |
+| **Post-parallel closeout** | After disjoint Swift edits | `npm run macos:validation-batch` (full) or `npm run macos:cua-reproof` (stale CUA only) |
+
+CUA harness + E2E: `~/.agents/skills/macos-cua/references/likeminded.md` (do not duplicate).
+
+## Pass signals
+
+| Layer | Pass |
+| --- | --- |
+| API | `curl -fsS http://127.0.0.1:8787/health` |
+| Build | `xcodebuild … -scheme LikemindedMac -destination 'platform=macOS'` exit 0 |
+| Capture | PNG at `output/validation/macos-screens/<screen>.png`, window **1200×760** |
+| Control | Ledger `controls[].result=pass` + `tested_source_hash` = `source_hash` |
+| UI | `ui_validation.result=pass` vs ledger `mockup_ref` + `DESIGN.md` |
+| Batch | Closeout command exit 0; no actionable `fail`/`stale_pass` on touched screens |
+
+Mockup compare **before** CUA: classify **match** / **intentional variation** / **gap**; record in `visual_parity.notes`.
+
+## Iteration (phases 2–5)
+
+After any fix, rerun the **full lane** — not only the failing step.
 
 ```
-apps/ios-macos/
-  project.yml                         # XcodeGen owner — iOS + macOS targets
-  Likeminded.xcodeproj/               # generated, do NOT hand-edit
-  Sources/LikemindedMac/
-    LikemindedMacApp.swift            # app entry / scene
-    MacRootView.swift                 # root layout
-    MacScreens.swift                  # --mac-screen switch
-    MacAppState.swift                 # auth + placement state
-    MacPrototypeData.swift
-    MacDesignSystem.swift             # macOS-only colors/typography/materials
-    LikemindedAPIClient.swift         # HTTP client — same backend contract
-    Models.swift
-mockups/macos/                        # montage references:
-  01-04-auth-meet-circles-profile.png
-  05-08-chat-communities-detail-recap.png
-  09-12-profile-soulmate-discover-detail.png
-  13-16-community-members-event-messages-activity.png
-  17-20-profile-onboarding-detail-settings.png
-  21-meet-video-call.png
-  22-create-event.png
+run lane → collect pass/fail + timings → failure | inefficiency → root cause → retest full → repeat
 ```
 
-Bundle id: `com.likeminded.mac`. Deployment target: **macOS 15.0**. No LiveKit
-dependency on this target. `GENERATE_INFOPLIST_FILE: YES`. No entitlements
-file declared in `project.yml` for the Mac target (Apple Sign-In is iOS-only).
+| Situation | Loop |
+| --- | --- |
+| One screen | `macos_cua_screen.sh` until controls pass; recompile if Swift changed |
+| Post-parallel | `macos:validation-batch` until ledger clean on edited screens |
+| Captures drift | `verify:macos-screens` → compare `mockup_ref` → fix or `intentional_differences` |
 
-## Build / Run / Debug Workflow
+**Stop when:** consecutive full runs pass **and** the last full iteration was **empty** (no failure, inefficiency, simplify, optimize, or automate debt — see workflow-hardening § Empty last iteration).
 
-### 0. Prerequisites
-- The API server must be running for in-app auth + placement flows. Verify:
-  ```
-  curl -s http://127.0.0.1:8787/health
-  ```
-- For realistic validation data, use the validation lane (see §Validation).
-- XcodeGen must be installed: `brew install xcodegen`.
+## Preflight → build → run
 
-### 1. Regenerate the Xcode project after any `project.yml` change
-```
-(cd apps/ios-macos && xcodegen generate)
-```
-Never hand-edit `Likeminded.xcodeproj`. The spec is the source of truth.
+```bash
+curl -fsS http://127.0.0.1:8787/health          # or: npm run dev:api:validation
+(cd apps/ios-macos && xcodegen generate)        # after project.yml edits
 
-### 2. Build only
-```
 xcodebuild \
   -project apps/ios-macos/Likeminded.xcodeproj \
   -scheme LikemindedMac \
   -destination 'platform=macOS' \
   -derivedDataPath .build/macos \
   build
-```
-App lands at `.build/macos/Build/Products/Debug/LikemindedMac.app`.
 
-### 3. Run the built app (native open, not simulator)
-```
-open -F -n .build/macos/Build/Products/Debug/LikemindedMac.app
-```
-- `-F` launches a fresh instance even if one is running.
-- `-n` opens a new instance.
-- Use `--args …` to pass launch arguments (see §Launch Arguments).
-
-### 4. Terminate / restart (use lock holder)
-
-During validation, never bare `pkill -x LikemindedMac` from parallel agents — it kills another agent's capturable window.
-
-```
-./script/cross_platform_validation_lock.sh with_lock macos-app bash -c '
-  source script/macos_canonical_app.sh
-  macos_kill_if_lock_holder
-'
-```
-
-Only the lock holder should kill/relaunch. Set `LIKEMINDED_HOLDS_MACOS_APP_LOCK=1` when your script owns `macos-app`.
-
-### 5. Stream runtime logs
-```
-log stream --level debug --style compact --predicate 'process == "LikemindedMac"'
-```
-
-## Launch Arguments (project-specific)
-
-The macOS app reads these `open --args` flags. The most important is
-`--mac-screen <name>`, which deep-links the app to a specific screen flow
-for validation:
-
-Auth / dev:
-- `--likeminded-reset-auth-session` — wipe cached session
-- `--likeminded-dev-auth-bypass` — skip Apple Sign-In (local-auth mode)
-- `--likeminded-dev-auth-token <token>` — pre-seed a profile token
-- `--likeminded-dev-auth-name "<Name>"` — pre-seed display name
-
-Deep-link screen (one of):
-```
-welcome, meetOverview, circlesRoom, profileEdit, chat, communitiesBrowse,
-communityDetail, meetRecap, myProfile, soulmateOverview, soulmateDiscover,
-soulmateDetail, communityMembers, createEvent, messages, notifications,
-profileOnboarding, profileSignals, circleDetail, settingsSoulmate
-```
-
-Example (deep-link to soulmate discover with seeded validation profile):
-```
 open -F -n .build/macos/Build/Products/Debug/LikemindedMac.app --args \
-  --likeminded-reset-auth-session --likeminded-dev-auth-bypass \
-  --likeminded-dev-auth-token validation-gurusharan --likeminded-dev-auth-name "Gurusharan Gupta" \
-  --mac-screen soulmateDiscover
+  --likeminded-reset-auth-session \
+  --likeminded-dev-auth-bypass \
+  --likeminded-dev-auth-token "${LIKEMINDED_VALIDATION_USER:-validation-gurusharan}" \
+  --likeminded-dev-auth-name "${LIKEMINDED_VALIDATION_NAME:-Gurusharan Gupta}" \
+  --mac-screen <screen>
 ```
 
-**Launch arg order matters.** Put `--mac-screen <name>` **before** profile/dev flags when both are needed (e.g. empty onboarding):
-```
---mac-screen profileOnboarding --likeminded-dev-profile-empty
-```
-Wrong order can yield **no capturable window**.
+**Kill/relaunch (validation only):** lock holder via `cross_platform_validation_lock.sh` + `macos_kill_if_lock_holder` — never bare `pkill` from parallel agents.
 
-**Post-sign-in re-apply.** `MacRootView` must re-apply `--mac-screen` after dev auth completes (`onChange(of: isSignedIn)`); otherwise notifications/settings deep links land on Profile.
+**Logs:** `log stream --level debug --style compact --predicate 'process == "LikemindedMac"'`
 
-**Screen-specific recipes:**
-- **Welcome (auth gate):** no dev bypass — `--likeminded-reset-auth-session --mac-screen welcome --likeminded-validation-welcome`
-- **Settings how-it-works:** `--mac-screen settingsSoulmate --mac-settings-pane howItWorks` only (dual iOS-style flags + pane can open 0 windows)
-- **Communities browse:** catalog vs joined are separate API fetches in `MacAppState.fetchCommunities()` — both must succeed for the grid
+## Per-screen checklist
 
-## Validation (against `mockups/macos/`)
+1. Ledger JSON + `mockup_ref` + open `requires_fixing` / controls
+2. Swift in `MacScreens.swift` (or `MacDesignSystem`)
+3. `xcodebuild` compile
+4. Proof via **lane table** above (not ad-hoc `screencapture`)
+5. `ui_validation.result=pass` only when plate + `DESIGN.md` agree
 
-**Mockup compare before controls.** Capture the live app window, open the
-matching plate in `mockups/macos/`, and classify differences as **match**,
-**intentional variation**, or **gap** before CUA or ledger pass/fail. Mockups
-are montages and often diverge (seeded roster size, no photos, tab order
-Soulmate before Profile, planned call chrome, honest empty Groups). Record
-variations in ledger `visual_parity.notes` — do not fail controls solely for those.
+## Hard rules
 
-Per AGENTS.md: before claiming seamless behavior, point both apps at
-`data/validation-db` with the validation API and seeded data.
+- **Ledger owns status** — `validation/macos/*.json`; no parallel pass/fail tables.
+- **Scripts, not improvisation** — no hand-built Quartz capture one-liners in agent loops.
+- **Sequential proof** — one `xcodebuild` / one app instance for capture+CUA batch; see `validation.md` § Parallel.
+- **`LIKEMINDED_API_BASE_URL`** in Info.plist — never hardcode URLs in Swift.
+- **Native macOS** — not Catalyst; scheme `LikemindedMac`, `-destination 'platform=macOS'`.
+- **Validation data** — `npm run dev:api:validation` + `npm run reset:validation-data` → `data/validation-db`.
 
-The repo ships an end-to-end script that captures **all 20** screen flows:
-```
-./script/verify_macos_screens.sh
-```
-What it does, in order:
-1. Kills any prior app instance + frees port `${PORT:-8787}`.
-2. Starts the validation API (`script/run_validation_api.sh`) and waits for `/health`.
-3. `npm run reset:validation-data` — seeds `data/validation-db`.
-4. `(cd apps/ios-macos && xcodegen generate)`.
-5. `xcodebuild … -scheme LikemindedMac -destination 'platform=macOS' build` into `.build/macos`.
-6. For each of the 20 screens: lock `macos-app`, `macos_open_with_args … --mac-screen <name>`,
-   activate + resize the window to 1200×760 at {80,80} via AppleScript,
-   then `screencapture -x -l <window_id>` the Likeminded window only
-   (filtered by owner + size through CoreGraphics).
-7. `npm run remove:validation-data` cleanup on exit.
-8. Writes PNGs to `output/validation/macos-screens/<screen>.png`.
+## Progressive disclosure
 
-Then compare each capture against the matching montage in `mockups/macos/`:
-
-| Screens (`--mac-screen`) | Mockup file |
-|---|---|
-| welcome, meetOverview, circlesRoom, profileEdit | `01-04-auth-meet-circles-profile.png` |
-| chat, communitiesBrowse, communityDetail, meetRecap | `05-08-chat-communities-detail-recap.png` |
-| myProfile, soulmateOverview, soulmateDiscover, soulmateDetail | `09-12-profile-soulmate-discover-detail.png` |
-| communityMembers, messages, notifications | `13-16-community-members-event-messages-activity.png` |
-| createEvent | `22-create-event.png` |
-| profileOnboarding, profileSignals, circleDetail, settingsSoulmate | `17-20-profile-onboarding-detail-settings.png` |
-| meet video call (extra) | `21-meet-video-call.png` |
-
-Ad-hoc single-screen capture (without the full script):
-```
-# build + open with the desired deep-link, then capture the window:
-screencapture -x -l "$(python3 -c 'import Quartz; \
-  ws=Quartz.CGWindowListCopyWindowInfo(Quartz.kCGWindowListOptionOnScreenOnly|Quartz.kCGWindowListExcludeDesktopElements,Quartz.kCGNullWindowID); \
-  print(next((w["kCGWindowNumber"] for w in ws if (w.get("kCGWindowOwnerName") or "").startswith("Likeminded") and w.get("kCGWindowBounds",{}).get("Width",0)>400), ""))')" \
-  output/validation/macos-screens/soulmateDiscover.png
-```
-
-## Post-parallel validation batch
-
-After parallel UI work, run **one** sequential pass (no concurrent CUA/capture):
-
-```bash
-npm run macos:validation-batch              # full
-npm run macos:cua-reproof                   # stale-pass CUA only
-```
-
-Sequential `macos_cua_screen.sh` per screen; uses `macos-cua.py` (`click-label` / `type-label`). Preflight: `macos_cua_preflight.sh`.
-
-## Validation fixtures contract (`--mac-screen` deep links)
-
-When a screen must match a mockup plate but API rows are unstable (parallel
-seeding, empty chat threads, roster order), add a **fixture layer** in
-`MacPrototypeData.swift` (or screen-local plate map) used when `--mac-screen`
-is set and API data is empty or validation needs plate copy.
-
-| Screen | Fixture | Mockup plate | Rule |
-|--------|---------|--------------|------|
-| `chat` | `MacChatFixtures` | 05 | API matches first; fixtures for plate-05 roster + jazz thread |
-| `messages` | `MacMessagesFixtures` | 15 | Fixtures preferred on `messages` deep-link |
-| `communitiesBrowse` | `communityBrowsePlate` in `MacScreens.swift` | 06 | Maps API ids → mockup names/order/join badges |
-
-When adding a new deep-link screen to validation:
-1. Add fixture block if plate copy ≠ seeded API shape
-2. Document in ledger `intentional_differences`
-3. Wire `accessibilityLabel` strings to labels in `macos_cua_screen.sh` (see `~/.agents/skills/macos-cua/references/AppInstructions/LikemindedMac.md`)
-
-## Per-screen validation checklist
-
-1. One `validation/macos/NN-*.json` + `mockup_ref` + `requires_fixing`
-2. One `MacScreens.swift` MARK section (or `MacDesignSystem` helper)
-3. `xcodebuild … LikemindedMac` — compile
-4. Capture at **1200×760** → `output/validation/macos-screens/<screen>.png`
-5. Compare plate; gaps → fix or `intentional_differences`
-6. `./script/macos_cua_screen.sh <screen>` — stamp controls + `tested_source_hash`
-7. `ui_validation.result=pass` only when layout matches `DESIGN.md` + plate
-
-## Conventions Specific to This App
-
-- **Backend contract is `LIKEMINDED_API_BASE_URL`.** Both iOS and macOS read
-  the same key from their Info.plist (`INFOPLIST_KEY_LIKEMINDED_API_BASE_URL`).
-  Never hardcode a URL in the Swift client; never fork the contract per platform.
-- **Auth gate** is the macOS welcome screen (`MacScreens.swift`):
-  Sign in with Apple + Google + MetaMask + Solflare (same shared buttons as iOS).
-  Entitlement: `Entitlements/LikemindedMac.entitlements`. URL schemes + `GIDClientID`
-  in `Info/LikemindedMac-Info.plist`. Wallet callbacks in `LikemindedMacApp.onOpenURL`.
-  `MacRootView` uses `@EnvironmentObject MacAppState` from the app entry point.
-  For validation without real Apple ID: `--likeminded-dev-auth-bypass` with
-  `npm run dev:api:local-auth`.
-- **LiveKit** on macOS: `LikemindedMac` links LiveKit SPM packages; join flow uses
-  `Sources/Shared/LiveKitMeetSession.swift` in `meetVideoCall`. Preview tiles when
-  `POST /v1/meetings/:id/join` fails (no `LIVEKIT_*` env).
-- **Keep macOS-only SwiftUI in `Sources/LikemindedMac`.** Shared auth + LiveKit
-  live in `Sources/Shared/`.
-- **Window size for validation is 1200×760** at {80,80} — match this when
-  capturing for parity with `mockups/macos/`.
-- **Shell-first.** No simulator tooling on this surface — use `xcodebuild`,
-  `open`, `cross_platform_validation_lock.sh`, `screencapture`, `log stream`, `osascript`.
-
-## Common Pitfalls
-
-- Editing `Likeminded.xcodeproj` directly → always edit `project.yml` and run `xcodegen generate`.
-- Circle/community hero art uses `Sources/DoodleArt` + `Assets.xcassets` doodles — if `DoodleCover` fails to compile, confirm `project.yml` lists `Sources/DoodleArt` under the Mac target and rerun `xcodegen generate`.
-- Building for `platform=iOS Simulator` when you wanted the Mac → use `-destination 'platform=macOS'` and scheme `LikemindedMac`.
-- Leaving a prior `LikemindedMac` instance running → new `--mac-screen` args won't take effect. Use `macos_kill_if_lock_holder` inside the `macos-app` lock — not bare `pkill` from parallel agents.
-- Forgetting to start the validation API → blank/auth-gated screens. Always `curl /health` first.
-- `screencapture` without `-l <window_id>` → grabs the whole screen, breaking mockup parity.
-- Port 8787 already in use → `verify_macos_screens.sh` will kill the existing listener, but be aware it does so unconditionally.
-- **Parallel agents + CUA/capture** → empty AX tree, wrong window in PNG; use `npm run macos:validation-batch` after parallel UI work.
-- **Community browse card white line at hero top** → apply `MacPalette.surface` only on the text footer, not the full card; hero uses `DoodleCover` with top-aligned `scaledToFill` (see `communityCard` in `MacScreens.swift`).
-- Treating macOS as Catalyst → this project is **native macOS**, not Catalyst (`SUPPORTS_MACCATALYST: NO` on the iOS target). Don't switch to a Catalyst destination.
+| Load when | File |
+| --- | --- |
+| `--mac-screen` / launch recipes | [`references/launch-args.md`](references/launch-args.md) |
+| Fixture plates vs API | [`references/fixtures.md`](references/fixtures.md) |
+| Build failed / wrong window / capture | [`references/troubleshooting.md`](references/troubleshooting.md) |
+| Source tree / bundle / LiveKit | [`references/layout.md`](references/layout.md) |
+| CUA / multi-monitor / E2E | `~/.agents/skills/macos-cua/references/likeminded.md` |
+| All npm proof commands | `docs/workflows/validation.md` |
 
 ## Related
-- `build-ios-app` skill — the iOS SwiftUI surface (`Likeminded`).
-- AGENTS.md "Trigger Map" for the canonical validation order and the
-  `npm run verify:macos-screens` / `npm run verify:simulator-local` aliases.
+
+- `build-ios-app` — iOS surface.
+- `AGENTS.md` trigger map — aliases `verify:macos-screens`, `macos:validation-batch`.

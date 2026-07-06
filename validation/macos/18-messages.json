@@ -24,9 +24,9 @@
       "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (match-row)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "538e3a81936254d6",
+      "tested_source_hash": "a5e374c8034f760b",
       "last_tested_at": "2026-07-06",
-      "last_test_method": "local-product-loop"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "draft",
@@ -37,9 +37,9 @@
       "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (draft)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "538e3a81936254d6",
+      "tested_source_hash": "a5e374c8034f760b",
       "last_tested_at": "2026-07-06",
-      "last_test_method": "local-product-loop"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "send",
@@ -50,9 +50,9 @@
       "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (send)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "538e3a81936254d6",
+      "tested_source_hash": "a5e374c8034f760b",
       "last_tested_at": "2026-07-06",
-      "last_test_method": "local-product-loop"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "close",
@@ -63,9 +63,9 @@
       "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (close)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "538e3a81936254d6",
+      "tested_source_hash": "a5e374c8034f760b",
       "last_tested_at": "2026-07-06",
-      "last_test_method": "local-product-loop"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "voice-call-header",
@@ -77,8 +77,8 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-06",
-      "last_test_method": "local-product-loop",
-      "tested_source_hash": "538e3a81936254d6"
+      "last_test_method": "CUA-click",
+      "tested_source_hash": "a5e374c8034f760b"
     },
     {
       "id": "video-call-header",
@@ -90,8 +90,8 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-06",
-      "last_test_method": "local-product-loop",
-      "tested_source_hash": "538e3a81936254d6"
+      "last_test_method": "CUA-click",
+      "tested_source_hash": "a5e374c8034f760b"
     },
     {
       "id": "conversation-info-header",
@@ -103,8 +103,8 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-06",
-      "last_test_method": "local-product-loop",
-      "tested_source_hash": "538e3a81936254d6"
+      "last_test_method": "CUA-click",
+      "tested_source_hash": "a5e374c8034f760b"
     }
   ],
   "visual_parity": {
@@ -112,7 +112,7 @@
     "notes": "2026-07-05 capture vs plate 15: Ananya sidebar + Jazz & Music group rows, jazz thread, Type a message composer. Intentional: Groups filter honest empty; initials not photos."
   },
   "notes": "2026-07-05: MacMessagesFixtures for --mac-screen messages; shared chat() with Chats; chatDisplayName for seed names.",
-  "source_hash": "7a7a5a21e1f1449f",
+  "source_hash": "a5e374c8034f760b",
   "recent_screenshot_ref": "output/validation/macos-screens/messages.png",
   "ui_validation": {
     "result": "pass",

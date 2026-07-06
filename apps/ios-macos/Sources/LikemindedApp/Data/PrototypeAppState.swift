@@ -497,7 +497,8 @@ final class PrototypeAppState: ObservableObject {
         city: String,
         gender: Gender?,
         dateOfBirth: String?,
-        pincode: String?
+        pincode: String?,
+        interests: [String] = []
     ) async -> Bool {
         guard isSignedIn else { return false }
         let existing = basicInfo ?? slice?.profile.basicInfo
@@ -508,8 +509,9 @@ final class PrototypeAppState: ObservableObject {
             city: city.trimmingCharacters(in: .whitespacesAndNewlines),
             pincode: pincode ?? existing?.pincode
         )
+        let interestModels = interests.map { Interest(area: "general", label: $0, depth: .active) }
         do {
-            let profile = try await client.updateProfile(basicInfo: update)
+            let profile = try await client.updateProfile(basicInfo: update, interests: interestModels.isEmpty ? nil : interestModels)
             if let info = profile.basicInfo {
                 basicInfo = info
             }

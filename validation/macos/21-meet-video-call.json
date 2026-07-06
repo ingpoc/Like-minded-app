@@ -32,9 +32,9 @@
       "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (tiles)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "b1a8e998ffd5c321",
+      "tested_source_hash": "5f58d68c4fb27018",
       "last_tested_at": "2026-07-06",
-      "last_test_method": "local-product-loop"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "mute",
@@ -45,9 +45,9 @@
       "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (mute)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "b1a8e998ffd5c321",
+      "tested_source_hash": "5f58d68c4fb27018",
       "last_tested_at": "2026-07-06",
-      "last_test_method": "local-product-loop"
+      "last_test_method": "CUA-click"
     },
     {
       "id": "leave",
@@ -58,9 +58,9 @@
       "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (leave)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "b1a8e998ffd5c321",
+      "tested_source_hash": "5f58d68c4fb27018",
       "last_tested_at": "2026-07-06",
-      "last_test_method": "local-product-loop"
+      "last_test_method": "CUA-click"
     }
   ],
   "visual_parity": {
@@ -68,7 +68,7 @@
     "notes": "2026-07-05 capture vs mockups/macos/21-meet-video-call.png: 2x2 tile grid, participant panel with avatars and +N more, mute/leave controls, agenda tab, safety card. Intentional: gradient initials on tiles (no LiveKit camera feeds); join-room blocked Phase 10."
   },
   "notes": "2026-07-05: join-room blocked on LiveKit infra (Phase 10). tiles/mute/leave pass as prototype UI. ui_validation pass — layout matches mockup 21; camera feeds deferred until LiveKit join.",
-  "source_hash": "1f2a9e608823cc62",
+  "source_hash": "5f58d68c4fb27018",
   "recent_screenshot_ref": "output/validation/macos-screens/meetVideoCall.png",
   "ui_validation": {
     "result": "pass",

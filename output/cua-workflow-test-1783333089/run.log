@@ -1,0 +1,38 @@
+[manual-cua] === launch + align (token=cua-manual-1783333089 capture=failures) ===
+[manual-cua] screenshot output/cua-workflow-test-1783333089/screenshots/00-launch.png
+[manual-cua] === onboarding ===
+[manual-cua] PASS step 1 click 'Profile' @ 875.5 824.5
+[manual-cua] PASS step 2 click 'Start profile setup' @ 205.5 394.0
+[manual-cua] PASS step 3 type 'What should we call you?'
+[manual-cua] PASS step 4 type 'Where are you based?'
+[manual-cua] PASS step 5 click 'Jazz' @ 502.0 667.5
+[manual-cua] PASS step 6 click 'Books' @ 568.5 667.5
+[manual-cua] PASS step 7 click 'Continue' @ 669.0 761.0
+[manual-cua] PASS basics saved on API
+[manual-cua] === voice reflection ===
+[manual-cua] PASS step 8 click 'Voice profile step' @ 200.5 383.5
+[manual-cua] PASS step 9 type 'Your answer'
+[manual-cua] PASS step 10 click 'Next prompt' @ 516.0 1009.0
+[manual-cua] PASS step 11 type 'Your answer'
+[manual-cua] PASS step 12 click 'Next prompt' @ 582.0 957.0
+[manual-cua] PASS step 13 type 'Your answer'
+[manual-cua] PASS step 14 click 'Save voice profile' @ 597.5 722.0
+[manual-cua] === post-onboarding tabs ===
+[manual-cua] PASS step 15 click 'Circles' @ 615.75 824.38623046875
+[manual-cua] PASS step 16 click 'Communities' @ 745.75 824.5
+[manual-cua] PASS step 17 click 'Meet' @ 485.75 824.5
+[manual-cua] PASS step 18 click 'Profile' @ 875.5 824.5
+[manual-cua] PASS placement on API before sign-out
+[manual-cua] === sign out ===
+[manual-cua] PASS step 19 click 'Settings' @ 1237.0 145.0
+[manual-cua] PASS step 20 click 'Log out' @ 175.99999618530273 659.0
+[manual-cua] PASS step 21 click 'Sign out' @ 739.0 515.0
+[manual-cua] screenshot output/cua-workflow-test-1783333089/screenshots/99-signed-out.png
+[manual-cua] === re-auth + delete account ===
+[manual-cua] PASS step 22 click 'Profile' @ 875.5 824.5
+[manual-cua] PASS step 23 click 'Settings' @ 1237.0 145.0
+[manual-cua] PASS step 24 click 'Delete account' @ 196.99999618530273 695.5
+[manual-cua] screenshot output/cua-workflow-test-1783333089/screenshots/99-deleted.png
+[manual-cua] === API / UI checks ===
+[manual-cua] PASS welcome screen after delete
+[manual-cua] === SUMMARY pass=27 fail=0 token=cua-manual-1783333089 shots=output/cua-workflow-test-1783333089/screenshots capture=failures ===

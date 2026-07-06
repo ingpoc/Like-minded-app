@@ -668,8 +668,10 @@ async function handleRequest(req, res) {
         reflectionAnswers: body.reflectionAnswers || []
       });
       const placed = await saveProfilePlacement({ userId: user.id, profile, placement, transcript: body.interviewTranscript || "" });
-      rememberCircleMember(placement, profile.profileId);
-      json(res, 201, { ...resultEnvelope(profile, placement, null, "realtime_tool"), placementId: placed.placementId });
+      const savedProfile = await getLatestProfile(user.id);
+      const profileId = savedProfile?.profileId || profile.profileId;
+      rememberCircleMember(placement, profileId);
+      json(res, 201, { ...resultEnvelope(savedProfile || profile, placement, null, "realtime_tool"), placementId: placed.placementId });
     } catch (error) {
       json(res, 400, { error: "invalid_realtime_profile_placement", message: error.message });
     }
@@ -711,12 +713,13 @@ async function handleRequest(req, res) {
       const result = await modelBackedProfilePlacement({ interviewTranscript: interviewTranscript || "", reflectionAnswers: reflectionAnswers || [] });
       const { profile, placement, allCircleFits, synthesisMode } = result;
       profile.deviceId = deviceId;
-      profiles.set(profile.profileId, profile);
-
       await saveProfilePlacement({ userId: user.id, profile, placement, transcript: interviewTranscript });
-      rememberCircleMember(placement, profile.profileId);
+      const savedProfile = await getLatestProfile(user.id);
+      const profileId = savedProfile?.profileId || profile.profileId;
+      profiles.set(profileId, savedProfile || profile);
+      rememberCircleMember(placement, profileId);
 
-      json(res, 200, resultEnvelope(profile, placement, allCircleFits, synthesisMode));
+      json(res, 200, resultEnvelope(savedProfile || profile, placement, allCircleFits, synthesisMode));
     } catch (error) {
       json(res, 400, { error: "invalid_json", message: error.message });
     }
@@ -743,7 +746,8 @@ async function handleRequest(req, res) {
       const profile = await updateLatestProfile(user.id, {
         reflectionSummary: typeof body.reflectionSummary === "string" ? body.reflectionSummary.trim() : null,
         signals: body.signals && typeof body.signals === "object" ? body.signals : null,
-        basicInfo: body.basicInfo && typeof body.basicInfo === "object" ? body.basicInfo : null
+        basicInfo: body.basicInfo && typeof body.basicInfo === "object" ? body.basicInfo : null,
+        interests: Array.isArray(body.interests) ? body.interests : null
       });
       if (!profile) {
         json(res, 404, { error: "profile_not_found", message: "No profile has been created yet." });

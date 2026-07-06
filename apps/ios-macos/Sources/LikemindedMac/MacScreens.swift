@@ -280,19 +280,17 @@ struct MacScreenView: View {
     }
 
     private var subtitleText: String {
-        let state = _appState.wrappedValue
         if screen == .meetRecap, let meeting = currentRecapMeeting {
             return "You attended \(meeting.title) on \(LikemindedDate.full(meeting.scheduledAt))."
         }
         if screen == .circleDetail, let circle = appState.circleDetail {
             return circle.placementReason
         }
-        guard screen == .meetOverview, state.isSignedIn else { return screen.subtitle }
-        if let name = state.profile?.basicInfo?.name {
-            let first = name.split(separator: " ").first.map(String.init) ?? name
+        guard screen == .meetOverview, appState.isSignedIn else { return screen.subtitle }
+        if let first = appState.profileFirstName {
             return "Good evening, \(first) 👋"
         }
-        return screen.subtitle
+        return "Your next room is ready."
     }
 
     private var dynamicTitle: String {
@@ -426,11 +424,10 @@ struct MacScreenView: View {
                 )
             }
             .frame(width: 420)
-            Spacer()
-            MacOrb()
-                .frame(width: 430, height: 360)
+            MacConvergenceField()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .frame(maxWidth: .infinity, minHeight: 560, alignment: .topLeading)
+        .frame(maxWidth: .infinity, minHeight: 560, maxHeight: .infinity, alignment: .topLeading)
         .sheet(isPresented: $showWelcomePrivacyPolicy) {
             ScrollView {
                 macPrivacyPolicyContent
@@ -469,6 +466,7 @@ struct MacScreenView: View {
         }
         .task {
             if appState.isSignedIn {
+                await appState.refreshProfileDisplay()
                 await appState.fetchMeetings()
             }
         }
@@ -2358,7 +2356,7 @@ struct MacScreenView: View {
         let editing = mode == .signals
         return HStack(alignment: .top, spacing: 24) {
             if let profile = appState.profile {
-                let name = profile.basicInfo?.name ?? "You"
+                let name = appState.profileDisplayName ?? "You"
                 let location = profile.basicInfo?.city ?? "Your location"
                 profileCard(name: name, location: location, profile: profile, editing: editing, signalsScreen: editing)
                 VStack(spacing: 18) {
@@ -2387,7 +2385,10 @@ struct MacScreenView: View {
                                     .foregroundStyle(MacPalette.muted)
                             }
                             LazyVGrid(
-                                columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: editing ? 5 : 4),
+                                columns: Array(
+                                    repeating: GridItem(.flexible(minimum: editing ? 120 : 150), spacing: 10),
+                                    count: editing ? 5 : 4
+                                ),
                                 spacing: editing ? 10 : 12
                             ) {
                                 let signalItems = editing
@@ -4348,6 +4349,7 @@ struct MacScreenView: View {
         if saved {
             voiceReflectionStatus = "Voice profile refreshed."
             profileOnboardingStep = 3
+            await appState.refreshProfileDisplay()
         } else {
             voiceReflectionStatus = appState.loadError ?? "Voice profile could not be saved."
         }
@@ -4395,12 +4397,14 @@ struct MacScreenView: View {
             city: draftProfileCity,
             gender: draftProfileGender,
             dateOfBirth: formatter.string(from: draftProfileDateOfBirth),
-            pincode: draftProfilePincode
+            pincode: draftProfilePincode,
+            interests: Array(draftOnboardingInterests).sorted()
         )
         isSavingProfileBasics = false
         if saved {
             profileBasicsStatus = "Saved"
             profileOnboardingStep = 2
+            await appState.refreshProfileDisplay()
         } else {
             profileBasicsStatus = appState.loadError ?? "Profile could not be saved."
         }

@@ -28,7 +28,7 @@
       "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-type-meetup) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "b6bb5b5798a68ac4",
+      "tested_source_hash": "be16a539f86f43cb",
       "last_tested_at": "2026-07-06",
       "last_test_method": "CUA-click"
     },
@@ -41,7 +41,7 @@
       "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-type-listening-session) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "b6bb5b5798a68ac4",
+      "tested_source_hash": "be16a539f86f43cb",
       "last_tested_at": "2026-07-06",
       "last_test_method": "CUA-click"
     },
@@ -54,7 +54,7 @@
       "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-type-jam-session) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "b6bb5b5798a68ac4",
+      "tested_source_hash": "be16a539f86f43cb",
       "last_tested_at": "2026-07-06",
       "last_test_method": "CUA-click"
     },
@@ -67,7 +67,7 @@
       "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-fields) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "b6bb5b5798a68ac4",
+      "tested_source_hash": "be16a539f86f43cb",
       "last_tested_at": "2026-07-06",
       "last_test_method": "CUA-click"
     },
@@ -80,7 +80,7 @@
       "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (add-cover) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "b6bb5b5798a68ac4",
+      "tested_source_hash": "be16a539f86f43cb",
       "last_tested_at": "2026-07-06",
       "last_test_method": "CUA-click"
     },
@@ -93,7 +93,7 @@
       "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (add-tags) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "b6bb5b5798a68ac4",
+      "tested_source_hash": "be16a539f86f43cb",
       "last_tested_at": "2026-07-06",
       "last_test_method": "CUA-click"
     },
@@ -106,7 +106,7 @@
       "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (create-event) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "b6bb5b5798a68ac4",
+      "tested_source_hash": "be16a539f86f43cb",
       "last_tested_at": "2026-07-06",
       "last_test_method": "CUA-click"
     },
@@ -119,7 +119,7 @@
       "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (bottom-nav) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "b6bb5b5798a68ac4",
+      "tested_source_hash": "be16a539f86f43cb",
       "last_tested_at": "2026-07-06",
       "last_test_method": "CUA-click"
     },
@@ -132,7 +132,7 @@
       "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (traffic-lights) (hash-migrated: screen-slice source hash)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "b6bb5b5798a68ac4",
+      "tested_source_hash": "be16a539f86f43cb",
       "last_tested_at": "2026-07-06",
       "last_test_method": "CUA-click"
     }
@@ -159,7 +159,7 @@
     }
   ],
   "notes": "CUA 2026-07-05: type pills, fields, Add cover/tags, Create event on seeded jazz form at 1200x760.",
-  "source_hash": "b6bb5b5798a68ac4",
+  "source_hash": "be16a539f86f43cb",
   "recent_screenshot_ref": "output/validation/macos-screens/createEvent.png",
   "ui_validation": {
     "result": "pass",

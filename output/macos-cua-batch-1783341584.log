@@ -1,0 +1,68 @@
+
+> likeminded@0.1.0 macos:validation-batch
+> ./script/macos_validation_batch.sh --cua-only
+
+Reusing validation API on :8787
+== sequential CUA (21 screens) ==
+
+-- CUA meetOverview --
+screen=meetOverview app=Likeminded
+1 'Meet' 
+2 'Circles' 
+3 'Communities' 
+4 'Profile' 
+5 'Saturday Community meetup available' Selected
+6 'Saturday Community meetup not available' Not selected
+7 'Sunday Circle meetup available' Selected
+8 'Sunday Circle meetup not available' Not selected
+9 'Join Reflective Builders meetup' 
+10 'Reflective Builders, Jun 28, host Gurusharan Gupta' 
+11 'Jazz Music, Jun 21, host Priya Shah' 
+12 'Saturday Jazz Listening Session, Jul 5, host Gurusharan Gupta' 
+13 'Reflective Builders, Jun 29, host Gurusharan Gupta' 
+14 'Jazz Music, Jun 22, host Priya Shah' 
+15 'Saturday Jazz Listening Session, Jul 5, host Gurusharan Gupta' 
+OK click 'Join Reflective Builders meetup'
+OK click 'Saturday Community meetup available'
+OK click 'Saturday Community meetup not available'
+OK click 'Sunday Circle meetup not available'
+OK click 'Sunday Circle meetup available'
+cua_click_summary ok=5 miss=0
+stamped macos/02-meet-overview.json: join-meetup, rsvp-sat-yes, rsvp-sat-no, rsvp-sun-yes, rsvp-sun-no, past-row source_hash=f89b65cf0c544efd
+
+-- CUA circlesRoom --
+screen=circlesRoom app=Likeminded
+1 'Meet' 
+2 'Circles' 
+3 'Communities' 
+4 'Profile' 
+5 'Open your circle The Quiet Builders' 
+6 'Request circle placement refresh' 
+7 'Browse all circles' 
+8 'Open Open Hearts circle' 18 members
+9 "Open The Thinkers' Room circle" 22 members
+10 'Open Visionaries circle' 16 members
+11 'Open Kindred Souls circle' 20 members
+12 'Open The Explorers circle' 14 members
+OK click 'Request circle placement refresh'
+MISSING: Open Reflective Builders circle
+cua_click_summary ok=1 miss=0
+stamped macos/03-circles-room.json: concern-btn, circle-card source_hash=e800411f65af57bd
+
+-- CUA circleDetail --
+screen=circleDetail app=Likeminded
+1 'Meet' 
+2 'Circles' 
+3 'Communities' 
+4 'Profile' 
+5 'Message circle' 
+6 'Circle options' 
+7 'About' Selected
+8 'Members' Not selected
+9 'Events' Not selected
+10 'Discussions' Not selected
+11 'Resources' Not selected
+12 'Upcoming circle meet row' 
+13 "What's a book that changed how you think?" 
+14 'View all' 
+OK click 'Message circle'

@@ -3,7 +3,8 @@
 # One app only: .build/macos/.../LikemindedMac.app (window title "Likeminded").
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+_SCRIPT_SELF="${BASH_SOURCE[0]:-$0}"
+ROOT="$(cd "$(dirname "$_SCRIPT_SELF")/.." && pwd)"
 export MACOS_CANONICAL_APP="$ROOT/.build/macos/Build/Products/Debug/LikemindedMac.app"
 export MACOS_CANONICAL_BUNDLE_ID="com.likeminded.mac"
 export MACOS_CANONICAL_SCHEME="LikemindedMac"

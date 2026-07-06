@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "label": "Start profile setup",
+  "element": 6,
+  "coords": {
+    "x": 2765.5,
+    "y": 681.0
+  },
+  "cursor_coords": {
+    "x": 205.5,
+    "y": 394.0
+  },
+  "move": {
+    "raw": "Agent cursor 'macos-cua' moved to (205.5, 394.0)."
+  },
+  "result": {
+    "effect": "unverifiable",
+    "path": "ax",
+    "verified": false
+  },
+  "method": "agent-cursor+driver-click"
+}

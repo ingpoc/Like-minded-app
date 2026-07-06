@@ -47,6 +47,20 @@ final class MacAppState: ObservableObject {
         let trimmed = placementConcern.trimmingCharacters(in: .whitespacesAndNewlines)
         return trimmed.isEmpty ? Self.defaultPlacementConcernCopy : trimmed
     }
+
+    /// Saved profile name from API — not dev-auth seed or Apple sign-in display name.
+    var profileDisplayName: String? {
+        guard let raw = profile?.basicInfo?.name.trimmingCharacters(in: .whitespacesAndNewlines), !raw.isEmpty else {
+            return nil
+        }
+        return raw
+    }
+
+    var profileFirstName: String? {
+        guard let name = profileDisplayName else { return nil }
+        return name.split(separator: " ").first.map(String.init) ?? name
+    }
+
     @Published var requestedSettingsPane: String?
 
     private var client: LikemindedAPIClient {
@@ -249,7 +263,8 @@ final class MacAppState: ObservableObject {
         city: String,
         gender: Gender?,
         dateOfBirth: String? = nil,
-        pincode: String? = nil
+        pincode: String? = nil,
+        interests: [String] = []
     ) async -> Bool {
         guard isSignedIn else { return false }
         let existing = profile?.basicInfo
@@ -260,14 +275,20 @@ final class MacAppState: ObservableObject {
             city: city.trimmingCharacters(in: .whitespacesAndNewlines),
             pincode: pincode ?? existing?.pincode
         )
+        let interestModels = interests.map { Interest(area: "general", label: $0, depth: .active) }
         do {
-            profile = try await client.updateProfile(basicInfo: update)
+            profile = try await client.updateProfile(basicInfo: update, interests: interestModels.isEmpty ? nil : interestModels)
             loadError = nil
             return true
         } catch {
             loadError = "Profile could not be saved."
             return false
         }
+    }
+
+    /// Refresh profile from API after local edits (e.g. tab switch) so UI shows saved basics.
+    func refreshProfileDisplay() async {
+        await loadCurrentProfile()
     }
 
     func loadCurrentPlacement() async {
