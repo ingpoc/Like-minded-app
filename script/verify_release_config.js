@@ -42,6 +42,7 @@ assertIncludes("apps/ios-macos/Info/LikemindedMac-Info.plist", read("apps/ios-ma
 
 const apiClient = read("apps/ios-macos/Sources/LikemindedApp/Data/LikemindedAPIClient.swift");
 assertIncludes("LikemindedAPIClient.swift", apiClient, "https://likeminded-api.onrender.com");
+assertIncludes("LikemindedAPIClient.swift", apiClient, "Authorization");
 assertIncludes("LikemindedAPIClient.swift", apiClient, "Bearer");
 
 const voiceClient = read("apps/ios-macos/Sources/LikemindedApp/Data/RealtimeVoiceClient.swift");
