@@ -207,29 +207,14 @@ screencapture -x -l "$(python3 -c 'import Quartz; \
 
 ## Post-parallel validation batch
 
-After **parallel** UI work across multiple ledger screens, do **not** run CUA or
-capture from multiple agents at once (port `:8787` and `LikemindedMac` instance
-fights produce empty AX trees and wrong screenshots).
+After parallel UI work, run **one** sequential pass (no concurrent CUA/capture):
 
-Use one orchestrated pass:
+```bash
+npm run macos:validation-batch              # full
+npm run macos:cua-reproof                   # stale-pass CUA only
 ```
-npm run macos:validation-batch              # full closeout
-npm run macos:validation-batch -- --stale-only --cua-only   # ledger stale_pass only
-npm run macos:cua-reproof                   # alias for stale-only CUA
-```
-Or: `./script/macos_validation_batch.sh` with the same flags.
 
-What it does:
-1. Sole owner of validation API on `:8787` (frees port if needed)
-2. `npm run reset:validation-data` once (skipped in `--cua-only` when API already up)
-3. `./script/verify_macos_screens.sh` — captures at 1200×760 (`--stale-only` limits screen list)
-4. Sequential `./script/macos_cua_screen.sh <screen>` per prototype screen
-5. `npm run ledger:stale` summary
-
-Flags: `--stale-only`, `--capture-only`, `--cua-only`, optional screen list, `--keep-api`.
-
-**Parallel OK:** disjoint `MacScreens.swift` MARK slices per `validation/macos/*.json`.  
-**Parallel NOT OK:** capture, CUA, `reset:validation-data` mid-flight.
+Sequential `macos_cua_screen.sh` per screen; uses `macos-cua.py` (`click-label` / `type-label`). Preflight: `macos_cua_preflight.sh`.
 
 ## Validation fixtures contract (`--mac-screen` deep links)
 
@@ -247,7 +232,7 @@ is set and API data is empty or validation needs plate copy.
 When adding a new deep-link screen to validation:
 1. Add fixture block if plate copy ≠ seeded API shape
 2. Document in ledger `intentional_differences`
-3. Wire `macos_cua_screen.sh` click labels to `accessibilityLabel` strings
+3. Wire `accessibilityLabel` strings to labels in `macos_cua_screen.sh` (see `~/.agents/skills/macos-cua/references/AppInstructions/LikemindedMac.md`)
 
 ## Per-screen validation checklist
 

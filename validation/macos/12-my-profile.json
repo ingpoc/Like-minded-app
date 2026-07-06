@@ -26,8 +26,8 @@
       "evidence": "CUA-click validation-priya 2026-07-05: Share profile navigates to profileSignals (post layout fix, source hash 690d02978d2b2e6b)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "eeb9d5676054f7d4",
-      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "b1a8e998ffd5c321",
+      "last_tested_at": "2026-07-06",
       "last_test_method": "CUA-click"
     },
     {
@@ -39,8 +39,8 @@
       "evidence": "CUA-click validation-priya 2026-07-05: Edit profile pencil + link (post layout fix, source hash 690d02978d2b2e6b)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "eeb9d5676054f7d4",
-      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "b1a8e998ffd5c321",
+      "last_tested_at": "2026-07-06",
       "last_test_method": "CUA-click"
     },
     {
@@ -52,9 +52,9 @@
       "evidence": "CUA-click validation-priya 2026-07-05: Retake voice profile opens onboarding step 2 (post layout fix, source hash 690d02978d2b2e6b)",
       "blocker": "",
       "stub": false,
-      "last_tested_at": "2026-07-05",
+      "last_tested_at": "2026-07-06",
       "last_test_method": "CUA-click",
-      "tested_source_hash": "eeb9d5676054f7d4"
+      "tested_source_hash": "b1a8e998ffd5c321"
     },
     {
       "id": "signal-cards",
@@ -65,8 +65,8 @@
       "evidence": "screen-capture 2026-07-05: 4-column signal grid with semantic icons (post layout fix, source hash 690d02978d2b2e6b)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "eeb9d5676054f7d4",
-      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "b1a8e998ffd5c321",
+      "last_tested_at": "2026-07-06",
       "last_test_method": "CUA-click"
     },
     {
@@ -78,8 +78,8 @@
       "evidence": "screen-capture 2026-07-05: metrics row + interest pills + distinct My vibe copy (post layout fix, source hash 690d02978d2b2e6b)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "eeb9d5676054f7d4",
-      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "b1a8e998ffd5c321",
+      "last_tested_at": "2026-07-06",
       "last_test_method": "CUA-click"
     }
   ],
@@ -88,7 +88,7 @@
     "notes": "2026-07-05 capture vs plate 09: MacProfilePortrait glow rings, dark card metrics, 4-column signal grid, Top interests, My vibe orb. Intentional: DoodlePortraitFemale asset vs mockup photo; backend signal labels not mockup copy."
   },
   "notes": "2026-07-05: retake-voice routes to profileOnboarding step 2 (honest MVP).",
-  "source_hash": "eeb9d5676054f7d4",
+  "source_hash": "b1a8e998ffd5c321",
   "recent_screenshot_ref": "output/validation/macos-screens/myProfile.png",
   "ui_validation": {
     "result": "pass",

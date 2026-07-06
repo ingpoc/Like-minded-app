@@ -21,11 +21,11 @@
       "label": "Bell icon (top-right)",
       "expected": "Opens NotificationsView sheet; badge shows unread",
       "result": "pass",
-      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (bell)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (bell)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "190064b2d223df8d",
-      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "6084a2409f18e3db",
+      "last_tested_at": "2026-07-06",
       "last_test_method": "screen-capture"
     },
     {
@@ -34,11 +34,11 @@
       "label": "Saturday Available",
       "expected": "POST rsvp community available=true",
       "result": "pass",
-      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (rsvp-sat-yes)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (rsvp-sat-yes)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "190064b2d223df8d",
-      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "6084a2409f18e3db",
+      "last_tested_at": "2026-07-06",
       "last_test_method": "screen-capture"
     },
     {
@@ -47,11 +47,11 @@
       "label": "Saturday Not",
       "expected": "POST rsvp community available=false",
       "result": "pass",
-      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (rsvp-sat-no)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (rsvp-sat-no)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "190064b2d223df8d",
-      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "6084a2409f18e3db",
+      "last_tested_at": "2026-07-06",
       "last_test_method": "screen-capture"
     },
     {
@@ -60,11 +60,11 @@
       "label": "Sunday Available",
       "expected": "POST rsvp circle available=true",
       "result": "pass",
-      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (rsvp-sun-yes)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (rsvp-sun-yes)",
       "blocker": "",
       "stub": false,
-      "last_tested_at": "2026-07-05",
-      "tested_source_hash": "190064b2d223df8d",
+      "last_tested_at": "2026-07-06",
+      "tested_source_hash": "6084a2409f18e3db",
       "last_test_method": "screen-capture"
     },
     {
@@ -73,11 +73,11 @@
       "label": "Sunday Not",
       "expected": "POST rsvp circle available=false",
       "result": "pass",
-      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (rsvp-sun-no)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (rsvp-sun-no)",
       "blocker": "",
       "stub": false,
-      "last_tested_at": "2026-07-05",
-      "tested_source_hash": "190064b2d223df8d",
+      "last_tested_at": "2026-07-06",
+      "tested_source_hash": "6084a2409f18e3db",
       "last_test_method": "screen-capture"
     },
     {
@@ -99,11 +99,11 @@
       "label": "Past meet row",
       "expected": "Pushes PastMeetDetailView",
       "result": "pass",
-      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (past-row)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (past-row)",
       "blocker": "",
       "stub": false,
-      "last_tested_at": "2026-07-05",
-      "tested_source_hash": "190064b2d223df8d",
+      "last_tested_at": "2026-07-06",
+      "tested_source_hash": "6084a2409f18e3db",
       "last_test_method": "screen-capture"
     }
   ],
@@ -112,6 +112,6 @@
     "notes": "2026-07-05 meetOverview parity refactor: RSVP → hero (first upcoming) → past meets; removed duplicate Upcoming-meets list + PreMeetTeaser cards to match macOS meetOverview + mockup plate 07. Hero shows meetHeader date + countdownUntil. Intentional iOS-only: notifications bell; vertical stack vs macOS side-by-side hero/RSVP; join gated until meetup time (macOS prototype navigates immediately). Fresh post-build capture pending LiveKit SPM rebuild."
   },
   "notes": "Cross-platform map: iOS MeetView ↔ macOS meetOverview (MacScreens.swift). validation-gurusharan primary user. macOS ref capture: output/validation/macos-screens/meetOverview.png @ 1200×760. iOS interim capture: output/validation/ios-screens/meet-gurusharan.png (pre-rebuild binary).",
-  "source_hash": "190064b2d223df8d",
+  "source_hash": "6084a2409f18e3db",
   "recent_screenshot_ref": "output/validation/ios-screens/meet-gurusharan.png"
 }

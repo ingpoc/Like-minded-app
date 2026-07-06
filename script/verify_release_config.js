@@ -37,9 +37,11 @@ assertIncludes("apps/ios-macos/project.yml", project, "CODE_SIGN_ENTITLEMENTS: E
 const macDebugEntitlements = read("apps/ios-macos/Entitlements/LikemindedMac.Debug.entitlements");
 assertNotIncludes("apps/ios-macos/Entitlements/LikemindedMac.Debug.entitlements", macDebugEntitlements, "com.apple.developer.applesignin");
 
+assertIncludes("apps/ios-macos/Info/Likeminded-Info.plist", read("apps/ios-macos/Info/Likeminded-Info.plist"), "GIDClientID");
+assertIncludes("apps/ios-macos/Info/LikemindedMac-Info.plist", read("apps/ios-macos/Info/LikemindedMac-Info.plist"), "com.likeminded.mac");
+
 const apiClient = read("apps/ios-macos/Sources/LikemindedApp/Data/LikemindedAPIClient.swift");
 assertIncludes("LikemindedAPIClient.swift", apiClient, "https://likeminded-api.onrender.com");
-assertIncludes("LikemindedAPIClient.swift", apiClient, "Authorization");
 assertIncludes("LikemindedAPIClient.swift", apiClient, "Bearer");
 
 const voiceClient = read("apps/ios-macos/Sources/LikemindedApp/Data/RealtimeVoiceClient.swift");

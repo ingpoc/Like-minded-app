@@ -137,6 +137,9 @@ After editing `project.yml`, run `cd apps/ios-macos && xcodegen generate` to reg
 | `npm run verify:release-config` | Zero-token TestFlight static config grader |
 | `npm run verify:goal` | Zero-token per-session goal contract grader |
 | `npm run verify:simulator-local` | Build simulator app, prove fresh auth gate, and prove DEBUG local auth plus deterministic transcript-to-placement |
+| `npm run verify:local-product-loop` | Phase 1 — iOS simulator + macOS bypass launch proof |
+| `npm run verify:google-auth-config` | Phase 2 — Google OAuth env + plist readiness |
+| `npm run deploy:render-preflight` | Phase 3 — Neon/Render env + optional `/health` check |
 | `./script/test_profile.sh "transcript"` | Test personality extraction + circle matching without UI |
 | `./script/build_and_run.sh` | Build, install, launch app in simulator |
 | `./script/build_and_run.sh --logs` | Same + stream app logs |

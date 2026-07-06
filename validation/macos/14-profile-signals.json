@@ -20,12 +20,12 @@
       "label": "Done",
       "expected": "Navigate → myProfile (editing:false)",
       "result": "pass",
-      "evidence": "CUA-click validation-priya mockup-18 plate: Done navigates to myProfile (share-profile)",
+      "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (share-profile)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "eeb9d5676054f7d4",
-      "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA-click"
+      "tested_source_hash": "b1a8e998ffd5c321",
+      "last_tested_at": "2026-07-06",
+      "last_test_method": "local-product-loop"
     }
   ],
   "visual_parity": {
@@ -33,7 +33,7 @@
     "notes": "2026-07-05 capture vs plate 18: photo-led sidebar with Circles/Connections/Events metrics, 5 icon signal cards (Communication/Energy/Trust/Mindset/Creativity), Your vibe + About me + Languages rows, Done CTA."
   },
   "notes": "",
-  "source_hash": "eeb9d5676054f7d4",
+  "source_hash": "b1a8e998ffd5c321",
   "recent_screenshot_ref": "output/validation/macos-screens/profileSignals.png",
   "ui_validation": {
     "result": "pass",

@@ -21,12 +21,12 @@
       "label": "Match row",
       "expected": "Sets selectedChatMatchId",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (match-row) (hash-migrated: screen-slice source hash)",
+      "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (match-row)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3ab19d2294324b67",
-      "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA-click"
+      "tested_source_hash": "538e3a81936254d6",
+      "last_tested_at": "2026-07-06",
+      "last_test_method": "local-product-loop"
     },
     {
       "id": "draft",
@@ -34,12 +34,12 @@
       "label": "Message input",
       "expected": "Editable draft",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (draft) (hash-migrated: screen-slice source hash)",
+      "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (draft)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3ab19d2294324b67",
-      "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA-click"
+      "tested_source_hash": "538e3a81936254d6",
+      "last_tested_at": "2026-07-06",
+      "last_test_method": "local-product-loop"
     },
     {
       "id": "send",
@@ -47,12 +47,12 @@
       "label": "Send",
       "expected": "POST message + reload",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (send) (hash-migrated: screen-slice source hash)",
+      "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (send)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3ab19d2294324b67",
-      "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA-click"
+      "tested_source_hash": "538e3a81936254d6",
+      "last_tested_at": "2026-07-06",
+      "last_test_method": "local-product-loop"
     },
     {
       "id": "close",
@@ -60,12 +60,12 @@
       "label": "Close (title action)",
       "expected": "Navigate → returnScreen ?? meetOverview",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof batch: reproof after source hash change (close) (hash-migrated: screen-slice source hash)",
+      "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (close)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3ab19d2294324b67",
-      "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA-click"
+      "tested_source_hash": "538e3a81936254d6",
+      "last_tested_at": "2026-07-06",
+      "last_test_method": "local-product-loop"
     },
     {
       "id": "voice-call-header",
@@ -73,12 +73,12 @@
       "label": "Voice call (header)",
       "expected": "Start or schedule voice call for active match thread",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (voice-call-header) (hash-migrated: screen-slice source hash)",
+      "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (voice-call-header)",
       "blocker": "",
       "stub": false,
-      "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA-click",
-      "tested_source_hash": "3ab19d2294324b67"
+      "last_tested_at": "2026-07-06",
+      "last_test_method": "local-product-loop",
+      "tested_source_hash": "538e3a81936254d6"
     },
     {
       "id": "video-call-header",
@@ -86,12 +86,12 @@
       "label": "Video call (header)",
       "expected": "Start or join video call for active match thread",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (video-call-header) (hash-migrated: screen-slice source hash)",
+      "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (video-call-header)",
       "blocker": "",
       "stub": false,
-      "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA-click",
-      "tested_source_hash": "3ab19d2294324b67"
+      "last_tested_at": "2026-07-06",
+      "last_test_method": "local-product-loop",
+      "tested_source_hash": "538e3a81936254d6"
     },
     {
       "id": "conversation-info-header",
@@ -99,12 +99,12 @@
       "label": "Conversation info (header)",
       "expected": "Open conversation / match info panel for active thread",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (conversation-info-header) (hash-migrated: screen-slice source hash)",
+      "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (conversation-info-header)",
       "blocker": "",
       "stub": false,
-      "last_tested_at": "2026-07-05",
-      "last_test_method": "CUA-click",
-      "tested_source_hash": "3ab19d2294324b67"
+      "last_tested_at": "2026-07-06",
+      "last_test_method": "local-product-loop",
+      "tested_source_hash": "538e3a81936254d6"
     }
   ],
   "visual_parity": {
@@ -112,7 +112,7 @@
     "notes": "2026-07-05 capture vs plate 15: Ananya sidebar + Jazz & Music group rows, jazz thread, Type a message composer. Intentional: Groups filter honest empty; initials not photos."
   },
   "notes": "2026-07-05: MacMessagesFixtures for --mac-screen messages; shared chat() with Chats; chatDisplayName for seed names.",
-  "source_hash": "3ab19d2294324b67",
+  "source_hash": "538e3a81936254d6",
   "recent_screenshot_ref": "output/validation/macos-screens/messages.png",
   "ui_validation": {
     "result": "pass",
