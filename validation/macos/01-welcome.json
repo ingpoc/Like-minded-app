@@ -2,9 +2,13 @@
   "screen": "Welcome / Sign in with Apple",
   "platform": "macos",
   "source_files": [
-    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (welcome)"
+    "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (welcome)",
+    "apps/ios-macos/Sources/Shared/SocialAuthButtonsView.swift",
+    "apps/ios-macos/Sources/Shared/AuthAppleSignInButton.swift",
+    "apps/ios-macos/Sources/Shared/AuthBrandMark.swift",
+    "apps/ios-macos/Sources/Shared/AuthTermsFooter.swift"
   ],
-  "mockup_ref": "mockups/macos/01-04-auth-meet-circles-profile.png",
+  "mockup_ref": "mockups/macos/23-auth-login-theme-consistent.png",
   "mockup_missing": false,
   "entry_points": [
     "App launch when not signed in"
@@ -24,19 +28,19 @@
       "stub": false
     }
   ],
-  "notes": "2026-07-05: sign-in-apple is blocked on infra, not a static row. UI control is present; runtime proof waits on TestFlight/Apple credentials.",
+  "notes": "2026-07-06: welcome aligned to mockups/macos/23-auth-login-theme-consistent.png. sign-in-apple blocked on infra.",
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-04 capture vs plate 01: Likeminded wordmark, hero copy, three promise rows, Sign in with Apple, MacOrb art, terms footer. Unsigned capture (no dev-auth bypass). Intentional: promise subtitles slightly shorter than montage."
+    "notes": "2026-07-06 vs mockups/macos/23-auth-login-theme-consistent.png: When you meet headline, subhead, shorter feature copy, black Apple button, white bordered social auth, Terms footer, MacOrb. Intentional: bottom nav hidden while signed out; simplified brand marks."
   },
-  "source_hash": "094d399492036ad0",
+  "source_hash": "04e6b0b38d97244a",
   "recent_screenshot_ref": "output/validation/macos-screens/welcome.png",
   "ui_validation": {
     "result": "pass",
-    "reference_mockup_ref": "mockups/macos/01-04-auth-meet-circles-profile.png",
+    "reference_mockup_ref": "mockups/macos/23-auth-login-theme-consistent.png",
     "recent_screenshot_ref": "output/validation/macos-screens/welcome.png",
     "design_ref": "DESIGN.md",
-    "last_compared_at": "2026-07-04",
+    "last_compared_at": "2026-07-06",
     "validated": [
       "latest screenshot exists and was compared with reference mockup",
       "DESIGN.md design language checked: warm canvas, calm editorial hierarchy, card system, green accents, bottom glass navigation",
@@ -47,6 +51,6 @@
     "requires_implementation": [],
     "requires_fixing": [],
     "intentional_differences": [],
-    "notes": "2026-07-04 capture vs plate 01: Likeminded wordmark, hero copy, three promise rows, Sign in with Apple, MacOrb art, terms footer. Unsigned capture (no dev-auth bypass). Intentional: promise subtitles slightly shorter than montage."
+    "notes": "2026-07-06 vs mockups/macos/23-auth-login-theme-consistent.png: theme-consistent welcome layout with Terms footer and white bordered social buttons."
   }
 }

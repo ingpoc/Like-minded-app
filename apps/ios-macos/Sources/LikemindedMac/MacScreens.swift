@@ -152,6 +152,7 @@ struct MacScreenView: View {
     let screen: MacPrototypeScreen
     @ObservedObject var appState: MacAppState
     var navigate: ((MacPrototypeScreen) -> Void)?
+    @State private var showWelcomePrivacyPolicy = false
     @State private var showSignOutConfirm = false
     @State private var selectedCommunityId: String?
     @State private var selectedRecapMeetingId: String?
@@ -379,40 +380,29 @@ struct MacScreenView: View {
                     .font(.system(size: 25, weight: .semibold, design: .serif))
                     .foregroundStyle(MacPalette.accent)
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Meet the right people.")
+                    Text("When you meet, it matters.")
                         .font(MacType.title)
                         .foregroundStyle(MacPalette.ink)
-                    Text("In the right room.")
-                        .font(MacType.title)
-                        .foregroundStyle(MacPalette.ink)
-                        .frame(maxWidth: 420, alignment: .leading)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Text("AI helps you meet the right people in the right rooms.")
+                        .font(MacType.body)
+                        .foregroundStyle(MacPalette.muted)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 VStack(alignment: .leading, spacing: 16) {
-                    featureRow(icon: "waveform", title: "Voice profile", detail: "AI voice interview that understands you deeply.", accessibilityLabel: "Voice profile")
-                    featureRow(icon: "person.crop.rectangle", title: "Private by design", detail: "Your profile is private and under your control.", accessibilityLabel: "Private by design")
-                    featureRow(icon: "person.3", title: "Circle placement", detail: "We place you in the right circle and communities.", accessibilityLabel: "Circle placement")
+                    featureRow(icon: "waveform", title: "Voice profile", detail: "Speak naturally. We understand you.", accessibilityLabel: "Voice profile")
+                    featureRow(icon: "shield.lefthalf.filled", title: "Private by design", detail: "Your data is yours. Always.", accessibilityLabel: "Private by design")
+                    featureRow(icon: "person.3", title: "Circle placement", detail: "We place you where you'll belong.", accessibilityLabel: "Circle placement")
                 }
                 .padding(.vertical, 8)
-                Button {
+                AuthAppleSignInButton(style: .black, isAuthenticating: appState.isAuthenticating) {
                     Task { await appState.signInWithApple(using: appleSignInController) }
-                } label: {
-                    HStack(spacing: 10) {
-                        Image(systemName: "applelogo")
-                            .font(.title3)
-                        Text(appState.isAuthenticating ? "Signing in" : "Sign in with Apple")
-                            .font(MacType.button)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .background(.black, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                    .foregroundColor(.white)
                 }
-                .buttonStyle(.plain)
-                .disabled(appState.isAuthenticating)
-                .accessibilityLabel("Sign in with Apple")
 
                 SocialAuthButtonsView(
                     isAuthenticating: appState.isAuthenticating,
+                    titleColor: MacPalette.ink,
+                    borderColor: MacPalette.line,
                     onGoogleSignIn: { Task { await appState.signInWithGoogle() } },
                     onMetaMaskSignIn: { Task { await appState.signInWithWallet(.metamask, controller: WalletSignInController()) } },
                     onSolflareSignIn: { Task { await appState.signInWithWallet(.solflare, controller: WalletSignInController()) } }
@@ -429,10 +419,11 @@ struct MacScreenView: View {
                         .foregroundStyle(MacPalette.clay)
                 }
 
-                Label("Your data is private and never shared.", systemImage: "lock")
-                    .font(MacType.small)
-                    .foregroundStyle(MacPalette.muted)
-                    .frame(maxWidth: .infinity, alignment: .center)
+                AuthTermsFooter(
+                    accent: MacPalette.accent,
+                    muted: MacPalette.muted,
+                    onPrivacyTap: { showWelcomePrivacyPolicy = true }
+                )
             }
             .frame(width: 420)
             Spacer()
@@ -440,6 +431,13 @@ struct MacScreenView: View {
                 .frame(width: 430, height: 360)
         }
         .frame(maxWidth: .infinity, minHeight: 560, alignment: .topLeading)
+        .sheet(isPresented: $showWelcomePrivacyPolicy) {
+            ScrollView {
+                macPrivacyPolicyContent
+                    .padding(24)
+            }
+            .frame(minWidth: 520, minHeight: 420)
+        }
     }
 
     // MARK: - 2. meetOverview

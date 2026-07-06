@@ -2,6 +2,8 @@ import SwiftUI
 
 struct SocialAuthButtonsView: View {
     let isAuthenticating: Bool
+    var titleColor: Color = Color(red: 0.063, green: 0.165, blue: 0.145)
+    var borderColor: Color = Color.black.opacity(0.08)
     let onGoogleSignIn: () -> Void
     let onMetaMaskSignIn: () -> Void
     let onSolflareSignIn: () -> Void
@@ -10,30 +12,27 @@ struct SocialAuthButtonsView: View {
         VStack(spacing: 12) {
             AuthProviderButton(
                 title: "Continue with Google",
-                icon: "g.circle.fill",
-                foreground: .primary,
-                background: Color.white,
-                border: Color.black.opacity(0.08),
+                brand: .google,
+                titleColor: titleColor,
+                borderColor: borderColor,
                 isAuthenticating: isAuthenticating,
                 action: onGoogleSignIn
             )
 
             AuthProviderButton(
                 title: "Continue with MetaMask",
-                icon: "wallet.pass.fill",
-                foreground: .white,
-                background: Color(red: 0.95, green: 0.55, blue: 0.17),
-                border: .clear,
+                brand: .metamask,
+                titleColor: titleColor,
+                borderColor: borderColor,
                 isAuthenticating: isAuthenticating,
                 action: onMetaMaskSignIn
             )
 
             AuthProviderButton(
                 title: "Continue with Solflare",
-                icon: "sun.max.fill",
-                foreground: .white,
-                background: Color(red: 0.98, green: 0.45, blue: 0.09),
-                border: .clear,
+                brand: .solflare,
+                titleColor: titleColor,
+                borderColor: borderColor,
                 isAuthenticating: isAuthenticating,
                 action: onSolflareSignIn
             )
@@ -43,28 +42,27 @@ struct SocialAuthButtonsView: View {
 
 private struct AuthProviderButton: View {
     let title: String
-    let icon: String
-    let foreground: Color
-    let background: Color
-    let border: Color
+    let brand: AuthBrandMark
+    let titleColor: Color
+    let borderColor: Color
     let isAuthenticating: Bool
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             HStack(spacing: 10) {
-                Image(systemName: icon)
-                    .font(.title3)
+                brand.view
+                    .frame(width: 22, height: 22)
                 Text(title)
                     .font(.system(size: 17, weight: .semibold))
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
-            .foregroundStyle(foreground)
-            .background(background, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .foregroundStyle(titleColor)
+            .background(Color.white, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .stroke(border, lineWidth: border == .clear ? 0 : 1)
+                    .stroke(borderColor, lineWidth: 1)
             )
         }
         .buttonStyle(.plain)

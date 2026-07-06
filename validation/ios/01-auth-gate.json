@@ -4,10 +4,13 @@
   "source_files": [
     "apps/ios-macos/Sources/LikemindedApp/Views/AuthGateView.swift",
     "apps/ios-macos/Sources/Shared/SocialAuthButtonsView.swift",
+    "apps/ios-macos/Sources/Shared/AuthAppleSignInButton.swift",
+    "apps/ios-macos/Sources/Shared/AuthBrandMark.swift",
+    "apps/ios-macos/Sources/Shared/AuthTermsFooter.swift",
     "apps/ios-macos/Sources/Shared/GoogleSignInSupport.swift",
     "apps/ios-macos/Sources/Shared/WalletSignInSupport.swift"
   ],
-  "mockup_ref": "mockups/ios/27-auth-login.png",
+  "mockup_ref": "mockups/ios/28-auth-login-theme-consistent.png",
   "mockup_missing": false,
   "recent_screenshot_ref": "output/validation/ios-screens/auth-gate.png",
   "entry_points": [
@@ -84,8 +87,8 @@
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-05 capture output/validation/ios-screens/auth-gate.png vs mockups/ios/27-auth-login.png: Likeminded wordmark, Meet the right people / In the right room hero, three promise rows (Voice profile / Private by design / Circle placement), Sign in with Apple + Google/MetaMask/Solflare, lock footer. Intentional: SF Symbol provider icons vs mockup brand logos. macOS parity copy aligned in MacScreens welcome (2026-07-05); macOS recapture blocked by parallel LikemindedMac workers — rerun welcome capture solo."
+    "notes": "2026-07-06 vs mockups/ios/28-auth-login-theme-consistent.png: green Sign in with Apple, white bordered Google/MetaMask/Solflare with brand marks, lock icon on Private by design, privacy lock footer. Intentional: simplified vector brand marks vs mockup raster logos."
   },
-  "notes": "Cross-platform map: iOS 01-auth-gate → macOS --mac-screen welcome (+ --likeminded-validation-welcome for signed-in layout hold). Launch unsigned: --likeminded-reset-auth-session only (iOS simctl / macOS open). Dev user: validation-gurusharan / Gurusharan Gupta.",
-  "source_hash": "583ad0c62cb62278"
+  "notes": "Cross-platform map: iOS 01-auth-gate → macOS --mac-screen welcome (mockup 23). iOS uses theme-consistent mockup 28; macOS welcome uses mockup 23 headline/footer.",
+  "source_hash": "1fc8f5744bb26386"
 }

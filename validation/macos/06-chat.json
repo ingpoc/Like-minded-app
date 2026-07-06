@@ -116,7 +116,7 @@
     "notes": "2026-07-05 capture vs plate 05: Arjun/Meera/Rohan/Ananya/Vikram roster, jazz thread, Message Arjun composer, search/filters, header call chrome. Validation fixtures via MacChatFixtures when API roster empty."
   },
   "notes": "2026-07-05: mockup plate 05 roster + jazz thread; chatDisplayName maps seed names; MacChatFixtures for --mac-screen chat deep-link.",
-  "source_hash": "85e769a83e8def9d",
+  "source_hash": "a144f70ec42818ea",
   "recent_screenshot_ref": "output/validation/macos-screens/chat.png",
   "ui_validation": {
     "result": "pass",
