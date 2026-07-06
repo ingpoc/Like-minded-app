@@ -504,6 +504,7 @@ struct PastMeetDetailView: View {
         }
         .navigationTitle("Recap")
         .navigationBarTitleDisplayMode(.inline)
+        .prototypeBackNavigation(label: "Back to meet")
         .sheet(isPresented: $showingSoulmateSelection) {
             SoulmateSelectionDialog(meetingId: meeting.id)
                 .environmentObject(appState)
@@ -598,19 +599,19 @@ private struct RecapConnectionRow: View {
 struct GroupVideoCallView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var appState: PrototypeAppState
-    @StateObject private var room = Room()
-    @State private var error: String?
-    @State private var isMuted = false
-    @State private var usesPrototypeRoom = false
+    @StateObject private var liveKitSession = LiveKitMeetSession()
     @State private var showingParticipants = false
     let meeting: Meeting
 
     private var isLive: Bool {
-        usesPrototypeRoom || room.connectionState == .connected
+        liveKitSession.isConnected
     }
 
     private var participantCount: Int {
-        max(meeting.groupSize, callParticipants.count)
+        if liveKitSession.isConnected {
+            return max(meeting.groupSize, liveKitSession.room.remoteParticipants.count + 1)
+        }
+        return max(meeting.groupSize, callParticipants.count)
     }
 
     private var callParticipants: [String] {
@@ -653,7 +654,7 @@ struct GroupVideoCallView: View {
                 .padding(.top, 12)
 
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 4) {
-                    if usesPrototypeRoom {
+                    if liveKitSession.isPrototypeFallback {
                         ForEach(Array(callParticipants.enumerated()), id: \.offset) { index, name in
                             VideoTile(
                                 name: name,
@@ -663,10 +664,10 @@ struct GroupVideoCallView: View {
                         }
                     } else {
                         VideoTile(name: "You", index: 0)
-                        ForEach(Array(room.remoteParticipants.values.enumerated()), id: \.element.identity) { index, participant in
+                        ForEach(Array(liveKitSession.room.remoteParticipants.values.enumerated()), id: \.element.identity) { index, participant in
                             VideoTile(name: String(describing: participant.identity), index: index + 1)
                         }
-                        ForEach(room.remoteParticipants.count + 1..<max(meeting.groupSize, 1), id: \.self) { index in
+                        ForEach(liveKitSession.room.remoteParticipants.count + 1..<max(meeting.groupSize, 1), id: \.self) { index in
                             VideoTile(name: "Seat \(index + 1)", index: index)
                         }
                     }
@@ -675,8 +676,8 @@ struct GroupVideoCallView: View {
                 .accessibilityLabel("Participant tiles grid")
                 .accessibilityValue("\(participantCount) participants")
 
-                if let error, !usesPrototypeRoom {
-                    Text(error)
+                if let error = liveKitSession.errorMessage, liveKitSession.isPrototypeFallback {
+                    Text("Live room unavailable: \(error)")
                         .font(PrototypeTypography.metadata)
                         .foregroundStyle(PrototypePalette.amber)
                         .padding(.horizontal, 16)
@@ -686,23 +687,16 @@ struct GroupVideoCallView: View {
 
                 HStack(spacing: 42) {
                     Button {
-                        Task {
-                            isMuted.toggle()
-                            if !usesPrototypeRoom {
-                                try? await room.localParticipant.setMicrophone(enabled: !isMuted)
-                            }
-                        }
+                        Task { await liveKitSession.setMuted(!liveKitSession.isMuted) }
                     } label: {
-                        CallControl(icon: isMuted ? "mic.slash.fill" : "mic.fill", title: isMuted ? "Muted" : "Mute")
+                        CallControl(icon: liveKitSession.isMuted ? "mic.slash.fill" : "mic.fill", title: liveKitSession.isMuted ? "Muted" : "Mute")
                     }
                     .buttonStyle(.plain)
-                    .accessibilityLabel(isMuted ? "Unmute microphone" : "Mute microphone")
+                    .accessibilityLabel(liveKitSession.isMuted ? "Unmute microphone" : "Mute microphone")
 
                     Button {
-                        if usesPrototypeRoom {
-                            dismiss()
-                        } else {
-                            Task { await room.disconnect() }
+                        Task {
+                            await liveKitSession.disconnect()
                             dismiss()
                         }
                     } label: {
@@ -772,21 +766,17 @@ struct GroupVideoCallView: View {
             await connectToRoom()
         }
         .onDisappear {
-            if !usesPrototypeRoom {
-                Task { await room.disconnect() }
-            }
+            Task { await liveKitSession.disconnect() }
         }
     }
 
     private func connectToRoom() async {
         do {
             let token = try await appState.joinMeeting(id: meeting.id)
-            try await room.connect(url: token.url, token: token.token)
-            try await room.localParticipant.setCamera(enabled: true)
-            try await room.localParticipant.setMicrophone(enabled: true)
+            await liveKitSession.connect(url: token.url, token: token.token)
         } catch {
-            usesPrototypeRoom = true
-            self.error = nil
+            await liveKitSession.connect(url: "", token: "")
+            liveKitSession.errorMessage = error.localizedDescription
         }
     }
 }

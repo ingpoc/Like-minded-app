@@ -397,19 +397,10 @@ struct CircleDetailView: View {
             .frame(height: 280)
             .matchedGeometryEffect(id: circle.id, in: namespace)
 
-            Button {
+            PrototypeBackButton(label: "Back to circles", style: .overlay) {
                 dismiss()
-            } label: {
-                Image(systemName: "chevron.left")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(.white)
-                    .frame(width: 44, height: 44)
-                    .background(Color.black.opacity(0.28))
-                    .clipShape(Circle())
             }
-            .buttonStyle(.plain)
             .padding(16)
-            .accessibilityLabel("Back to circles")
 
             Button {
                 showCircleOptions = true
@@ -1514,6 +1505,7 @@ struct CommunityMembersView: View {
             }
         }
         .toolbar(.hidden, for: .navigationBar)
+        .prototypeBackNavigation(label: "Back to community")
         .task(id: community.id) {
             await appState.fetchCommunityMembers(id: community.id)
         }
@@ -1716,6 +1708,7 @@ struct CreateEventView: View {
         .background(PrototypePalette.background.ignoresSafeArea())
         .navigationTitle("Create event")
         .navigationBarTitleDisplayMode(.inline)
+        .prototypeBackNavigation(label: "Cancel")
     }
 
     private var eventPreviewCoverAsset: String {

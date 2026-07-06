@@ -760,7 +760,6 @@ private struct VoiceWaveformBars: View {
 
 struct ProfileEditView: View {
     @EnvironmentObject private var appState: PrototypeAppState
-    @Environment(\.dismiss) private var dismiss
 
     private var profileTraits: [ProfileTraitRowModel] {
         let bigFive = appState.slice?.signals?.bigFive ?? ProfileSignals.BigFive()
@@ -828,20 +827,13 @@ struct ProfileEditView: View {
                         .foregroundStyle(PrototypePalette.ink)
                         .fixedSize(horizontal: false, vertical: true)
                 }
-
-                Button {
-                    dismiss()
-                } label: {
-                    PrimaryActionButton(title: "Back to profile", systemImage: "chevron.left")
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Back to profile")
             }
             .padding(20)
         }
         .background(PrototypePalette.background.ignoresSafeArea())
         .navigationTitle("Who you are")
         .navigationBarTitleDisplayMode(.inline)
+        .prototypeBackNavigation(label: "Back to profile")
     }
 }
 
@@ -878,5 +870,6 @@ struct ProfileSignalsView: View {
             .accessibilityLabel("Done")
         }
         .toolbar(.hidden, for: .navigationBar)
+        .prototypeBackNavigation()
     }
 }

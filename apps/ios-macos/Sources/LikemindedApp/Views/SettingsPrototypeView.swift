@@ -98,6 +98,7 @@ struct SettingsPrototypeView: View {
         .background(PrototypePalette.background.ignoresSafeArea())
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
+        .prototypeBackNavigation()
         .task {
             await appState.fetchSoulmateStatus()
         }
@@ -296,6 +297,7 @@ private struct SoulmateDiscoveryPreferencesView: View {
         .background(PrototypePalette.background.ignoresSafeArea())
         .navigationTitle("Discovery preferences")
         .navigationBarTitleDisplayMode(.inline)
+        .prototypeBackNavigation()
         .task {
             await appState.fetchSoulmateStatus()
         }
