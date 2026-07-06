@@ -2,7 +2,11 @@
   "schema_version": 1,
   "status": "pending",
   "purpose": "Per-session execution goal. Copy this file to goal.json at session start, set the current goal, and keep graders/validation/agent routing current when files or commands change.",
-  "goal": "Reproof stale iOS/macOS ledger controls after validation closeout; commit uncommitted slice.",
+  "goal": "Wave 2 reproof: restamp stale iOS/macOS ledger controls (sequential).",
+  "route_contract": {
+    "lane": "wave2-reproof-sequential",
+    "first_command": "npm run validation:wave2-reproof"
+  },
   "ultimate_goal_source": "GOAL.md",
   "progress_source": "PROGRESS.md",
   "workflow_refs": [

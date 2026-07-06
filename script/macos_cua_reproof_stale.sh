@@ -7,7 +7,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 source "$ROOT/script/macos_canonical_app.sh"
 
 METHOD="${METHOD:-CUA}"
-EVIDENCE_PREFIX="${EVIDENCE_PREFIX:-CUA ${LIKEMINDED_VALIDATION_USER:-validation-priya} $(date -u +%Y-%m-%d)}"
+EVIDENCE_PREFIX="${EVIDENCE_PREFIX:-CUA ${LIKEMINDED_VALIDATION_USER:-validation-gurusharan} $(date -u +%Y-%m-%d)}"
 SCREENS=(
   meetOverview
   circlesRoom
@@ -54,8 +54,8 @@ failed_screens=""
 for screen in "${SCREENS[@]}"; do
   echo ""
   echo "== reproof $screen =="
-  if LIKEMINDED_VALIDATION_USER="${LIKEMINDED_VALIDATION_USER:-validation-priya}" \
-     LIKEMINDED_VALIDATION_NAME="${LIKEMINDED_VALIDATION_NAME:-Priya Shah}" \
+  if LIKEMINDED_VALIDATION_USER="${LIKEMINDED_VALIDATION_USER:-validation-gurusharan}" \
+     LIKEMINDED_VALIDATION_NAME="${LIKEMINDED_VALIDATION_NAME:-Gurusharan Gupta}" \
      "$ROOT/script/macos_cua_screen.sh" "$screen"; then
     ok=$((ok + 1))
   else

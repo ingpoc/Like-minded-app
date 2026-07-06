@@ -53,20 +53,25 @@ build_app() {
 }
 
 install_and_launch() {
-  xcrun simctl uninstall booted "$BUNDLE_ID" >/dev/null 2>&1 || true
-  xcrun simctl install booted "$APP_PATH"
-  xcrun simctl launch booted "$BUNDLE_ID"
+  xcrun simctl uninstall "$SIMULATOR_ID" "$BUNDLE_ID" >/dev/null 2>&1 || true
+  xcrun simctl install "$SIMULATOR_ID" "$APP_PATH"
+  xcrun simctl launch "$SIMULATOR_ID" "$BUNDLE_ID"
+}
+
+install_only() {
+  xcrun simctl uninstall "$SIMULATOR_ID" "$BUNDLE_ID" >/dev/null 2>&1 || true
+  xcrun simctl install "$SIMULATOR_ID" "$APP_PATH"
 }
 
 stream_logs() {
-  xcrun simctl spawn booted log stream --level debug --style compact --predicate "process == \"$APP_NAME\""
+  xcrun simctl spawn "$SIMULATOR_ID" log stream --level debug --style compact --predicate "process == \"$APP_NAME\""
 }
 
 verify_launch() {
   local launch_output
-  xcrun simctl uninstall booted "$BUNDLE_ID" >/dev/null 2>&1 || true
-  xcrun simctl install booted "$APP_PATH"
-  launch_output="$(xcrun simctl launch booted "$BUNDLE_ID" --likeminded-reset-auth-session)"
+  xcrun simctl uninstall "$SIMULATOR_ID" "$BUNDLE_ID" >/dev/null 2>&1 || true
+  xcrun simctl install "$SIMULATOR_ID" "$APP_PATH"
+  launch_output="$(xcrun simctl launch "$SIMULATOR_ID" "$BUNDLE_ID" --likeminded-reset-auth-session)"
   echo "$launch_output"
 }
 
@@ -77,6 +82,11 @@ case "$MODE" in
   run)
     build_app
     install_and_launch
+    ;;
+  build)
+    build_app
+    install_only
+    echo "SIMULATOR_ID=$SIMULATOR_ID"
     ;;
   --debug|debug)
     build_app
@@ -97,7 +107,7 @@ case "$MODE" in
     verify_launch
     ;;
   *)
-    echo "usage: $0 [run|--debug|--logs|--telemetry|--verify]" >&2
+    echo "usage: $0 [run|build|--debug|--logs|--telemetry|--verify]" >&2
     exit 2
     ;;
 esac

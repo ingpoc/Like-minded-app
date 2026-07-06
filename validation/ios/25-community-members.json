@@ -19,9 +19,12 @@
       "label": "Search members",
       "expected": "Filters roster by name/gender",
       "result": "pass",
-      "evidence": "2026-07-05 iOS macOS parity P0: CommunityMembersView search field filters filteredMembers.",
+      "evidence": "2026-07-05 capture validation-gurusharan: CommunityMembersView search filters filteredMembers by name/gender; matches macOS communityMembers search.",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "0a12e738c5eab2cb",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "capture+parity"
     },
     {
       "id": "filter-pills",
@@ -29,9 +32,12 @@
       "label": "Member count label",
       "expected": "Header subtitle and roster badge use same loaded member count from API",
       "result": "pass",
-      "evidence": "2026-07-05 iOS macOS parity P0: memberCount drives ScreenContainer subtitle and roster badge.",
+      "evidence": "2026-07-05 capture: subtitle and roster badge both show 12 members from jazz-music API (same count as macOS).",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "0a12e738c5eab2cb",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "capture+parity"
     },
     {
       "id": "member-rows",
@@ -39,15 +45,40 @@
       "label": "Member rows",
       "expected": "Display-only roster from API",
       "result": "pass",
-      "evidence": "2026-07-05 iOS macOS parity P0: ForEach filteredMembers from fetchCommunityMembers.",
+      "evidence": "2026-07-05 capture: roster Priya Shah, Rohan Mehta, Arjun Nair, Aditya Verma, Karan Singh, Zara Khan… matches macOS communityMembers.png and GET /v1/communities/jazz-music/members (12).",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "0a12e738c5eab2cb",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "capture+parity"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-05 mobile layout mirrors macOS communityMembers controls with stacked FeatureCards."
+    "notes": "2026-07-05 iOS capture vs mockups/ios/17-20-profile-community-settings.png + macOS plate 13: stacked FeatureCards roster with search, 12-member badge, theme·gender role line, activity hints, online dots. Intentional: no macOS sidebar nav; initial-circle avatars not DoodlePortrait; mobile omits desktop filter pills (All/Active now/Most active)."
   },
-  "notes": "Parity with validation/macos/09-community-members.json.",
-  "source_hash": ""
+  "notes": "Parity with validation/macos/09-community-members.json. iOS validation capture uses LIKEMINDED_VALIDATION_SCREEN=communityMembers UserDefaults when simctl launch args are unreliable.",
+  "source_hash": "0a12e738c5eab2cb",
+  "recent_screenshot_ref": "output/validation/ios-screens/25-community-members.png",
+  "ui_validation": {
+    "result": "pass",
+    "reference_mockup_ref": "mockups/ios/17-20-profile-community-settings.png",
+    "recent_screenshot_ref": "output/validation/ios-screens/25-community-members.png",
+    "design_ref": "DESIGN.md",
+    "last_compared_at": "2026-07-05",
+    "validated": [
+      "latest screenshot exists and was compared with reference mockup",
+      "member roster matches macOS communityMembers capture and jazz-music API seed",
+      "control behavior tracked separately in controls[]"
+    ],
+    "pending_validation": [],
+    "requires_implementation": [],
+    "requires_fixing": [],
+    "intentional_differences": [
+      "Stacked FeatureCards vs macOS sidebar+roster split",
+      "Initial-circle avatars instead of doodle portraits",
+      "No desktop activity filter pills; mobile shows display-only activity labels"
+    ],
+    "notes": "Cross-platform roster parity confirmed with validation-gurusharan on jazz-music (12 members)."
+  }
 }

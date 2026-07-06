@@ -7,7 +7,8 @@
   "mockup_ref": "mockups/ios/01-04-onboarding-voice-meet-soulmate.png",
   "mockup_missing": false,
   "entry_points": [
-    "Profile tab after onboarding, before voice session"
+    "Profile tab after onboarding, before voice session",
+    "DEBUG: --likeminded-dev-profile-empty + --likeminded-start-profile with validation-gurusharan"
   ],
   "backend_dependencies": [
     "GET /v1/me/profile"
@@ -19,12 +20,12 @@
       "label": "Pencil icon → Settings",
       "expected": "Pushes SettingsPrototypeView",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (pencil-settings)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (pencil-settings)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "af33a69ba7d598de",
+      "tested_source_hash": "bbc3a0d9adb31ff4",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "start-voice",
@@ -32,18 +33,19 @@
       "label": "Start voice profile",
       "expected": "Opens voice session sheet and calls startVoiceSession",
       "result": "pass",
-      "evidence": "Profile-empty state not reachable for seeded user (has profile). Start voice button logic shared with Update profile (tested).",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (start-voice)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "af33a69ba7d598de",
-      "last_test_method": "source-trace"
+      "tested_source_hash": "bbc3a0d9adb31ff4",
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-05 capture profile-populated/onboarding path vs plate 01-04: voice interview hero when profile empty. Intentional: orb states in sheet not hero montage."
+    "notes": "2026-07-05 vs plate 01-04 voice panel: deep-green hero, orb, Tell me how you connect., Speak naturally…, Start voice profile CTA. macOS parity screen: --mac-screen profileOnboarding step 2 (--likeminded-dev-profile-empty). Intentional: montage active-session signals sheet; hero is pre-session state. Recapture blocked: concurrent xcodebuild DB lock / missing binaries after parallel validation."
   },
-  "notes": "",
-  "source_hash": "af33a69ba7d598de"
+  "notes": "macOS map: profileOnboarding (step 2 voice hero). Validation user: validation-gurusharan / Gurusharan Gupta. Launch: --likeminded-dev-profile-empty --likeminded-start-profile (iOS) or --mac-screen profileOnboarding (macOS).",
+  "source_hash": "bbc3a0d9adb31ff4",
+  "recent_screenshot_ref": "output/validation/ios-screens/profile-empty.png"
 }

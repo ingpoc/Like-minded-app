@@ -19,7 +19,15 @@ struct WaveLines: Shape {
 struct ScreenContainer<Content: View>: View {
     let title: String
     let subtitle: String
+    var caption: String?
     @ViewBuilder var content: Content
+
+    init(title: String, subtitle: String, caption: String? = nil, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.subtitle = subtitle
+        self.caption = caption
+        self.content = content()
+    }
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -35,6 +43,14 @@ struct ScreenContainer<Content: View>: View {
                         .frame(maxWidth: 320, alignment: .leading)
                         .lineLimit(3)
                         .fixedSize(horizontal: false, vertical: true)
+
+                    if let caption, !caption.isEmpty {
+                        Text(caption)
+                            .font(PrototypeTypography.body)
+                            .foregroundStyle(PrototypePalette.subink)
+                            .frame(maxWidth: 320, alignment: .leading)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
                 }
 
                 content
@@ -421,6 +437,127 @@ extension View {
                 scale: scale
             )
         )
+    }
+}
+
+struct PrototypeAgeRangeSlider: View {
+    @Binding var minAge: Int
+    @Binding var maxAge: Int
+    var bounds: ClosedRange<Int> = 18...100
+
+    private func fraction(_ age: Int) -> CGFloat {
+        CGFloat(age - bounds.lowerBound) / CGFloat(bounds.upperBound - bounds.lowerBound)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("\(bounds.lowerBound)")
+                    .font(PrototypeTypography.metadata)
+                    .foregroundStyle(PrototypePalette.muted)
+                Spacer()
+                Text("\(minAge) – \(maxAge)")
+                    .font(PrototypeTypography.button)
+                    .foregroundStyle(PrototypePalette.ink)
+                Spacer()
+                Text("\(bounds.upperBound)")
+                    .font(PrototypeTypography.metadata)
+                    .foregroundStyle(PrototypePalette.muted)
+            }
+            GeometryReader { geo in
+                let width = geo.size.width
+                let lo = fraction(minAge) * width
+                let hi = fraction(maxAge) * width
+                ZStack(alignment: .leading) {
+                    Capsule()
+                        .fill(PrototypePalette.rule)
+                        .frame(height: 5)
+                    Capsule()
+                        .fill(PrototypePalette.accent.opacity(0.35))
+                        .frame(width: max(hi - lo, 6), height: 5)
+                        .offset(x: lo)
+                    Circle()
+                        .fill(PrototypePalette.accent)
+                        .frame(width: 14, height: 14)
+                        .offset(x: lo - 7)
+                    Circle()
+                        .fill(PrototypePalette.accent)
+                        .frame(width: 14, height: 14)
+                        .offset(x: hi - 7)
+                }
+            }
+            .frame(height: 14)
+            Slider(
+                value: Binding(
+                    get: { Double(minAge) },
+                    set: { minAge = min(Int($0.rounded()), maxAge) }
+                ),
+                in: Double(bounds.lowerBound)...Double(maxAge),
+                step: 1
+            )
+            .tint(PrototypePalette.accent)
+            .accessibilityLabel("Minimum age")
+            Slider(
+                value: Binding(
+                    get: { Double(maxAge) },
+                    set: { maxAge = max(Int($0.rounded()), minAge) }
+                ),
+                in: Double(minAge)...Double(bounds.upperBound),
+                step: 1
+            )
+            .tint(PrototypePalette.accent)
+            .accessibilityLabel("Maximum age")
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Age range")
+        .accessibilityValue("\(minAge) to \(maxAge)")
+    }
+}
+
+struct PrototypeRadioCard: View {
+    let title: String
+    let detail: String
+    let selected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(alignment: .top, spacing: 10) {
+                ZStack {
+                    Circle()
+                        .stroke(PrototypePalette.rule, lineWidth: 1)
+                        .frame(width: 16, height: 16)
+                    if selected {
+                        Circle()
+                            .fill(PrototypePalette.accent)
+                            .frame(width: 8, height: 8)
+                    }
+                }
+                .padding(.top, 2)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(PrototypeTypography.button)
+                        .foregroundStyle(PrototypePalette.ink)
+                        .multilineTextAlignment(.leading)
+                    Text(detail)
+                        .font(PrototypeTypography.metadata)
+                        .foregroundStyle(PrototypePalette.muted)
+                        .multilineTextAlignment(.leading)
+                }
+                Spacer(minLength: 0)
+            }
+            .padding(12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(PrototypePalette.surface)
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(selected ? PrototypePalette.accent.opacity(0.45) : PrototypePalette.rule, lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(title)
+        .accessibilityAddTraits(selected ? [.isButton, .isSelected] : .isButton)
     }
 }
 

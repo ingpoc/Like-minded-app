@@ -46,7 +46,9 @@
 		B6865DD6F294D8C495E0F118 /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4CC542091C9D3F04D1DE21 /* CustomTabBar.swift */; };
 		B9E7E4DC406E0482E4C8D26C /* SocialAuthButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F92FDA4C0807BAC3C64DDC /* SocialAuthButtonsView.swift */; };
 		BE4F826A0A1C866F945B5AAB /* SettingsPrototypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11E3DAEAEA4F6D6B35D2D32 /* SettingsPrototypeView.swift */; };
+		C0779A3AF07F111E9FD05005 /* LikemindedPrivacyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63D2CC8991B9726CA6E09FED /* LikemindedPrivacyPolicy.swift */; };
 		CE50886875324458689A2D08 /* LiveKitWebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 02402CF435BA0C350E109525 /* LiveKitWebRTC */; };
+		CFE0601D6BF86208DE3761F3 /* LikemindedPrivacyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63D2CC8991B9726CA6E09FED /* LikemindedPrivacyPolicy.swift */; };
 		D0960611CC66E6642F609ACD /* ProfilePrototypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75C0F95C041A6C7D0D328202 /* ProfilePrototypeView.swift */; };
 		E4C21F153CB397BCA7E4CF65 /* MeetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7107FDFB96FB4B6E50291C /* MeetView.swift */; };
 		E5F05FF2F77CDC1BC4866782 /* PrototypeComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83237B0C66BA3537CAB89B87 /* PrototypeComponents.swift */; };
@@ -66,6 +68,7 @@
 		4895BAF5408C8A7CEDEB5EC3 /* CircleCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleCard.swift; sourceTree = "<group>"; };
 		583CD7AF0A74916366CBF8AF /* Likeminded.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Likeminded.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F51BCAB677E4C2BEAE840EE /* NotificationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsView.swift; sourceTree = "<group>"; };
+		63D2CC8991B9726CA6E09FED /* LikemindedPrivacyPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikemindedPrivacyPolicy.swift; sourceTree = "<group>"; };
 		63DCB9E92C74E864B793C207 /* LikemindedAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikemindedAPIClient.swift; sourceTree = "<group>"; };
 		704749A39D4B879E03561B1B /* LikemindedApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikemindedApp.swift; sourceTree = "<group>"; };
 		70685EA3FAE20FBC4827812B /* RealtimeVoiceClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeVoiceClient.swift; sourceTree = "<group>"; };
@@ -129,6 +132,7 @@
 			children = (
 				D7FCE7C689C2FF701CCB18EB /* AppleSignInSupport.swift */,
 				7B055E6A70526D0FD3D6B7C5 /* GoogleSignInSupport.swift */,
+				63D2CC8991B9726CA6E09FED /* LikemindedPrivacyPolicy.swift */,
 				85F92FDA4C0807BAC3C64DDC /* SocialAuthButtonsView.swift */,
 				CE323EA9FB8B001BE3FD724E /* WalletSignInSupport.swift */,
 			);
@@ -358,6 +362,7 @@
 				16F14684399DFC422A77AF87 /* GoogleSignInSupport.swift in Sources */,
 				9991EE71916006E89457B6E5 /* LikemindedAPIClient.swift in Sources */,
 				638037123B69B011D78BF5A7 /* LikemindedApp.swift in Sources */,
+				C0779A3AF07F111E9FD05005 /* LikemindedPrivacyPolicy.swift in Sources */,
 				0F0F08547C69AA374756B919 /* LiveKitTokenProvider.swift in Sources */,
 				E4C21F153CB397BCA7E4CF65 /* MeetView.swift in Sources */,
 				3790F3067C86B1DF4F11FF86 /* NotificationsView.swift in Sources */,
@@ -385,6 +390,7 @@
 				6817D124A01EACB3443E418A /* GoogleSignInSupport.swift in Sources */,
 				132444A82981B36C69EF5C56 /* LikemindedAPIClient.swift in Sources */,
 				00C5C47C4D3A69486DC493D3 /* LikemindedMacApp.swift in Sources */,
+				CFE0601D6BF86208DE3761F3 /* LikemindedPrivacyPolicy.swift in Sources */,
 				EA5E724579022F5894D30BCE /* MacAppState.swift in Sources */,
 				9917E4D207930B06A316F53D /* MacDesignSystem.swift in Sources */,
 				31D1987C09EEBD76447D0DF7 /* MacPrototypeData.swift in Sources */,

@@ -107,7 +107,7 @@ Per control in `validation/*/*.json`:
 
 - `expected` — success criteria
 - `result` — `pass` | `fail` | `blocked` | `pending`
-- `evidence` — proof text (include date + method, e.g. `2026-07-04 CUA validation-priya`)
+- `evidence` — proof text (include date + method, e.g. `2026-07-04 CUA validation-gurusharan`)
 - `blocker` — infra or untestable reason
 
 No separate control database. Do not re-inventory controls from Swift/JS when JSON exists.

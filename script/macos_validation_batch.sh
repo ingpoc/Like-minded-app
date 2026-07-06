@@ -67,7 +67,7 @@ fi
 cleanup() {
   # shellcheck source=macos_canonical_app.sh
   source "$ROOT/script/macos_canonical_app.sh"
-  macos_kill_all
+  macos_kill_if_lock_holder
   if [[ -n "$api_pid" ]] && [[ -z "${MACOS_BATCH_KEEP_API:-}" ]]; then
     kill "$api_pid" >/dev/null 2>&1 || true
   fi
@@ -128,8 +128,8 @@ if [[ "$mode" != "capture" ]]; then
   for screen in "${SCREENS[@]}"; do
     echo ""
     echo "-- CUA $screen --"
-    if LIKEMINDED_VALIDATION_USER="${LIKEMINDED_VALIDATION_USER:-validation-priya}" \
-       LIKEMINDED_VALIDATION_NAME="${LIKEMINDED_VALIDATION_NAME:-Priya Shah}" \
+    if LIKEMINDED_VALIDATION_USER="${LIKEMINDED_VALIDATION_USER:-validation-gurusharan}" \
+       LIKEMINDED_VALIDATION_NAME="${LIKEMINDED_VALIDATION_NAME:-Gurusharan Gupta}" \
        "$ROOT/script/macos_cua_screen.sh" "$screen"; then
       cua_ok=$((cua_ok + 1))
     else

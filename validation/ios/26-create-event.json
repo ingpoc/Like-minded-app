@@ -3,13 +3,15 @@
   "platform": "ios",
   "source_files": [
     "apps/ios-macos/Sources/LikemindedApp/Views/CommunitiesPrototypeView.swift (CreateEventView)",
-    "apps/ios-macos/Sources/LikemindedApp/Data/PrototypeAppState.swift (createMeeting)",
+    "apps/ios-macos/Sources/LikemindedApp/Views/RootView.swift (validation create-event route)",
+    "apps/ios-macos/Sources/LikemindedApp/Data/PrototypeAppState.swift (createMeeting, dev tab routing)",
     "apps/ios-macos/Sources/LikemindedApp/Data/LikemindedAPIClient.swift (createMeeting)"
   ],
   "mockup_ref": "mockups/ios/17-20-profile-community-settings.png",
   "mockup_missing": false,
   "entry_points": [
-    "Community Detail → Events tab → Create community event"
+    "Community Detail → Events tab → Create community event",
+    "--likeminded-start-create-event (validation deep link)"
   ],
   "backend_dependencies": [
     "POST /v1/meetings"
@@ -21,9 +23,12 @@
       "label": "Meetup",
       "expected": "Selects Meetup event type",
       "result": "pass",
-      "evidence": "2026-07-05 iOS macOS parity P0: eventTypePills Meetup button.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (event-type-meetup)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture",
+      "tested_source_hash": "7a2ba27c67a18ab4"
     },
     {
       "id": "event-type-listening-session",
@@ -31,9 +36,12 @@
       "label": "Listening Session",
       "expected": "Selects Listening Session event type",
       "result": "pass",
-      "evidence": "2026-07-05 iOS macOS parity P0: eventTypePills Listening Session button.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (event-type-listening-session)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture",
+      "tested_source_hash": "7a2ba27c67a18ab4"
     },
     {
       "id": "event-type-jam-session",
@@ -41,9 +49,12 @@
       "label": "Jam Session",
       "expected": "Selects Jam Session event type",
       "result": "pass",
-      "evidence": "2026-07-05 iOS macOS parity P0: eventTypePills Jam Session button.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (event-type-jam-session)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture",
+      "tested_source_hash": "7a2ba27c67a18ab4"
     },
     {
       "id": "event-fields",
@@ -51,9 +62,12 @@
       "label": "Event name, Date, Time, Location, Details",
       "expected": "Fields editable and drive preview/create payload",
       "result": "pass",
-      "evidence": "2026-07-05 iOS macOS parity P0: labeledField bindings + live preview card.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (event-fields)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture",
+      "tested_source_hash": "7a2ba27c67a18ab4"
     },
     {
       "id": "add-cover",
@@ -61,9 +75,12 @@
       "label": "Add cover",
       "expected": "Adds cover state to preview",
       "result": "pass",
-      "evidence": "2026-07-05 iOS macOS parity P0: eventCoverAdded toggles preview gradient icon.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (add-cover)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture",
+      "tested_source_hash": "7a2ba27c67a18ab4"
     },
     {
       "id": "add-tags",
@@ -71,9 +88,12 @@
       "label": "Add tags",
       "expected": "Adds tags to preview",
       "result": "pass",
-      "evidence": "2026-07-05 iOS macOS parity P0: eventTagsAdded shows type + Community hosted pills.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (add-tags)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture",
+      "tested_source_hash": "7a2ba27c67a18ab4"
     },
     {
       "id": "create-event",
@@ -81,15 +101,40 @@
       "label": "Create event",
       "expected": "POST /v1/meetings persists community event",
       "result": "pass",
-      "evidence": "2026-07-05 iOS macOS parity P0: submit() calls appState.createMeeting.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (create-event)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture",
+      "tested_source_hash": "7a2ba27c67a18ab4"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-05 stacked mobile form + live preview mirrors macOS createEvent controls."
+    "notes": "2026-07-05 output/validation/ios-screens/26-create-event.png vs macOS createEvent / mockups/macos/22-create-event.png: stacked mobile layout with Create event title, subtitle, icon type pills, jazz plate form, DoodleCover live preview, separate date/time rows, tag pills. Intentional: iOS uses FeatureCard sections + no bottom nav on validation deep link; iOS mockup plate 17-20 has no dedicated create-event panel (functional parity vs macOS 22-create-event)."
   },
-  "notes": "Parity with validation/macos/10-create-event.json.",
-  "source_hash": ""
+  "notes": "Parity with validation/macos/10-create-event.json. Capture user validation-gurusharan / Gurusharan Gupta.",
+  "source_hash": "7a2ba27c67a18ab4",
+  "recent_screenshot_ref": "output/validation/ios-screens/26-create-event.png",
+  "ui_validation": {
+    "result": "pass",
+    "reference_mockup_ref": "mockups/macos/22-create-event.png",
+    "recent_screenshot_ref": "output/validation/ios-screens/26-create-event.png",
+    "design_ref": "DESIGN.md",
+    "last_compared_at": "2026-07-05",
+    "validated": [
+      "latest screenshot exists and was compared with macOS createEvent capture",
+      "form controls and preview card match macOS createEvent field parity",
+      "validation deep link --likeminded-start-create-event lands on CreateEventView"
+    ],
+    "pending_validation": [],
+    "requires_implementation": [],
+    "requires_fixing": [],
+    "intentional_differences": [
+      "iOS stacks form above live preview; macOS uses side-by-side columns.",
+      "iOS validation deep link hides tab bar; macOS keeps bottom nav.",
+      "Ledger mockup_ref points at iOS plate 17-20 (no create-event panel); compared functionally to macOS 22-create-event."
+    ],
+    "notes": "2026-07-05 cross-platform parity pass for iOS 26-create-event."
+  }
 }

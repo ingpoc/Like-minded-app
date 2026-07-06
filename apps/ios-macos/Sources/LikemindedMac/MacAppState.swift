@@ -38,6 +38,16 @@ final class MacAppState: ObservableObject {
     @Published var activityItems: [MacNotificationItem] = []
     @Published var notificationError: String?
     @Published var readNotificationIds: Set<String> = []
+    @Published var concernFlag = false
+    @Published var placementConcern = ""
+
+    static let defaultPlacementConcernCopy = "This circle doesn't match how I connect with people."
+
+    var displayPlacementConcern: String {
+        let trimmed = placementConcern.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? Self.defaultPlacementConcernCopy : trimmed
+    }
+    @Published var requestedSettingsPane: String?
 
     private var client: LikemindedAPIClient {
         LikemindedAPIClient(authToken: authSession?.token)
@@ -45,6 +55,24 @@ final class MacAppState: ObservableObject {
 
     var isSignedIn: Bool {
         authSession != nil
+    }
+
+    #if DEBUG
+    static var devProfileEmptyPreview: Bool {
+        ProcessInfo.processInfo.arguments.contains("--likeminded-dev-profile-empty")
+    }
+    #else
+    static var devProfileEmptyPreview: Bool { false }
+    #endif
+
+    func applyDevProfileEmptyPreviewIfNeeded() {
+        guard Self.devProfileEmptyPreview else { return }
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(500))
+            placement = nil
+            concernFlag = false
+            placementConcern = ""
+        }
     }
 
     func signInForLocalValidationIfNeeded() async {
@@ -64,6 +92,7 @@ final class MacAppState: ObservableObject {
                 fullName: fullName
             )
             await saveSessionAndLoadPlacement(response, authProvider: "apple")
+            applyDevProfileConcernLaunchArg(from: arguments)
         } catch {
             authError = error.localizedDescription
         }
@@ -161,6 +190,7 @@ final class MacAppState: ObservableObject {
         authSession = session
         await loadCurrentProfile()
         await loadCurrentPlacement()
+        applyDevProfileEmptyPreviewIfNeeded()
     }
 
     func signOut() {
@@ -182,6 +212,8 @@ final class MacAppState: ObservableObject {
         chatMessages = []
         notifications = []
         activityItems = []
+        concernFlag = false
+        placementConcern = ""
     }
 
     func deleteAccount() async -> Bool {
@@ -200,11 +232,14 @@ final class MacAppState: ObservableObject {
         isLoading = true
         do {
             profile = try await client.fetchMyProfile()
+            applyConcernState(concernFlag: profile?.concernFlag, placementConcern: profile?.placementConcern)
             loadError = nil
         } catch {
             profile = nil
             loadError = "No profile yet. Complete the voice profile to unlock this screen."
         }
+        applyValidationLaunchOverrides()
+        applyDevProfileEmptyPreviewIfNeeded()
         isLoading = false
     }
 
@@ -240,13 +275,17 @@ final class MacAppState: ObservableObject {
         isLoading = true
         do {
             placement = try await client.fetchMyPlacement()
+            applyConcernState(concernFlag: placement?.concernFlag, placementConcern: placement?.placementConcern)
             loadError = nil
+            applyDevProfileEmptyPreviewIfNeeded()
         } catch {
             placement = nil
+            applyDevProfileEmptyPreviewIfNeeded()
             if profile == nil {
                 loadError = "No profile placement yet. Complete the voice profile to unlock this screen."
             }
         }
+        applyValidationLaunchOverrides()
         isLoading = false
     }
 
@@ -287,12 +326,45 @@ final class MacAppState: ObservableObject {
     }
 
     func reportCircleConcern(_ message: String) async {
-        guard isSignedIn else { return }
+        let note = message.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !note.isEmpty else { return }
+        placementConcern = note
+        concernFlag = true
         do {
-            try await client.registerCircleConcern()
+            try await client.registerCircleConcern(message: note)
+            loadError = nil
         } catch {
             loadError = "Concern could not be registered."
         }
+    }
+
+    private func applyConcernState(concernFlag: Bool?, placementConcern: String?) {
+        if concernFlag == true {
+            self.concernFlag = true
+        }
+        if let placementConcern {
+            let trimmed = placementConcern.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !trimmed.isEmpty {
+                self.placementConcern = trimmed
+            }
+        }
+        if self.concernFlag && self.placementConcern.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            self.placementConcern = Self.defaultPlacementConcernCopy
+        }
+    }
+
+    private func applyDevProfileConcernLaunchArg(from arguments: [String]) {
+        guard arguments.contains("--likeminded-dev-profile-concern") else { return }
+        let message = Self.argumentValue(after: "--likeminded-dev-profile-concern", in: arguments)
+            ?? Self.defaultPlacementConcernCopy
+        placementConcern = message
+        concernFlag = true
+    }
+
+    private func applyValidationLaunchOverrides() {
+        #if DEBUG
+        applyDevProfileConcernLaunchArg(from: ProcessInfo.processInfo.arguments)
+        #endif
     }
 
     func fetchCircles() async {
@@ -325,14 +397,22 @@ final class MacAppState: ObservableObject {
         isLoadingCommunities = true
         defer { isLoadingCommunities = false }
         do {
-            async let catalog = client.fetchCommunities()
-            async let joined = isSignedIn ? client.fetchMyCommunities() : []
-            communities = try await catalog
-            joinedCommunities = try await joined
-            communityError = nil
+            communities = try await client.fetchCommunities()
         } catch {
             communityError = "Communities could not be loaded."
+            return
         }
+
+        if isSignedIn {
+            do {
+                joinedCommunities = try await client.fetchMyCommunities()
+            } catch {
+                joinedCommunities = []
+            }
+        } else {
+            joinedCommunities = []
+        }
+        communityError = nil
     }
 
     func joinCommunity(id: String) async {

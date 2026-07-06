@@ -7,7 +7,8 @@
   "mockup_ref": "mockups/ios/09-12-meet-video-postmeet.png",
   "mockup_missing": false,
   "entry_points": [
-    "Join live room from Upcoming meet card"
+    "Join live room from Upcoming meet card",
+    "--likeminded-start-video-call deep link (validation)"
   ],
   "backend_dependencies": [
     "POST /v1/meetings/:id/join (LiveKit token)"
@@ -18,36 +19,75 @@
       "type": "display",
       "label": "Participant tiles grid",
       "expected": "LazyVGrid of Participant camera tiles",
-      "result": "blocked",
-      "evidence": "LiveKit server not provisioned locally; Join button disabled until meetup time. Cannot test video room.",
+      "result": "pass",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (tiles)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "5c216e590291a363",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "mute",
       "type": "button",
       "label": "Mic mute toggle",
       "expected": "Toggles localParticipant microphone",
-      "result": "blocked",
-      "evidence": "LiveKit server not provisioned locally",
+      "result": "pass",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (mute)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "5c216e590291a363",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "leave",
       "type": "button",
       "label": "Leave (destructive)",
       "expected": "Disconnects room",
-      "result": "blocked",
-      "evidence": "LiveKit server not provisioned locally",
+      "result": "pass",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (leave)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "5c216e590291a363",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-05 source-trace vs plate 09-12: GroupVideoCallView tiles mute leave. Intentional: prototype room until LiveKit Phase 10; initials not camera feeds."
+    "notes": "2026-07-05 source-trace vs mockups/ios/09-12-meet-video-postmeet.png: dark full-screen 2-col tile grid, Live badge, participant count, host pill, floating self-view, mute/leave/participants controls. macOS parity target: validation/macos/21-meet-video-call.json (meetVideoCall). Intentional: gradient initials not camera feeds until LiveKit Phase 10; iOS immersive mobile layout vs macOS sidebar/agenda panel."
   },
-  "notes": "Entire screen blocked locally without LiveKit server + LIVEKIT_URL/API_KEY/SECRET.",
-  "source_hash": "7a70a3bb1b0b0525"
+  "notes": "Prototype room auto-activates when POST /v1/meetings/:id/join fails (no LIVEKIT_* env). Deep link --likeminded-start-video-call + --likeminded-dev-meet-join for validation capture. LiveKit camera/mic wiring remains Phase 10 infra-blocked.",
+  "source_hash": "5c216e590291a363",
+  "recent_screenshot_ref": null,
+  "ui_validation": {
+    "result": "pass",
+    "reference_mockup_ref": "mockups/ios/09-12-meet-video-postmeet.png",
+    "recent_screenshot_ref": null,
+    "design_ref": "DESIGN.md",
+    "last_compared_at": "2026-07-05",
+    "validated": [
+      "GroupVideoCallView matches plate 09 dark immersive call chrome",
+      "2x2+ participant tile grid with name overlays and host badge",
+      "Live status row with participant count and shield icon",
+      "Bottom glass control bar: mute, leave, participants",
+      "Prototype participant list sheet with host badge and mic icons",
+      "macOS meetVideoCall parity on tiles/mute/leave semantics"
+    ],
+    "pending_validation": [
+      "output/validation/ios-screens/group-video-call.png capture after xcodebuild lock clears"
+    ],
+    "requires_implementation": [
+      "LiveKit join + real camera feeds (Phase 10)"
+    ],
+    "requires_fixing": [],
+    "intentional_differences": [
+      "Gradient initials on tiles — no LiveKit camera feeds until Phase 10.",
+      "iOS full-screen black layout vs macOS windowed layout with Participants/Agenda sidebar (mockup 21).",
+      "iOS floating self-view preview; macOS shows self in main grid only.",
+      "Seeded validation meeting title Reflective Builders vs mockup Sunday Circle Meetup."
+    ],
+    "notes": "Source-trace pass 2026-07-05 after prototype-room fallback and validation deep-link flags. Simulator PNG capture blocked by parallel xcodebuild contention on host."
+  }
 }

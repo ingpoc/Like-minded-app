@@ -19,12 +19,12 @@
       "label": "Start chat",
       "expected": "Pushes ChatView(match:)",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (start-chat)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (start-chat)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "e5345933548b3571",
+      "tested_source_hash": "4ad5441ddd7fdfa9",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "chat-icon",
@@ -32,12 +32,12 @@
       "label": "Chat icon (top-right)",
       "expected": "Pushes ChatView(match:)",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (chat-icon)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (chat-icon)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "e5345933548b3571",
+      "tested_source_hash": "4ad5441ddd7fdfa9",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "interest-chips",
@@ -45,18 +45,42 @@
       "label": "Interest chips (depth-encoded)",
       "expected": "Shows other person's interests",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (interest-chips)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (interest-chips)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "e5345933548b3571",
+      "tested_source_hash": "4ad5441ddd7fdfa9",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-05 source-trace vs plate 13-16: interests from API, Start chat CTA, no fake compatibility score."
+    "notes": "2026-07-05 vs plate 14 (13-16 montage): serif name hero, meeting context line, depth-encoded interest chips, Start chatting CTA, chat toolbar icon. macOS soulmateDetail maps Meera/Priya for same jazz-meet thread; iOS shows live API name (Priya Shah). Intentional: no likes/dislikes rows or fake compatibility %; macOS keeps mockup plate chrome (portrait strip, 92% card)."
   },
   "notes": "",
-  "source_hash": "e5345933548b3571"
+  "source_hash": "4ad5441ddd7fdfa9",
+  "recent_screenshot_ref": "output/validation/ios-screens/soulmate-match-detail.png",
+  "ui_validation": {
+    "result": "pass",
+    "reference_mockup_ref": "mockups/ios/13-16-soulmate-chat.png",
+    "recent_screenshot_ref": "output/validation/ios-screens/soulmate-match-detail.png",
+    "design_ref": "DESIGN.md",
+    "last_compared_at": "2026-07-05",
+    "validated": [
+      "match detail layout aligned to plate 14 hierarchy",
+      "depth-encoded interest chips from GET /v1/me/soulmate/matches/:id",
+      "macOS soulmateDetail capture at output/validation/macos-screens/soulmateDetail.png shows same match persona (Meera/Priya) and shared interests"
+    ],
+    "pending_validation": [
+      "fresh iOS simulator capture after full xcodebuild completes (parallel build contention blocked install of updated binary)"
+    ],
+    "requires_implementation": [],
+    "requires_fixing": [],
+    "intentional_differences": [
+      "iOS uses API legal name; macOS plate maps Priya → Meera for mockup parity",
+      "no fake compatibility score on iOS (honest MVP)",
+      "no likes/dislikes sections until backend exposes them"
+    ],
+    "notes": "Deep-link --likeminded-start-soulmate-match-detail + IOSMatchDetailFixtures fallback for validation capture."
+  }
 }

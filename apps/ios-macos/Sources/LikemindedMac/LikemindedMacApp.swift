@@ -88,5 +88,11 @@ private struct MacWindowChromeHider: NSViewRepresentable {
         window.standardWindowButton(.closeButton)?.isHidden = false
         window.standardWindowButton(.miniaturizeButton)?.isHidden = false
         window.standardWindowButton(.zoomButton)?.isHidden = false
+        window.minSize = NSSize(width: 1120, height: 760)
+        let target = NSSize(width: 1200, height: 760)
+        if window.frame.width < 400 || window.frame.height < 400 {
+            window.setContentSize(target)
+            window.center()
+        }
     }
 }

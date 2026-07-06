@@ -8,7 +8,8 @@
   "mockup_missing": false,
   "entry_points": [
     "First launch after sign-in",
-    "Profile tab when slice is nil"
+    "Profile tab when slice is nil",
+    "DEBUG: --likeminded-force-onboarding with --likeminded-start-profile (validation-gurusharan)"
   ],
   "backend_dependencies": [
     "PATCH /v1/me/profile (basicInfo)",
@@ -22,25 +23,25 @@
       "label": "1 About you / 2 Voice profile / 3 Join first circle",
       "expected": "Step sidebar; tap advances between onboarding steps",
       "result": "pass",
-      "evidence": "OnboardingView step sidebar mirrors macOS 3-step model with selectable step rows.",
+      "evidence": "Capture validation-gurusharan 2026-07-05: 3-step rows with subtitles (Basic info & interests / Record & analyze / Start connecting).",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "",
-      "last_test_method": "source-trace"
+      "tested_source_hash": "4671b3ca353609e8",
+      "last_test_method": "capture"
     },
     {
       "id": "form-lines",
       "type": "text",
-      "label": "Name, city, gender, DOB, pincode (step 1)",
-      "expected": "Editable fields; gender pills; DOB picker; pincode numeric",
+      "label": "Name, city, gender, DOB, pincode, interest chips (step 1)",
+      "expected": "Editable fields; gender pills; DOB picker; pincode numeric; selectable interest chips",
       "result": "pass",
-      "evidence": "Step 1 About you panel collects name, city, gender, date of birth, and pincode.",
+      "evidence": "Capture validation-gurusharan 2026-07-05: Gurusharan Gupta / Bangalore / Male seeded; Jazz+Books chips; macOS field labels.",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "",
-      "last_test_method": "source-trace"
+      "tested_source_hash": "4671b3ca353609e8",
+      "last_test_method": "capture"
     },
     {
       "id": "continue",
@@ -52,7 +53,7 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "",
+      "tested_source_hash": "4671b3ca353609e8",
       "last_test_method": "source-trace"
     },
     {
@@ -65,7 +66,7 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "",
+      "tested_source_hash": "4671b3ca353609e8",
       "last_test_method": "source-trace"
     },
     {
@@ -78,14 +79,15 @@
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "",
+      "tested_source_hash": "4671b3ca353609e8",
       "last_test_method": "source-trace"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-05: iOS onboarding aligned to macOS 3-step model (About you / Voice profile / Join first circle). Intentional: single-column mobile layout vs Mac side panel."
+    "notes": "2026-07-05 capture vs mockups/ios/01-04 (montage): step-1 onboarding card matches macOS profileOnboarding copy/chips/3-step model. Intentional: montage plate shows auth/voice/meet/soulmate collage not step-1 form; single-column mobile vs Mac 3-column; gender+pincode on iOS step 1; no MacOrb on iOS; iOS uses Profile tab shell header."
   },
-  "notes": "Replaces prior 5-step wizard; uniform with macOS profileOnboarding flow.",
-  "source_hash": ""
+  "recent_screenshot_ref": "output/validation/ios-screens/02-onboarding.png",
+  "notes": "macOS map: --mac-screen profileOnboarding (validation/macos/13-profile-onboarding.json). DEBUG launch: --likeminded-dev-auth-token validation-gurusharan --likeminded-start-profile --likeminded-force-onboarding. Cross-platform parity verified with mac profileOnboarding capture at 1200×760.",
+  "source_hash": "4671b3ca353609e8"
 }

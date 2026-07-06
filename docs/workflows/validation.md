@@ -26,6 +26,13 @@ Do not load `GOAL.md`, `DESIGN.md`, full `PROGRESS.md`, `validation/README.md` s
 
 ## Commands (by need)
 
+Default validation profile (override with env):
+
+```bash
+export LIKEMINDED_VALIDATION_USER=validation-gurusharan
+export LIKEMINDED_VALIDATION_NAME="Gurusharan Gupta"
+```
+
 | Need | Command |
 |------|---------|
 | Route | `npm run goal:next` |
@@ -38,6 +45,8 @@ Do not load `GOAL.md`, `DESIGN.md`, full `PROGRESS.md`, `validation/README.md` s
 | macOS captures | `npm run verify:macos-screens` |
 | macOS post-parallel batch | `npm run macos:validation-batch` (capture + sequential CUA; sole `:8787` owner) |
 | iOS simulator | `npm run verify:simulator-local` |
+| **One screen capture (locked)** | `./script/cross_platform_screen_validate.sh --screen <id> --platform ios\|both` |
+| iOS batch captures (legacy) | `npm run verify:ios-screens` — wrapper over `validate:screen` (sequential) |
 | Seeded API | `npm run dev:api:validation` |
 | Reset seed | `npm run reset:validation-data` |
 | macOS CUA (one screen) | `./script/macos_audit_prepare.sh` → `./script/macos_cua_screen.sh <screen>` |
@@ -65,7 +74,7 @@ Do not load `GOAL.md`, `DESIGN.md`, full `PROGRESS.md`, `validation/README.md` s
 2. Never claim ledger-green while actionable rows exist (unless track owns them).
 3. Update JSON + PROGRESS; do not add narrative status tables elsewhere.
 4. While `macos_cua_screen.sh` exists, do not claim GUI automation unavailable in evidence.
-5. Parallel macOS UI implementation per ledger JSON is OK; run `npm run macos:validation-batch` once after parallel workers (no concurrent CUA/capture).
+5. Parallel UI implementation per ledger JSON is OK; **sequential proof** after (see § Parallel screen validation) — not concurrent build/capture/seed.
 6. `README.md` defers Phase 9 until `goal:next` shows clean tracks.
 
 ## Session alignment
@@ -73,6 +82,8 @@ Do not load `GOAL.md`, `DESIGN.md`, full `PROGRESS.md`, `validation/README.md` s
 Project hooks (`.cursor/hooks.json`): `sessionStart` injects compact `goal:next` output. Authoritative gate: `npm run verify:ledger-progress` (includes context-routing checks — no status tables in `validation/README.md`, no Phase 0–8 in `PROGRESS.md`).
 
 ## macOS proof (pick one)
+
+See § Parallel screen validation for locks and two-wave model. iOS single-screen: `cross_platform_screen_validate.sh --platform ios`.
 
 | Situation | Command |
 |-----------|---------|
@@ -82,6 +93,69 @@ Project hooks (`.cursor/hooks.json`): `sessionStart` injects compact `goal:next`
 | Stale controls only | `npm run macos:cua-reproof` |
 
 Do not run capture/CUA in parallel across agents. Mockup path: ledger `mockup_ref` per screen.
+
+## Parallel screen validation
+
+### Two-wave model (default for multi-screen work)
+
+| Wave | Parallel? | Work |
+|------|-----------|------|
+| **1 — Code** | Yes | Disjoint Swift edits per `validation/{ios,macos}/*.json` + ledger hash/notes |
+| **2 — Proof** | **No** | One `reset:validation-data` (if needed) → one iOS build → one macOS build → **sequential** captures |
+
+Do **not** spawn one agent per screen for build+capture+fix. Parallel UI agents + concurrent `xcodebuild` / `simctl launch` / `open` caused SIGKILL, wrong PNGs, and corrupt seed data in practice.
+
+After wave 1 finishes: `./script/cross_platform_screen_validate.sh --screen <id> --platform ios|both` per screen, or `npm run macos:validation-batch` for macOS closeout.
+
+### Locks (macOS uses `lockf`; Linux uses `flock`)
+
+Never raw `pkill`, `open`, or `simctl launch` without `./script/cross_platform_validation_lock.sh`. Never bare `pkill -9 LikemindedMac` — use `macos_kill_if_lock_holder` from `script/macos_canonical_app.sh` (holder sets `LIKEMINDED_HOLDS_MACOS_APP_LOCK=1`).
+
+| Resource | Lock | Serialize |
+|----------|------|-----------|
+| `api` | `:8787` validation API start/stop | yes |
+| `seed` | `npm run reset:validation-data` | yes |
+| `ios-sim` | `simctl launch` / booted simulator app | yes |
+| `macos-app` | `LikemindedMac` launch / `macos_kill_all` | yes |
+| `macos-capture` | `screencapture` + CUA window focus | yes |
+| `xcodebuild-ios` | iOS build (`.build/ios-simulator`) | yes |
+| `xcodebuild-macos` | macOS build (`.build/macos`) | yes |
+
+```bash
+# Wrapper (preferred)
+./script/cross_platform_validation_lock.sh with_lock ios-sim bash -c '...'
+
+# Single-screen entry (skips API/seed when :8787 healthy on validation-db)
+./script/cross_platform_screen_validate.sh --screen 07-meet --platform ios
+./script/cross_platform_screen_validate.sh --screen 04-profile-populated --platform both
+```
+
+Lock files: `/tmp/likeminded-validation-locks/` (600s wait). macOS `--mac-screen` resolves via bash cases in `cross_platform_screen_validate.sh` (profile screens) then ledger `source_files` parenthetical (e.g. `(meetOverview)`).
+
+### Seed + API timing
+
+- Single owner of `:8787` during seed + capture. Stop API before seed if `reset:validation-data` fails mid-run against a live server.
+- Simulator auth gate (“Could not connect to the server”) often means `:8787` was killed by another agent — not a wrong plist URL.
+- `curl -s http://127.0.0.1:8787/health` → `dbPath` must contain `validation-db` before native capture.
+
+### Ledger lookup
+
+Use full ledger id: `npm run ledger:screen -- --platform ios --screen 22-settings-info` (exact file stem). Fuzzy match without the numeric prefix can hit the wrong settings ledger.
+
+### iOS capture hygiene
+
+- Target one simulator UDID from `./script/build_and_run.sh` — not `booted` when multiple simulators are running.
+- Prefer build-only + explicit `simctl launch` with validation args; `./script/build_and_run.sh run` auto-launches without deep links.
+- Wait **15–60s** after launch for dev-auth before screenshot.
+- When `simctl` drops `--likeminded-start-*` args, use `LIKEMINDED_VALIDATION_SCREEN` UserDefaults fallback (see `build-ios-app` skill).
+
+### macOS capture hygiene
+
+- Re-apply `--mac-screen` after dev sign-in (`MacRootView.onChange(of: isSignedIn)`).
+- Put **`--mac-screen <name>` before other launch flags** (order-sensitive; wrong order → no capturable window).
+- Auth welcome: **no** dev bypass; `--likeminded-reset-auth-session --mac-screen welcome --likeminded-validation-welcome`.
+- Settings how-it-works: `--mac-screen settingsSoulmate --mac-settings-pane howItWorks` only (dual `--likeminded-start-settings-info` + pane can yield 0 windows).
+- Capture by **PID window id** (`macos_cua_focus_window.sh`), not first “Likeminded*” window on screen.
 
 ## Delegated verification
 

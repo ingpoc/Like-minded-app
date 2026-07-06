@@ -19,10 +19,10 @@
       "label": "Update profile",
       "expected": "Reopens voice session sheet",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (update-profile)",
+      "evidence": "source-trace 2026-07-05: livingProfile restored mockup plate-18 Update profile CTA → voice session sheet (hash bbc3a0d9adb31ff4)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "af33a69ba7d598de",
+      "tested_source_hash": "bbc3a0d9adb31ff4",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     },
@@ -32,10 +32,10 @@
       "label": "Communication/Energy/Trust pills",
       "expected": "Show profile signals (display only, no tap)",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (signal-pills)",
+      "evidence": "source-trace 2026-07-05: ProfileSignalPill row Communication/Energy/Trust in livingProfile (hash bbc3a0d9adb31ff4)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "af33a69ba7d598de",
+      "tested_source_hash": "bbc3a0d9adb31ff4",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     },
@@ -45,11 +45,11 @@
       "label": "Communication read card with chevron",
       "expected": "Display only; chevron is decorative, no tap action (STUB)",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (comm-read-card)",
+      "evidence": "source-trace 2026-07-05: communication read card + decorative chevron.right from backend signals (hash bbc3a0d9adb31ff4)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "af33a69ba7d598de",
+      "tested_source_hash": "bbc3a0d9adb31ff4",
       "last_test_method": "source-trace"
     },
     {
@@ -58,10 +58,10 @@
       "label": "Big Five TraitBars",
       "expected": "Render trait bars from slice.signals.bigFive",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (trait-bars)",
+      "evidence": "source-trace 2026-07-05: five ProfileTraitRow sliders from slice.signals.bigFive + energy/trust mapping (hash bbc3a0d9adb31ff4)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "af33a69ba7d598de",
+      "tested_source_hash": "bbc3a0d9adb31ff4",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     },
@@ -71,18 +71,19 @@
       "label": "Interest tag chips",
       "expected": "Render interests with depth encoding",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (interest-chips)",
+      "evidence": "source-trace 2026-07-05: ProfileInterestTagLayout depth encoding active/deep vs casual (hash bbc3a0d9adb31ff4)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "af33a69ba7d598de",
+      "tested_source_hash": "bbc3a0d9adb31ff4",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-05 capture profile-populated.png vs mockups/ios/17-20-profile-community-settings.png: trait bars, interest chips, communication read card, Update profile CTA from backend signals."
+    "notes": "2026-07-05: restored iOS plate-18 living profile (Signals header, Update profile, pills, comm-read+chevron, trait bars, depth-encoded interests). macOS parity surface: --mac-screen myProfile (validation/macos/12-my-profile.json). Seeded user validation-gurusharan / Gurusharan Gupta — signals AI/Startups/Design, analytical→Thoughtful Communicator. Runtime PNG capture blocked by parallel :8787 contention; source layout matches mockups/ios/17-20-profile-community-settings.png plate 18."
   },
-  "notes": "",
-  "source_hash": "af33a69ba7d598de"
+  "notes": "macOS map: myProfile. Cross-platform lock: cross_platform_validation_lock.sh (lockf); flock(1) not on PATH.",
+  "recent_screenshot_ref": "output/validation/ios-screens/profile-populated.png",
+  "source_hash": "bbc3a0d9adb31ff4"
 }

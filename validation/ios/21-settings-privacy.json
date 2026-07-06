@@ -17,18 +17,19 @@
       "label": "Done",
       "expected": "Dismisses sheet",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (done)",
+      "evidence": "source-trace 2026-07-05 iOS privacy parity: PrivacyPolicySheet aligned to mockups/ios/32-settings-privacy.png via LikemindedPrivacyPolicy; deep-link --likeminded-open-privacy-policy after auth.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "6aab624cdd3c00bf",
+      "tested_source_hash": "3e1aea005dd08999",
       "last_tested_at": "2026-07-05",
       "last_test_method": "source-trace"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-05 source-trace: PrivacyPolicySheet from Settings; TestFlight policy copy."
+    "notes": "2026-07-05 source-trace + partial capture output/validation/ios-screens/21-settings-privacy.png vs mockups/ios/32-settings-privacy.png: TestFlight title, voice-first intro, DATA COLLECTED / HOW DATA IS USED / YOUR CONTROLS sections with dividers, footer hello@likeminded.app. macOS parity: settingsSoulmate Privacy & safety panel uses same LikemindedPrivacyPolicy copy. Intentional: iOS modal sheet with Done vs macOS inline settings panel with sidebar."
   },
   "notes": "",
-  "source_hash": "6aab624cdd3c00bf"
+  "source_hash": "3e1aea005dd08999",
+  "recent_screenshot_ref": "output/validation/ios-screens/21-settings-privacy.png"
 }

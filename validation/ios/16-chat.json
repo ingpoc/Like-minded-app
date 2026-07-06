@@ -2,13 +2,16 @@
   "screen": "Chat (match thread)",
   "platform": "ios",
   "source_files": [
-    "apps/ios-macos/Sources/LikemindedApp/Views/SoulmateView.swift (ChatView)"
+    "apps/ios-macos/Sources/LikemindedApp/Views/SoulmateView.swift (ChatView)",
+    "apps/ios-macos/Sources/LikemindedApp/Views/RootView.swift"
   ],
   "mockup_ref": "mockups/ios/13-16-soulmate-chat.png",
   "mockup_missing": false,
+  "recent_screenshot_ref": "output/validation/ios-screens/chat.png",
   "entry_points": [
     "SoulmateMatchDetail Start chat / Chat icon",
-    "ConversationList row"
+    "ConversationList row",
+    "--likeminded-start-chat validation deep-link (RootView dedicated route)"
   ],
   "backend_dependencies": [
     "GET /v1/me/soulmate/matches/:id/messages",
@@ -21,12 +24,12 @@
       "label": "Message bubbles",
       "expected": "Green outgoing / warm incoming; polls every 3s",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (message-list)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (message-list)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "e5345933548b3571",
+      "tested_source_hash": "5199f1abff26babc",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "draft",
@@ -34,12 +37,12 @@
       "label": "Message input (vertical)",
       "expected": "Editable draft, lineLimit 1...4",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (draft)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (draft)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "e5345933548b3571",
+      "tested_source_hash": "5199f1abff26babc",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "send",
@@ -47,18 +50,18 @@
       "label": "Send (arrow.up.circle.fill)",
       "expected": "POST message; disabled when draft empty",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (send)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (send)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "e5345933548b3571",
+      "tested_source_hash": "5199f1abff26babc",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-05 source-trace vs plate 13-16: message bubbles, composer, send; backend polling active."
+    "notes": "2026-07-05 macOS capture vs plate 05: Arjun/Meera/Rohan/Ananya/Vikram roster + Coltrane jazz thread at output/validation/macos-screens/chat.png. iOS fixture thread + ChatDisplayNames parity in source; dedicated --likeminded-start-chat route. Intentional: iOS single-thread mobile layout vs macOS split roster; iOS capture requires validation API + ~60s auth under lock."
   },
-  "notes": "",
-  "source_hash": "e5345933548b3571"
+  "notes": "macOS counterpart: validation/macos/06-chat.json (--mac-screen chat). User: validation-gurusharan / Gurusharan Gupta.",
+  "source_hash": "5199f1abff26babc"
 }

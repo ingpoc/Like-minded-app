@@ -4,8 +4,9 @@
   "source_files": [
     "apps/ios-macos/Sources/LikemindedApp/Views/CommunitiesPrototypeView.swift (CommunitiesPrototypeView, CommunityDetailView, CommunityMembersView, CreateEventView)"
   ],
-  "mockup_ref": "mockups/ios/13-16-soulmate-chat.png",
+  "mockup_ref": "mockups/ios/17-20-profile-community-settings.png",
   "mockup_missing": false,
+  "recent_screenshot_ref": "output/validation/ios-screens/13-community-detail.png",
   "entry_points": [
     "Community card nav"
   ],
@@ -21,12 +22,12 @@
       "label": "Back chevron",
       "expected": "Dismisses/pops",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (back)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (back)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "cd8e1ff30d57b66d",
+      "tested_source_hash": "5a470c76f74bce9e",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "ellipsis",
@@ -34,9 +35,12 @@
       "label": "Community options (ellipsis)",
       "expected": "Opens options sheet with guidelines",
       "result": "pass",
-      "evidence": "2026-07-05 iOS macOS parity P0: showCommunityOptions sheet + guidelines action.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (ellipsis)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "5a470c76f74bce9e",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "view-members",
@@ -44,9 +48,12 @@
       "label": "View members",
       "expected": "Pushes CommunityMembersView",
       "result": "pass",
-      "evidence": "2026-07-05 iOS macOS parity P0: Members tab NavigationLink to CommunityMembersRoute.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (view-members)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "5a470c76f74bce9e",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "event-rows",
@@ -54,9 +61,12 @@
       "label": "Upcoming event rows / create event",
       "expected": "Lists community meetings or links to CreateEventView",
       "result": "pass",
-      "evidence": "2026-07-05 iOS macOS parity P0: Events tab shows communityMeetings or create-event NavigationLink.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (event-rows)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "5a470c76f74bce9e",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "resources-guidelines",
@@ -64,9 +74,12 @@
       "label": "Community guidelines row",
       "expected": "Opens guidelines resource sheet",
       "result": "pass",
-      "evidence": "2026-07-05 iOS macOS parity P0: Resources tab guidelines button.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (resources-guidelines)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "5a470c76f74bce9e",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "resources-prompts",
@@ -74,9 +87,12 @@
       "label": "Conversation prompts row",
       "expected": "Opens prompts resource sheet",
       "result": "pass",
-      "evidence": "2026-07-05 iOS macOS parity P0: Resources tab prompts button.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (resources-prompts)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "5a470c76f74bce9e",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "highlights-essay",
@@ -84,9 +100,12 @@
       "label": "Best essay thread row",
       "expected": "Opens essay thread sheet",
       "result": "pass",
-      "evidence": "2026-07-05 iOS macOS parity P0: Highlights tab essay thread button.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (highlights-essay)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "5a470c76f74bce9e",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "highlights-recommendation",
@@ -94,9 +113,12 @@
       "label": "Most saved recommendation row",
       "expected": "Opens recommendation sheet",
       "result": "pass",
-      "evidence": "2026-07-05 iOS macOS parity P0: Highlights tab recommendation button.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (highlights-recommendation)",
       "blocker": "",
-      "stub": false
+      "stub": false,
+      "tested_source_hash": "5a470c76f74bce9e",
+      "last_tested_at": "2026-07-05",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "join-leave",
@@ -104,18 +126,18 @@
       "label": "Join community / Leave community",
       "expected": "Toggles membership via backend; updates member count",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (join-leave)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (join-leave)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "cd8e1ff30d57b66d",
+      "tested_source_hash": "5a470c76f74bce9e",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-05 source-trace vs mockups/ios/13-16-soulmate-chat.png: community hero, join/leave, options sheet, meetup countdown from backend."
+    "notes": "2026-07-05 capture output/validation/ios-screens/13-community-detail.png vs mockups/ios/17-20-profile-community-settings.png plate 19: Jazz & Music Community hero, stats row (members + next meetup), About, You'll fit in checklist, Upcoming/Members/Resources/Highlights tabs, upcoming row with countdown. macOS communityDetail parity: tab labels Upcoming (was Events), plate copy for jazz-music, fit-in section. Intentional: gradient hero vs mockup scenic plate; join CTA at bottom vs macOS hero pill; macOS About sidebar vs iOS inline sections."
   },
   "notes": "",
-  "source_hash": "cd8e1ff30d57b66d"
+  "source_hash": "5a470c76f74bce9e"
 }

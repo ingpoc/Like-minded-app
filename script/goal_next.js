@@ -67,9 +67,20 @@ function resolveMacosRoute(ledger) {
 function resolveIosRoute(ledger) {
   const ios = ledger.platforms.find((p) => p.platform === "ios");
   if (!ios) return "npm run ledger:open";
-  if (ios.stale_pass > 0) return "npm run ledger:stale";
+  if (ios.stale_pass > 0) return "npm run verify:ios-screens";
   if (ios.fail > 0 || ios.pending > 0) return "npm run ledger:open";
   return "npm run ledger:open";
+}
+
+function resolveWave2Route(ledger) {
+  const ios = ledger.platforms.find((p) => p.platform === "ios");
+  const mac = ledger.platforms.find((p) => p.platform === "macos");
+  const iosStale = (ios?.stale_pass || 0) > 0;
+  const macStale = (mac?.stale_pass || 0) > 0;
+  if (iosStale && macStale) return "npm run validation:wave2-reproof";
+  if (macStale) return "npm run macos:validation-batch";
+  if (iosStale) return "npm run verify:ios-screens";
+  return null;
 }
 
 function pickActiveTrack(ledger, dirty) {
@@ -83,6 +94,8 @@ function pickActiveTrack(ledger, dirty) {
 }
 
 function routeCommandForTrack(track, ledger) {
+  const wave2 = resolveWave2Route(ledger);
+  if (wave2) return wave2;
   if (track === "macos-visual-parity") return resolveMacosRoute(ledger);
   if (track === "ios-ledger-honesty") return resolveIosRoute(ledger);
   return null;
@@ -108,11 +121,30 @@ const routeCommand =
       ? `npm run phase:preflight -- ${nextPhase.number}`
       : "npm run verify:goal");
 
+const contract = goal.route_contract;
+const useContract =
+  !dirtyFirst && goal.status !== "completed" && contract?.first_command;
+
+const compact = process.argv.includes("--compact");
+
 const firstCommand = dirtyFirst
   ? "git status --short"
-  : goal.status !== "completed" && !trackRoute && !activeCommand
-    ? `./script/project_context.sh query --task ${JSON.stringify(goal.goal)}`
-    : routeCommand;
+  : useContract
+    ? contract.first_command
+    : goal.status !== "completed" && !trackRoute && !activeCommand
+      ? `./script/project_context.sh query --task ${JSON.stringify(goal.goal)}`
+      : routeCommand;
+
+if (compact) {
+  console.log(`first_command: ${firstCommand}`);
+  if (useContract && contract.lane) console.log(`session_lane: ${contract.lane}`);
+  console.log(`dirty_work_required: ${dirtyFirst ? "yes" : "no"}`);
+  if (dirtyFirst) console.log(`after_dirty_resolved: ${routeCommand}`);
+  for (const line of formatGoalNextLines(ledger)) {
+    console.log(line);
+  }
+  process.exit(0);
+}
 
 console.log(`# Goal Next
 current_status: ${goal.status}
@@ -124,6 +156,10 @@ next_phase_unchecked: ${nextPhase ? nextPhase.unchecked : 0}
 active_track: ${activeTrack}
 ledger_progress_ok: ${ledger.ok ? "yes" : "no"}
 first_command: ${firstCommand}`);
+
+if (useContract && contract.lane) {
+  console.log(`session_lane: ${contract.lane}`);
+}
 
 for (const line of formatGoalNextLines(ledger)) {
   console.log(line);

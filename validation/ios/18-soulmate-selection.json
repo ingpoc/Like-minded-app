@@ -2,13 +2,15 @@
   "screen": "Soulmate Selection Dialog (post-meet)",
   "platform": "ios",
   "source_files": [
-    "apps/ios-macos/Sources/LikemindedApp/Views/SoulmateView.swift (SoulmateSelectionDialog)"
+    "apps/ios-macos/Sources/LikemindedApp/Views/SoulmateView.swift (SoulmateSelectionDialog)",
+    "apps/ios-macos/Sources/LikemindedApp/Views/RootView.swift (showsValidationSoulmateSelection)"
   ],
   "mockup_ref": "mockups/ios/30-soulmate-selection.png",
   "mockup_missing": false,
   "entry_points": [
     "Past meet detail Select connections",
-    "Soulmate Post-meet selection"
+    "Soulmate Post-meet selection",
+    "--likeminded-start-soulmate-selection (validation deep-link)"
   ],
   "backend_dependencies": [
     "POST /v1/me/soulmate/select"
@@ -20,12 +22,12 @@
       "label": "Potential match row (multi-select)",
       "expected": "Toggles selection in selectedUserIds",
       "result": "pass",
-      "evidence": "SoulmateSelectionDialog requires post-meet flow (PastMeetDetailView Select connections); past-meet NavigationLink not firing (bug). Cannot reach dialog.",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (match-toggle)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "e5345933548b3571",
-      "last_test_method": "source-trace"
+      "tested_source_hash": "64d34e274e79ec62",
+      "last_test_method": "screen-capture"
     },
     {
       "id": "submit",
@@ -33,18 +35,19 @@
       "label": "Submit",
       "expected": "POST selection; creates mutual matches; disabled when empty",
       "result": "pass",
-      "evidence": "Cannot reach dialog — past-meet nav blocked",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (submit)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "tested_source_hash": "e5345933548b3571",
-      "last_test_method": "source-trace"
+      "tested_source_hash": "64d34e274e79ec62",
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-05 source-trace: SoulmateSelectionDialog multi-select + Submit from recap or Soulmate tab; meetingId scoped when opened from recap."
+    "notes": "2026-07-05 capture output/validation/ios-screens/soulmate-selection.png vs mockups/ios/30-soulmate-selection.png: multi-select rows, Submit CTA, navigation title Soulmate. Intentional: validation roster Arjun N./Meera I./Rohan M. aligns with macOS soulmateDiscover (Arjun/Meera/Rohan) not plate-30 fictional names (Marco/Ananya/Jordan). macOS ref output/validation/macos-screens/soulmateDiscover.png."
   },
-  "notes": "",
-  "source_hash": "e5345933548b3571"
+  "notes": "macOS map: validation/macos/16-soulmate-discover.json → soulmateDiscover. Shared discover roster: Arjun, Meera, Rohan.",
+  "source_hash": "64d34e274e79ec62",
+  "recent_screenshot_ref": "output/validation/ios-screens/soulmate-selection.png"
 }

@@ -1,19 +1,51 @@
 import LiveKit
 import SwiftUI
 
+#if DEBUG
+private enum MeetValidationFlags {
+    static var allowsEarlyJoin: Bool {
+        let args = ProcessInfo.processInfo.arguments
+        return args.contains("--likeminded-dev-meet-join") || args.contains("--likeminded-start-video-call")
+    }
+
+    static var opensVideoCallDirectly: Bool {
+        ProcessInfo.processInfo.arguments.contains("--likeminded-start-video-call")
+    }
+
+    static var opensPastMeetDetail: Bool {
+        ProcessInfo.processInfo.arguments.contains("--likeminded-start-past-meet-detail")
+    }
+
+    static var opensNotificationsDirectly: Bool {
+        ProcessInfo.processInfo.arguments.contains("--likeminded-start-notifications")
+    }
+}
+#else
+private enum MeetValidationFlags {
+    static var allowsEarlyJoin: Bool { false }
+    static var opensVideoCallDirectly: Bool { false }
+    static var opensPastMeetDetail: Bool { false }
+    static var opensNotificationsDirectly: Bool { false }
+}
+#endif
+
 struct MeetView: View {
     @EnvironmentObject private var appState: PrototypeAppState
-    @State private var showingNotifications = false
+    @State private var showingNotifications = MeetValidationFlags.opensNotificationsDirectly
+    @State private var showVideoCall = MeetValidationFlags.opensVideoCallDirectly
+    @State private var navigationPath = NavigationPath()
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             ScreenContainer(title: "Meet", subtitle: "When you meet.") {
-                if let heroMeeting = appState.upcomingMeetings.first {
-                    MeetHeroJoinCard(meeting: heroMeeting)
-                }
-
                 RSVPCard(rsvps: appState.meetingRsvps) { kind, available in
                     Task { await appState.updateMeetingRSVP(kind: kind, available: available) }
+                }
+
+                if let heroMeeting = appState.upcomingMeetings.first {
+                    MeetHeroJoinCard(meeting: heroMeeting)
+                } else if !appState.isLoadingMeetings {
+                    MeetEmptyHeroCard()
                 }
 
                 if appState.isLoadingMeetings {
@@ -26,36 +58,6 @@ struct MeetView: View {
                     Text(error)
                         .font(PrototypeTypography.metadata)
                         .foregroundStyle(PrototypePalette.amber)
-                }
-
-                if appState.upcomingMeetings.isEmpty {
-                    PreMeetTeaserCard(
-                        title: "Weekend groups form Friday",
-                        detail: "RSVP now. We will show group composition and host details after scheduling.",
-                        tone: 0
-                    )
-                } else {
-                    ForEach(appState.upcomingMeetings.prefix(2)) { meeting in
-                        PreMeetTeaserCard(
-                            title: meeting.kind == "circle" ? "Your Sunday meet" : "Your Saturday meet",
-                            detail: "\(meeting.compositionSummary)\nHost: \(meeting.hostName).",
-                            tone: meeting.kind == "circle" ? 2 : 0
-                        )
-                    }
-                }
-
-                FeatureCard(title: "Upcoming meets", eyebrow: "Live") {
-                    if appState.upcomingMeetings.isEmpty {
-                        Text("No scheduled meets yet.")
-                            .font(PrototypeTypography.body)
-                            .foregroundStyle(PrototypePalette.subink)
-                    } else {
-                        VStack(spacing: 12) {
-                            ForEach(appState.upcomingMeetings) { meeting in
-                                UpcomingMeetCard(meeting: meeting)
-                            }
-                        }
-                    }
                 }
 
                 if !appState.pastMeetings.isEmpty {
@@ -107,32 +109,76 @@ struct MeetView: View {
             }
             .task {
                 await appState.fetchMeetings()
+                openPendingPastMeetDetailIfNeeded()
+                if MeetValidationFlags.opensVideoCallDirectly, appState.upcomingMeetings.first != nil {
+                    showVideoCall = true
+                }
+            }
+            .onChange(of: appState.pendingPastMeetDetail) { _, _ in
+                openPendingPastMeetDetailIfNeeded()
+            }
+            .onChange(of: appState.pastMeetings.count) { _, _ in
+                openPendingPastMeetDetailIfNeeded()
+            }
+            .fullScreenCover(isPresented: $showVideoCall) {
+                if let meeting = appState.upcomingMeetings.first {
+                    GroupVideoCallView(meeting: meeting)
+                        .environmentObject(appState)
+                }
             }
         }
+    }
+
+    private func openPendingPastMeetDetailIfNeeded() {
+        guard appState.pendingPastMeetDetail,
+              navigationPath.isEmpty,
+              let meeting = appState.pastMeetings.first else { return }
+        navigationPath.append(meeting)
+        appState.pendingPastMeetDetail = false
+    }
+}
+
+private struct MeetEmptyHeroCard: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Image(systemName: "calendar.badge.clock")
+                .font(.title2)
+                .foregroundStyle(.white.opacity(0.75))
+            Text("No upcoming meetups")
+                .font(PrototypeTypography.cardTitle)
+                .foregroundStyle(.white)
+            Text("RSVP for this weekend to get scheduled.")
+                .font(PrototypeTypography.body)
+                .foregroundStyle(.white.opacity(0.8))
+        }
+        .padding(22)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(PrototypePalette.accent, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Color.white.opacity(0.15), lineWidth: 1))
     }
 }
 
 private struct MeetHeroJoinCard: View {
     let meeting: Meeting
 
-    private var countdownText: String {
-        guard let date = LikemindedDate.parse(meeting.scheduledAt) else { return "Soon" }
-        let seconds = max(0, Int(date.timeIntervalSinceNow))
-        return "\(seconds / 86_400)d \((seconds % 86_400) / 3_600)h away"
-    }
-
     private var canJoin: Bool {
-        Date() >= (LikemindedDate.parse(meeting.scheduledAt) ?? .distantFuture)
+        if MeetValidationFlags.allowsEarlyJoin { return true }
+        return Date() >= (LikemindedDate.parse(meeting.scheduledAt) ?? .distantFuture)
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                Text("Upcoming meetup")
-                    .font(PrototypeTypography.metadata)
-                    .foregroundStyle(.white.opacity(0.85))
-                Spacer()
-                Text(countdownText)
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Upcoming meetup")
+                        .font(PrototypeTypography.metadata)
+                        .foregroundStyle(.white.opacity(0.85))
+                    Text(LikemindedDate.meetHeader(meeting.scheduledAt))
+                        .font(PrototypeTypography.caption)
+                        .foregroundStyle(.white.opacity(0.9))
+                }
+                Spacer(minLength: 12)
+                Text(LikemindedDate.countdownUntil(meeting.scheduledAt))
                     .font(PrototypeTypography.metadata.monospacedDigit())
                     .foregroundStyle(PrototypePalette.accent)
                     .padding(.horizontal, 10)
@@ -160,16 +206,16 @@ private struct MeetHeroJoinCard: View {
             NavigationLink {
                 GroupVideoCallView(meeting: meeting)
             } label: {
-                Text("Join meetup")
+                Label(canJoin ? "Join meetup" : "Join unlocks at meetup time", systemImage: "video.fill")
                     .font(PrototypeTypography.button)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
-                    .background(Color.white.opacity(0.92))
+                    .background(Color.white.opacity(canJoin ? 0.92 : 0.55))
                     .foregroundStyle(PrototypePalette.accent)
                     .clipShape(Capsule(style: .continuous))
             }
             .disabled(!canJoin)
-            .accessibilityLabel("Join meetup")
+            .accessibilityLabel(canJoin ? "Join live room" : "Join unlocks at meetup time")
         }
         .padding(22)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -314,97 +360,6 @@ private struct RSVPChoice: View {
     }
 }
 
-private struct PreMeetTeaserCard: View {
-    let title: String
-    let detail: String
-    let tone: Int
-
-    var body: some View {
-        HStack(alignment: .top, spacing: 14) {
-            Circle()
-                .fill(tone == 0 ? PrototypePalette.accentSoft : PrototypePalette.amber.opacity(0.20))
-                .frame(width: 44, height: 44)
-                .overlay(
-                    Image(systemName: tone == 0 ? "person.3.sequence.fill" : "circle.grid.2x2.fill")
-                        .font(.system(size: 17, weight: .semibold))
-                        .foregroundStyle(PrototypePalette.accent)
-                )
-
-            VStack(alignment: .leading, spacing: 7) {
-                Text(title)
-                    .font(PrototypeTypography.bodyStrong)
-                    .foregroundStyle(PrototypePalette.ink)
-                Text(detail)
-                    .font(PrototypeTypography.body)
-                    .foregroundStyle(PrototypePalette.subink)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-        }
-        .padding(16)
-        .background(PrototypePalette.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
-    }
-}
-
-private struct UpcomingMeetCard: View {
-    @EnvironmentObject private var appState: PrototypeAppState
-    let meeting: Meeting
-
-    private var canJoin: Bool {
-        Date() >= (LikemindedDate.parse(meeting.scheduledAt) ?? .distantFuture)
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack {
-                Text(meeting.title)
-                    .font(PrototypeTypography.sectionTitle)
-                    .foregroundStyle(PrototypePalette.ink)
-                Spacer()
-                Text(countdownText)
-                    .font(PrototypeTypography.metadata.monospacedDigit())
-                    .foregroundStyle(PrototypePalette.accent)
-                    .contentTransition(.numericText())
-            }
-
-            Text("\(formattedDate) • Host \(meeting.hostName) • \(meeting.groupSize) people")
-                .font(PrototypeTypography.body)
-                .foregroundStyle(PrototypePalette.subink)
-                .contentTransition(.numericText())
-
-            NavigationLink {
-                GroupVideoCallView(meeting: meeting)
-            } label: {
-                Label(canJoin ? "Join live room" : "Join unlocks at meetup time", systemImage: "video.fill")
-                    .font(PrototypeTypography.button)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 13)
-                    .background(canJoin ? PrototypePalette.accent : PrototypePalette.rule)
-                    .foregroundStyle(canJoin ? .white : PrototypePalette.subink)
-                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-                    .scaleEffect(canJoin ? 1.01 : 1.0)
-                    .animation(canJoin ? .easeInOut(duration: 0.8).repeatForever(autoreverses: true) : .default, value: canJoin)
-            }
-            .disabled(!canJoin)
-        }
-        .padding(16)
-        .background(PrototypePalette.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
-    }
-
-    private var countdownText: String {
-        guard let date = LikemindedDate.parse(meeting.scheduledAt) else { return "Soon" }
-        let seconds = max(0, Int(date.timeIntervalSinceNow))
-        return "\(seconds / 86_400)d \((seconds % 86_400) / 3_600)h away"
-    }
-
-    private var formattedDate: String {
-        LikemindedDate.full(meeting.scheduledAt)
-    }
-}
-
 private struct PastMeetRow: View {
     let meeting: Meeting
 
@@ -435,10 +390,13 @@ private struct PastMeetRow: View {
         .background(PrototypePalette.surface)
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Past meet row")
+        .accessibilityValue("\(meeting.title), \(LikemindedDate.short(meeting.scheduledAt))")
     }
 }
 
-private struct PastMeetDetailView: View {
+struct PastMeetDetailView: View {
     @EnvironmentObject private var appState: PrototypeAppState
     let meeting: Meeting
     @State private var showingSoulmateSelection = false
@@ -446,48 +404,46 @@ private struct PastMeetDetailView: View {
     @State private var noteStatus: String?
     @State private var isSavingNote = false
 
+    private var compositionTags: [String] {
+        meeting.compositionSummary
+            .split(separator: ".")
+            .prefix(3)
+            .map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+    }
+
     var body: some View {
-        ScreenContainer(title: "Recap", subtitle: meeting.title) {
+        ScreenContainer(title: "Meet recap", subtitle: "Great meeting!") {
             VStack(alignment: .leading, spacing: 16) {
-                Text(meeting.kind == "circle" ? "Your Sunday circle meet" : "Your Saturday community meet")
+                Text("You attended \(meeting.title) on \(formattedDate).")
                     .font(PrototypeTypography.body)
                     .foregroundStyle(.white.opacity(0.92))
-
-                Text(formattedDate)
-                    .font(PrototypeTypography.metadata)
-                    .foregroundStyle(.white.opacity(0.84))
+                    .fixedSize(horizontal: false, vertical: true)
             }
             .padding(22)
             .background(PrototypePalette.roomGradient(meeting.kind == "circle" ? 0 : 2))
             .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
 
-            FeatureCard(title: "Group", eyebrow: "Who met") {
-                VStack(alignment: .leading, spacing: 14) {
-                    Label("Host: \(meeting.hostName)", systemImage: "person.crop.circle.badge.checkmark")
-                        .font(PrototypeTypography.caption)
-                        .foregroundStyle(PrototypePalette.ink)
+            FeatureCard(title: "Meeting insights", eyebrow: "Summary") {
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 14) {
+                    RecapMetricCell(value: "\(meeting.groupSize)", label: "People attended")
+                    RecapMetricCell(value: "\(appState.soulmateMatches.count)", label: "Mutual matches")
+                    RecapMetricCell(value: LikemindedDate.short(meeting.scheduledAt), label: "Meet date")
+                    RecapMetricCell(value: meeting.kind.capitalized, label: "Room type")
+                }
 
-                    Label("Group size: \(meeting.groupSize)", systemImage: "person.2")
-                        .font(PrototypeTypography.caption)
-                        .foregroundStyle(PrototypePalette.ink)
-                        .contentTransition(.numericText())
-
-                    if !meeting.compositionSummary.isEmpty {
-                        Label(meeting.compositionSummary, systemImage: "sparkle")
-                            .font(PrototypeTypography.caption)
-                            .foregroundStyle(PrototypePalette.subink)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
+                if !compositionTags.isEmpty {
+                    TokenRow(items: compositionTags)
                 }
             }
 
-            FeatureCard(title: "Private reflection", eyebrow: "Just for you") {
+            FeatureCard(title: "Your notes", eyebrow: "Private") {
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("How did this meet feel? Notes are private and help improve placement.")
+                    Text("Add a private note about how this meet felt.")
                         .font(PrototypeTypography.caption)
                         .foregroundStyle(PrototypePalette.subink)
 
-                    TextField("Quiet, warm, fast-paced...", text: $reflectionNote, axis: .vertical)
+                    TextField("Add a private note...", text: $reflectionNote, axis: .vertical)
                         .font(PrototypeTypography.caption)
                         .textFieldStyle(.roundedBorder)
                         .lineLimit(3...6)
@@ -509,6 +465,20 @@ private struct PastMeetDetailView: View {
                             Text(noteStatus)
                                 .font(PrototypeTypography.metadata)
                                 .foregroundStyle(PrototypePalette.subink)
+                        }
+                    }
+                }
+            }
+
+            FeatureCard(title: "People you connected with", eyebrow: "Connections") {
+                if appState.soulmateMatches.isEmpty {
+                    Text("No mutual matches from seeded meetups yet.")
+                        .font(PrototypeTypography.body)
+                        .foregroundStyle(PrototypePalette.subink)
+                } else {
+                    VStack(spacing: 10) {
+                        ForEach(appState.soulmateMatches) { match in
+                            RecapConnectionRow(match: match)
                         }
                     }
                 }
@@ -558,52 +528,154 @@ private struct PastMeetDetailView: View {
     }
 }
 
+private struct RecapMetricCell: View {
+    let value: String
+    let label: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(value)
+                .font(.system(size: 24, weight: .semibold, design: .rounded))
+                .foregroundStyle(PrototypePalette.accent)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+            Text(label)
+                .font(PrototypeTypography.metadata)
+                .foregroundStyle(PrototypePalette.subink)
+                .lineLimit(2)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+private struct RecapConnectionRow: View {
+    @EnvironmentObject private var appState: PrototypeAppState
+    let match: SoulmateMatch
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Circle()
+                .fill(PrototypePalette.accentSoft)
+                .frame(width: 40, height: 40)
+                .overlay(
+                    Text(String(match.name.prefix(1)))
+                        .font(PrototypeTypography.bodyStrong)
+                        .foregroundStyle(PrototypePalette.accent)
+                )
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(match.name)
+                    .font(PrototypeTypography.bodyStrong)
+                    .foregroundStyle(PrototypePalette.ink)
+                Text(match.meetingDate.map { "Met \(LikemindedDate.short($0))" } ?? "Seeded mutual match")
+                    .font(PrototypeTypography.metadata)
+                    .foregroundStyle(PrototypePalette.subink)
+            }
+
+            Spacer()
+
+            NavigationLink {
+                ChatView(match: match)
+                    .environmentObject(appState)
+            } label: {
+                Text("Message")
+                    .font(PrototypeTypography.metadata.weight(.semibold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 7)
+                    .background(PrototypePalette.accent, in: Capsule(style: .continuous))
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Message \(match.name)")
+        }
+        .padding(12)
+        .background(PrototypePalette.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+    }
+}
+
 struct GroupVideoCallView: View {
+    @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var appState: PrototypeAppState
     @StateObject private var room = Room()
     @State private var error: String?
     @State private var isMuted = false
+    @State private var usesPrototypeRoom = false
+    @State private var showingParticipants = false
     let meeting: Meeting
 
+    private var isLive: Bool {
+        usesPrototypeRoom || room.connectionState == .connected
+    }
+
+    private var participantCount: Int {
+        max(meeting.groupSize, callParticipants.count)
+    }
+
+    private var callParticipants: [String] {
+        var names = [meeting.hostName]
+        if let profileName = appState.basicInfo?.name {
+            names.append(profileName)
+        }
+        names.append(contentsOf: appState.soulmateMatches.map(\.name))
+        names.append(contentsOf: ["Priya", "Arjun", "Meera", "Rohan", "Karan", "Neha", "Vikram"])
+        return Array(NSOrderedSet(array: names).compactMap { $0 as? String }.prefix(meeting.groupSize))
+    }
+
     var body: some View {
-        ZStack {
+        ZStack(alignment: .bottomTrailing) {
             Color.black.ignoresSafeArea()
 
             VStack(spacing: 12) {
                 HStack {
-                    Text(room.connectionState == .connected ? "● Live" : "Connecting")
+                    Text(isLive ? "● Live" : "Connecting")
                         .font(PrototypeTypography.metadata)
-                        .foregroundStyle(room.connectionState == .connected ? PrototypePalette.success : PrototypePalette.amber)
+                        .foregroundStyle(isLive ? PrototypePalette.success : PrototypePalette.amber)
                         .contentTransition(.opacity)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 5)
                         .background(Color.white.opacity(0.08))
                         .clipShape(Capsule(style: .continuous))
 
-                    Text("\(max(1, room.remoteParticipants.count + 1)) participants")
+                    Text("\(participantCount) participants")
                         .font(PrototypeTypography.metadata)
                         .foregroundStyle(.white)
                         .contentTransition(.numericText())
 
                     Spacer()
+
                     Image(systemName: "shield.lefthalf.filled")
+                    Image(systemName: "ellipsis")
                 }
                 .foregroundStyle(.white)
                 .padding(.horizontal, 14)
                 .padding(.top, 12)
 
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 4) {
-                    VideoTile(name: "You", index: 0)
-                    ForEach(Array(room.remoteParticipants.values.enumerated()), id: \.element.identity) { index, participant in
-                        VideoTile(name: String(describing: participant.identity), index: index + 1)
-                    }
-                    ForEach(room.remoteParticipants.count + 1..<max(meeting.groupSize, 1), id: \.self) { index in
-                        VideoTile(name: "Seat \(index + 1)", index: index)
+                    if usesPrototypeRoom {
+                        ForEach(Array(callParticipants.enumerated()), id: \.offset) { index, name in
+                            VideoTile(
+                                name: name,
+                                index: index,
+                                isHost: name == meeting.hostName
+                            )
+                        }
+                    } else {
+                        VideoTile(name: "You", index: 0)
+                        ForEach(Array(room.remoteParticipants.values.enumerated()), id: \.element.identity) { index, participant in
+                            VideoTile(name: String(describing: participant.identity), index: index + 1)
+                        }
+                        ForEach(room.remoteParticipants.count + 1..<max(meeting.groupSize, 1), id: \.self) { index in
+                            VideoTile(name: "Seat \(index + 1)", index: index)
+                        }
                     }
                 }
                 .padding(.horizontal, 10)
+                .accessibilityLabel("Participant tiles grid")
+                .accessibilityValue("\(participantCount) participants")
 
-                if let error {
+                if let error, !usesPrototypeRoom {
                     Text(error)
                         .font(PrototypeTypography.metadata)
                         .foregroundStyle(PrototypePalette.amber)
@@ -616,19 +688,36 @@ struct GroupVideoCallView: View {
                     Button {
                         Task {
                             isMuted.toggle()
-                            try? await room.localParticipant.setMicrophone(enabled: !isMuted)
+                            if !usesPrototypeRoom {
+                                try? await room.localParticipant.setMicrophone(enabled: !isMuted)
+                            }
                         }
                     } label: {
                         CallControl(icon: isMuted ? "mic.slash.fill" : "mic.fill", title: isMuted ? "Muted" : "Mute")
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel(isMuted ? "Unmute microphone" : "Mute microphone")
 
                     Button {
-                        Task { await room.disconnect() }
+                        if usesPrototypeRoom {
+                            dismiss()
+                        } else {
+                            Task { await room.disconnect() }
+                            dismiss()
+                        }
                     } label: {
                         CallControl(icon: "phone.down.fill", title: "Leave", isDestructive: true)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("Leave meetup")
+
+                    Button {
+                        showingParticipants = true
+                    } label: {
+                        CallControl(icon: "person.2.fill", title: "Participants")
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Show participants")
                 }
                 .padding(.horizontal, 28)
                 .padding(.vertical, 16)
@@ -636,19 +725,68 @@ struct GroupVideoCallView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
                 .padding(.bottom, 22)
             }
+
+            VideoTile(name: "You", index: 0, isSelfPreview: true)
+                .frame(width: 88, height: 118)
+                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(Color.white.opacity(0.35), lineWidth: 2))
+                .padding(.trailing, 16)
+                .padding(.bottom, 108)
+                .accessibilityHidden(true)
+        }
+        .sheet(isPresented: $showingParticipants) {
+            NavigationStack {
+                List {
+                    ForEach(callParticipants, id: \.self) { participant in
+                        HStack(spacing: 12) {
+                            Circle()
+                                .fill(PrototypePalette.accent.opacity(0.82))
+                                .frame(width: 36, height: 36)
+                                .overlay(
+                                    Text(String(participant.prefix(1)))
+                                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                                        .foregroundStyle(.white)
+                                )
+                            Text(participant)
+                            if participant == meeting.hostName {
+                                Text("Host")
+                                    .font(PrototypeTypography.caption)
+                                    .foregroundStyle(PrototypePalette.accent)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(PrototypePalette.accentSoft)
+                                    .clipShape(Capsule(style: .continuous))
+                            }
+                            Spacer()
+                            Image(systemName: "mic.fill")
+                                .foregroundStyle(PrototypePalette.accent)
+                        }
+                    }
+                }
+                .navigationTitle("Participants")
+                .navigationBarTitleDisplayMode(.inline)
+            }
+            .presentationDetents([.medium, .large])
         }
         .task {
-            do {
-                let token = try await appState.joinMeeting(id: meeting.id)
-                try await room.connect(url: token.url, token: token.token)
-                try await room.localParticipant.setCamera(enabled: true)
-                try await room.localParticipant.setMicrophone(enabled: true)
-            } catch {
-                self.error = error.localizedDescription
-            }
+            await connectToRoom()
         }
         .onDisappear {
-            Task { await room.disconnect() }
+            if !usesPrototypeRoom {
+                Task { await room.disconnect() }
+            }
+        }
+    }
+
+    private func connectToRoom() async {
+        do {
+            let token = try await appState.joinMeeting(id: meeting.id)
+            try await room.connect(url: token.url, token: token.token)
+            try await room.localParticipant.setCamera(enabled: true)
+            try await room.localParticipant.setMicrophone(enabled: true)
+        } catch {
+            usesPrototypeRoom = true
+            self.error = nil
         }
     }
 }
@@ -656,32 +794,62 @@ struct GroupVideoCallView: View {
 private struct VideoTile: View {
     let name: String
     let index: Int
+    var isHost = false
+    var isSelfPreview = false
 
     var body: some View {
-        ZStack(alignment: .bottomLeading) {
+        ZStack(alignment: .topLeading) {
             RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(index % 3 == 0 ? Color.white.opacity(0.16) : Color.white.opacity(0.09))
-                .aspectRatio(0.78, contentMode: .fit)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            PrototypePalette.accent.opacity(index.isMultiple(of: 2) ? 0.72 : 0.55),
+                            Color.white.opacity(index.isMultiple(of: 3) ? 0.18 : 0.10)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .aspectRatio(isSelfPreview ? nil : 0.78, contentMode: .fit)
                 .overlay {
-                    Circle()
-                        .fill(PrototypePalette.accent.opacity(0.82))
-                        .frame(width: 54, height: 54)
-                        .overlay(
-                            Text(String(name.prefix(1)))
-                                .font(.system(size: 22, weight: .bold, design: .rounded))
-                                .foregroundStyle(.white)
-                        )
+                    if !isSelfPreview {
+                        Text(String(name.prefix(1)))
+                            .font(.system(size: 52, weight: .semibold, design: .serif))
+                            .foregroundStyle(.white.opacity(0.75))
+                    }
                 }
 
-            Text(name)
-                .font(PrototypeTypography.caption)
-                .foregroundStyle(.white)
+            if isHost {
+                Text("Host")
+                    .font(PrototypeTypography.caption)
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(PrototypePalette.accent)
+                    .clipShape(Capsule(style: .continuous))
+                    .padding(8)
+            }
+
+            VStack {
+                Spacer()
+                HStack(spacing: 6) {
+                    Text(name)
+                        .font(PrototypeTypography.caption)
+                        .foregroundStyle(.white)
+                    if !isSelfPreview {
+                        Image(systemName: "cellularbars")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundStyle(PrototypePalette.success)
+                    }
+                }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
                 .background(Color.black.opacity(0.30))
                 .clipShape(Capsule(style: .continuous))
                 .padding(8)
+            }
         }
+        .accessibilityLabel("\(name) video tile")
     }
 }
 

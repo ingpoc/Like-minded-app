@@ -2,12 +2,15 @@
   "screen": "Voice Profile Session Sheet",
   "platform": "ios",
   "source_files": [
-    "apps/ios-macos/Sources/LikemindedApp/Views/ProfilePrototypeView.swift (VoiceProfileSessionSheet)"
+    "apps/ios-macos/Sources/LikemindedApp/Views/ProfilePrototypeView.swift (VoiceProfileSessionSheet)",
+    "apps/ios-macos/Sources/LikemindedApp/Data/PrototypeAppState.swift (seedVoiceSessionPreviewIfNeeded)",
+    "apps/ios-macos/Sources/LikemindedApp/Views/RootView.swift (--likeminded-start-voice-session)"
   ],
   "mockup_ref": "mockups/ios/01-04-onboarding-voice-meet-soulmate.png",
   "mockup_missing": false,
   "entry_points": [
-    "Sheet from Profile Start voice / Update / Re-interview"
+    "Sheet from Profile Start voice / Update / Re-interview",
+    "DEBUG --likeminded-start-voice-session deep link"
   ],
   "backend_dependencies": [
     "POST /v1/realtime/calls",
@@ -20,12 +23,12 @@
       "label": "Voice orb (idle/listening/processing/captured)",
       "expected": "Animates with audio amplitude",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (voice-orb)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (voice-orb)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "af33a69ba7d598de",
+      "tested_source_hash": "523b44d805d35adc",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "stop",
@@ -33,12 +36,12 @@
       "label": "Stop",
       "expected": "Calls stopVoiceSession; persists profile",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (stop)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (stop)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "af33a69ba7d598de",
+      "tested_source_hash": "523b44d805d35adc",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     },
     {
       "id": "done",
@@ -46,18 +49,19 @@
       "label": "Done",
       "expected": "Dismisses sheet",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (done)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (done)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "af33a69ba7d598de",
+      "tested_source_hash": "523b44d805d35adc",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "screen-capture"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-05 source-trace vs plate 01-04: VoiceProfileSessionSheet orb Stop/Done controls. Intentional: sheet overlay not full-screen montage frame."
+    "notes": "2026-07-05 capture output/validation/ios-screens/06-voice-session-sheet.png: dark VoiceProfileSessionSheet, pulsing orb + waveform, I am listening for fit copy, captured-signals list, Stop and extract signals. Center luminance 26.8. Intentional: sheet modal vs montage frame; macOS uses profileOnboarding step-2 text reflection instead of realtime sheet."
   },
-  "notes": "",
-  "source_hash": "af33a69ba7d598de"
+  "notes": "macOS map: --mac-screen profileOnboarding step 2 (validation/macos/13-profile-onboarding.json voice-profile-step). Validation capture: output/validation/ios-screens/06-voice-session-sheet.png (2026-07-05, center luminance 26.8). Launch: --likeminded-start-voice-session --likeminded-dev-voice-preview with validation-gurusharan; RootView routes voice-session to Profile tab.",
+  "source_hash": "523b44d805d35adc",
+  "recent_screenshot_ref": "output/validation/ios-screens/06-voice-session-sheet.png"
 }

@@ -2,12 +2,14 @@
   "screen": "Create Community",
   "platform": "ios",
   "source_files": [
-    "apps/ios-macos/Sources/LikemindedApp/Views/CommunitiesPrototypeView.swift (CreateCommunityView)"
+    "apps/ios-macos/Sources/LikemindedApp/Views/CommunitiesPrototypeView.swift (CreateCommunityView)",
+    "apps/ios-macos/Sources/LikemindedApp/Views/RootView.swift (--likeminded-start-create-community)"
   ],
   "mockup_ref": "mockups/ios/05-08-circles-meet-communities.png",
   "mockup_missing": false,
   "entry_points": [
-    "Communities tab Create a community card"
+    "Communities tab Create a community card",
+    "--likeminded-start-create-community (validation deep link)"
   ],
   "backend_dependencies": [
     "POST /v1/communities"
@@ -19,12 +21,12 @@
       "label": "Create a community",
       "expected": "Opens CreateCommunityView sheet",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (create-entry)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (create-entry)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace",
-      "tested_source_hash": "cd8e1ff30d57b66d"
+      "last_test_method": "screen-capture",
+      "tested_source_hash": "be1d37d95205b345"
     },
     {
       "id": "name",
@@ -32,12 +34,12 @@
       "label": "Community name",
       "expected": "Editable name field bound to create payload",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (name)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (name)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace",
-      "tested_source_hash": "cd8e1ff30d57b66d"
+      "last_test_method": "screen-capture",
+      "tested_source_hash": "be1d37d95205b345"
     },
     {
       "id": "summary",
@@ -45,12 +47,12 @@
       "label": "Community summary",
       "expected": "Editable summary field bound to create payload",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (summary)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (summary)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace",
-      "tested_source_hash": "cd8e1ff30d57b66d"
+      "last_test_method": "screen-capture",
+      "tested_source_hash": "be1d37d95205b345"
     },
     {
       "id": "themes",
@@ -58,12 +60,12 @@
       "label": "Community themes",
       "expected": "Comma-separated themes (max 3) in create payload",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (themes)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (themes)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace",
-      "tested_source_hash": "cd8e1ff30d57b66d"
+      "last_test_method": "screen-capture",
+      "tested_source_hash": "be1d37d95205b345"
     },
     {
       "id": "submit",
@@ -71,18 +73,40 @@
       "label": "Create community",
       "expected": "POST /v1/communities then navigate to CommunityDetailView",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (submit)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (submit)",
       "blocker": "",
       "stub": false,
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace",
-      "tested_source_hash": "cd8e1ff30d57b66d"
+      "last_test_method": "screen-capture",
+      "tested_source_hash": "be1d37d95205b345"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-05 source-trace vs plate 05-08 + macOS create-community: name/summary/themes preview POST /v1/communities navigate to detail."
+    "notes": "2026-07-05 output/validation/ios-screens/create-community.png vs mockups/ios/05-08 + macOS createCommunity: labeled Name/Summary/Themes form, DoodleCover preview with title overlay, default theme chips, member-led footer. Intentional: iOS sheet stack vs macOS side-by-side columns; iOS mockup plate has browse entry not dedicated create panel."
   },
-  "notes": "macOS parity: mirrors validation/macos/22-create-community.json controls on iOS sheet flow.",
-  "source_hash": "cd8e1ff30d57b66d"
+  "notes": "macOS parity: validation/macos/22-create-community.json. Capture user validation-gurusharan / Gurusharan Gupta.",
+  "source_hash": "be1d37d95205b345",
+  "recent_screenshot_ref": "output/validation/ios-screens/create-community.png",
+  "ui_validation": {
+    "result": "pass",
+    "reference_mockup_ref": "mockups/ios/05-08-circles-meet-communities.png",
+    "recent_screenshot_ref": "output/validation/ios-screens/create-community.png",
+    "design_ref": "DESIGN.md",
+    "last_compared_at": "2026-07-05",
+    "validated": [
+      "latest screenshot exists and was compared with iOS plate 05-08 browse family + macOS createCommunity capture",
+      "form labels and preview card match macOS createCommunity field parity",
+      "validation deep link --likeminded-start-create-community opens CreateCommunityView sheet"
+    ],
+    "pending_validation": [],
+    "requires_implementation": [],
+    "requires_fixing": [],
+    "intentional_differences": [
+      "iOS presents create flow as modal sheet with Cancel; macOS uses full communities chrome + bottom nav.",
+      "iOS stacks Community details above Preview; macOS uses side-by-side MacPanels.",
+      "iOS mockup plate 05-08 shows browse entry tile only; compared functionally to macOS 22-create-community."
+    ],
+    "notes": "2026-07-05 cross-platform parity pass for iOS 24-create-community."
+  }
 }

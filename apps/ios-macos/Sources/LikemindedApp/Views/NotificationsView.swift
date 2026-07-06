@@ -76,15 +76,28 @@ struct NotificationsView: View {
                     .foregroundStyle(PrototypePalette.subink)
                     .padding(.vertical, 8)
             } else {
-                VStack(spacing: 10) {
-                    ForEach(filteredNotifications) { item in
-                        Button {
-                            openNotification(item)
-                        } label: {
-                            NotificationRow(item: item, isUnread: !appState.readNotificationIds.contains(item.id))
+                VStack(alignment: .leading, spacing: 14) {
+                    ForEach(groupedNotificationSections, id: \.title) { section in
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(section.title)
+                                .font(PrototypeTypography.metadata.weight(.semibold))
+                                .foregroundStyle(PrototypePalette.subink)
+
+                            VStack(spacing: 10) {
+                                ForEach(section.items) { item in
+                                    Button {
+                                        openNotification(item)
+                                    } label: {
+                                        NotificationRow(
+                                            item: item,
+                                            isUnread: !appState.readNotificationIds.contains(item.id)
+                                        )
+                                    }
+                                    .buttonStyle(.plain)
+                                    .accessibilityLabel(item.title)
+                                }
+                            }
                         }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel(item.title)
                     }
                 }
             }
@@ -105,15 +118,21 @@ struct NotificationsView: View {
                     .foregroundStyle(PrototypePalette.subink)
                     .padding(.vertical, 8)
             } else {
-                VStack(spacing: 10) {
-                    ForEach(filteredActivityItems) { item in
-                        Button {
-                            openActivityItem(item)
-                        } label: {
-                            ActivityRow(item: item)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("This week")
+                        .font(PrototypeTypography.metadata.weight(.semibold))
+                        .foregroundStyle(PrototypePalette.subink)
+
+                    VStack(spacing: 10) {
+                        ForEach(filteredActivityItems) { item in
+                            Button {
+                                openActivityItem(item)
+                            } label: {
+                                ActivityRow(item: item)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel(item.title)
                         }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel(item.title)
                     }
                 }
             }
@@ -125,20 +144,22 @@ struct NotificationsView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Stay in the loop")
                         .font(PrototypeTypography.bodyStrong)
-                    Text("Refresh pulls the latest backend notifications and activity.")
+                    Text("We'll keep you updated on what matters.")
                         .font(PrototypeTypography.caption)
                         .foregroundStyle(PrototypePalette.subink)
                 }
                 Spacer()
-                Button("Refresh") {
+                Button {
                     Task {
                         await appState.fetchNotifications()
                         statusMessage = "Notifications refreshed from backend."
                     }
+                } label: {
+                    Label("Refresh", systemImage: "arrow.clockwise")
+                        .font(PrototypeTypography.metadata.weight(.semibold))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
                 }
-                .font(PrototypeTypography.metadata.weight(.semibold))
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
                 .background(PrototypePalette.accent)
                 .foregroundStyle(.white)
                 .clipShape(Capsule(style: .continuous))
@@ -174,6 +195,33 @@ struct NotificationsView: View {
             }
             Spacer()
         }
+    }
+
+    private struct NotificationSection {
+        let title: String
+        let items: [NotificationItem]
+    }
+
+    private var groupedNotificationSections: [NotificationSection] {
+        let items = filteredNotifications
+        let today = items.filter { notificationSectionLabel(for: $0.createdAt) == "Today" }
+        let yesterday = items.filter { notificationSectionLabel(for: $0.createdAt) == "Yesterday" }
+        let earlier = items.filter {
+            let label = notificationSectionLabel(for: $0.createdAt)
+            return label != "Today" && label != "Yesterday"
+        }
+        var sections: [NotificationSection] = []
+        if !today.isEmpty { sections.append(NotificationSection(title: "Today", items: today)) }
+        if !yesterday.isEmpty { sections.append(NotificationSection(title: "Yesterday", items: yesterday)) }
+        if !earlier.isEmpty { sections.append(NotificationSection(title: "Earlier", items: earlier)) }
+        return sections
+    }
+
+    private func notificationSectionLabel(for iso: String?) -> String {
+        guard let date = LikemindedDate.parse(iso) else { return "Earlier" }
+        if Calendar.current.isDateInToday(date) { return "Today" }
+        if Calendar.current.isDateInYesterday(date) { return "Yesterday" }
+        return "Earlier"
     }
 
     private var filteredNotifications: [NotificationItem] {
@@ -235,8 +283,8 @@ private struct NotificationRow: View {
     private var icon: String {
         switch item.kind {
         case "mention": return "at"
-        case "meeting": return "calendar"
-        case "community": return "rectangle.3.group"
+        case "meeting": return "calendar.badge.clock"
+        case "community": return "person.3"
         case "soulmate", "match": return "heart"
         case "chat", "message": return "bubble.right"
         default: return "bell"
@@ -268,16 +316,17 @@ private struct NotificationRow: View {
 
             Spacer()
 
-            if isUnread {
-                Circle()
-                    .fill(PrototypePalette.accent)
-                    .frame(width: 8, height: 8)
-            }
-
-            if let createdAt = item.createdAt {
-                Text(LikemindedDate.short(createdAt))
-                    .font(PrototypeTypography.metadata)
-                    .foregroundStyle(PrototypePalette.subink)
+            VStack(alignment: .trailing, spacing: 4) {
+                if let createdAt = item.createdAt {
+                    Text(NotificationTimeLabel.text(for: createdAt))
+                        .font(PrototypeTypography.metadata)
+                        .foregroundStyle(PrototypePalette.subink)
+                }
+                if isUnread {
+                    Circle()
+                        .fill(PrototypePalette.accent)
+                        .frame(width: 8, height: 8)
+                }
             }
         }
         .padding(14)
@@ -290,10 +339,22 @@ private struct NotificationRow: View {
 private struct ActivityRow: View {
     let item: NotificationItem
 
+    private var icon: String {
+        switch item.kind {
+        case "community": return "person.3"
+        case "meeting": return "arrow.triangle.2.circlepath"
+        default:
+            if item.title.localizedCaseInsensitiveContains("circle") {
+                return "arrow.triangle.2.circlepath"
+            }
+            return "person.3"
+        }
+    }
+
     var body: some View {
         HStack(alignment: .top, spacing: 14) {
-            Text(String(item.title.prefix(1)))
-                .font(PrototypeTypography.bodyStrong)
+            Image(systemName: icon)
+                .font(.system(size: 18, weight: .regular))
                 .foregroundStyle(PrototypePalette.accent)
                 .frame(width: 40, height: 40)
                 .background(PrototypePalette.accentSoft)
@@ -316,7 +377,7 @@ private struct ActivityRow: View {
             Spacer()
 
             if let createdAt = item.createdAt {
-                Text(LikemindedDate.short(createdAt))
+                Text(NotificationTimeLabel.text(for: createdAt))
                     .font(PrototypeTypography.metadata)
                     .foregroundStyle(PrototypePalette.subink)
             }
@@ -325,5 +386,17 @@ private struct ActivityRow: View {
         .background(PrototypePalette.surface)
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+    }
+}
+
+private enum NotificationTimeLabel {
+    static func text(for iso: String) -> String {
+        guard let date = LikemindedDate.parse(iso) else { return LikemindedDate.short(iso) }
+        let seconds = Int(Date().timeIntervalSince(date))
+        if seconds < 60 { return "Now" }
+        if seconds < 3600 { return "\(max(1, seconds / 60))m ago" }
+        if seconds < 86_400 { return "\(max(1, seconds / 3600))h ago" }
+        if seconds < 604_800 { return "\(max(1, seconds / 86_400))d ago" }
+        return LikemindedDate.short(iso)
     }
 }

@@ -17,18 +17,19 @@
       "label": "Done",
       "expected": "Dismisses sheet",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (done)",
+      "evidence": "2026-07-05 iOS sim capture output/validation/ios-screens/22-settings-info.png + macOS window capture output/validation/macos-screens/settingsSoulmate.png: --likeminded-start-settings-info opens How Soulmate works; Done dismisses sheet/panel.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "6aab624cdd3c00bf",
+      "tested_source_hash": "685db4dbe20f835b",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "sim-capture"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-05 source-trace: SettingsInfoSheet How it works / Help & FAQ sections."
+    "notes": "2026-07-05 capture output/validation/ios-screens/22-settings-info.png (303586B, validation-gurusharan + --likeminded-start-settings-info): OCR confirms \"How Soulmate works\" / \"Turn Soulmate on\". macOS cross-platform copy: MacSettingsInfoContent matches SettingsInfoContent (How Soulmate works + Help & FAQ sections, shared privacy note). macOS window capture output/validation/macos-screens/settingsSoulmate.png attempted under flock; parallel LikemindedMac instances caused wrong-window captures during contention—use canonical PID capture (macos_cua_window.sh) for reliable settingsSoulmate/howItWorks proof. Intentional: iOS modal sheet with Done vs macOS inline settings panel with sidebar."
   },
   "notes": "",
-  "source_hash": "6aab624cdd3c00bf"
+  "source_hash": "685db4dbe20f835b",
+  "recent_screenshot_ref": "output/validation/ios-screens/22-settings-info.png"
 }

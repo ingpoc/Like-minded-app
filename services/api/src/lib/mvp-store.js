@@ -366,6 +366,11 @@ async function updateLatestProfile(userId, updates) {
   if (!profile) return null;
   if (updates.signals) profile.signals = updates.signals;
   if (Object.prototype.hasOwnProperty.call(updates, "concernFlag")) profile.concernFlag = !!updates.concernFlag;
+  if (Object.prototype.hasOwnProperty.call(updates, "placementConcern")) {
+    profile.placementConcern = typeof updates.placementConcern === "string" && updates.placementConcern.trim()
+      ? updates.placementConcern.trim()
+      : null;
+  }
   if (updates.basicInfo && typeof updates.basicInfo === "object") {
     const current = profile.basicInfo && typeof profile.basicInfo === "object" ? profile.basicInfo : {};
     const next = { ...current };

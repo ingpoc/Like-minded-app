@@ -96,12 +96,18 @@ open -F -n .build/macos/Build/Products/Debug/LikemindedMac.app
 - `-n` opens a new instance.
 - Use `--args …` to pass launch arguments (see §Launch Arguments).
 
-### 4. Terminate / restart
+### 4. Terminate / restart (use lock holder)
+
+During validation, never bare `pkill -x LikemindedMac` from parallel agents — it kills another agent's capturable window.
+
 ```
-pkill -x LikemindedMac
+./script/cross_platform_validation_lock.sh with_lock macos-app bash -c '
+  source script/macos_canonical_app.sh
+  macos_kill_if_lock_holder
+'
 ```
-Always `pkill` before re-`open`ing during validation so the new launch args
-take effect.
+
+Only the lock holder should kill/relaunch. Set `LIKEMINDED_HOLDS_MACOS_APP_LOCK=1` when your script owns `macos-app`.
 
 ### 5. Stream runtime logs
 ```
@@ -132,9 +138,22 @@ Example (deep-link to soulmate discover with seeded validation profile):
 ```
 open -F -n .build/macos/Build/Products/Debug/LikemindedMac.app --args \
   --likeminded-reset-auth-session --likeminded-dev-auth-bypass \
-  --likeminded-dev-auth-token validation-priya --likeminded-dev-auth-name "Priya Shah" \
+  --likeminded-dev-auth-token validation-gurusharan --likeminded-dev-auth-name "Gurusharan Gupta" \
   --mac-screen soulmateDiscover
 ```
+
+**Launch arg order matters.** Put `--mac-screen <name>` **before** profile/dev flags when both are needed (e.g. empty onboarding):
+```
+--mac-screen profileOnboarding --likeminded-dev-profile-empty
+```
+Wrong order can yield **no capturable window**.
+
+**Post-sign-in re-apply.** `MacRootView` must re-apply `--mac-screen` after dev auth completes (`onChange(of: isSignedIn)`); otherwise notifications/settings deep links land on Profile.
+
+**Screen-specific recipes:**
+- **Welcome (auth gate):** no dev bypass — `--likeminded-reset-auth-session --mac-screen welcome --likeminded-validation-welcome`
+- **Settings how-it-works:** `--mac-screen settingsSoulmate --mac-settings-pane howItWorks` only (dual iOS-style flags + pane can open 0 windows)
+- **Communities browse:** catalog vs joined are separate API fetches in `MacAppState.fetchCommunities()` — both must succeed for the grid
 
 ## Validation (against `mockups/macos/`)
 
@@ -158,7 +177,7 @@ What it does, in order:
 3. `npm run reset:validation-data` — seeds `data/validation-db`.
 4. `(cd apps/ios-macos && xcodegen generate)`.
 5. `xcodebuild … -scheme LikemindedMac -destination 'platform=macOS' build` into `.build/macos`.
-6. For each of the 20 screens: `pkill`, `open … --args … --mac-screen <name>`,
+6. For each of the 20 screens: lock `macos-app`, `macos_open_with_args … --mac-screen <name>`,
    activate + resize the window to 1200×760 at {80,80} via AppleScript,
    then `screencapture -x -l <window_id>` the Likeminded window only
    (filtered by owner + size through CoreGraphics).
@@ -257,14 +276,14 @@ When adding a new deep-link screen to validation:
 - **`GENERATE_INFOPLIST_FILE: YES`** — no hand-written Info.plist; configure
   keys via `project.yml` (`INFOPLIST_KEY_*`), then regenerate.
 - **Shell-first.** No simulator tooling on this surface — use `xcodebuild`,
-  `open`, `pkill`, `screencapture`, `log stream`, `osascript`.
+  `open`, `cross_platform_validation_lock.sh`, `screencapture`, `log stream`, `osascript`.
 
 ## Common Pitfalls
 
 - Editing `Likeminded.xcodeproj` directly → always edit `project.yml` and run `xcodegen generate`.
 - Circle/community hero art uses `Sources/DoodleArt` + `Assets.xcassets` doodles — if `DoodleCover` fails to compile, confirm `project.yml` lists `Sources/DoodleArt` under the Mac target and rerun `xcodegen generate`.
 - Building for `platform=iOS Simulator` when you wanted the Mac → use `-destination 'platform=macOS'` and scheme `LikemindedMac`.
-- Leaving a prior `LikemindedMac` instance running → new `--mac-screen` args won't take effect. Always `pkill -x LikemindedMac` first.
+- Leaving a prior `LikemindedMac` instance running → new `--mac-screen` args won't take effect. Use `macos_kill_if_lock_holder` inside the `macos-app` lock — not bare `pkill` from parallel agents.
 - Forgetting to start the validation API → blank/auth-gated screens. Always `curl /health` first.
 - `screencapture` without `-l <window_id>` → grabs the whole screen, breaking mockup parity.
 - Port 8787 already in use → `verify_macos_screens.sh` will kill the existing listener, but be aware it does so unconditionally.

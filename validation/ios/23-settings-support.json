@@ -19,12 +19,12 @@
       "label": "What needs help? field",
       "expected": "Editable support message",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (message)",
+      "evidence": "2026-07-05 capture output/validation/ios-screens/23-settings-support.png vs mockups/ios/34-settings-support.png: placeholder, intro copy, and field layout match plate 34.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "6aab624cdd3c00bf",
+      "tested_source_hash": "69906d62e803ce96",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "capture-compare"
     },
     {
       "id": "send",
@@ -32,12 +32,12 @@
       "label": "Send support note",
       "expected": "POST feedback; disabled when empty",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (send)",
+      "evidence": "2026-07-05 capture: PrimaryActionButton Send support note with paperplane; POST /v1/feedback prefix Support request: (source-trace).",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "6aab624cdd3c00bf",
+      "tested_source_hash": "69906d62e803ce96",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "capture-compare"
     },
     {
       "id": "done",
@@ -45,18 +45,19 @@
       "label": "Done",
       "expected": "Dismisses sheet",
       "result": "pass",
-      "evidence": "source-trace 2026-07-05 iOS parity closeout: reproof after source hash change (done)",
+      "evidence": "2026-07-05 capture: Done toolbar button visible on Contact support sheet.",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "6aab624cdd3c00bf",
+      "tested_source_hash": "69906d62e803ce96",
       "last_tested_at": "2026-07-05",
-      "last_test_method": "source-trace"
+      "last_test_method": "capture-compare"
     }
   ],
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-05 source-trace: ContactSupportSheet persists via POST /v1/feedback."
+    "notes": "2026-07-05 capture output/validation/ios-screens/23-settings-support.png vs mockups/ios/34-settings-support.png: Contact support title, tester-note intro, What needs help? field, Send support note CTA. Intentional: large-title sheet chrome vs mockup centered nav title."
   },
-  "notes": "",
-  "source_hash": "6aab624cdd3c00bf"
+  "notes": "macOS equivalent: validation/macos/20-settings-soulmate.json help-support pane (inline Help & FAQ + contact form). Deep-link: --likeminded-start-settings-support (iOS), --mac-screen settingsSoulmate --mac-settings-pane helpSupport (macOS).",
+  "source_hash": "69906d62e803ce96",
+  "recent_screenshot_ref": "output/validation/ios-screens/23-settings-support.png"
 }
