@@ -373,14 +373,24 @@ struct MacScreenView: View {
     // MARK: - 1. welcome
 
     private var welcome: some View {
-        HStack(spacing: 54) {
+        ZStack(alignment: .leading) {
+            HStack(spacing: 0) {
+                Spacer()
+                    .frame(width: 392)
+                MacConvergenceField()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .scaleEffect(x: 1.08, y: 1.04, anchor: .center)
+            }
+            .allowsHitTesting(false)
+
             VStack(alignment: .leading, spacing: 28) {
                 Text("Likeminded")
                     .font(.system(size: 25, weight: .semibold, design: .serif))
                     .foregroundStyle(MacPalette.accent)
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("When you meet, it matters.")
-                        .font(MacType.title)
+                    Text("When you meet,\nit matters.")
+                        .font(.system(size: 44, weight: .semibold, design: .serif))
+                        .lineSpacing(1)
                         .foregroundStyle(MacPalette.ink)
                         .fixedSize(horizontal: false, vertical: true)
                     Text("AI helps you meet the right people in the right rooms.")
@@ -423,11 +433,11 @@ struct MacScreenView: View {
                     muted: MacPalette.muted
                 )
             }
-            .frame(width: 420)
-            MacConvergenceField()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .frame(width: 390)
+            .padding(.leading, 42)
+            .padding(.top, 8)
         }
-        .frame(maxWidth: .infinity, minHeight: 560, maxHeight: .infinity, alignment: .topLeading)
+        .frame(maxWidth: .infinity, minHeight: 600, maxHeight: .infinity, alignment: .topLeading)
     }
 
     // MARK: - 2. meetOverview
