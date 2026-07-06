@@ -78,6 +78,7 @@
     "Check validation_state / ledger:open before rerunning completed proof; re-test stale_pass rows only.",
     "Reuse validation_inventory scripts and ledger scripts before creating new ones.",
     "Before claiming phase/track/goal complete, run npm run verify:ledger-progress. Actionable fail/pending/stale_pass/stale-blocked controls need unchecked PROGRESS owners; JSON is sole control-status owner.",
+    "Remove goal.json route_contract when a validation slice ships; never pin reproof first_command after ledger stale_pass=0 — npm run goal:next derives reproof from ledger_stale_screens.js.",
     "When a control is fail or stub, add or keep an unchecked PROGRESS item in the same session."
   ],
   "deterministic_graders": [
@@ -246,7 +247,7 @@
   "done_criteria": [
     "All deterministic graders pass.",
     "npm run verify:ledger-progress passes (open fail/pending/stale-blocked controls retain unchecked PROGRESS owners).",
-    "After parallel macOS UI work: npm run macos:validation-batch (or capture + sequential CUA with sole :8787 owner).",
+    "After parallel macOS UI work: `npm run macos:validation-batch` (full) or `npm run macos:validation-batch -- --stale-only --cua-only` when only `stale_pass` rows moved.",
     "Local simulator build and launch pass when local validation inputs changed.",
     "Repo-owned MVP loop surfaces are ready for later external Render, Neon, Apple, and TestFlight proof.",
     "No stale docs or config describe prototype tabs, prototype bundle id, no auth, or SQLite as the production path.",

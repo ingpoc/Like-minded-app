@@ -35,6 +35,10 @@ screens=(
   welcome
 )
 
+if (($# > 0)); then
+  screens=("$@")
+fi
+
 macos_launch_args_for_screen() {
   case "$1" in
     welcome)

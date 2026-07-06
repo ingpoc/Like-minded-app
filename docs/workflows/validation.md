@@ -22,7 +22,7 @@ Do not load `GOAL.md`, `DESIGN.md`, full `PROGRESS.md`, `validation/README.md` s
 
 **Actionable** = `fail`, `pending`, empty `controls`, `stale_pass` (hash mismatch), or `blocked` with automation-unavailable wording (not LiveKit/Apple infra).
 
-`npm run verify:ledger-progress` — open controls need unchecked `PROGRESS.md` owners.
+`npm run verify:ledger-progress` — open controls need unchecked `PROGRESS.md` owners. Also fails on: sibling status tables, phase graveyard in PROGRESS, stale `route_contract` vs ledger, PROGRESS `stale_pass` checkboxes out of sync with JSON.
 
 ## Commands (by need)
 
@@ -43,13 +43,15 @@ export LIKEMINDED_VALIDATION_NAME="Gurusharan Gupta"
 | Release static | `npm run verify:release-config` |
 | Goal contract | `npm run verify:goal` |
 | macOS captures | `npm run verify:macos-screens` |
-| macOS post-parallel batch | `npm run macos:validation-batch` (capture + sequential CUA; sole `:8787` owner) |
+| macOS post-parallel batch | `npm run macos:validation-batch` (full capture + CUA) |
+| macOS / iOS stale reproof | `npm run macos:validation-batch -- --stale-only --cua-only` · `npm run verify:ios-screens -- --stale-only` · `npm run validation:wave2-reproof` |
 | iOS simulator | `npm run verify:simulator-local` |
 | **One screen capture (locked)** | `./script/cross_platform_screen_validate.sh --screen <id> --platform ios\|both` |
-| iOS batch captures (legacy) | `npm run verify:ios-screens` — wrapper over `validate:screen` (sequential) |
+| iOS batch captures | `npm run verify:ios-screens` (default list) or `--stale-only` for ledger-driven reproof |
 | Seeded API | `npm run dev:api:validation` |
 | Reset seed | `npm run reset:validation-data` |
 | macOS CUA (one screen) | `./script/macos_audit_prepare.sh` → `./script/macos_cua_screen.sh <screen>` |
+| Stale screen list | `node script/ledger_stale_screens.js --platform ios\|macos` |
 | macOS minimum window | `./script/macos_audit_window_matrix.sh small` = 1120×901 |
 | Phase checklist | `npm run phase:preflight -- <N>` |
 | External gate | `npm run verify:external-preflight` |
@@ -88,9 +90,11 @@ See § Parallel screen validation for locks and two-wave model. iOS single-scree
 | Situation | Command |
 |-----------|---------|
 | One screen, API up | `macos_audit_prepare.sh <screen>` → `macos_cua_screen.sh <screen>` |
-| After parallel UI edits or `stale_pass` | `npm run macos:validation-batch` |
+| After parallel UI edits (full macOS closeout) | `npm run macos:validation-batch` |
 | Captures only | `npm run verify:macos-screens` |
-| Stale controls only | `npm run macos:cua-reproof` |
+| Stale controls only (macOS) | `npm run macos:cua-reproof` (= `--stale-only --cua-only`) |
+| Stale controls only (iOS) | `npm run verify:ios-screens -- --stale-only` |
+| Both platforms stale | `npm run validation:wave2-reproof` |
 
 Do not run capture/CUA in parallel across agents. Mockup path: ledger `mockup_ref` per screen.
 
@@ -105,7 +109,7 @@ Do not run capture/CUA in parallel across agents. Mockup path: ledger `mockup_re
 
 Do **not** spawn one agent per screen for build+capture+fix. Parallel UI agents + concurrent `xcodebuild` / `simctl launch` / `open` caused SIGKILL, wrong PNGs, and corrupt seed data in practice.
 
-After wave 1 finishes: `./script/cross_platform_screen_validate.sh --screen <id> --platform ios|both` per screen, or `npm run macos:validation-batch` for macOS closeout.
+After wave 1 finishes: `./script/cross_platform_screen_validate.sh --screen <id> --platform ios|both` per screen, `npm run verify:ios-screens -- --stale-only` for iOS stale-pass, or `npm run macos:validation-batch -- --stale-only --cua-only` for macOS stale-pass.
 
 ### Locks (macOS uses `lockf`; Linux uses `flock`)
 

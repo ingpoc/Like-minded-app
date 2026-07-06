@@ -3,11 +3,12 @@
 # Uses locks, explicit simulator UDID, build-only + deep-link launch (not build_and_run run).
 #
 # Prefer one screen: npm run validate:screen -- --screen <ledger-id> --platform ios
-# Full gap audit: npm run ledger:open then validate:screen per open row.
+# Stale reproof: npm run verify:ios-screens -- --stale-only
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 VALIDATE="$ROOT_DIR/script/cross_platform_screen_validate.sh"
+STAMP_STALE=0
 
 # Default batch (legacy smoke set + common parity screens). Override: verify_ios_screens.sh 07-meet 16-chat …
 default_screens=(
@@ -28,8 +29,37 @@ default_screens=(
   26-create-event
 )
 
-if [[ $# -gt 0 ]]; then
-  screens=("$@")
+usage() {
+  cat <<EOF
+Usage: $0 [options] [ledger-id ...]
+
+Options:
+  --stale-only   Capture only ledger screens with stale-pass controls; stamp hashes after capture
+  -h, --help     Show this help
+
+Default (no args): legacy smoke screen list.
+EOF
+}
+
+args=()
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --stale-only) STAMP_STALE=1; shift ;;
+    -h|--help) usage; exit 0 ;;
+    -*) echo "Unknown option: $1" >&2; usage >&2; exit 2 ;;
+    *) args+=("$1"); shift ;;
+  esac
+done
+
+if ((${#args[@]} > 0)); then
+  screens=("${args[@]}")
+elif (( STAMP_STALE == 1 )); then
+  mapfile -t screens < <(node "$ROOT_DIR/script/ledger_stale_screens.js" --platform ios)
+  if ((${#screens[@]} == 0)); then
+    echo "iOS stale-pass: no screens to capture"
+    exit 0
+  fi
+  echo "iOS stale-only capture: ${#screens[@]} screen(s)" >&2
 else
   screens=("${default_screens[@]}")
 fi
@@ -57,3 +87,11 @@ if (( failed > 0 )); then
   exit 1
 fi
 echo "Screenshots: $ROOT_DIR/output/validation/ios-screens"
+
+if (( STAMP_STALE == 1 )); then
+  echo "== stamp stale iOS controls ==" >&2
+  node "$ROOT_DIR/script/ledger_stamp_stale_pass.js" \
+    --platform ios \
+    --method screen-capture \
+    --evidence-prefix "screen-capture ${LIKEMINDED_VALIDATION_USER} $(date -u +%Y-%m-%d) reproof"
+fi

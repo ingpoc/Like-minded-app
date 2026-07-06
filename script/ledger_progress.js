@@ -13,6 +13,8 @@
  * - stale "GUI automation unavailable" evidence while macos_cua_screen.sh exists
  * - README routing that lists Phase 9 external setup without goal:next / ledger deferral
  * - competing context surfaces (validation README status tables, PROGRESS phase graveyard, etc.)
+ * - PROGRESS stale_pass checkboxes out of sync with ledger stale_pass counts
+ * - goal.json route_contract pinning reproof commands when ledger is clean or mismatched
  */
 const fs = require("node:fs");
 const path = require("node:path");
@@ -200,6 +202,78 @@ function forbiddenAutomationClaimErrors() {
   ];
 }
 
+/** Unchecked stale_pass rows when ledger is clean, or checked rows when ledger still has stale_pass. */
+function progressStaleDesyncErrors(progress, platformSummaries) {
+  const errors = [];
+  const unchecked = uncheckedLines(progress);
+  const checked = checkedLines(progress);
+
+  for (const summary of platformSummaries) {
+    const ownerRe = PLATFORM_OWNERS[summary.platform];
+    if (!ownerRe) continue;
+
+    for (const line of unchecked) {
+      if (summary.stale_pass === 0 && ownerRe.test(line) && /stale_pass/i.test(line)) {
+        errors.push(
+          `${summary.platform}: PROGRESS.md has open stale_pass checkbox but ledger stale_pass=0 — check it off or fix validation/${summary.platform}/*.json`
+        );
+      }
+    }
+    for (const line of checked) {
+      if (summary.stale_pass > 0 && ownerRe.test(line) && /stale_pass/i.test(line)) {
+        errors.push(
+          `${summary.platform}: PROGRESS.md marks stale_pass done but ledger has ${summary.stale_pass} stale_pass control(s) — reopen checkbox or run reproof`
+        );
+      }
+    }
+  }
+  return errors;
+}
+
+/** route_contract must not override goal:next when ledger is clean or pin the wrong reproof command. */
+function goalRouteContractErrors() {
+  const errors = [];
+  const goalPath = path.join(root, "goal.json");
+  if (!fs.existsSync(goalPath)) return errors;
+
+  let goal;
+  try {
+    goal = JSON.parse(fs.readFileSync(goalPath, "utf8"));
+  } catch {
+    return errors;
+  }
+
+  const pinned = String(goal.route_contract?.first_command || "").trim();
+  if (!pinned) return errors;
+
+  const ios = summarizePlatform("ios");
+  const mac = summarizePlatform("macos");
+  const { wave2ReproofCommand, reproofCommand } = require("./ledger_stale_screens");
+
+  let expected = null;
+  if (ios.stale_pass > 0 && mac.stale_pass > 0) {
+    expected = wave2ReproofCommand();
+  } else if (mac.stale_pass > 0) {
+    expected = reproofCommand("macos");
+  } else if (ios.stale_pass > 0) {
+    expected = reproofCommand("ios");
+  }
+
+  if (!expected) {
+    errors.push(
+      `goal.json route_contract pins "${pinned}" but ledger stale_pass=0 on both platforms — remove route_contract; npm run goal:next owns routing`
+    );
+    return errors;
+  }
+
+  if (pinned !== expected) {
+    errors.push(
+      `goal.json route_contract "${pinned}" does not match ledger-driven command "${expected}" — remove route_contract or align with ledger_stale_screens.js`
+    );
+  }
+  return errors;
+}
+
 /** Competing context surfaces that waste tokens or lie about status. */
 function contextRoutingErrors() {
   const errors = [];
@@ -344,6 +418,12 @@ function ownershipReport(progress = readProgress(), goalStatus = readGoalStatus(
   for (const message of contextRoutingErrors()) {
     errors.push(message);
   }
+  for (const message of progressStaleDesyncErrors(progress, platforms)) {
+    errors.push(message);
+  }
+  for (const message of goalRouteContractErrors()) {
+    errors.push(message);
+  }
 
   if (goalStatus === "completed" && errors.length > 0) {
     errors.push("goal.json status is completed but ledger ↔ PROGRESS ownership still fails");
@@ -381,6 +461,8 @@ module.exports = {
   formatGoalNextLines,
   siblingMdLedgers,
   contextRoutingErrors,
+  progressStaleDesyncErrors,
+  goalRouteContractErrors,
   readProgress,
   uncheckedLines
 };

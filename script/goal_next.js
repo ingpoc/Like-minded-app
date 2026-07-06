@@ -59,7 +59,7 @@ function isMacosTrackDirty(dirty) {
 function resolveMacosRoute(ledger) {
   const mac = ledger.platforms.find((p) => p.platform === "macos");
   if (!mac) return "npm run ledger:open";
-  if (mac.stale_pass > 0) return "npm run macos:validation-batch";
+  if (mac.stale_pass > 0) return reproofCommand("macos") || "npm run ledger:open";
   if (mac.fail > 0 || mac.pending > 0) return "npm run ledger:open";
   return "npm run ledger:open";
 }
@@ -67,21 +67,11 @@ function resolveMacosRoute(ledger) {
 function resolveIosRoute(ledger) {
   const ios = ledger.platforms.find((p) => p.platform === "ios");
   if (!ios) return "npm run ledger:open";
-  if (ios.stale_pass > 0) return "npm run verify:ios-screens";
+  if (ios.stale_pass > 0) return reproofCommand("ios") || "npm run ledger:open";
   if (ios.fail > 0 || ios.pending > 0) return "npm run ledger:open";
   return "npm run ledger:open";
 }
 
-function resolveWave2Route(ledger) {
-  const ios = ledger.platforms.find((p) => p.platform === "ios");
-  const mac = ledger.platforms.find((p) => p.platform === "macos");
-  const iosStale = (ios?.stale_pass || 0) > 0;
-  const macStale = (mac?.stale_pass || 0) > 0;
-  if (iosStale && macStale) return "npm run validation:wave2-reproof";
-  if (macStale) return "npm run macos:validation-batch";
-  if (iosStale) return "npm run verify:ios-screens";
-  return null;
-}
 
 function pickActiveTrack(ledger, dirty) {
   const open = ledger.open_tracks || [];
@@ -94,14 +84,21 @@ function pickActiveTrack(ledger, dirty) {
 }
 
 function routeCommandForTrack(track, ledger) {
-  const wave2 = resolveWave2Route(ledger);
-  if (wave2) return wave2;
+  const wave2 = wave2ReproofCommand();
+  if (wave2 && wave2 !== "npm run ledger:stale") {
+    const ios = ledger.platforms.find((p) => p.platform === "ios");
+    const mac = ledger.platforms.find((p) => p.platform === "macos");
+    const iosStale = (ios?.stale_pass || 0) > 0;
+    const macStale = (mac?.stale_pass || 0) > 0;
+    if (iosStale && macStale) return wave2;
+  }
   if (track === "macos-visual-parity") return resolveMacosRoute(ledger);
   if (track === "ios-ledger-honesty") return resolveIosRoute(ledger);
   return null;
 }
 
 const { ownershipReport, formatGoalNextLines } = require("./ledger_progress");
+const { reproofCommand, wave2ReproofCommand } = require("./ledger_stale_screens");
 
 const goal = readJson("goal.json");
 const dirty = gitStatus();

@@ -32,7 +32,7 @@
 | Phase N | `npm run phase:preflight -- N` | Entire phase history |
 | Claim track/goal done | `npm run verify:ledger-progress` | — |
 | macOS CUA (one screen) | `./script/macos_audit_prepare.sh` → `./script/macos_cua_screen.sh <screen>` |
-| macOS post-parallel / stale | `npm run macos:validation-batch` |
+| macOS post-parallel / stale | `npm run macos:validation-batch` (full) or `npm run macos:cua-reproof` when `ledger:stale` shows macOS `stale_pass` only |
 
 `./script/project_context.sh query --task "…"`: **only** if `goal:next` is insufficient, `decision_count > 0`, or boundary/decision-graph work. **Skip when zero decisions.**
 
@@ -126,7 +126,7 @@ Do **not** spawn a background worker for these. If a subagent stalls &gt;5 minut
 | `reset:validation-data` | **No** — sole `:8787` owner | lock `seed` |
 | API contract after `server.js` edit | No | `npm run smoke:mvp` |
 
-Use `./script/cross_platform_validation_lock.sh` for all kills/launches/captures. After parallel UI workers finish: `npm run validate:screen -- --screen <id> --platform ios|both` per screen or `npm run macos:validation-batch` for macOS closeout.
+Use `./script/cross_platform_validation_lock.sh` for all kills/launches/captures. After parallel UI workers finish: `npm run validate:screen -- --screen <id> --platform ios|both` per screen, `npm run verify:ios-screens -- --stale-only` for iOS stale-pass, or `npm run macos:cua-reproof` for macOS stale-pass.
 
 Scripts own proof. Subagents own bounded sidecars. Main thread owns integration and final judgment.
 
