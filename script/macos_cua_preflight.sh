@@ -32,14 +32,19 @@ if ! probe; then
   }
 fi
 
-export MACOS_CUA_DISPLAY="${MACOS_CUA_DISPLAY:-DELL}"
+export MACOS_CUA_FOLLOW_WINDOW="${MACOS_CUA_FOLLOW_WINDOW:-1}"
+# Overlay follows LikemindedMac window display unless MACOS_CUA_FORCE_DISPLAY=1.
 export MACOS_CUA_APP_PROCESS="${MACOS_CUA_APP_PROCESS:-LikemindedMac}"
 export MACOS_CUA_VIRTUAL_OVERLAY="${MACOS_CUA_VIRTUAL_OVERLAY:-1}"
 export MACOS_CUA_LOCAL_COORDS="${MACOS_CUA_LOCAL_COORDS:-1}"
 export MACOS_CUA_NO_FRAME="${MACOS_CUA_NO_FRAME:-1}"
 export MACOS_CUA_CURSOR_ARROW="${MACOS_CUA_CURSOR_ARROW:-1}"
 export MACOS_CUA_FAST="${MACOS_CUA_FAST:-1}"
-export MACOS_CUA_GLIDE_MS="${MACOS_CUA_GLIDE_MS:-300}"
-export MACOS_CUA_DWELL_MS="${MACOS_CUA_DWELL_MS:-300}"
-export MACOS_CUA_MOVE_PAUSE_SEC="${MACOS_CUA_MOVE_PAUSE_SEC:-0.12}"
+export MACOS_CUA_GLIDE_MS="${MACOS_CUA_GLIDE_MS:-120}"
+export MACOS_CUA_DWELL_MS="${MACOS_CUA_DWELL_MS:-80}"
+export MACOS_CUA_MOVE_PAUSE_SEC="${MACOS_CUA_MOVE_PAUSE_SEC:-0.04}"
+# Single pointer: glide via move_cursor (overlay-local), then AX element click
+# (cursorless). PIXEL_CLICK=1 forces desktop pixel clicks — only for surfaces
+# with no AX tree; it minted the sweeping/phantom cursor when tied to a session.
+export MACOS_CUA_PIXEL_CLICK="${MACOS_CUA_PIXEL_CLICK:-0}"
 export MACOS_CUA_MAX_MODAL="${MACOS_CUA_MAX_MODAL:-80}"

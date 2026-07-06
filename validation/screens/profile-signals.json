@@ -1,0 +1,138 @@
+{
+  "schema_version": 2,
+  "logical_screen_id": "profile-signals",
+  "screen": "Profile Signals (share / edit mode)",
+  "platforms": {
+    "ios": {
+      "ledger_legacy_id": null,
+      "implemented": false,
+      "source_files": [],
+      "source_hash": null,
+      "mockup_ref": null,
+      "mockup_missing": true,
+      "entry_points": [],
+      "backend_dependencies": [],
+      "ui_validation": null,
+      "visual_parity": null,
+      "recent_screenshot_ref": null,
+      "notes": "No dedicated iOS screen — feature may live under another logical screen"
+    },
+    "macos": {
+      "ledger_legacy_id": "14-profile-signals",
+      "implemented": true,
+      "source_files": [
+        "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift"
+      ],
+      "source_hash": "5f58d68c4fb27018",
+      "mockup_ref": "mockups/macos/17-20-profile-onboarding-detail-settings.png",
+      "mockup_missing": false,
+      "entry_points": [
+        "Continue from profileOnboarding",
+        "Share profile from myProfile"
+      ],
+      "backend_dependencies": [
+        "GET /v1/me/profile"
+      ],
+      "ui_validation": {
+        "result": "pass",
+        "reference_mockup_ref": "mockups/macos/17-20-profile-onboarding-detail-settings.png",
+        "recent_screenshot_ref": "output/validation/macos-screens/profileSignals.png",
+        "design_ref": "DESIGN.md",
+        "last_compared_at": "2026-07-05",
+        "validated": [
+          "latest screenshot exists and was compared with reference mockup plate 18",
+          "DESIGN.md design language checked: warm canvas, calm editorial hierarchy, card system, green accents, bottom glass navigation",
+          "photo-led profile sidebar with voice-active pill and Circles/Connections/Events metrics",
+          "5-column personality signal cards with category icons and Creativity fifth card",
+          "Your vibe orb panel, About me, Languages, and Done share-flow CTA",
+          "control behavior tracked separately in controls[]"
+        ],
+        "pending_validation": [],
+        "requires_implementation": [],
+        "requires_fixing": [],
+        "intentional_differences": [
+          "Doodle portrait art vs photographic avatar in mockup",
+          "Backend-seeded stats and interest tags vs mockup placeholder counts/copy",
+          "Signal trait labels from validation profile.signals vs mockup sample values"
+        ],
+        "notes": "2026-07-05 dedicated profileSignals surface matches mockup 18 layout; capture at output/validation/macos-screens/profileSignals.png."
+      },
+      "visual_parity": {
+        "result": "pass",
+        "notes": "2026-07-05 capture vs plate 18: photo-led sidebar with Circles/Connections/Events metrics, 5 icon signal cards (Communication/Energy/Trust/Mindset/Creativity), Your vibe + About me + Languages rows, Done CTA."
+      },
+      "recent_screenshot_ref": "output/validation/macos-screens/profileSignals.png",
+      "notes": ""
+    }
+  },
+  "flows": [
+    {
+      "id": "share-profile",
+      "name": "Done",
+      "origin": "profile-signals",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [],
+        "macos": [
+          "share-profile"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "not-applicable",
+          "evidence": "Platform screen not implemented",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "share-profile: verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (share-profile)",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "5f58d68c4fb27018",
+          "last_test_method": "CUA-click"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "User outcome achieved: Done"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "No mockup — functional proof only",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen profile-signals --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh profileSignals → macos_cua_screen.sh profileSignals"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-signals --flow share-profile --result pass --method <tier-method> --evidence \"...\""
+      }
+    }
+  ],
+  "controls": {
+    "ios": [],
+    "macos": [
+      {
+        "id": "share-profile",
+        "type": "button",
+        "label": "Done",
+        "expected": "Navigate → myProfile (editing:false)",
+        "result": "pass",
+        "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (share-profile)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "5f58d68c4fb27018",
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "CUA-click"
+      }
+    ]
+  }
+}

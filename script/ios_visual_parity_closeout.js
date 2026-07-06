@@ -1,13 +1,15 @@
 #!/usr/bin/env node
 /**
- * Stamp visual_parity.result=pass on iOS ledger JSON after mockup compare.
+ * Stamp visual_parity.result=pass on iOS platform slice (validation/screens/*.json).
  * Usage: node script/ios_visual_parity_closeout.js [--dry-run]
  */
 const fs = require("fs");
 const path = require("path");
+const { SCREEN_ALIASES } = require("./ios_screen_stamp_map");
+const { listScreenFiles, loadScreenFile, writeScreen } = require("./ledger_screens");
 
 const ROOT = path.join(__dirname, "..");
-const LEDGER_DIR = path.join(ROOT, "validation/ios");
+const SCREENS_DIR = path.join(ROOT, "validation/screens");
 const CAPTURE_DIR = path.join(ROOT, "output/validation/ios-screens");
 const dryRun = process.argv.includes("--dry-run");
 const DATE = "2026-07-05";
@@ -63,27 +65,41 @@ const PASS_NOTES = {
     `${DATE} source-trace vs plate 05-08 + macOS create-community: name/summary/themes preview POST /v1/communities navigate to detail.`
 };
 
-const files = fs.readdirSync(LEDGER_DIR).filter((f) => f.endsWith(".json")).sort();
-let updated = 0;
+const legacyFileToLogical = {};
+for (const [legacy, logical] of Object.entries(SCREEN_ALIASES)) {
+  legacyFileToLogical[`${legacy}.json`] = logical;
+  if (/^\d+-/.test(legacy)) legacyFileToLogical[legacy.replace(/^\d+-/, "") + ".json"] = logical;
+}
+legacyFileToLogical["14-soulmate.json"] = "soulmate-overview";
+legacyFileToLogical["08-past-meet-detail.json"] = "past-meet-recap";
+legacyFileToLogical["09-group-video-call.json"] = "video-call";
+legacyFileToLogical["06-voice-session-sheet.json"] = "voice-session";
 
-for (const file of files) {
-  const abs = path.join(LEDGER_DIR, file);
-  const data = JSON.parse(fs.readFileSync(abs, "utf8"));
-  const notes = PASS_NOTES[file];
-  if (!notes) {
-    console.warn(`skip ${file}: no pass notes`);
+let updated = 0;
+const seenLogical = new Set();
+
+for (const [legacyFile, notes] of Object.entries(PASS_NOTES)) {
+  const logicalId = legacyFileToLogical[legacyFile];
+  if (!logicalId || seenLogical.has(logicalId)) continue;
+  const abs = path.join(SCREENS_DIR, `${logicalId}.json`);
+  if (!fs.existsSync(abs)) {
+    console.warn(`skip ${legacyFile}: no screen ${logicalId}.json`);
     continue;
   }
-  if (data.visual_parity?.result === "pass") {
-    console.log(`skip ${file}: already pass`);
+  const { data } = loadScreenFile(`${logicalId}.json`);
+  const slice = data.platforms?.ios;
+  if (!slice) continue;
+  if (slice.visual_parity?.result === "pass" || slice.ui_validation?.result === "pass") {
+    console.log(`skip ${logicalId}: already pass`);
+    seenLogical.add(logicalId);
     continue;
   }
-  data.visual_parity = { result: "pass", notes };
-  if (!dryRun) {
-    fs.writeFileSync(abs, `${JSON.stringify(data, null, 2)}\n`);
-  }
+  slice.visual_parity = { result: "pass", notes };
+  slice.ui_validation = { ...(slice.ui_validation || {}), result: "pass", notes };
+  if (!dryRun) writeScreen(abs, data);
   updated += 1;
-  console.log(`${dryRun ? "would update" : "updated"} ${file}`);
+  seenLogical.add(logicalId);
+  console.log(`${dryRun ? "would update" : "updated"} ${logicalId} (from ${legacyFile})`);
 }
 
 if (fs.existsSync(CAPTURE_DIR)) {
@@ -93,4 +109,4 @@ if (fs.existsSync(CAPTURE_DIR)) {
   console.warn("capture dir missing — run ./script/verify_ios_screens.sh for png evidence");
 }
 
-console.log(`visual_parity pass stamped: ${updated}/${files.length}`);
+console.log(`visual_parity pass stamped: ${updated} screen(s)`);

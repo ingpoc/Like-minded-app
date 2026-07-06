@@ -1,0 +1,118 @@
+{
+  "schema_version": 2,
+  "logical_screen_id": "profile-concern",
+  "screen": "Profile (re-interview when concernFlag)",
+  "platforms": {
+    "ios": {
+      "ledger_legacy_id": "05-profile-concern",
+      "implemented": true,
+      "source_files": [
+        "apps/ios-macos/Sources/LikemindedApp/Views/ProfilePrototypeView.swift"
+      ],
+      "source_hash": "b0f00ffafcb84710",
+      "mockup_ref": "mockups/ios/29-profile-concern.png",
+      "mockup_missing": false,
+      "entry_points": [
+        "Auto-routed here from Circles concern button"
+      ],
+      "backend_dependencies": [
+        "GET /v1/me/profile (concernFlag)",
+        "POST /v1/me/circles/concern"
+      ],
+      "ui_validation": {
+        "result": "pass",
+        "notes": "2026-07-05 capture output/validation/ios-screens/profile-concern.png vs mockups/ios/29-profile-concern.png: CIRCLE FEELS OFF eyebrow, concern body copy, Re-interview for placement CTA, living profile signals below. macOS parity surface: --mac-screen myProfile (validation/macos/12-my-profile.json) with matching concern card + CTA in MacScreens.swift."
+      },
+      "visual_parity": {
+        "result": "pass",
+        "notes": "2026-07-05 capture output/validation/ios-screens/profile-concern.png vs mockups/ios/29-profile-concern.png: CIRCLE FEELS OFF eyebrow, concern body copy, Re-interview for placement CTA, living profile signals below. macOS parity surface: --mac-screen myProfile (validation/macos/12-my-profile.json) with matching concern card + CTA in MacScreens.swift."
+      },
+      "recent_screenshot_ref": "output/validation/ios-screens/profile-concern.png",
+      "notes": "macOS map: --mac-screen myProfile. Validation user validation-gurusharan / Gurusharan Gupta. Dev deep-link: --likeminded-dev-profile-concern \"<message>\"."
+    },
+    "macos": {
+      "ledger_legacy_id": null,
+      "implemented": false,
+      "source_files": [],
+      "source_hash": null,
+      "mockup_ref": null,
+      "mockup_missing": true,
+      "entry_points": [],
+      "backend_dependencies": [],
+      "ui_validation": null,
+      "visual_parity": null,
+      "recent_screenshot_ref": null,
+      "notes": "No dedicated macOS screen — feature may live under another logical screen"
+    }
+  },
+  "flows": [
+    {
+      "id": "start-reinterview",
+      "name": "Start re-interview",
+      "origin": "profile-concern",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "start-reinterview"
+        ],
+        "macos": []
+      },
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "start-reinterview: screen-capture 2026-07-06",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "b0f00ffafcb84710",
+          "last_test_method": "screen-capture"
+        },
+        "macos": {
+          "result": "not-applicable",
+          "evidence": "Platform screen not implemented",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control start-reinterview responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/29-profile-concern.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen profile-concern --platform ios",
+          "macos": "npm run ledger:screen -- --platform macos --screen profile-concern --section flows"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-concern --flow start-reinterview --result pass --method <tier-method> --evidence \"...\""
+      }
+    }
+  ],
+  "controls": {
+    "ios": [
+      {
+        "id": "start-reinterview",
+        "type": "button",
+        "label": "Start re-interview",
+        "expected": "Opens voice session sheet, calls startReinterview (appends signals)",
+        "result": "pass",
+        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (start-reinterview)",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "tested_source_hash": "b0f00ffafcb84710",
+        "last_test_method": "screen-capture"
+      }
+    ],
+    "macos": []
+  }
+}

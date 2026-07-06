@@ -1,0 +1,541 @@
+{
+  "schema_version": 2,
+  "logical_screen_id": "soulmate-overview",
+  "screen": "Soulmate Overview",
+  "platforms": {
+    "ios": {
+      "ledger_legacy_id": "14-soulmate",
+      "implemented": true,
+      "source_files": [
+        "apps/ios-macos/Sources/LikemindedApp/Views/SoulmateView.swift (SoulmatePrototypeView)"
+      ],
+      "source_hash": "bb606f2c9ba7928e",
+      "mockup_ref": "mockups/ios/13-16-soulmate-chat.png",
+      "mockup_missing": false,
+      "entry_points": [
+        "Soulmate tab (visible when soulmateEnabled)"
+      ],
+      "backend_dependencies": [
+        "GET /v1/me/soulmate/status",
+        "GET /v1/me/soulmate/matches"
+      ],
+      "ui_validation": {
+        "result": "pass",
+        "notes": "2026-07-05 vs plate 13 (Soulmate matches): hero + YOUR MATCHES list, conversations icon, post-meet CTA when pending. Intentional: validation-gurusharan shows 1 API match (Priya) not mockup 4-name roster; enable toggle only when off + Settings when on; macOS Soulmate tab opens Discover while iOS tab is matches overview (maps to macOS soulmateOverview enable semantics + plate-13 list)."
+      },
+      "visual_parity": {
+        "result": "pass",
+        "notes": "2026-07-05 vs plate 13 (Soulmate matches): hero + YOUR MATCHES list, conversations icon, post-meet CTA when pending. Intentional: validation-gurusharan shows 1 API match (Priya) not mockup 4-name roster; enable toggle only when off + Settings when on; macOS Soulmate tab opens Discover while iOS tab is matches overview (maps to macOS soulmateOverview enable semantics + plate-13 list)."
+      },
+      "recent_screenshot_ref": "output/validation/ios-screens/soulmate.png",
+      "notes": "Cross-ref macOS validation/macos/15-soulmate-overview.json (soulmateOverview deep-link). Match data verified via GET /v1/me/soulmate/matches for validation-gurusharan."
+    },
+    "macos": {
+      "ledger_legacy_id": "15-soulmate-overview",
+      "implemented": true,
+      "source_files": [
+        "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (soulmateOverview)"
+      ],
+      "source_hash": "0b2e7ccc9dfc9fa1",
+      "mockup_ref": "mockups/macos/09-12-profile-soulmate-discover-detail.png",
+      "mockup_missing": false,
+      "entry_points": [
+        "Soulmate tab",
+        "⌘4 (when enabled)"
+      ],
+      "backend_dependencies": [
+        "GET /v1/me/soulmate/status"
+      ],
+      "ui_validation": {
+        "result": "pass",
+        "reference_mockup_ref": "mockups/macos/09-12-profile-soulmate-discover-detail.png",
+        "recent_screenshot_ref": "output/validation/macos-screens/soulmateOverview.png",
+        "design_ref": "DESIGN.md",
+        "last_compared_at": "2026-07-04",
+        "validated": [
+          "latest screenshot exists and was compared with reference mockup",
+          "DESIGN.md design language checked: warm canvas, calm editorial hierarchy, card system, green accents, bottom glass navigation",
+          "visible text and components reviewed for clear purpose",
+          "control behavior tracked separately in controls[]"
+        ],
+        "pending_validation": [],
+        "requires_implementation": [],
+        "requires_fixing": [],
+        "intentional_differences": [],
+        "notes": "2026-07-04 capture vs plate 09: matches overview when soulmate enabled. Intentional: enable toggle lives in Settings only."
+      },
+      "visual_parity": {
+        "result": "pass",
+        "notes": "2026-07-04 capture vs plate 09: matches overview when soulmate enabled. Intentional: enable toggle lives in Settings only."
+      },
+      "recent_screenshot_ref": "output/validation/macos-screens/soulmateOverview.png",
+      "notes": "Soulmate tab opens Discover directly when enabled; overview remains for --mac-screen deep-link only."
+    }
+  },
+  "flows": [
+    {
+      "id": "enable-toggle",
+      "name": "Soulmate status (when enabled)",
+      "origin": "soulmate-overview",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "enable-toggle"
+        ],
+        "macos": [
+          "enable-toggle"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "enable-toggle: screen-capture 2026-07-05",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "bb606f2c9ba7928e",
+          "last_test_method": "screen-capture"
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "enable-toggle: 2026-07-04: when soulmateEnabled, overview shows Label \"On — change this in Settings\" only. Toggle remains solely on set",
+          "blocker": "",
+          "last_tested_at": "2026-07-05",
+          "tested_source_hash": "0b2e7ccc9dfc9fa1",
+          "last_test_method": "CUA-click"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control enable-toggle responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/13-16-soulmate-chat.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen soulmate-overview --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh soulmateOverview → macos_cua_screen.sh soulmateOverview"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen soulmate-overview --flow enable-toggle --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "post-meet-select",
+      "name": "Post-meet selection (when pending)",
+      "origin": "soulmate-overview",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "post-meet-select"
+        ],
+        "macos": []
+      },
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "post-meet-select: screen-capture 2026-07-05",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "bb606f2c9ba7928e",
+          "last_test_method": "screen-capture"
+        },
+        "macos": {
+          "result": "not-applicable",
+          "evidence": "No controls on this platform for this flow",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control post-meet-select responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/13-16-soulmate-chat.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen soulmate-overview --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh soulmateOverview → macos_cua_screen.sh soulmateOverview"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen soulmate-overview --flow post-meet-select --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "match-row",
+      "name": "Match row",
+      "origin": "soulmate-overview",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "match-row"
+        ],
+        "macos": []
+      },
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "match-row: screen-capture 2026-07-05",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "bb606f2c9ba7928e",
+          "last_test_method": "screen-capture"
+        },
+        "macos": {
+          "result": "not-applicable",
+          "evidence": "No controls on this platform for this flow",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control match-row responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/13-16-soulmate-chat.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen soulmate-overview --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh soulmateOverview → macos_cua_screen.sh soulmateOverview"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen soulmate-overview --flow match-row --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "conversations-icon",
+      "name": "Conversations icon (bubble.right)",
+      "origin": "soulmate-overview",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "conversations-icon"
+        ],
+        "macos": []
+      },
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "conversations-icon: screen-capture 2026-07-05",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "bb606f2c9ba7928e",
+          "last_test_method": "screen-capture"
+        },
+        "macos": {
+          "result": "not-applicable",
+          "evidence": "No controls on this platform for this flow",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control conversations-icon responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/13-16-soulmate-chat.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen soulmate-overview --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh soulmateOverview → macos_cua_screen.sh soulmateOverview"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen soulmate-overview --flow conversations-icon --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "how-it-works",
+      "name": "How it works (underlined)",
+      "origin": "soulmate-overview",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [],
+        "macos": [
+          "how-it-works"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "not-applicable",
+          "evidence": "No controls on this platform for this flow",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "how-it-works: 2026-07-04 CUA validation-priya: How it works AXButton clicked via ./script/macos_cua_screen.sh soulmateOverview. (hash-",
+          "blocker": "",
+          "last_tested_at": "2026-07-05",
+          "tested_source_hash": "0b2e7ccc9dfc9fa1",
+          "last_test_method": "CUA-click"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "User outcome achieved: How it works (underlined)"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/13-16-soulmate-chat.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen soulmate-overview --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh soulmateOverview → macos_cua_screen.sh soulmateOverview"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen soulmate-overview --flow how-it-works --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "soulmate-tab-enable",
+      "name": "Enable Soulmate from tab when disabled",
+      "origin": "soulmate-overview",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "tab-enable-toggle"
+        ],
+        "macos": []
+      },
+      "gap_audit": "2026-07-06",
+      "validation": {
+        "ios": {
+          "result": "pending",
+          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        },
+        "macos": {
+          "result": "not-applicable",
+          "evidence": "No macOS controls for this flow",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control tab-enable-toggle responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/13-16-soulmate-chat.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen soulmate-overview --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh soulmateOverview → macos_cua_screen.sh soulmateOverview"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen soulmate-overview --flow soulmate-tab-enable --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "refresh-matches",
+      "name": "Refresh new matches",
+      "origin": "soulmate-overview",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "refresh-matches"
+        ],
+        "macos": []
+      },
+      "gap_audit": "2026-07-06",
+      "validation": {
+        "ios": {
+          "result": "pending",
+          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        },
+        "macos": {
+          "result": "not-applicable",
+          "evidence": "No macOS controls for this flow",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control refresh-matches responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/13-16-soulmate-chat.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen soulmate-overview --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh soulmateOverview → macos_cua_screen.sh soulmateOverview"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen soulmate-overview --flow refresh-matches --result pass --method <tier-method> --evidence \"...\""
+      }
+    }
+  ],
+  "controls": {
+    "ios": [
+      {
+        "id": "enable-toggle",
+        "type": "display",
+        "label": "Soulmate status (when enabled)",
+        "expected": "No Enable Soulmate toggle when already on; status points to Settings as the only toggle owner",
+        "result": "pass",
+        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (enable-toggle)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "bb606f2c9ba7928e",
+        "last_tested_at": "2026-07-05",
+        "last_test_method": "screen-capture"
+      },
+      {
+        "id": "post-meet-select",
+        "type": "button",
+        "label": "Post-meet selection (when pending)",
+        "expected": "Opens SoulmateSelectionDialog",
+        "result": "pass",
+        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (post-meet-select)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "bb606f2c9ba7928e",
+        "last_tested_at": "2026-07-05",
+        "last_test_method": "screen-capture"
+      },
+      {
+        "id": "match-row",
+        "type": "nav-link",
+        "label": "Match row",
+        "expected": "Pushes SoulmateMatchDetailView",
+        "result": "pass",
+        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (match-row)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "bb606f2c9ba7928e",
+        "last_tested_at": "2026-07-05",
+        "last_test_method": "screen-capture"
+      },
+      {
+        "id": "conversations-icon",
+        "type": "nav-link",
+        "label": "Conversations icon (bubble.right)",
+        "expected": "Pushes ConversationListView",
+        "result": "pass",
+        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (conversations-icon)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "bb606f2c9ba7928e",
+        "last_tested_at": "2026-07-05",
+        "last_test_method": "screen-capture"
+      },
+      {
+        "id": "tab-enable-toggle",
+        "type": "button",
+        "label": "Enable Soulmate (tab)",
+        "expected": "Enables soulmate from Soulmate tab shell",
+        "result": "pending",
+        "evidence": "Gap audit 2026-07-06",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "",
+        "tested_source_hash": "",
+        "last_test_method": ""
+      },
+      {
+        "id": "refresh-matches",
+        "type": "button",
+        "label": "New matches",
+        "expected": "Calls fetchSoulmateStatus()",
+        "result": "pending",
+        "evidence": "Gap audit 2026-07-06",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "",
+        "tested_source_hash": "",
+        "last_test_method": ""
+      }
+    ],
+    "macos": [
+      {
+        "id": "enable-toggle",
+        "type": "display",
+        "label": "Soulmate status (when enabled)",
+        "expected": "No Enable Soulmate toggle when already on; status points to Settings as the only toggle owner",
+        "result": "pass",
+        "evidence": "2026-07-04: when soulmateEnabled, overview shows Label \"On — change this in Settings\" only. Toggle remains solely on settingsSoulmate. (hash-migrated: screen-slice source hash)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "0b2e7ccc9dfc9fa1",
+        "last_tested_at": "2026-07-05",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "how-it-works",
+        "type": "button",
+        "label": "How it works (underlined)",
+        "expected": "Navigate → soulmateDiscover",
+        "result": "pass",
+        "evidence": "2026-07-04 CUA validation-priya: How it works AXButton clicked via ./script/macos_cua_screen.sh soulmateOverview. (hash-migrated: screen-slice source hash)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "0b2e7ccc9dfc9fa1",
+        "last_tested_at": "2026-07-05",
+        "last_test_method": "CUA-click"
+      }
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "label": "Save voice profile",
+  "element": 12,
+  "coords": {
+    "x": 3311.5,
+    "y": 1336.0
+  },
+  "cursor_coords": {
+    "x": 751.5,
+    "y": 1049.0
+  },
+  "move": {
+    "raw": "Agent cursor 'macos-cua' moved to (751.5, 1049.0)."
+  },
+  "result": {
+    "effect": "unverifiable",
+    "path": "ax",
+    "verified": false
+  },
+  "method": "agent-cursor-glide+ax-click"
+}

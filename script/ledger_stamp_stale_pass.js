@@ -1,23 +1,20 @@
 #!/usr/bin/env node
 /**
- * Re-stamp stale-pass controls after CUA/screen-capture reproof.
+ * Re-stamp stale-pass controls and flows after CUA/screen-capture reproof (schema v2).
  *
- *   node script/ledger_stamp_stale_pass.js --platform macos --method CUA \
- *     --evidence-prefix "CUA validation-gurusharan 2026-07-05"
- *
- * Optional: --screen meetOverview  (only one ledger file)
+ *   npm run ledger:stamp-stale -- --platform ios --method screen-capture
+ *   npm run ledger:stamp-stale -- --platform macos --screen meetOverview --method CUA
  */
-const fs = require("node:fs");
-const path = require("node:path");
 const {
-  root,
-  loadScreenLedger,
   findLedgerByScreenArg,
-  writeLedger,
-  refreshScreenSourceHash,
-  isControlStale,
+  stampStaleLedger,
+  syncFlowsFromControls,
+  persistLedger,
+  getPlatformHash,
   isoNow
 } = require("./ledger_hash");
+const { listScreenFiles, loadScreenFile } = require("./ledger_screens");
+const { logicalIdFromScreenArg } = require("./ios_screen_stamp_map");
 
 function arg(name) {
   const i = process.argv.indexOf(name);
@@ -26,48 +23,36 @@ function arg(name) {
 
 const platform = arg("--platform") || "macos";
 const screen = arg("--screen");
-const file = arg("--file");
 const method = arg("--method") || "CUA";
 const evidencePrefix = arg("--evidence-prefix") || `${method} ${isoNow()}`;
 
-const dir = path.join(root, "validation", platform);
-let files = fs.readdirSync(dir).filter((name) => name.endsWith(".json"));
-
-if (file) {
-  files = [file.endsWith(".json") ? file : `${file}.json`];
-} else if (screen) {
-  const ledger = findLedgerByScreenArg(platform, screen);
-  files = [ledger.file];
+let screens = [];
+if (screen) {
+  screens = [logicalIdFromScreenArg(screen)];
+} else {
+  screens = listScreenFiles().map((f) => loadScreenFile(f).logicalId);
 }
 
-let stampedTotal = 0;
+let stampedControls = 0;
+let stampedFlows = 0;
 
-for (const name of files) {
-  const { abs, data } = loadScreenLedger(platform, name);
-  const currentHash = refreshScreenSourceHash(data);
-  const staleIds = (data.controls || [])
-    .filter((control) => isControlStale(control, currentHash))
-    .map((control) => control.id);
-
-  if (staleIds.length === 0) {
+for (const logicalId of screens) {
+  let ledger;
+  try {
+    ledger = findLedgerByScreenArg(platform, logicalId);
+  } catch {
     continue;
   }
-
-  for (const id of staleIds) {
-    const control = data.controls.find((c) => c.id === id);
-    if (!control) continue;
-    control.result = "pass";
-    control.last_tested_at = isoNow();
-    control.last_test_method = method;
-    if (currentHash) control.tested_source_hash = currentHash;
-    control.evidence = `${evidencePrefix}: reproof after source hash change (${id})`;
-    control.blocker = "";
-    control.stub = false;
-    stampedTotal += 1;
+  const result = stampStaleLedger(ledger, platform, { method, evidencePrefix });
+  const synced = syncFlowsFromControls(ledger, platform);
+  persistLedger(ledger);
+  if (result.controls.length || result.flows.length) {
+    console.log(
+      `stamped ${platform}/${logicalId}: controls=[${result.controls.join(", ")}] flows=[${result.flows.join(", ")}] hash=${getPlatformHash(ledger, platform)} synced=${synced}`
+    );
   }
-
-  writeLedger(abs, data);
-  console.log(`stamped ${platform}/${name}: ${staleIds.join(", ")} hash=${currentHash}`);
+  stampedControls += result.controls.length;
+  stampedFlows += result.flows.length;
 }
 
-console.log(`ledger_stamp_stale_pass: ${stampedTotal} control(s) on ${platform}`);
+console.log(`ledger_stamp_stale_pass: controls=${stampedControls} flows=${stampedFlows} on ${platform}`);

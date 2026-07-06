@@ -95,7 +95,7 @@ npm run validate:screen -- --screen 07-meet --platform ios
 
 ## Hard rules
 
-- **Ledger owns status** — `validation/ios/*.json`; no parallel pass/fail tables.
+- **Ledger owns status** — `validation/screens/*.json`; no parallel pass/fail tables.
 - **Scripts, not improvisation** — locked `cross_platform_screen_validate.sh` for proof.
 - **Explicit simulator UDID** — from `build_and_run.sh build`; never `booted` with multiple sims.
 - **Sequential proof** — one build/capture chain at a time; `cross_platform_validation_lock.sh`.

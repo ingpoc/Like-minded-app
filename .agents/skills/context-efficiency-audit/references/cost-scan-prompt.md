@@ -45,7 +45,7 @@ Run as `cost_scan`, which is pinned to `gpt-5.4-mini` at medium effort. This is 
 - **Wrong asset/mockup map in active skills or validation indexes:** screen → mockup path points at montage or "missing" when a dedicated mockup exists.
 - **Historical narrative in owner docs:** Phase-complete writeups still read as current ("replaced with Coming soon placeholder") without an explicit historical label.
 - **Non-goals treated as gaps:** audit/mockup extras that product intentionally removed (fake radios, stub likes) still listed as required fixes.
-- **Ledger open without PROGRESS owner:** `validation/{ios,macos}/*.json` has fail/pending/stale-blocked controls but `PROGRESS.md` has no unchecked owner track (or historical phases still read as ledger-green). Fix is `npm run verify:ledger-progress` ownership, not a one-off audit skill run.
+- **Ledger open without PROGRESS owner:** `validation/screens/*.json` has open flows but `PROGRESS.md` has no unchecked owner track (or historical phases still read as ledger-green). Fix is `npm run verify:ledger-progress` ownership, not a one-off audit skill run.
 
 ## Output format
 

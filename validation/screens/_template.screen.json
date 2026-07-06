@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "logical_screen_id": "<slug>",
+  "screen": "<Human-readable screen name>",
+  "platforms": {
+    "ios": {
+      "ledger_legacy_id": null,
+      "implemented": true,
+      "source_files": [
+        "apps/ios-macos/Sources/LikemindedApp/Views/<View>.swift"
+      ],
+      "source_hash": null,
+      "mockup_ref": "mockups/ios/<mockup>.png",
+      "mockup_missing": false,
+      "entry_points": [
+        "<How the user reaches this screen>"
+      ],
+      "backend_dependencies": [
+        "GET /v1/example"
+      ],
+      "ui_validation": null,
+      "visual_parity": null,
+      "recent_screenshot_ref": null,
+      "notes": ""
+    },
+    "macos": {
+      "ledger_legacy_id": null,
+      "implemented": true,
+      "source_files": [
+        "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (<screenCase>)"
+      ],
+      "source_hash": null,
+      "mockup_ref": "mockups/macos/<mockup>.png",
+      "mockup_missing": false,
+      "entry_points": [
+        "<Meet tab | --mac-screen foo>"
+      ],
+      "backend_dependencies": [],
+      "ui_validation": null,
+      "visual_parity": null,
+      "recent_screenshot_ref": null,
+      "notes": ""
+    }
+  },
+  "flows": [],
+  "controls": {
+    "ios": [],
+    "macos": []
+  }
+}

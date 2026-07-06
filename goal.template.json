@@ -110,7 +110,7 @@
       "name": "ledger_progress_ownership",
       "command": "npm run verify:ledger-progress",
       "cost": "zero_token",
-      "proves": "Every actionable fail/pending/stale-blocked control in validation/{ios,macos}/*.json has an unchecked PROGRESS.md owner track item."
+      "proves": "Every actionable open flow in validation/screens/*.json has an unchecked PROGRESS.md owner track item."
     },
     {
       "name": "repo_docs_lint",

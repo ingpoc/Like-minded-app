@@ -23,9 +23,8 @@ const { hashScreenSources, isControlStale } = require("./ledger_hash");
 const root = path.resolve(__dirname, "..");
 
 const PLATFORM_OWNERS = {
-  ios: /Track — iOS Ledger Honesty|validation\/ios|iOS stale_pass|iOS infra-blocked/i,
-  macos:
-    /Track — macOS|validation\/macos|macOS infra-blocked|macOS stale_pass/i
+  ios: /Track — iOS Ledger Honesty|validation\/screens|iOS stale_pass|iOS infra-blocked/i,
+  macos: /Track — macOS|validation\/screens|macOS infra-blocked|macOS stale_pass/i
 };
 
 const TRACK_LABELS = {
@@ -101,10 +100,34 @@ function siblingMdLedgers() {
 }
 
 function summarizePlatform(platform) {
+  const screensDir = path.join(root, "validation", "screens");
+  if (fs.existsSync(screensDir)) {
+    const { summarizeFlows } = require("./ledger_screens");
+    const flowSummary = summarizeFlows(platform, root);
+    return {
+      platform,
+      dir_exists: true,
+      mode: "flows",
+      screens: flowSummary.screens,
+      empty_ledgers: [],
+      fail: flowSummary.fail,
+      pending: flowSummary.pending,
+      blocked: flowSummary.blocked,
+      blocked_stale_automation: 0,
+      stale_pass: flowSummary.stale_pass,
+      stubs: 0,
+      actionable: flowSummary.actionable,
+      open_screens: [...new Set(flowSummary.open_items.map((i) => i.screen))]
+    };
+  }
+
   const dir = path.join(root, "validation", platform);
+  const legacyDir = path.join(root, "validation", "_legacy", platform);
+  const base = fs.existsSync(dir) ? dir : legacyDir;
   const summary = {
     platform,
-    dir_exists: fs.existsSync(dir),
+    dir_exists: fs.existsSync(base),
+    mode: "legacy-controls",
     screens: 0,
     empty_ledgers: [],
     fail: 0,
@@ -118,8 +141,8 @@ function summarizePlatform(platform) {
   };
   if (!summary.dir_exists) return summary;
 
-  for (const name of fs.readdirSync(dir).filter((f) => f.endsWith(".json")).sort()) {
-    const data = JSON.parse(fs.readFileSync(path.join(dir, name), "utf8"));
+  for (const name of fs.readdirSync(base).filter((f) => f.endsWith(".json")).sort()) {
+    const data = JSON.parse(fs.readFileSync(path.join(base, name), "utf8"));
     const controls = Array.isArray(data.controls) ? data.controls : [];
     const currentHash = hashScreenSources(data, root) || data.source_hash || null;
     summary.screens += 1;
@@ -182,15 +205,45 @@ const FORBIDDEN_AUTOMATION_CLAIM = /GUI automation unavailable|macOS GUI automat
 function forbiddenAutomationClaimErrors() {
   if (!fs.existsSync(path.join(root, "script/macos_cua_screen.sh"))) return [];
   const hits = [];
+  const scanDirs = [];
+  const screensDir = path.join(root, "validation", "screens");
+  if (fs.existsSync(screensDir)) {
+    for (const file of fs.readdirSync(screensDir).filter((f) => f.endsWith(".json"))) {
+      const data = JSON.parse(fs.readFileSync(path.join(screensDir, file), "utf8"));
+      for (const flow of data.flows || []) {
+        for (const platform of ["ios", "macos"]) {
+          const v = flow.validation?.[platform] || {};
+          const text = `${v.evidence || ""} ${v.blocker || ""}`;
+          if (FORBIDDEN_AUTOMATION_CLAIM.test(text)) {
+            hits.push(`screens/${file}#${flow.id}:${platform}`);
+          }
+        }
+      }
+      for (const platform of ["ios", "macos"]) {
+        for (const control of data.controls?.[platform] || []) {
+          const text = `${control.evidence || ""} ${control.blocker || ""}`;
+          if (FORBIDDEN_AUTOMATION_CLAIM.test(text)) {
+            hits.push(`${platform}/${file}#${control.id || "?"}`);
+          }
+        }
+      }
+    }
+    if (hits.length === 0) return [];
+    const sample = hits.slice(0, 8).join(", ") + (hits.length > 8 ? "…" : "");
+    return [
+      `stale "GUI automation unavailable" claim while script/macos_cua_screen.sh exists (${hits.length}): ${sample}. Use result=pending and point at ./script/macos_cua_screen.sh — do not mark infrastructure-blocked.`
+    ];
+  }
   for (const platform of ["ios", "macos"]) {
-    const dir = path.join(root, "validation", platform);
-    if (!fs.existsSync(dir)) continue;
-    for (const name of fs.readdirSync(dir).filter((f) => f.endsWith(".json"))) {
-      const data = JSON.parse(fs.readFileSync(path.join(dir, name), "utf8"));
-      for (const control of data.controls || []) {
-        const text = `${control.evidence || ""} ${control.blocker || ""}`;
-        if (FORBIDDEN_AUTOMATION_CLAIM.test(text)) {
-          hits.push(`${platform}/${name}#${control.id || "?"}`);
+    for (const dir of [path.join(root, "validation", platform), path.join(root, "validation", "_legacy", platform)]) {
+      if (!fs.existsSync(dir)) continue;
+      for (const name of fs.readdirSync(dir).filter((f) => f.endsWith(".json"))) {
+        const data = JSON.parse(fs.readFileSync(path.join(dir, name), "utf8"));
+        for (const control of data.controls || []) {
+          const text = `${control.evidence || ""} ${control.blocker || ""}`;
+          if (FORBIDDEN_AUTOMATION_CLAIM.test(text)) {
+            hits.push(`${platform}/${name}#${control.id || "?"}`);
+          }
         }
       }
     }
@@ -334,6 +387,26 @@ function contextRoutingErrors() {
     }
   }
 
+  for (const sub of ["ios", "macos"]) {
+    const dup = path.join(root, "validation", sub);
+    if (!fs.existsSync(dup)) continue;
+    const jsonLedgers = fs.readdirSync(dup).filter((f) => f.endsWith(".json"));
+    if (jsonLedgers.length > 0) {
+      errors.push(
+        `delete validation/${sub}/ (${jsonLedgers.length} JSON ledgers) — status owner is validation/screens/*.json only`
+      );
+    }
+  }
+
+  for (const ownerFile of ["AGENTS.md", "README.md", "PROGRESS.md", path.join("docs/workflows/validation.md")]) {
+    const abs = path.join(root, ownerFile);
+    if (!fs.existsSync(abs)) continue;
+    const text = fs.readFileSync(abs, "utf8");
+    if (/validation\/\{ios,macos\}/.test(text) || /validation\/ios\/\*\.json|validation\/macos\/\*\.json/.test(text)) {
+      errors.push(`${ownerFile} still references legacy validation/{ios,macos} paths — use validation/screens/*.json`);
+    }
+  }
+
   return errors;
 }
 
@@ -380,8 +453,10 @@ function ownershipReport(progress = readProgress(), goalStatus = readGoalStatus(
     let ok = true;
 
     if (summary.dir_exists && summary.screens === 0) {
+      const screensDir = path.join(root, "validation", "screens");
+      const label = fs.existsSync(screensDir) ? "validation/screens" : `validation/${platform}`;
       ok = false;
-      errors.push(`${platform}: validation/${platform} exists but has no JSON ledgers`);
+      errors.push(`${platform}: ${label} exists but has no JSON ledgers`);
     }
     if (summary.empty_ledgers.length > 0) {
       ok = false;

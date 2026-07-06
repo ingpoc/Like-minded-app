@@ -140,6 +140,8 @@ if (compact) {
   for (const line of formatGoalNextLines(ledger)) {
     console.log(line);
   }
+  const actionable = ledger.platforms.reduce((n, p) => n + (p.actionable || 0), 0);
+  if (actionable > 0) console.log("validation_brief: npm run ledger:brief");
   process.exit(0);
 }
 

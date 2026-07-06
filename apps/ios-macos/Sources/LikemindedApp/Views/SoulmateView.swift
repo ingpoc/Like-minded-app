@@ -111,7 +111,7 @@ struct SoulmatePrototypeView: View {
 
     var body: some View {
         NavigationStack {
-            ScreenContainer(title: "Soulmate", subtitle: "Who you connected with.") {
+            ScreenContainer(title: "Soulmate", subtitle: "Discover") {
                 SoulmateHeroCard()
 
                 if !appState.soulmateEnabled {

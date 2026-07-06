@@ -1,0 +1,59 @@
+{
+  "id": "<globally-unique-flow-id>",
+  "name": "<What the user accomplishes in one sentence>",
+  "origin": "<logical_screen_id where user starts>",
+  "steps": [
+    "<Step 1: tap X>",
+    "<Step 2: confirm Y>"
+  ],
+  "destinations": [
+    "<other-logical-screen-id-if-handoff>"
+  ],
+  "spans": [],
+  "backend": [
+    "POST /v1/example"
+  ],
+  "control_ids": {
+    "ios": ["<control-id>"],
+    "macos": ["<control-id>"]
+  },
+  "proof": {
+    "tier": "cua-click",
+    "preconditions": [
+      "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+      "LIKEMINDED_VALIDATION_USER=validation-gurusharan"
+    ],
+    "success_signals": [
+      "<Objective pass signal 1>",
+      "<Objective pass signal 2>"
+    ],
+    "mockup_ref": null,
+    "mockup_note": "null → inherit platforms.{platform}.mockup_ref on parent screen",
+    "commands": {
+      "ios": "./script/cross_platform_screen_validate.sh --screen <logical-id> --platform ios",
+      "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh <mac-screen> → macos_cua_screen.sh <mac-screen>"
+    },
+    "record_pass": "npm run ledger:record-flow -- --platform <ios|macos> --screen <id> --flow <flow-id> --result pass --method <tier-method> --evidence \"...\""
+  },
+  "gap_audit": null,
+  "validation": {
+    "ios": {
+      "result": "pending",
+      "evidence": "",
+      "blocker": "",
+      "screenshot_ref": "",
+      "last_tested_at": "",
+      "tested_source_hash": "",
+      "last_test_method": ""
+    },
+    "macos": {
+      "result": "pending",
+      "evidence": "",
+      "blocker": "",
+      "screenshot_ref": "",
+      "last_tested_at": "",
+      "tested_source_hash": "",
+      "last_test_method": ""
+    }
+  }
+}

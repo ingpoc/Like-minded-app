@@ -1,14 +1,18 @@
 #!/usr/bin/env node
 /**
  * Ledger-driven stale screen lists for targeted reproof batches.
- *
- *   node script/ledger_stale_screens.js --platform ios
- *   node script/ledger_stale_screens.js --platform macos
- *   node script/ledger_stale_screens.js --platform ios --count
+ * Schema v2: stale flows in validation/screens/*.json
  */
 const fs = require("node:fs");
 const path = require("node:path");
 const { hashScreenSources, isControlStale } = require("./ledger_hash");
+const {
+  listScreenFiles,
+  loadScreenFile,
+  hashPlatformSlice,
+  isFlowStale
+} = require("./ledger_screens");
+const { SCREEN_REGISTRY } = require("./ledger_migrate_to_screens");
 
 const root = path.resolve(__dirname, "..");
 
@@ -59,13 +63,50 @@ function macScreenFromLedger(file, data) {
   return MAC_SCREENS.has(fromStem) ? fromStem : null;
 }
 
-function staleLedgerEntries(platform, repoRoot = root) {
+function logicalToLegacyId(platform, logicalId) {
+  const row = SCREEN_REGISTRY.find((r) => r.id === logicalId);
+  return row?.[platform] || logicalId;
+}
+
+function staleFlowEntries(platform, repoRoot = root) {
+  const screensDir = path.join(repoRoot, "validation", "screens");
+  if (fs.existsSync(screensDir)) {
+    const entries = [];
+    for (const file of listScreenFiles(repoRoot)) {
+      const { data, logicalId } = loadScreenFile(file, repoRoot);
+      const currentHash = hashPlatformSlice(data, platform, repoRoot);
+      const staleFlows = (data.flows || []).filter(
+        (flow) =>
+          String(flow.validation?.[platform]?.result || "").toLowerCase() === "pass" &&
+          isFlowStale(flow, platform, currentHash)
+      );
+      if (staleFlows.length === 0) continue;
+      const legacyId = logicalToLegacyId(platform, logicalId);
+      if (platform === "ios") {
+        entries.push({ ledgerId: legacyId, logicalId, staleControls: staleFlows.length });
+        continue;
+      }
+      const slice = data.platforms?.macos;
+      const macScreen =
+        macScreenFromLedger(`${legacyId}.json`, {
+          source_files: slice?.source_files || []
+        }) || stemToCamelScreen(logicalId);
+      entries.push({ ledgerId: legacyId, logicalId, macScreen, staleControls: staleFlows.length });
+    }
+    return entries;
+  }
+  return staleLedgerEntriesLegacy(platform, repoRoot);
+}
+
+function staleLedgerEntriesLegacy(platform, repoRoot = root) {
   const dir = path.join(repoRoot, "validation", platform);
-  if (!fs.existsSync(dir)) return [];
+  const legacyDir = path.join(repoRoot, "validation", "_legacy", platform);
+  const base = fs.existsSync(dir) ? dir : legacyDir;
+  if (!fs.existsSync(base)) return [];
 
   const entries = [];
-  for (const file of fs.readdirSync(dir).filter((f) => f.endsWith(".json")).sort()) {
-    const data = JSON.parse(fs.readFileSync(path.join(dir, file), "utf8"));
+  for (const file of fs.readdirSync(base).filter((f) => f.endsWith(".json")).sort()) {
+    const data = JSON.parse(fs.readFileSync(path.join(base, file), "utf8"));
     const currentHash = hashScreenSources(data, repoRoot) || data.source_hash || null;
     const staleControls = (data.controls || []).filter(
       (control) =>
@@ -75,29 +116,24 @@ function staleLedgerEntries(platform, repoRoot = root) {
     if (staleControls.length === 0) continue;
 
     if (platform === "ios") {
-      entries.push({
-        ledgerId: ledgerStem(file),
-        staleControls: staleControls.length
-      });
+      entries.push({ ledgerId: ledgerStem(file), staleControls: staleControls.length });
       continue;
     }
 
-    if (platform === "macos") {
-      const macScreen = macScreenFromLedger(file, data);
-      if (!macScreen) continue;
-      entries.push({
-        ledgerId: ledgerStem(file),
-        macScreen,
-        staleControls: staleControls.length
-      });
-    }
+    const macScreen = macScreenFromLedger(file, data);
+    if (!macScreen) continue;
+    entries.push({ ledgerId: ledgerStem(file), macScreen, staleControls: staleControls.length });
   }
   return entries;
 }
 
+function staleLedgerEntries(platform, repoRoot = root) {
+  return staleFlowEntries(platform, repoRoot);
+}
+
 function staleLedgerScreens(platform, repoRoot = root) {
   const entries = staleLedgerEntries(platform, repoRoot);
-  if (platform === "ios") return entries.map((e) => e.ledgerId);
+  if (platform === "ios") return entries.map((e) => e.ledgerId || e.logicalId);
   if (platform === "macos") return entries.map((e) => e.macScreen);
   return [];
 }

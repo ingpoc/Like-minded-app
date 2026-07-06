@@ -15,14 +15,17 @@ Do not load `GOAL.md`, `DESIGN.md`, full `PROGRESS.md`, `validation/README.md` s
 
 | What | Owner |
 |------|--------|
-| Control status, success criteria, evidence | `validation/{ios,macos}/*.json` |
+| Logical screen + flow status (both platforms) | `validation/screens/*.json` |
+| Flow pass/fail per platform | `flows[].validation.{ios,macos}` |
+| Atomic UI controls (optional regression) | `controls.{ios,macos}[]` |
 | Roadmap checkbox | `PROGRESS.md` active track |
 | Link index (no status) | `node validation/_generate.js` → `validation/README.md` |
+| Legacy archive (read-only) | `validation/_legacy/{ios,macos}/` |
 | macOS proof routing | `docs/workflows/validation.md` § macOS proof |
 
-**Actionable** = `fail`, `pending`, empty `controls`, `stale_pass` (hash mismatch), or `blocked` with automation-unavailable wording (not LiveKit/Apple infra).
+**Actionable** = open `flows[]` with `fail`, `pending`, `stale-pass`, or infra `blocked` on both platforms where applicable.
 
-`npm run verify:ledger-progress` — open controls need unchecked `PROGRESS.md` owners. Also fails on: sibling status tables, phase graveyard in PROGRESS, stale `route_contract` vs ledger, PROGRESS `stale_pass` checkboxes out of sync with JSON.
+`npm run verify:ledger-progress` — open flows need unchecked `PROGRESS.md` owners. Also fails on: sibling status tables, phase graveyard in PROGRESS, stale `route_contract` vs ledger, PROGRESS `stale_pass` checkboxes out of sync with JSON.
 
 ## Commands (by need)
 
@@ -36,7 +39,7 @@ export LIKEMINDED_VALIDATION_NAME="Gurusharan Gupta"
 | Need | Command |
 |------|---------|
 | Route | `npm run goal:next` |
-| One screen ledger | `npm run ledger:screen -- --platform macos --screen <screen> --section ui\|controls\|all` |
+| One screen ledger | `npm run ledger:screen -- --platform macos --screen <logical-id> --section flows\|controls\|all` |
 | All open controls (gap) | `npm run ledger:open` / `ledger:stale` |
 | Syntax | `npm run check` |
 | API contract | `npm run smoke:mvp` |
@@ -59,19 +62,144 @@ export LIKEMINDED_VALIDATION_NAME="Gurusharan Gupta"
 | Phase checklist | `npm run phase:preflight -- <N>` |
 | External gate | `npm run verify:external-preflight` |
 | Hash refresh | `npm run ledger:refresh-hashes` |
-| Record CUA | `node script/ledger_record_control.js` / `ledger_stamp_screen.js` |
+| Record flow proof | `npm run ledger:record-flow` |
+| Sync flows from controls | `npm run ledger:sync-flows` |
+| Capture closeout | `npm run ledger:capture-closeout` |
+| Refresh platform hashes | `npm run ledger:refresh-hashes` |
+| Stamp stale reproof (batch) | `npm run ledger:stamp-stale` |
+| Session brief (anti-redo) | `npm run ledger:brief` |
+| Testing-ledger queue | `npm run testing:ledger-next` (`@testing-ledger` skill) |
+| Testing-ledger session | `./script/testing_ledger_session.sh preflight\|next\|record` |
+| Add discovered flow | `npm run testing:ledger-add-flow` (see skill `references/add-flow-criteria.md`) |
+| One flow packet | `npm run ledger:flow -- --platform ios\|macos --screen <id> --flow <flow-id>` |
+| Production gate | `npm run verify:production-ready` |
+| Record control (legacy detail) | `node script/ledger_record_control.js` / `ledger_stamp_screen.js` |
 
-## Ledger fields
+### Production readiness (TestFlight MVP)
 
-- Screen `source_hash` — from `source_files`; refresh after Swift edits.
-- Screen `ui_validation` — visual pass/fail against `reference_mockup_ref`, `recent_screenshot_ref`, and `DESIGN.md`.
-  - `validated`: what was checked for UI only.
-  - `pending_validation`: UI checks still not run.
-  - `requires_implementation`: missing UI surface/component.
-  - `requires_fixing`: visible UI mismatch or unclear component.
-  - Control behavior stays in `controls[]`, not `ui_validation`.
-- Control `expected` — success criteria; `result` — pass/fail/blocked/pending.
-- `last_tested_at`, `tested_source_hash`, `last_test_method` — set on proof; `pass` stale when hash differs.
+Contract: `validation/production-contract.json` — defines in-scope screens, out-of-scope features, and when **production-ready** is claimable.
+
+| Need | Command |
+|------|---------|
+| One flow agent packet | `npm run ledger:flow -- --platform ios\|macos --screen <id> --flow <flow-id>` |
+| Text packet (compact) | add `--text` |
+| Backfill `flows[].proof` | `npm run ledger:apply-proof` |
+| Production gate (composite) | `npm run verify:production-ready` |
+
+**Proof tiers** (`flows[].proof.tier`): `capture` < `cua-click` < `api-persist` < `real-auth` / `real-livekit`.
+`ledger:record-flow` rejects `pass` when `last_test_method` is below tier (unless `--force-tier`).
+
+**Agent packet fields:** preconditions, success_signals, mockup_ref, baseline_screenshot (`platforms.*.recent_screenshot_ref`), proof_screenshot (`validation.*.screenshot_ref`), run command, record command.
+
+## Agent validation workflow (hardened)
+
+Phases follow workflow-hardening: **make it work → validate → simplify → optimize → automate**. Status lives in JSON only; agents must not re-discover controls from source when ledger already answers the question.
+
+### Session start (do not redo pass work)
+
+```bash
+npm run goal:next
+npm run ledger:brief          # counts + trust_pass rule
+# Ledger flow testing (macOS CUA): @testing-ledger skill
+npm run testing:ledger-next   # one open flow — do not use ledger:open as queue
+```
+
+| Question | Command | Do **not** load |
+|----------|---------|-----------------|
+| Next flow to prove (macOS) | `npm run testing:ledger-next` | `ledger:open` full gap scan |
+| What's open? | `npm run ledger:open` | Full source trees, mockup dirs |
+| What's stale after edits? | `npm run ledger:stale` | All validation JSON |
+| One screen detail | `npm run ledger:screen -- --platform ios\|macos --screen <id> --section flows` | Other screens |
+| Record proof | `npm run ledger:record-flow` (preferred) or `ledger:record-control` | — |
+
+**Trust `flows[].validation.*.result: pass`** unless `ledger:stale` lists the row or `source_files` changed (`tested_source_hash` ≠ current `platforms.*.source_hash`).
+
+### Status hierarchy (single chain)
+
+| Layer | Owner | Purpose |
+|-------|-------|---------|
+| **Primary** | `flows[].validation.{ios,macos}` | User journey pass/fail/pending/blocked |
+| **Atomic** | `controls.{ios,macos}[]` | Per-button regression detail |
+| **Visual** | `platforms.*.ui_validation` | Mockup parity (screen-level) |
+
+After CUA/capture: stamp controls → `npm run ledger:sync-flows` (or `ledger:record-flow` which syncs controls). Never mark `pass` without `evidence`, `last_test_method`, `tested_source_hash`.
+
+### Success criteria (where it lives)
+
+| Field | Location | Meaning |
+|-------|----------|---------|
+| Journey steps | `flows[].steps[]` | What the user does |
+| Atomic expectation | `controls.*.expected` | Per-control success |
+| Proof | `flows[].validation.*.evidence` | Dated method + outcome |
+| Infra skip | `flows[].validation.*.blocker` | Apple sign-in, LiveKit only |
+
+### Proof tiers (pick one; default Tier A)
+
+| Tier | When | Commands |
+|------|------|----------|
+| **A — Status scan** | Session start, "what's pending?" | `goal:next` → `ledger:brief` → `ledger:open` |
+| **B — One screen** | Fix/verify one open flow | Tier A + `ledger:screen` + platform proof script |
+| **C — Batch closeout** | Multi-screen stale reproof | `validation:wave2-reproof` or `macos:validation-batch --stale-only` |
+
+**macOS one screen:** `macos_cua_preflight.sh` → `macos_audit_prepare.sh <screen>` → `macos_cua_screen.sh <screen>` (stamps controls + syncs flows).
+
+**iOS one screen:** `./script/cross_platform_screen_validate.sh --screen <logical-id> --platform ios` — capture auto-runs `ledger:capture-closeout` (screenshot ref + control stamp + flow sync). Manual: `npm run ledger:record-flow`.
+
+**Capture closeout (both platforms):** `npm run ledger:capture-closeout -- --platform ios|macos --screen <id> --screenshot <path> [--stamp auto|--stale-only]`
+
+### Anti-patterns (agents must avoid)
+
+- Using `ledger:open` as the per-turn work queue — use `testing:ledger-next`
+- Grep/Swift walk to inventory buttons when `ledger:open` already lists gaps
+- Re-run CUA on `pass` flows without stale signal
+- Source-code gap audit when `gap-flows-registry.json` + `ledger:apply-gaps` owns backlog
+- Writing status tables to README, PROGRESS, or sibling `.md` ledgers
+- Parallel capture/CUA across agents (use validation locks)
+
+## Ledger template (schema v2)
+
+Copy before adding a screen or flow:
+
+| Template | Path |
+|----------|------|
+| New logical screen | `validation/screens/_template.screen.json` |
+| New flow object | `validation/screens/_template.flow.json` |
+| Gap backlog (batch apply) | `validation/gap-flows-registry.json` → `npm run ledger:apply-gaps` |
+
+### Adding a flow (checklist)
+
+1. Pick `logical_screen_id` where the user **starts** the journey (`origin`).
+2. Copy `_template.flow.json`; set globally unique `id` (kebab-case).
+3. Fill `control_ids.ios` and/or `control_ids.macos` (empty + `not-applicable` on the other side).
+4. Set `validation.{platform}.result` to `pending` until runtime proof; never `pass` without evidence.
+5. Add matching rows to `controls.{ios,macos}[]` on the same screen file.
+6. Use `destinations[]` when the flow hands off to another logical screen.
+7. Run `npm run ledger:open` — new `pending` flows should appear.
+
+### Validation result values
+
+| `result` | When |
+|----------|------|
+| `pending` | Implemented in app; not runtime-validated yet |
+| `pass` | Proven with evidence + `last_test_method` + `tested_source_hash` |
+| `blocked` | Infra only (Apple sign-in, LiveKit) — set `blocker` |
+| `not-applicable` | No control on that platform for this flow |
+| `fail` | Runtime proof failed |
+
+## Ledger fields (schema v2 — `validation/screens/<id>.json`)
+
+- `logical_screen_id` — canonical screen slug (e.g. `meet`, `onboarding`)
+- `platforms.ios` / `platforms.macos` — source files, mockup, entry points, `ledger_legacy_id` (e.g. `07-meet`)
+- `flows[]` — **primary status owner** for user journeys originating on this screen
+  - `flows[].id` — globally unique flow id
+  - `flows[].validation.ios|macos` — `result`, `evidence`, `last_test_method`, `tested_source_hash`
+  - `flows[].destinations[]` — handoff to other logical screens
+  - `flows[].control_ids` — links to atomic controls
+- `controls.ios[]` / `controls.macos[]` — atomic UI elements (regression detail)
+- Platform `source_hash` — stale when Swift edits change source_files
+- `ui_validation` / `visual_parity` — per-platform visual pass (under `platforms.*`)
+
+## Ledger fields (legacy — archived)
 
 ## Rules
 
@@ -107,7 +235,7 @@ Do not run capture/CUA in parallel across agents. Mockup path: ledger `mockup_re
 
 | Wave | Parallel? | Work |
 |------|-----------|------|
-| **1 — Code** | Yes | Disjoint Swift edits per `validation/{ios,macos}/*.json` + ledger hash/notes |
+| **1 — Code** | Yes | Disjoint Swift edits per `validation/screens/*.json` + ledger hash/notes |
 | **2 — Proof** | **No** | One `reset:validation-data` (if needed) → one iOS build → one macOS build → **sequential** captures |
 
 Do **not** spawn one agent per screen for build+capture+fix. Parallel UI agents + concurrent `xcodebuild` / `simctl launch` / `open` caused SIGKILL, wrong PNGs, and corrupt seed data in practice.
@@ -163,8 +291,8 @@ Use full ledger id: `npm run ledger:screen -- --platform ios --screen 22-setting
 - Put **`--mac-screen <name>` before other launch flags** (order-sensitive; wrong order → no capturable window).
 - Auth welcome: **no** dev bypass; `--likeminded-reset-auth-session --mac-screen welcome --likeminded-validation-welcome`.
 - Settings how-it-works: `--mac-screen settingsSoulmate --mac-settings-pane howItWorks` only (dual `--likeminded-start-settings-info` + pane can yield 0 windows).
-- Capture by **PID window id** (`macos_cua_focus_window.sh`). Run `macos_cua_preflight.sh` if `cua-driver` calls timeout.
-- **Multi-monitor:** defaults in `macos_cua_preflight.sh` (`MACOS_CUA_DISPLAY=DELL`, `MACOS_CUA_LOCAL_COORDS=1`). Align: `macos_cua_focus_window.sh`. Contract: `~/.agents/skills/macos-cua/references/displays.md`.
+- Capture by **PID window id** (`macos_cua_focus_window.sh`). Run `macos_cua_preflight.sh` if `cua-driver` calls timeout. Pointer sanity: `npm run macos:cua-pointer-smoke`.
+- **Multi-monitor:** `MACOS_CUA_FOLLOW_WINDOW=1` (default with `MACOS_CUA_NO_FRAME=1`) — overlay follows LikemindedMac window display via `macos_cua_align_displays.py`. Pin with `MACOS_CUA_FORCE_DISPLAY=1 MACOS_CUA_DISPLAY=DELL`. Align once: `macos_cua_focus_window.sh`; batch clicks use `MACOS_CUA_SKIP_OVERLAY=1`. Pointer: one glide (`move_cursor`, overlay-local) + cursorless AX `element_index` click (default); `MACOS_CUA_PIXEL_CLICK=1` forces desktop pixel clicks for no-AX surfaces only. Contract: `~/.agents/skills/macos-cua/references/displays.md`.
 
 ## Delegated verification
 

@@ -1,11 +1,9 @@
 #!/usr/bin/env node
 /**
- * One-time/backfill: set tested_source_hash on existing pass controls that lack it.
- * Uses date from evidence text when present; does not change result or evidence.
+ * Backfill tested_source_hash on pass controls/flows that lack it (schema v2).
  */
-const fs = require("node:fs");
-const path = require("node:path");
-const { hashScreenSources, writeLedger, root, isoNow } = require("./ledger_hash");
+const { listScreenFiles, loadScreenFile, hashPlatformSlice, writeScreen } = require("./ledger_screens");
+const { isoNow } = require("./ledger_hash");
 
 const onlyPlatform = process.argv.find((a) => a.startsWith("--platform="))?.split("=")[1];
 const platforms = onlyPlatform ? [onlyPlatform] : ["ios", "macos"];
@@ -16,16 +14,13 @@ function dateFromEvidence(evidence) {
   return m ? m[1] : isoNow();
 }
 
-for (const platform of platforms) {
-  const dir = path.join(root, "validation", platform);
-  for (const file of fs.readdirSync(dir).filter((f) => f.endsWith(".json")).sort()) {
-    const abs = path.join(dir, file);
-    const data = JSON.parse(fs.readFileSync(abs, "utf8"));
-    const currentHash = hashScreenSources(data, root);
+for (const file of listScreenFiles()) {
+  const { abs, data, logicalId } = loadScreenFile(file);
+  let touched = false;
+  for (const platform of platforms) {
+    const currentHash = hashPlatformSlice(data, platform);
     if (!currentHash) continue;
-    let touched = false;
-    data.source_hash = currentHash;
-    for (const control of data.controls || []) {
+    for (const control of data.controls?.[platform] || []) {
       if (String(control.result).toLowerCase() !== "pass") continue;
       if (control.tested_source_hash) continue;
       control.tested_source_hash = currentHash;
@@ -34,8 +29,21 @@ for (const platform of platforms) {
       touched = true;
       updated += 1;
     }
-    if (touched) writeLedger(abs, data);
+    for (const flow of data.flows || []) {
+      const v = flow.validation?.[platform];
+      if (!v || String(v.result).toLowerCase() !== "pass") continue;
+      if (v.tested_source_hash) continue;
+      v.tested_source_hash = currentHash;
+      v.last_tested_at = v.last_tested_at || dateFromEvidence(v.evidence);
+      v.last_test_method = v.last_test_method || "backfill";
+      touched = true;
+      updated += 1;
+    }
+  }
+  if (touched) {
+    writeScreen(abs, data);
+    console.log(`backfilled ${logicalId}`);
   }
 }
 
-console.log(`ledger:backfill-test-hashes controls_updated=${updated}`);
+console.log(`ledger:backfill-test-hashes rows_updated=${updated}`);

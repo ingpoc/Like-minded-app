@@ -9,6 +9,24 @@
 
 cua() { python3 "$MACOS_CUA_PY" "$@"; }
 
+# App menu ⌘1-5 — cua key background delivery cannot verify menu shortcuts.
+cua_menu_shortcut() {
+  local digit="$1"
+  if [[ "${MACOS_CUA_SKIP_OVERLAY:-}" == "1" ]]; then
+    cua focus "$CUA_APP" >/dev/null 2>&1 || true
+  else
+    "$ROOT/script/macos_cua_focus_window.sh" >/dev/null
+  fi
+  osascript <<APPLESCRIPT >/dev/null
+tell application "System Events"
+  tell process "$MACOS_CANONICAL_EXEC"
+    set frontmost to true
+  end tell
+  keystroke "$digit" using command down
+end tell
+APPLESCRIPT
+}
+
 macos_wait_main_window() {
   local timeout="${1:-25}"
   local deadline=$((SECONDS + timeout))
@@ -23,12 +41,38 @@ macos_wait_main_window() {
   return 1
 }
 
+# Align cua-driver overlay to the display hosting LikemindedMac (multi-monitor safe).
+macos_cua_align_to_window() {
+  local align_json token
+  align_json="$(python3 "$ROOT/script/macos_cua_align_displays.py" 2>/dev/null)" || return 1
+  token="$(python3 -c "
+import json, sys
+d = json.loads(sys.stdin.read())
+print(d.get('target_token') or '')
+" <<<"$align_json")"
+  [[ -n "$token" ]] || return 1
+  export MACOS_CUA_DISPLAY="$token"
+}
+
+# Resolve display token for the parent shell (subprocess focus does not export env).
+macos_cua_export_display_env() {
+  local align_json token
+  align_json="$(MACOS_CUA_SKIP_OVERLAY=1 python3 "$ROOT/script/macos_cua_align_displays.py" 2>/dev/null)" || return 1
+  token="$(python3 -c "
+import json, sys
+d = json.loads(sys.stdin.read())
+print(d.get('target_token') or '')
+" <<<"$align_json")"
+  [[ -n "$token" ]] || return 1
+  export MACOS_CUA_DISPLAY="$token"
+}
+
 macos_cua_session_start() {
-  "$ROOT/script/macos_cua_focus_window.sh" >/dev/null
+  "$ROOT/script/macos_cua_focus_window.sh" >/dev/null || return 1
   export MACOS_CUA_SKIP_OVERLAY=1
+  macos_cua_export_display_env || return 1
   cua reset >/dev/null 2>&1 || true
   cua focus "$CUA_APP" >/dev/null 2>&1 || true
-  cua cursor show >/dev/null 2>&1 || true
 }
 
 macos_cua_launch_dev() {
@@ -45,9 +89,184 @@ macos_cua_launch_dev() {
   macos_cua_session_start
 }
 
+ui_ax_contains() {
+  local needle="$1"
+  local proc="${MACOS_CANONICAL_EXEC:-LikemindedMac}"
+  osascript - "$proc" "$needle" <<'APPLESCRIPT' 2>/dev/null | grep -q '^true$'
+on run argv
+  set procName to item 1 of argv
+  set needle to item 2 of argv
+  tell application "System Events"
+    if not (exists process procName) then return "false"
+    tell process procName
+      set frontmost to true
+      try
+        repeat with el in (entire contents as list)
+          try
+            if (value of el as text) contains needle then return "true"
+          end try
+          try
+            if (title of el as text) contains needle then return "true"
+          end try
+          try
+            if (description of el as text) contains needle then return "true"
+          end try
+        end repeat
+      end try
+    end tell
+  end tell
+  return "false"
+end run
+APPLESCRIPT
+}
+
 ui_tree_contains() {
   local needle="$1"
-  cua snap "$CUA_APP" --max 80 --mode ax 2>/dev/null | grep -qF "$needle"
+  local max="${2:-80}"
+  local skip_focus="${3:-}"
+  if [[ "$skip_focus" != "no-focus" ]]; then
+    cua focus "$CUA_APP" >/dev/null 2>&1 || true
+  fi
+  if cua snap "$CUA_APP" --max "$max" --mode som 2>/dev/null | grep -qF "$needle"; then
+    return 0
+  fi
+  if cua snap "$CUA_APP" --max "$max" --mode ax 2>/dev/null | grep -qF "$needle"; then
+    return 0
+  fi
+  if [[ "$skip_focus" == "no-focus" ]]; then
+    return 1
+  fi
+  ui_ax_contains "$needle"
+}
+
+ui_tree_contains_modal() {
+  if ui_tree_contains "$1" "$MACOS_CUA_MAX_MODAL" no-focus; then
+    return 0
+  fi
+  ui_ax_contains "$1"
+}
+
+wait_ui_contains() {
+  local needle="$1"
+  local timeout="${2:-20}"
+  local modal="${3:-}"
+  local deadline=$((SECONDS + timeout))
+  local pass=0
+  if [[ "$modal" == "modal" ]]; then
+    wait_ui_contains_modal "$needle" "$timeout"
+    return $?
+  fi
+  cua focus "$CUA_APP" >/dev/null 2>&1 || true
+  while (( SECONDS < deadline )); do
+    if ui_tree_contains "$needle"; then
+      return 0
+    fi
+    if (( pass % 4 == 3 )) && [[ "${MACOS_CUA_SKIP_OVERLAY:-}" != "1" ]]; then
+      macos_cua_align_to_window >/dev/null 2>&1 || true
+    fi
+    pass=$((pass + 1))
+    sleep 0.5
+  done
+  echo "[cua] timeout waiting for UI: $needle" >&2
+  return 1
+}
+
+wait_ui_contains_modal() {
+  local needle="$1"
+  local timeout="${2:-20}"
+  local deadline=$((SECONDS + timeout))
+  while (( SECONDS < deadline )); do
+    ui_tree_contains_modal "$needle" && return 0
+    sleep 0.5
+  done
+  echo "[cua] timeout waiting for UI: $needle" >&2
+  return 1
+}
+
+macos_wait_single_instance() {
+  local timeout="${1:-20}"
+  local deadline=$((SECONDS + timeout))
+  while (( SECONDS < deadline )); do
+    local -a pids=()
+    while IFS= read -r pid; do
+      [[ -n "$pid" ]] && pids+=("$pid")
+    done < <(macos_running_pids)
+    if (( ${#pids[@]} == 1 )); then
+      return 0
+    fi
+    if (( ${#pids[@]} > 1 )); then
+      local keep="${pids[-1]}"
+      local pid
+      for pid in "${pids[@]}"; do
+        [[ "$pid" == "$keep" ]] || kill -9 "$pid" 2>/dev/null || true
+      done
+      sleep 0.5
+      continue
+    fi
+    sleep 0.35
+  done
+  echo "[cua] timeout waiting for single LikemindedMac instance (${timeout}s)" >&2
+  return 1
+}
+
+cua_click_ax_label() {
+  local label="$1"
+  local proc="${MACOS_CANONICAL_EXEC:-LikemindedMac}"
+  osascript - "$proc" "$label" <<'APPLESCRIPT' 2>/dev/null | grep -q '^ok$'
+on run argv
+  set procName to item 1 of argv
+  set needle to item 2 of argv
+  tell application "System Events"
+    if not (exists process procName) then return "miss"
+    tell process procName
+      set frontmost to true
+      repeat with el in (entire contents as list)
+        try
+          set t to (description of el as text)
+          if t is needle then
+            perform action "AXPress" of el
+            return "ok"
+          end if
+        end try
+        try
+          set t to (title of el as text)
+          if t is needle then
+            perform action "AXPress" of el
+            return "ok"
+          end if
+        end try
+        try
+          set t to (value of el as text)
+          if t is needle then
+            perform action "AXPress" of el
+            return "ok"
+          end if
+        end try
+      end repeat
+    end tell
+  end tell
+  return "miss"
+end run
+APPLESCRIPT
+}
+
+cua_scroll_until() {
+  local needle="$1"
+  local attempts="${2:-6}"
+  local i
+  for (( i=0; i<attempts; i++ )); do
+    ui_tree_contains "$needle" && return 0
+    cua scroll "$CUA_APP" down --amount 4 >/dev/null 2>&1 || true
+    sleep 0.45
+  done
+  ui_tree_contains "$needle"
+}
+
+wait_welcome_ready() {
+  wait_ui_contains "Terms & Privacy Policy" 20 \
+    || wait_ui_contains "Sign in with Apple" 15 \
+    || wait_ui_contains "Continue with Google" 15 \
+    || wait_ui_contains "When you meet, it matters." 10
 }
 
 # Wait until basics save succeeds (voice step visible, no error banner).

@@ -12,7 +12,17 @@ export MACOS_CANONICAL_EXEC="LikemindedMac"
 export MACOS_CUA_CACHE_DIR="${MACOS_CUA_CACHE_DIR:-$HOME/.cache/macos-cua}"
 
 macos_clear_cua_cache() {
-  rm -f "$MACOS_CUA_CACHE_DIR"/*.json 2>/dev/null || true
+  python3 - "$MACOS_CUA_CACHE_DIR" <<'PY' 2>/dev/null || true
+import glob
+import os
+import sys
+
+for path in glob.glob(os.path.join(sys.argv[1], "*.json")):
+    try:
+        os.unlink(path)
+    except OSError:
+        pass
+PY
 }
 
 macos_macos_app_lock_held_by_other() {

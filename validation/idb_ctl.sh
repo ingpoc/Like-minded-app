@@ -6,6 +6,7 @@
 #   describe                 — full AX tree as compact JSON
 #   buttons                  — just button labels + frames
 #   tap "<label>"            — tap a button by AX label
+#   tap-id "<identifier>"    — tap by accessibility identifier (prefers Button)
 #   tap-point <x> <y>        — tap raw coordinates
 #   type "<text>"            — type into focused field
 #   screenshot <out.png>     — screenshot to path
@@ -42,13 +43,32 @@ import json,sys
 label = sys.argv[1]
 data = json.load(sys.stdin)
 for e in data:
-    if e.get('type')=='Button' and e.get('AXLabel')==label:
+    if e.get('AXLabel') != label:
+        continue
+    if e.get('type') in ('Button', 'Link', 'Image', 'Other'):
         f=e['frame']
         print(f\"{f['x']+f['width']/2:.0f} {f['y']+f['height']/2:.0f}\")
         sys.exit(0)
 sys.exit(1)
 " "$label" \
       | { read x y; echo "→ tap '$label' at ($x,$y)" >&2; idb ui tap --duration 0.05 "$x" "$y" >/dev/null 2>&1; }
+    ;;
+  tap-id)
+    identifier="$1"
+    idb ui describe-all --json 2>/dev/null \
+      | python3 -c "
+import json,sys
+identifier = sys.argv[1]
+data = json.load(sys.stdin)
+buttons = [e for e in data if e.get('type') == 'Button' and e.get('AXIdentifier') == identifier]
+candidates = buttons or [e for e in data if e.get('AXIdentifier') == identifier]
+for e in candidates:
+    f=e['frame']
+    print(f\"{f['x']+f['width']/2:.0f} {f['y']+f['height']/2:.0f}\")
+    sys.exit(0)
+sys.exit(1)
+" "$identifier" \
+      | { read x y; echo "→ tap-id '$identifier' at ($x,$y)" >&2; idb ui tap --duration 0.05 "$x" "$y" >/dev/null 2>&1; }
     ;;
   tap-point)
     idb ui tap --duration 0.05 "$1" "$2" >/dev/null 2>&1

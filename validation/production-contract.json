@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "product_scope": "TestFlight MVP — voice profile, circles, communities, meet, recap, soulmate chat (validation-gurusharan seed)",
+  "in_scope_screens": [
+    "app-shell",
+    "auth",
+    "chat",
+    "circle-detail",
+    "circles",
+    "communities",
+    "community-detail",
+    "community-members",
+    "conversations",
+    "create-community",
+    "create-event",
+    "meet",
+    "notifications",
+    "onboarding",
+    "past-meet-recap",
+    "profile-concern",
+    "profile-edit",
+    "profile-empty",
+    "profile-populated",
+    "profile-signals",
+    "settings",
+    "soulmate-discover",
+    "soulmate-match",
+    "soulmate-overview",
+    "soulmate-selection",
+    "video-call",
+    "voice-session"
+  ],
+  "explicitly_out_of_scope": [
+    "push notifications delivery",
+    "subscriptions and payments",
+    "full community moderation engine",
+    "production scale load testing"
+  ],
+  "production_ready_when": {
+    "ui": "all in_scope flows: pass OR blocked(infra) with allowed_blocked_reasons",
+    "api": "npm run smoke:mvp",
+    "infra": "PROGRESS.md Phase 9 unchecked = 0",
+    "graders": [
+      "npm run verify:ledger-progress",
+      "npm run verify:release-config",
+      "npm run verify:external-preflight"
+    ]
+  },
+  "allowed_blocked_reasons": [
+    "apple-sign-in",
+    "livekit-infra"
+  ],
+  "claim": "Production-ready for TestFlight MVP (production-contract v1) — not generic App Store forever."
+}

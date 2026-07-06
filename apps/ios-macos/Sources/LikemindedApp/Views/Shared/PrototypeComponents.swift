@@ -16,41 +16,56 @@ struct WaveLines: Shape {
     }
 }
 
-struct ScreenContainer<Content: View>: View {
+struct ScreenContainer<Content: View, TrailingHeader: View>: View {
     let title: String
     let subtitle: String
     var caption: String?
+    @ViewBuilder var trailingHeader: TrailingHeader
     @ViewBuilder var content: Content
 
-    init(title: String, subtitle: String, caption: String? = nil, @ViewBuilder content: () -> Content) {
+    init(
+        title: String,
+        subtitle: String,
+        caption: String? = nil,
+        @ViewBuilder trailingHeader: () -> TrailingHeader,
+        @ViewBuilder content: () -> Content
+    ) {
         self.title = title
         self.subtitle = subtitle
         self.caption = caption
+        self.trailingHeader = trailingHeader()
         self.content = content()
     }
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(alignment: .leading, spacing: 24) {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(title.uppercased())
-                        .font(PrototypeTypography.eyebrow)
-                        .foregroundStyle(PrototypePalette.accent)
+                HStack(alignment: .top, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(title.uppercased())
+                            .font(PrototypeTypography.eyebrow)
+                            .foregroundStyle(PrototypePalette.accent)
 
-                    Text(subtitle)
-                        .font(PrototypeTypography.display)
-                        .foregroundStyle(PrototypePalette.ink)
-                        .frame(maxWidth: 320, alignment: .leading)
-                        .lineLimit(3)
-                        .fixedSize(horizontal: false, vertical: true)
-
-                    if let caption, !caption.isEmpty {
-                        Text(caption)
-                            .font(PrototypeTypography.body)
-                            .foregroundStyle(PrototypePalette.subink)
+                        Text(subtitle)
+                            .font(PrototypeTypography.display)
+                            .foregroundStyle(PrototypePalette.ink)
                             .frame(maxWidth: 320, alignment: .leading)
+                            .lineLimit(3)
                             .fixedSize(horizontal: false, vertical: true)
+                            .accessibilityAddTraits(.isHeader)
+
+                        if let caption, !caption.isEmpty {
+                            Text(caption)
+                                .font(PrototypeTypography.body)
+                                .foregroundStyle(PrototypePalette.subink)
+                                .frame(maxWidth: 320, alignment: .leading)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
                     }
+
+                    Spacer(minLength: 0)
+
+                    trailingHeader
                 }
 
                 content
@@ -68,6 +83,12 @@ struct ScreenContainer<Content: View>: View {
         .toolbarBackground(.visible, for: .navigationBar)
         .toolbarBackground(PrototypePalette.background.opacity(0.96), for: .navigationBar)
 #endif
+    }
+}
+
+extension ScreenContainer where TrailingHeader == EmptyView {
+    init(title: String, subtitle: String, caption: String? = nil, @ViewBuilder content: () -> Content) {
+        self.init(title: title, subtitle: subtitle, caption: caption, trailingHeader: { EmptyView() }, content: content)
     }
 }
 

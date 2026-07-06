@@ -44,10 +44,11 @@ struct VoiceProfileView: View {
     @EnvironmentObject private var appState: PrototypeAppState
     @State private var showingVoiceSession = false
     @State private var showSettingsForValidation = false
+    @State private var profilePath = NavigationPath()
 
     var body: some View {
-        NavigationStack {
-            ScreenContainer(title: "Profile", subtitle: "Who you are.") {
+        NavigationStack(path: $profilePath) {
+            ScreenContainer(title: "Profile", subtitle: "Your profile") {
                 profileHeader
 
                 if shouldShowOnboarding {
@@ -129,13 +130,19 @@ struct VoiceProfileView: View {
 
             Spacer()
 
-            NavigationLink(value: ProfileRoute.settings) {
+            Button {
+                profilePath.append(ProfileRoute.settings)
+            } label: {
                 Image(systemName: "gearshape")
                     .font(PrototypeTypography.bodyStrong)
                     .foregroundStyle(PrototypePalette.ink)
+                    .frame(width: 44, height: 44)
             }
             .buttonStyle(.plain)
+            .accessibilityElement(children: .ignore)
+            .accessibilityAddTraits(.isButton)
             .accessibilityLabel("Settings")
+            .accessibilityIdentifier("title-settings")
         }
     }
 

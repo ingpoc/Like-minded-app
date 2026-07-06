@@ -94,18 +94,24 @@ struct RootView: View {
                     await appState.fetchSoulmateStatus()
                     await appState.fetchNotifications()
                 }
-                .onChange(of: appState.concernFlag) { _, needsReinterview in
+                .onChange(of: appState.concernFlag) { oldValue, needsReinterview in
                     #if DEBUG
-                    if ProcessInfo.processInfo.arguments.contains("--likeminded-start-notifications")
-                        || ProcessInfo.processInfo.arguments.contains("--likeminded-start-soulmate-selection")
-                        || ProcessInfo.processInfo.arguments.contains("--likeminded-start-past-meet-detail") {
+                    let args = ProcessInfo.processInfo.arguments
+                    if args.contains("--likeminded-start-notifications")
+                        || args.contains("--likeminded-start-soulmate-selection")
+                        || args.contains("--likeminded-start-past-meet-detail") {
+                        return
+                    }
+                    // Harness launches with dev-auth-bypass; stale concernFlag in validation-db
+                    // must not hijack Meet tab before app-shell title-action flows.
+                    if args.contains("--likeminded-dev-auth-bypass")
+                        && !args.contains("--likeminded-dev-profile-concern") {
                         return
                     }
                     #endif
-                    if needsReinterview {
-                        withAnimation(.interactive) {
-                            selection = .profile
-                        }
+                    guard needsReinterview, !oldValue else { return }
+                    withAnimation(.interactive) {
+                        selection = .profile
                     }
                 }
                 .onChange(of: appState.requestedTab) { _, tab in

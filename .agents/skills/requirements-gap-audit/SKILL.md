@@ -14,8 +14,8 @@ Answer **what is still missing before claiming a surface is production-ready** �
 
 **Repo doctrine (`AGENTS.md`):** lazy retrieval, lazy authoring, proactive prune, single control chain (JSON → PROGRESS → code).
 
-**Control-status owner:** `validation/{ios,macos}/*.json` only.  
-**Roadmap owner:** unchecked items in `PROGRESS.md` tracks.  
+**Control-status owner:** `validation/screens/*.json` (`flows[]` primary, `controls.{ios,macos}` detail).
+**Roadmap owner:** unchecked items in `PROGRESS.md` tracks.
 **Do not** rebuild a parallel backlog from `GOAL.md`, grep, or full app walks when ledgers already list pass/fail/pending/stale.
 
 ---
@@ -45,16 +45,20 @@ Run in order; stop when the question is answered:
 
 ```sh
 npm run goal:next
+npm run ledger:brief                 # session anti-redo brief
+npm run ledger:flow -- --platform macos --screen meet --flow rsvp-weekend --text  # one flow packet
 npm run ledger:open                    # open + stale-pass rows
 npm run ledger:stale                   # pass rows needing re-test after source change
 npm run verify:ledger-progress
 ```
 
-After CUA/manual proof on a control:
+After CUA/manual proof on a flow (preferred) or control:
 
 ```sh
-node script/ledger_record_control.js --platform macos --screen meetOverview --control join-meetup --result pass --evidence "..." --method CUA
-# or batch: node script/ledger_stamp_screen.js --platform macos --screen meetOverview --controls id1,id2
+npm run ledger:record-flow -- --platform macos --screen meet --flow rsvp-weekend --result pass --evidence "..." --method CUA-click
+# or control detail:
+node script/ledger_record_control.js --platform macos --screen meet --control rsvp-sat-yes --result pass --evidence "..." --method CUA
+npm run ledger:sync-flows -- --platform macos --screen meet
 ```
 
 When Swift/source changes: `npm run ledger:refresh-hashes` then `npm run ledger:stale`.
@@ -63,7 +67,7 @@ Then read **only**:
 
 - `goal.json` — active goal (not full `GOAL.md`)
 - `PROGRESS.md` — **active track section only** (macOS or iOS), not all phases
-- Individual `validation/*/*.json` files **for open rows only** (`ledger:open` lists them)
+- Individual `validation/screens/*.json` files **for open rows only** (`ledger:open` lists them)
 
 ### Tier A — do not load
 
@@ -103,12 +107,17 @@ Use only when Tier A shows open rows **and** the user wants exhaustive proof.
 
 ## Ledger fields (success criteria already live here)
 
-Per control in `validation/*/*.json`:
+Per **flow** in `validation/screens/*.json` (primary):
 
-- `expected` — success criteria
-- `result` — `pass` | `fail` | `blocked` | `pending`
-- `evidence` — proof text (include date + method, e.g. `2026-07-04 CUA validation-gurusharan`)
-- `blocker` — infra or untestable reason
+- `steps[]` — journey success criteria
+- `validation.{ios,macos}.result` — `pass` | `fail` | `blocked` | `pending` | `not-applicable`
+- `validation.*.evidence` — proof text (date + method)
+- `validation.*.tested_source_hash` — stale when `source_files` change
+
+Per **control** in `controls.{ios,macos}[]` (atomic regression):
+
+- `expected` — per-control success criteria
+- `result`, `evidence`, `blocker` — same semantics as flows
 
 No separate control database. Do not re-inventory controls from Swift/JS when JSON exists.
 

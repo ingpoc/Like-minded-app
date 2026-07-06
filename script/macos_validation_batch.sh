@@ -41,7 +41,7 @@ Usage: $0 [options] [screen ...]
 Runs macOS validation with a single validation API owner and sequential CUA (no port/instance fights).
 
 Options:
-  --stale-only     Only screens with stale-pass controls (from validation/macos/*.json)
+  --stale-only     Only screens with stale-pass flows (from validation/screens/*.json)
   --capture-only   Run verify_macos_screens.sh only (no CUA)
   --cua-only       Sequential macos_cua_screen.sh only (API must be up; skips capture)
   --keep-api       Do not stop validation API on exit

@@ -152,6 +152,27 @@ enum MacPrototypeScreen: String, CaseIterable, Identifiable {
         case .settingsSoulmate: "Manage your experience and preferences."
         }
     }
+
+    /// Child screens reachable from a `--mac-screen` entry without leaving validation scope.
+    func allowsValidationDrillDown(to destination: MacPrototypeScreen) -> Bool {
+        switch self {
+        case .circlesRoom:
+            return destination == .circleDetail
+        case .communitiesBrowse:
+            return destination == .communityDetail || destination == .createCommunity
+        case .communityDetail:
+            return destination == .communityMembers || destination == .createEvent
+        case .meetOverview:
+            return destination == .meetRecap || destination == .meetVideoCall
+        case .soulmateDiscover:
+            return destination == .soulmateDetail || destination == .chat || destination == .messages
+        case .myProfile:
+            return destination == .profileEdit || destination == .profileSignals
+                || destination == .profileOnboarding || destination == .settingsSoulmate
+        default:
+            return false
+        }
+    }
 }
 
 // Mockup plate 05 chat roster + jazz thread for macOS validation deep-links.

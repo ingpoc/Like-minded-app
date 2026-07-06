@@ -1,0 +1,617 @@
+{
+  "schema_version": 2,
+  "logical_screen_id": "app-shell",
+  "screen": "App shell (tabs, chrome, global navigation)",
+  "platforms": {
+    "ios": {
+      "ledger_legacy_id": null,
+      "implemented": true,
+      "source_files": [
+        "apps/ios-macos/Sources/LikemindedApp/Views/RootView.swift",
+        "apps/ios-macos/Sources/LikemindedApp/Views/CustomTabBar.swift"
+      ],
+      "source_hash": "c303ef38cfebd62c",
+      "mockup_ref": null,
+      "mockup_missing": true,
+      "entry_points": [
+        "Signed-in tab shell"
+      ],
+      "backend_dependencies": [],
+      "ui_validation": null,
+      "visual_parity": null,
+      "recent_screenshot_ref": "output/validation/ios-screens/app-shell.png",
+      "notes": "Gap audit 2026-07-06: global chrome screen"
+    },
+    "macos": {
+      "ledger_legacy_id": null,
+      "implemented": true,
+      "source_files": [
+        "apps/ios-macos/Sources/LikemindedMac/MacRootView.swift",
+        "apps/ios-macos/Sources/LikemindedMac/LikemindedMacApp.swift"
+      ],
+      "source_hash": "2727155aaa14b723",
+      "mockup_ref": null,
+      "mockup_missing": true,
+      "entry_points": [
+        "Signed-in MacRootView",
+        "App menu ⌘1-5"
+      ],
+      "backend_dependencies": [],
+      "ui_validation": null,
+      "visual_parity": null,
+      "recent_screenshot_ref": null,
+      "notes": "Gap audit 2026-07-06: global chrome screen"
+    }
+  },
+  "flows": [
+    {
+      "id": "tab-navigation",
+      "name": "Switch main tabs via bottom bar",
+      "origin": "app-shell",
+      "steps": [
+        "Tap Meet / Circles / Communities / Soulmate / Profile"
+      ],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "tab-meet",
+          "tab-circles",
+          "tab-communities",
+          "tab-soulmate",
+          "tab-profile"
+        ],
+        "macos": [
+          "tab-meet",
+          "tab-circles",
+          "tab-communities",
+          "tab-soulmate",
+          "tab-profile"
+        ]
+      },
+      "gap_audit": "2026-07-06",
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "tab-meet: CUA-click 2026-07-06 | tab-circles: CUA-click 2026-07-06 | tab-communities: CUA-click 2026-07-06 | tab-soulmate: CUA-click 2026-07-06 | tab-profile: CUA-click 2026-07-06",
+          "blocker": "",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "7ff61a63dac6b953",
+          "last_test_method": "CUA-click"
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "tab-meet: CUA-click 2026-07-06 | tab-circles: CUA-click 2026-07-06 | tab-communities: CUA-click 2026-07-06 | tab-soulmate: CUA-click 2026-07-06 | tab-profile: CUA-click 2026-07-06",
+          "blocker": "",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "229aeca791e8afbe",
+          "last_test_method": "CUA-click"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Step satisfied: Tap Meet / Circles / Communities / Soulmate / Profile"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "No mockup — functional proof only",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen app-shell --platform ios",
+          "macos": "npm run ledger:screen -- --platform macos --screen app-shell --section flows"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen app-shell --flow tab-navigation --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "global-back",
+      "name": "Navigate back from pushed screen",
+      "origin": "app-shell",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "global-back"
+        ],
+        "macos": [
+          "global-back"
+        ]
+      },
+      "gap_audit": "2026-07-06",
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "global-back: CUA-click 2026-07-06",
+          "blocker": "",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "7ff61a63dac6b953",
+          "last_test_method": "CUA-click"
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "global-back: CUA-click 2026-07-06",
+          "blocker": "",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "229aeca791e8afbe",
+          "last_test_method": "CUA-click"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control global-back responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "No mockup — functional proof only",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen app-shell --platform ios",
+          "macos": "npm run ledger:screen -- --platform macos --screen app-shell --section flows"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen app-shell --flow global-back --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "title-action-messages",
+      "name": "Open Messages from title action",
+      "origin": "app-shell",
+      "steps": [],
+      "destinations": [
+        "conversations"
+      ],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "title-messages"
+        ],
+        "macos": [
+          "title-messages"
+        ]
+      },
+      "gap_audit": "2026-07-06",
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "CUA validation-gurusharan app-shell/title-action-messages: Meet→Messages→Recent conversations (title-messages AX wait timeout, tap OK)",
+          "blocker": "",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "c303ef38cfebd62c",
+          "last_test_method": "CUA-click"
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "title-messages: CUA-click 2026-07-06",
+          "blocker": "",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "229aeca791e8afbe",
+          "last_test_method": "CUA-click"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control title-messages responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "No mockup — functional proof only",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen app-shell --platform ios",
+          "macos": "npm run ledger:screen -- --platform macos --screen app-shell --section flows"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen app-shell --flow title-action-messages --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "title-action-settings",
+      "name": "Open Settings from title action",
+      "origin": "app-shell",
+      "steps": [],
+      "destinations": [
+        "settings"
+      ],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "title-settings"
+        ],
+        "macos": [
+          "title-settings"
+        ]
+      },
+      "gap_audit": "2026-07-06",
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "CUA validation-gurusharan app-shell/title-action-settings: Profile→Settings→Account (title-settings AX wait timeout, tap OK)",
+          "blocker": "",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "7ff61a63dac6b953",
+          "last_test_method": "CUA-click"
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "CUA validation-gurusharan: Profile title Settings opens Settings with Account",
+          "blocker": "",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "229aeca791e8afbe",
+          "last_test_method": "CUA-click"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control title-settings responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "No mockup — functional proof only",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen app-shell --platform ios",
+          "macos": "npm run ledger:screen -- --platform macos --screen app-shell --section flows"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen app-shell --flow title-action-settings --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "app-menu-nav",
+      "name": "Switch tabs via app menu shortcuts",
+      "origin": "app-shell",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [],
+        "macos": [
+          "menu-meet",
+          "menu-circles",
+          "menu-communities",
+          "menu-soulmate",
+          "menu-profile"
+        ]
+      },
+      "gap_audit": "2026-07-06",
+      "validation": {
+        "ios": {
+          "result": "not-applicable",
+          "evidence": "No iOS controls for this flow",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "menu-meet: CUA-click 2026-07-06 | menu-circles: CUA-click 2026-07-06 | menu-communities: CUA-click 2026-07-06 | menu-soulmate: CUA-click 2026-07-06 | menu-profile: CUA-click 2026-07-06",
+          "blocker": "",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "229aeca791e8afbe",
+          "last_test_method": "CUA-click"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "User outcome achieved: Switch tabs via app menu shortcuts"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "No mockup — functional proof only",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen app-shell --platform ios",
+          "macos": "npm run ledger:screen -- --platform macos --screen app-shell --section flows"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen app-shell --flow app-menu-nav --result pass --method <tier-method> --evidence \"...\""
+      }
+    }
+  ],
+  "controls": {
+    "ios": [
+      {
+        "id": "tab-meet",
+        "type": "button",
+        "label": "Meet tab",
+        "expected": "Selects Meet tab",
+        "result": "pass",
+        "evidence": "CUA validation-gurusharan app-shell/tab-navigation: 5/5 tab taps ok=5 miss=0 flow_fail=0 retest 2026-07-07",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "tested_source_hash": "7ff61a63dac6b953",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "tab-circles",
+        "type": "button",
+        "label": "Circles tab",
+        "expected": "Selects Circles tab",
+        "result": "pass",
+        "evidence": "CUA validation-gurusharan app-shell/tab-navigation: 5/5 tab taps ok=5 miss=0 flow_fail=0 retest 2026-07-07",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "tested_source_hash": "7ff61a63dac6b953",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "tab-communities",
+        "type": "button",
+        "label": "Communities tab",
+        "expected": "Selects Communities tab",
+        "result": "pass",
+        "evidence": "CUA validation-gurusharan app-shell/tab-navigation: 5/5 tab taps ok=5 miss=0 flow_fail=0 retest 2026-07-07",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "tested_source_hash": "7ff61a63dac6b953",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "tab-soulmate",
+        "type": "button",
+        "label": "Soulmate tab",
+        "expected": "Selects Soulmate tab when enabled",
+        "result": "pass",
+        "evidence": "CUA validation-gurusharan app-shell/tab-navigation: 5/5 tab taps ok=5 miss=0 flow_fail=0 retest 2026-07-07",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "tested_source_hash": "7ff61a63dac6b953",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "tab-profile",
+        "type": "button",
+        "label": "Profile tab",
+        "expected": "Selects Profile tab",
+        "result": "pass",
+        "evidence": "CUA validation-gurusharan app-shell/tab-navigation: 5/5 tab taps ok=5 miss=0 flow_fail=0 retest 2026-07-07",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "tested_source_hash": "7ff61a63dac6b953",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "global-back",
+        "type": "button",
+        "label": "Back",
+        "expected": "Pops navigation stack or dismisses cover",
+        "result": "pass",
+        "evidence": "CUA validation-gurusharan app-shell/global-back: circle detail → Back to circles → Your room. prove_ios ok=1 flow_fail=0",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "tested_source_hash": "7ff61a63dac6b953",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "title-messages",
+        "type": "button",
+        "label": "Messages bubble (toolbar)",
+        "expected": "Opens conversations / chat entry",
+        "result": "pass",
+        "evidence": "CUA validation-gurusharan app-shell/title-action-messages: Meet→Messages→Recent conversations (title-messages AX wait timeout, tap OK)",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "tested_source_hash": "c303ef38cfebd62c",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "title-settings",
+        "type": "button",
+        "label": "Settings gear",
+        "expected": "Pushes SettingsPrototypeView",
+        "result": "pass",
+        "evidence": "CUA validation-gurusharan app-shell/title-action-settings: Profile→Settings→Account (title-settings AX wait timeout, tap OK)",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "tested_source_hash": "7ff61a63dac6b953",
+        "last_test_method": "CUA-click"
+      }
+    ],
+    "macos": [
+      {
+        "id": "tab-meet",
+        "type": "button",
+        "label": "Meet tab",
+        "expected": "Selects Meet tab",
+        "result": "pass",
+        "evidence": "CUA validation-gurusharan: bottom nav switches all five tabs",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "tested_source_hash": "229aeca791e8afbe",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "tab-circles",
+        "type": "button",
+        "label": "Circles tab",
+        "expected": "Selects Circles tab",
+        "result": "pass",
+        "evidence": "CUA validation-gurusharan: bottom nav switches all five tabs",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "tested_source_hash": "229aeca791e8afbe",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "tab-communities",
+        "type": "button",
+        "label": "Communities tab",
+        "expected": "Selects Communities tab",
+        "result": "pass",
+        "evidence": "CUA validation-gurusharan: bottom nav switches all five tabs",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "tested_source_hash": "229aeca791e8afbe",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "tab-soulmate",
+        "type": "button",
+        "label": "Soulmate tab",
+        "expected": "Selects Soulmate tab when enabled",
+        "result": "pass",
+        "evidence": "CUA validation-gurusharan: bottom nav switches all five tabs",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "tested_source_hash": "229aeca791e8afbe",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "tab-profile",
+        "type": "button",
+        "label": "Profile tab",
+        "expected": "Selects Profile tab",
+        "result": "pass",
+        "evidence": "CUA validation-gurusharan: bottom nav switches all five tabs",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "tested_source_hash": "229aeca791e8afbe",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "global-back",
+        "type": "button",
+        "label": "Back chevron",
+        "expected": "navigateBack() to previous screen",
+        "result": "pass",
+        "evidence": "CUA validation-gurusharan: Back from circle detail returns to Circles room",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "tested_source_hash": "229aeca791e8afbe",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "title-messages",
+        "type": "button",
+        "label": "Messages bubble (title action)",
+        "expected": "Navigate to messages screen",
+        "result": "pass",
+        "evidence": "CUA validation-gurusharan: title Messages opens Messages screen",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "tested_source_hash": "229aeca791e8afbe",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "title-settings",
+        "type": "button",
+        "label": "Settings gear (title action)",
+        "expected": "Navigate to settingsSoulmate",
+        "result": "pass",
+        "evidence": "CUA validation-gurusharan: Profile title Settings opens Settings with Account",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "tested_source_hash": "229aeca791e8afbe",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "menu-meet",
+        "type": "button",
+        "label": "App menu Meet",
+        "expected": "Selects Meet tab via NotificationCenter",
+        "result": "pass",
+        "evidence": "CUA validation-gurusharan: Prototype menu ⌘1-5 switches Meet/Circles/Communities/Soulmate/Profile",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "tested_source_hash": "229aeca791e8afbe",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "menu-circles",
+        "type": "button",
+        "label": "App menu Circles",
+        "expected": "Selects Circles tab",
+        "result": "pass",
+        "evidence": "CUA validation-gurusharan: Prototype menu ⌘1-5 switches Meet/Circles/Communities/Soulmate/Profile",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "tested_source_hash": "229aeca791e8afbe",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "menu-communities",
+        "type": "button",
+        "label": "App menu Communities",
+        "expected": "Selects Communities tab",
+        "result": "pass",
+        "evidence": "CUA validation-gurusharan: Prototype menu ⌘1-5 switches Meet/Circles/Communities/Soulmate/Profile",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "tested_source_hash": "229aeca791e8afbe",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "menu-soulmate",
+        "type": "button",
+        "label": "App menu Soulmate",
+        "expected": "Selects Soulmate tab when enabled",
+        "result": "pass",
+        "evidence": "CUA validation-gurusharan: Prototype menu ⌘1-5 switches Meet/Circles/Communities/Soulmate/Profile",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "tested_source_hash": "229aeca791e8afbe",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "menu-profile",
+        "type": "button",
+        "label": "App menu Profile",
+        "expected": "Selects Profile tab",
+        "result": "pass",
+        "evidence": "CUA validation-gurusharan: Prototype menu ⌘1-5 switches Meet/Circles/Communities/Soulmate/Profile",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "tested_source_hash": "229aeca791e8afbe",
+        "last_test_method": "CUA-click"
+      }
+    ]
+  }
+}

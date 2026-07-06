@@ -1,0 +1,541 @@
+{
+  "schema_version": 2,
+  "logical_screen_id": "community-members",
+  "screen": "Community Members",
+  "platforms": {
+    "ios": {
+      "ledger_legacy_id": "25-community-members",
+      "implemented": true,
+      "source_files": [
+        "apps/ios-macos/Sources/LikemindedApp/Views/CommunitiesPrototypeView.swift (CommunityMembersView)"
+      ],
+      "source_hash": "0a12e738c5eab2cb",
+      "mockup_ref": "mockups/ios/17-20-profile-community-settings.png",
+      "mockup_missing": false,
+      "entry_points": [
+        "Community Detail → Members tab → View members"
+      ],
+      "backend_dependencies": [
+        "GET /v1/communities/:id/members"
+      ],
+      "ui_validation": {
+        "result": "pass",
+        "reference_mockup_ref": "mockups/ios/17-20-profile-community-settings.png",
+        "recent_screenshot_ref": "output/validation/ios-screens/25-community-members.png",
+        "design_ref": "DESIGN.md",
+        "last_compared_at": "2026-07-05",
+        "validated": [
+          "latest screenshot exists and was compared with reference mockup",
+          "member roster matches macOS communityMembers capture and jazz-music API seed",
+          "control behavior tracked separately in controls[]"
+        ],
+        "pending_validation": [],
+        "requires_implementation": [],
+        "requires_fixing": [],
+        "intentional_differences": [
+          "Stacked FeatureCards vs macOS sidebar+roster split",
+          "Initial-circle avatars instead of doodle portraits",
+          "No desktop activity filter pills; mobile shows display-only activity labels"
+        ],
+        "notes": "Cross-platform roster parity confirmed with validation-gurusharan on jazz-music (12 members)."
+      },
+      "visual_parity": {
+        "result": "pass",
+        "notes": "2026-07-05 iOS capture vs mockups/ios/17-20-profile-community-settings.png + macOS plate 13: stacked FeatureCards roster with search, 12-member badge, theme·gender role line, activity hints, online dots. Intentional: no macOS sidebar nav; initial-circle avatars not DoodlePortrait; mobile omits desktop filter pills (All/Active now/Most active)."
+      },
+      "recent_screenshot_ref": "output/validation/ios-screens/25-community-members.png",
+      "notes": "Parity with validation/macos/09-community-members.json. iOS validation capture uses LIKEMINDED_VALIDATION_SCREEN=communityMembers UserDefaults when simctl launch args are unreliable."
+    },
+    "macos": {
+      "ledger_legacy_id": "09-community-members",
+      "implemented": true,
+      "source_files": [
+        "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (communityMembers)"
+      ],
+      "source_hash": "012ec3dd1410b363",
+      "mockup_ref": "mockups/macos/13-16-community-members-event-messages-activity.png",
+      "mockup_missing": false,
+      "entry_points": [
+        "Community Detail View members"
+      ],
+      "backend_dependencies": [
+        "GET /v1/communities/:id/members"
+      ],
+      "ui_validation": {
+        "result": "pass",
+        "reference_mockup_ref": "mockups/macos/13-16-community-members-event-messages-activity.png",
+        "recent_screenshot_ref": "output/validation/macos-screens/communityMembers.png",
+        "design_ref": "DESIGN.md",
+        "last_compared_at": "2026-07-05",
+        "validated": [
+          "latest screenshot exists and was compared with reference mockup",
+          "DESIGN.md design language checked: warm canvas, calm editorial hierarchy, card system, green accents, bottom glass navigation",
+          "visible text and components reviewed for clear purpose",
+          "control behavior tracked separately in controls[]"
+        ],
+        "pending_validation": [],
+        "requires_implementation": [],
+        "requires_fixing": [],
+        "intentional_differences": [
+          "Doodle portrait initials instead of photo avatars",
+          "No fake host badges; activity labels are display-only roster hints",
+          "Seeded roster count 12 vs mockup montage 18"
+        ],
+        "notes": "2026-07-05 capture vs plate 13: full community nav sidebar + members search/filters/roster from API. Intentional: doodle portraits not photos; no fake host badges."
+      },
+      "visual_parity": {
+        "result": "pass",
+        "notes": "2026-07-05 capture vs plate 13: full community nav sidebar + members search/filters/roster from API. Intentional: doodle portraits not photos; no fake host badges."
+      },
+      "recent_screenshot_ref": "output/validation/macos-screens/communityMembers.png",
+      "notes": ""
+    }
+  },
+  "flows": [
+    {
+      "id": "search",
+      "name": "Search members",
+      "origin": "community-members",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "search"
+        ],
+        "macos": [
+          "search"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "search: capture+parity 2026-07-05",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "0a12e738c5eab2cb",
+          "last_test_method": "capture+parity"
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "search: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (search) (hash-migrated: screen-slice s",
+          "blocker": "",
+          "last_tested_at": "2026-07-05",
+          "tested_source_hash": "012ec3dd1410b363",
+          "last_test_method": "CUA"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control search responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen community-members --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communityMembers → macos_cua_screen.sh communityMembers"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen community-members --flow search --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "filter-pills",
+      "name": "Member count label",
+      "origin": "community-members",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "filter-pills"
+        ],
+        "macos": [
+          "filter-pills"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "filter-pills: capture+parity 2026-07-05",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "0a12e738c5eab2cb",
+          "last_test_method": "capture+parity"
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "filter-pills: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (filter-pills) (hash-migrated: screen-s",
+          "blocker": "",
+          "last_tested_at": "2026-07-05",
+          "tested_source_hash": "012ec3dd1410b363",
+          "last_test_method": "CUA"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control filter-pills responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen community-members --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communityMembers → macos_cua_screen.sh communityMembers"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen community-members --flow filter-pills --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "member-rows",
+      "name": "Member rows",
+      "origin": "community-members",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "member-rows"
+        ],
+        "macos": [
+          "member-rows"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "member-rows: capture+parity 2026-07-05",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "0a12e738c5eab2cb",
+          "last_test_method": "capture+parity"
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "member-rows: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (member-rows) (hash-migrated: screen-sl",
+          "blocker": "",
+          "last_tested_at": "2026-07-05",
+          "tested_source_hash": "012ec3dd1410b363",
+          "last_test_method": "CUA"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control member-rows responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen community-members --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communityMembers → macos_cua_screen.sh communityMembers"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen community-members --flow member-rows --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "sidebar-nav",
+      "name": "Members section sidebar",
+      "origin": "community-members",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [],
+        "macos": [
+          "sidebar-nav"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "not-applicable",
+          "evidence": "No controls on this platform for this flow",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "sidebar-nav: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (sidebar-nav) (hash-migrated: screen-sl",
+          "blocker": "",
+          "last_tested_at": "2026-07-05",
+          "tested_source_hash": "012ec3dd1410b363",
+          "last_test_method": "CUA"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "User outcome achieved: Members section sidebar"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen community-members --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communityMembers → macos_cua_screen.sh communityMembers"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen community-members --flow sidebar-nav --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "community-members-back",
+      "name": "Back to community from members",
+      "origin": "community-members",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "members-back"
+        ],
+        "macos": []
+      },
+      "gap_audit": "2026-07-06",
+      "validation": {
+        "ios": {
+          "result": "pending",
+          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        },
+        "macos": {
+          "result": "not-applicable",
+          "evidence": "No macOS controls for this flow",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control members-back responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen community-members --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communityMembers → macos_cua_screen.sh communityMembers"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen community-members --flow community-members-back --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "member-row-options",
+      "name": "Member row options menu",
+      "origin": "community-members",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [],
+        "macos": [
+          "member-options",
+          "member-filter-reset"
+        ]
+      },
+      "gap_audit": "2026-07-06",
+      "validation": {
+        "ios": {
+          "result": "not-applicable",
+          "evidence": "No iOS controls for this flow",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        },
+        "macos": {
+          "result": "pending",
+          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "User outcome achieved: Member row options menu"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen community-members --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communityMembers → macos_cua_screen.sh communityMembers"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen community-members --flow member-row-options --result pass --method <tier-method> --evidence \"...\""
+      }
+    }
+  ],
+  "controls": {
+    "ios": [
+      {
+        "id": "search",
+        "type": "text",
+        "label": "Search members",
+        "expected": "Filters roster by name/gender",
+        "result": "pass",
+        "evidence": "2026-07-05 capture validation-gurusharan: CommunityMembersView search filters filteredMembers by name/gender; matches macOS communityMembers search.",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "0a12e738c5eab2cb",
+        "last_tested_at": "2026-07-05",
+        "last_test_method": "capture+parity"
+      },
+      {
+        "id": "filter-pills",
+        "type": "display",
+        "label": "Member count label",
+        "expected": "Header subtitle and roster badge use same loaded member count from API",
+        "result": "pass",
+        "evidence": "2026-07-05 capture: subtitle and roster badge both show 12 members from jazz-music API (same count as macOS).",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "0a12e738c5eab2cb",
+        "last_tested_at": "2026-07-05",
+        "last_test_method": "capture+parity"
+      },
+      {
+        "id": "member-rows",
+        "type": "display",
+        "label": "Member rows",
+        "expected": "Display-only roster from API",
+        "result": "pass",
+        "evidence": "2026-07-05 capture: roster Priya Shah, Rohan Mehta, Arjun Nair, Aditya Verma, Karan Singh, Zara Khan… matches macOS communityMembers.png and GET /v1/communities/jazz-music/members (12).",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "0a12e738c5eab2cb",
+        "last_tested_at": "2026-07-05",
+        "last_test_method": "capture+parity"
+      },
+      {
+        "id": "members-back",
+        "type": "button",
+        "label": "Back to community",
+        "expected": "Pops members list",
+        "result": "pending",
+        "evidence": "Gap audit 2026-07-06",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "",
+        "tested_source_hash": "",
+        "last_test_method": ""
+      }
+    ],
+    "macos": [
+      {
+        "id": "sidebar-nav",
+        "type": "display",
+        "label": "Members section sidebar",
+        "expected": "Honest Members-only section label",
+        "result": "pass",
+        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (sidebar-nav) (hash-migrated: screen-slice source hash)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "012ec3dd1410b363",
+        "last_tested_at": "2026-07-05",
+        "last_test_method": "CUA"
+      },
+      {
+        "id": "search",
+        "type": "text",
+        "label": "Search members",
+        "expected": "Filters filteredCommunityMembers by name/gender",
+        "result": "pass",
+        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (search) (hash-migrated: screen-slice source hash)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "012ec3dd1410b363",
+        "last_tested_at": "2026-07-05",
+        "last_test_method": "CUA"
+      },
+      {
+        "id": "filter-pills",
+        "type": "display",
+        "label": "Member count label",
+        "expected": "Display-only member count",
+        "result": "pass",
+        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (filter-pills) (hash-migrated: screen-slice source hash)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "012ec3dd1410b363",
+        "last_tested_at": "2026-07-05",
+        "last_test_method": "CUA"
+      },
+      {
+        "id": "member-rows",
+        "type": "display",
+        "label": "Member rows",
+        "expected": "Display-only roster from API",
+        "result": "pass",
+        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (member-rows) (hash-migrated: screen-slice source hash)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "012ec3dd1410b363",
+        "last_tested_at": "2026-07-05",
+        "last_test_method": "CUA"
+      },
+      {
+        "id": "member-options",
+        "type": "button",
+        "label": "Member row ⋯",
+        "expected": "Opens member options",
+        "result": "pending",
+        "evidence": "Gap audit 2026-07-06",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "",
+        "tested_source_hash": "",
+        "last_test_method": ""
+      },
+      {
+        "id": "member-filter-reset",
+        "type": "button",
+        "label": "Filter reset",
+        "expected": "Clears member search/filter",
+        "result": "pending",
+        "evidence": "Gap audit 2026-07-06",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "",
+        "tested_source_hash": "",
+        "last_test_method": ""
+      }
+    ]
+  }
+}

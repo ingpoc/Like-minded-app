@@ -9,9 +9,10 @@
 const {
   findLedgerByScreenArg,
   loadScreenLedger,
-  stampControls,
-  writeLedger,
-  refreshScreenSourceHash
+  stampControlsLedger,
+  syncFlowsFromControls,
+  persistLedger,
+  getPlatformHash
 } = require("./ledger_hash");
 
 function arg(name) {
@@ -38,8 +39,10 @@ const ledger = file
   : findLedgerByScreenArg(platform, screen);
 
 const controlIds = controlsRaw ? controlsRaw.split(",").map((s) => s.trim()).filter(Boolean) : [];
-refreshScreenSourceHash(ledger.data);
-const stamped = stampControls(ledger.data, controlIds, { method, evidencePrefix });
-writeLedger(ledger.abs, ledger.data);
+const stamped = stampControlsLedger(ledger, platform, controlIds, { method, evidencePrefix });
+const synced = syncFlowsFromControls(ledger, platform);
+persistLedger(ledger);
 
-console.log(`stamped ${platform}/${ledger.file}: ${stamped.join(", ")} source_hash=${ledger.data.source_hash}`);
+console.log(
+  `stamped ${platform}/${ledger.logicalId || ledger.file}: ${stamped.join(", ")} source_hash=${getPlatformHash(ledger, platform)} flows_synced=${synced}`
+);

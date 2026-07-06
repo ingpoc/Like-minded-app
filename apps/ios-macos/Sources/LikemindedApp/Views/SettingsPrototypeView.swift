@@ -180,6 +180,7 @@ struct SettingsPrototypeView: View {
             Text(title.uppercased())
                 .font(PrototypeTypography.eyebrow)
                 .foregroundStyle(PrototypePalette.accent)
+                .accessibilityLabel(title)
 
             VStack(spacing: 0) {
                 content()

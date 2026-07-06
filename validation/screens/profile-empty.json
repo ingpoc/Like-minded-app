@@ -1,0 +1,230 @@
+{
+  "schema_version": 2,
+  "logical_screen_id": "profile-empty",
+  "screen": "Profile (empty — voice interview hero)",
+  "platforms": {
+    "ios": {
+      "ledger_legacy_id": "03-profile-empty",
+      "implemented": true,
+      "source_files": [
+        "apps/ios-macos/Sources/LikemindedApp/Views/ProfilePrototypeView.swift (VoiceProfileView)"
+      ],
+      "source_hash": "bbc3a0d9adb31ff4",
+      "mockup_ref": "mockups/ios/01-04-onboarding-voice-meet-soulmate.png",
+      "mockup_missing": false,
+      "entry_points": [
+        "Profile tab after onboarding, before voice session",
+        "DEBUG: --likeminded-dev-profile-empty + --likeminded-start-profile with validation-gurusharan"
+      ],
+      "backend_dependencies": [
+        "GET /v1/me/profile"
+      ],
+      "ui_validation": {
+        "result": "pass",
+        "notes": "2026-07-05 vs plate 01-04 voice panel: deep-green hero, orb, Tell me how you connect., Speak naturally…, Start voice profile CTA. macOS parity screen: --mac-screen profileOnboarding step 2 (--likeminded-dev-profile-empty). Intentional: montage active-session signals sheet; hero is pre-session state. Recapture blocked: concurrent xcodebuild DB lock / missing binaries after parallel validation."
+      },
+      "visual_parity": {
+        "result": "pass",
+        "notes": "2026-07-05 vs plate 01-04 voice panel: deep-green hero, orb, Tell me how you connect., Speak naturally…, Start voice profile CTA. macOS parity screen: --mac-screen profileOnboarding step 2 (--likeminded-dev-profile-empty). Intentional: montage active-session signals sheet; hero is pre-session state. Recapture blocked: concurrent xcodebuild DB lock / missing binaries after parallel validation."
+      },
+      "recent_screenshot_ref": "output/validation/ios-screens/profile-empty.png",
+      "notes": "macOS map: profileOnboarding (step 2 voice hero). Validation user: validation-gurusharan / Gurusharan Gupta. Launch: --likeminded-dev-profile-empty --likeminded-start-profile (iOS) or --mac-screen profileOnboarding (macOS)."
+    },
+    "macos": {
+      "ledger_legacy_id": null,
+      "implemented": false,
+      "source_files": [],
+      "source_hash": null,
+      "mockup_ref": null,
+      "mockup_missing": true,
+      "entry_points": [],
+      "backend_dependencies": [],
+      "ui_validation": null,
+      "visual_parity": null,
+      "recent_screenshot_ref": null,
+      "notes": "No dedicated macOS screen — feature may live under another logical screen"
+    }
+  },
+  "flows": [
+    {
+      "id": "pencil-settings",
+      "name": "Pencil icon → Settings",
+      "origin": "profile-empty",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "pencil-settings"
+        ],
+        "macos": []
+      },
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "pencil-settings: screen-capture 2026-07-05",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "bbc3a0d9adb31ff4",
+          "last_test_method": "screen-capture"
+        },
+        "macos": {
+          "result": "not-applicable",
+          "evidence": "Platform screen not implemented",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control pencil-settings responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/01-04-onboarding-voice-meet-soulmate.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen profile-empty --platform ios",
+          "macos": "npm run ledger:screen -- --platform macos --screen profile-empty --section flows"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-empty --flow pencil-settings --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "start-voice",
+      "name": "Start voice profile",
+      "origin": "profile-empty",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "start-voice"
+        ],
+        "macos": []
+      },
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "start-voice: screen-capture 2026-07-05",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "bbc3a0d9adb31ff4",
+          "last_test_method": "screen-capture"
+        },
+        "macos": {
+          "result": "not-applicable",
+          "evidence": "Platform screen not implemented",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control start-voice responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/01-04-onboarding-voice-meet-soulmate.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen profile-empty --platform ios",
+          "macos": "npm run ledger:screen -- --platform macos --screen profile-empty --section flows"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-empty --flow start-voice --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "settings-gear-label-fix",
+      "name": "Open settings from profile (gear)",
+      "origin": "profile-empty",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [],
+        "macos": []
+      },
+      "gap_audit": "2026-07-06",
+      "validation": {
+        "ios": {
+          "result": "not-applicable",
+          "evidence": "No iOS controls for this flow",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        },
+        "macos": {
+          "result": "not-applicable",
+          "evidence": "No macOS controls for this flow",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "User outcome achieved: Open settings from profile (gear)"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/01-04-onboarding-voice-meet-soulmate.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen profile-empty --platform ios",
+          "macos": "npm run ledger:screen -- --platform macos --screen profile-empty --section flows"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-empty --flow settings-gear-label-fix --result pass --method <tier-method> --evidence \"...\""
+      }
+    }
+  ],
+  "controls": {
+    "ios": [
+      {
+        "id": "pencil-settings",
+        "type": "nav-link",
+        "label": "Pencil icon → Settings",
+        "expected": "Pushes SettingsPrototypeView",
+        "result": "pass",
+        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (pencil-settings)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "bbc3a0d9adb31ff4",
+        "last_tested_at": "2026-07-05",
+        "last_test_method": "screen-capture"
+      },
+      {
+        "id": "start-voice",
+        "type": "button",
+        "label": "Start voice profile",
+        "expected": "Opens voice session sheet and calls startVoiceSession",
+        "result": "pass",
+        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (start-voice)",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-05",
+        "tested_source_hash": "bbc3a0d9adb31ff4",
+        "last_test_method": "screen-capture"
+      }
+    ],
+    "macos": []
+  }
+}

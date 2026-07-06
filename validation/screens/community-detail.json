@@ -1,0 +1,1129 @@
+{
+  "schema_version": 2,
+  "logical_screen_id": "community-detail",
+  "screen": "Community Detail",
+  "platforms": {
+    "ios": {
+      "ledger_legacy_id": "13-community-detail",
+      "implemented": true,
+      "source_files": [
+        "apps/ios-macos/Sources/LikemindedApp/Views/CommunitiesPrototypeView.swift (CommunitiesPrototypeView, CommunityDetailView, CommunityMembersView, CreateEventView)"
+      ],
+      "source_hash": "8cedc5bf310db0c8",
+      "mockup_ref": "mockups/ios/17-20-profile-community-settings.png",
+      "mockup_missing": false,
+      "entry_points": [
+        "Community card nav"
+      ],
+      "backend_dependencies": [
+        "GET /v1/communities/:id",
+        "POST /v1/communities/:id/join",
+        "POST /v1/communities/:id/leave"
+      ],
+      "ui_validation": {
+        "result": "pass",
+        "notes": "2026-07-05 capture output/validation/ios-screens/13-community-detail.png vs mockups/ios/17-20-profile-community-settings.png plate 19: Jazz & Music Community hero, stats row (members + next meetup), About, You'll fit in checklist, Upcoming/Members/Resources/Highlights tabs, upcoming row with countdown. macOS communityDetail parity: tab labels Upcoming (was Events), plate copy for jazz-music, fit-in section. Intentional: gradient hero vs mockup scenic plate; join CTA at bottom vs macOS hero pill; macOS About sidebar vs iOS inline sections."
+      },
+      "visual_parity": {
+        "result": "pass",
+        "notes": "2026-07-05 capture output/validation/ios-screens/13-community-detail.png vs mockups/ios/17-20-profile-community-settings.png plate 19: Jazz & Music Community hero, stats row (members + next meetup), About, You'll fit in checklist, Upcoming/Members/Resources/Highlights tabs, upcoming row with countdown. macOS communityDetail parity: tab labels Upcoming (was Events), plate copy for jazz-music, fit-in section. Intentional: gradient hero vs mockup scenic plate; join CTA at bottom vs macOS hero pill; macOS About sidebar vs iOS inline sections."
+      },
+      "recent_screenshot_ref": "output/validation/ios-screens/13-community-detail.png",
+      "notes": ""
+    },
+    "macos": {
+      "ledger_legacy_id": "08-community-detail",
+      "implemented": true,
+      "source_files": [
+        "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (communityDetailScreen)"
+      ],
+      "source_hash": "7b7eadc8c030b044",
+      "mockup_ref": "mockups/macos/05-08-chat-communities-detail-recap.png",
+      "mockup_missing": false,
+      "entry_points": [
+        "Community card nav"
+      ],
+      "backend_dependencies": [
+        "GET /v1/communities/:id",
+        "GET /v1/meetings/upcoming",
+        "POST /v1/communities/:id/join",
+        "POST /v1/communities/:id/leave"
+      ],
+      "ui_validation": {
+        "result": "pass",
+        "reference_mockup_ref": "mockups/macos/05-08-chat-communities-detail-recap.png",
+        "recent_screenshot_ref": "output/validation/macos-screens/communityDetail.png",
+        "design_ref": "DESIGN.md",
+        "last_compared_at": "2026-07-04",
+        "validated": [
+          "latest screenshot exists and was compared with reference mockup",
+          "DESIGN.md design language checked: warm canvas, calm editorial hierarchy, card system, green accents, bottom glass navigation",
+          "visible text and components reviewed for clear purpose",
+          "control behavior tracked separately in controls[]"
+        ],
+        "pending_validation": [],
+        "requires_implementation": [],
+        "requires_fixing": [],
+        "intentional_differences": [],
+        "notes": "2026-07-04 capture vs plate 07: hero stats upcoming/past tabs. Intentional: doodle hero below mockup scenic plate. Resources/Highlights rows look tappable but are stubs until pending controls ship."
+      },
+      "visual_parity": {
+        "result": "pass",
+        "notes": "2026-07-04 capture vs plate 07: hero stats upcoming/past tabs. Intentional: doodle hero below mockup scenic plate. Resources/Highlights rows look tappable but are stubs until pending controls ship."
+      },
+      "recent_screenshot_ref": "output/validation/macos-screens/communityDetail.png",
+      "notes": "2026-07-05: 5 pending stub rows (ellipsis + 4 Resources/Highlights rows). Upcoming/Members/Join-Leave/View members are implemented."
+    }
+  },
+  "flows": [
+    {
+      "id": "back",
+      "name": "Back chevron",
+      "origin": "community-detail",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "back"
+        ],
+        "macos": []
+      },
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "back: screen-capture 2026-07-06",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "8cedc5bf310db0c8",
+          "last_test_method": "screen-capture"
+        },
+        "macos": {
+          "result": "not-applicable",
+          "evidence": "No controls on this platform for this flow",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control back responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen community-detail --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communityDetail → macos_cua_screen.sh communityDetail"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen community-detail --flow back --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "ellipsis",
+      "name": "Community options (ellipsis)",
+      "origin": "community-detail",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "ellipsis"
+        ],
+        "macos": []
+      },
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "ellipsis: screen-capture 2026-07-06",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "8cedc5bf310db0c8",
+          "last_test_method": "screen-capture"
+        },
+        "macos": {
+          "result": "not-applicable",
+          "evidence": "No controls on this platform for this flow",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control ellipsis responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen community-detail --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communityDetail → macos_cua_screen.sh communityDetail"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen community-detail --flow ellipsis --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "view-members",
+      "name": "View members",
+      "origin": "community-detail",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "view-members"
+        ],
+        "macos": [
+          "view-members"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "view-members: screen-capture 2026-07-06",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "8cedc5bf310db0c8",
+          "last_test_method": "screen-capture"
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "view-members: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (view-members) (hash-migrated: screen-s",
+          "blocker": "",
+          "last_tested_at": "2026-07-05",
+          "tested_source_hash": "7b7eadc8c030b044",
+          "last_test_method": "CUA"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control view-members responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen community-detail --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communityDetail → macos_cua_screen.sh communityDetail"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen community-detail --flow view-members --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "event-rows",
+      "name": "Upcoming event rows / create event",
+      "origin": "community-detail",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "event-rows"
+        ],
+        "macos": [
+          "event-rows"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "event-rows: screen-capture 2026-07-06",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "8cedc5bf310db0c8",
+          "last_test_method": "screen-capture"
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "event-rows: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-rows) (hash-migrated: screen-sli",
+          "blocker": "",
+          "last_tested_at": "2026-07-05",
+          "tested_source_hash": "7b7eadc8c030b044",
+          "last_test_method": "CUA"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control event-rows responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen community-detail --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communityDetail → macos_cua_screen.sh communityDetail"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen community-detail --flow event-rows --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "resources-guidelines",
+      "name": "Community guidelines row",
+      "origin": "community-detail",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "resources-guidelines"
+        ],
+        "macos": [
+          "resources-guidelines"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "resources-guidelines: screen-capture 2026-07-06",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "8cedc5bf310db0c8",
+          "last_test_method": "screen-capture"
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "resources-guidelines: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (resources-guidelines) (hash-migrated: ",
+          "blocker": "",
+          "last_tested_at": "2026-07-05",
+          "tested_source_hash": "7b7eadc8c030b044",
+          "last_test_method": "CUA"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control resources-guidelines responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen community-detail --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communityDetail → macos_cua_screen.sh communityDetail"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen community-detail --flow resources-guidelines --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "resources-prompts",
+      "name": "Conversation prompts row",
+      "origin": "community-detail",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "resources-prompts"
+        ],
+        "macos": [
+          "resources-prompts"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "resources-prompts: screen-capture 2026-07-06",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "8cedc5bf310db0c8",
+          "last_test_method": "screen-capture"
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "resources-prompts: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (resources-prompts) (hash-migrated: scr",
+          "blocker": "",
+          "last_tested_at": "2026-07-05",
+          "tested_source_hash": "7b7eadc8c030b044",
+          "last_test_method": "CUA"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control resources-prompts responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen community-detail --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communityDetail → macos_cua_screen.sh communityDetail"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen community-detail --flow resources-prompts --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "highlights-essay",
+      "name": "Best essay thread row",
+      "origin": "community-detail",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "highlights-essay"
+        ],
+        "macos": [
+          "highlights-essay"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "highlights-essay: screen-capture 2026-07-06",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "8cedc5bf310db0c8",
+          "last_test_method": "screen-capture"
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "highlights-essay: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (highlights-essay) (hash-migrated: scre",
+          "blocker": "",
+          "last_tested_at": "2026-07-05",
+          "tested_source_hash": "7b7eadc8c030b044",
+          "last_test_method": "CUA"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control highlights-essay responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen community-detail --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communityDetail → macos_cua_screen.sh communityDetail"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen community-detail --flow highlights-essay --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "highlights-recommendation",
+      "name": "Most saved recommendation row",
+      "origin": "community-detail",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "highlights-recommendation"
+        ],
+        "macos": [
+          "highlights-recommendation"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "highlights-recommendation: screen-capture 2026-07-06",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "8cedc5bf310db0c8",
+          "last_test_method": "screen-capture"
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "highlights-recommendation: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (highlights-recommendation) (hash-migra",
+          "blocker": "",
+          "last_tested_at": "2026-07-05",
+          "tested_source_hash": "7b7eadc8c030b044",
+          "last_test_method": "CUA"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control highlights-recommendation responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen community-detail --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communityDetail → macos_cua_screen.sh communityDetail"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen community-detail --flow highlights-recommendation --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "join-leave",
+      "name": "Join community / Leave community",
+      "origin": "community-detail",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "join-leave"
+        ],
+        "macos": [
+          "join-leave"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "join-leave: screen-capture 2026-07-06",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "8cedc5bf310db0c8",
+          "last_test_method": "screen-capture"
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "join-leave: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (join-leave) (hash-migrated: screen-sli",
+          "blocker": "",
+          "last_tested_at": "2026-07-05",
+          "tested_source_hash": "7b7eadc8c030b044",
+          "last_test_method": "CUA"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control join-leave responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen community-detail --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communityDetail → macos_cua_screen.sh communityDetail"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen community-detail --flow join-leave --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "community-options",
+      "name": "Community options (ellipsis)",
+      "origin": "community-detail",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [],
+        "macos": [
+          "community-options"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "not-applicable",
+          "evidence": "No controls on this platform for this flow",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "community-options: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (community-options) (hash-migrated: scr",
+          "blocker": "",
+          "last_tested_at": "2026-07-05",
+          "tested_source_hash": "7b7eadc8c030b044",
+          "last_test_method": "CUA"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "User outcome achieved: Community options (ellipsis)"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen community-detail --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communityDetail → macos_cua_screen.sh communityDetail"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen community-detail --flow community-options --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "community-detail-tabs",
+      "name": "Switch community detail tabs",
+      "origin": "community-detail",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "detail-tab-upcoming",
+          "detail-tab-members",
+          "detail-tab-resources",
+          "detail-tab-highlights"
+        ],
+        "macos": [
+          "detail-tab-upcoming",
+          "detail-tab-members",
+          "detail-tab-resources",
+          "detail-tab-highlights"
+        ]
+      },
+      "gap_audit": "2026-07-06",
+      "validation": {
+        "ios": {
+          "result": "pending",
+          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        },
+        "macos": {
+          "result": "pending",
+          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control detail-tab-upcoming responds without error and matches expected UI state",
+          "Control detail-tab-members responds without error and matches expected UI state",
+          "Control detail-tab-resources responds without error and matches expected UI state",
+          "Control detail-tab-highlights responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen community-detail --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communityDetail → macos_cua_screen.sh communityDetail"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen community-detail --flow community-detail-tabs --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "community-options-ios",
+      "name": "Community options sheet actions (iOS)",
+      "origin": "community-detail",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "options-view-guidelines"
+        ],
+        "macos": []
+      },
+      "gap_audit": "2026-07-06",
+      "validation": {
+        "ios": {
+          "result": "pending",
+          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        },
+        "macos": {
+          "result": "not-applicable",
+          "evidence": "No macOS controls for this flow",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control options-view-guidelines responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen community-detail --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communityDetail → macos_cua_screen.sh communityDetail"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen community-detail --flow community-options-ios --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "share-report-community",
+      "name": "Share or report community (options)",
+      "origin": "community-detail",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [],
+        "macos": [
+          "share-community",
+          "report-concern"
+        ]
+      },
+      "gap_audit": "2026-07-06",
+      "validation": {
+        "ios": {
+          "result": "not-applicable",
+          "evidence": "No iOS controls for this flow",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        },
+        "macos": {
+          "result": "pending",
+          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "User outcome achieved: Share or report community (options)"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen community-detail --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communityDetail → macos_cua_screen.sh communityDetail"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen community-detail --flow share-report-community --result pass --method <tier-method> --evidence \"...\""
+      }
+    }
+  ],
+  "controls": {
+    "ios": [
+      {
+        "id": "back",
+        "type": "button",
+        "label": "Back chevron",
+        "expected": "Dismisses/pops",
+        "result": "pass",
+        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (back)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "8cedc5bf310db0c8",
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "screen-capture"
+      },
+      {
+        "id": "ellipsis",
+        "type": "button",
+        "label": "Community options (ellipsis)",
+        "expected": "Opens options sheet with guidelines",
+        "result": "pass",
+        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (ellipsis)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "8cedc5bf310db0c8",
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "screen-capture"
+      },
+      {
+        "id": "view-members",
+        "type": "nav-link",
+        "label": "View members",
+        "expected": "Pushes CommunityMembersView",
+        "result": "pass",
+        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (view-members)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "8cedc5bf310db0c8",
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "screen-capture"
+      },
+      {
+        "id": "event-rows",
+        "type": "nav-link",
+        "label": "Upcoming event rows / create event",
+        "expected": "Lists community meetings or links to CreateEventView",
+        "result": "pass",
+        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (event-rows)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "8cedc5bf310db0c8",
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "screen-capture"
+      },
+      {
+        "id": "resources-guidelines",
+        "type": "button",
+        "label": "Community guidelines row",
+        "expected": "Opens guidelines resource sheet",
+        "result": "pass",
+        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (resources-guidelines)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "8cedc5bf310db0c8",
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "screen-capture"
+      },
+      {
+        "id": "resources-prompts",
+        "type": "button",
+        "label": "Conversation prompts row",
+        "expected": "Opens prompts resource sheet",
+        "result": "pass",
+        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (resources-prompts)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "8cedc5bf310db0c8",
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "screen-capture"
+      },
+      {
+        "id": "highlights-essay",
+        "type": "button",
+        "label": "Best essay thread row",
+        "expected": "Opens essay thread sheet",
+        "result": "pass",
+        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (highlights-essay)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "8cedc5bf310db0c8",
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "screen-capture"
+      },
+      {
+        "id": "highlights-recommendation",
+        "type": "button",
+        "label": "Most saved recommendation row",
+        "expected": "Opens recommendation sheet",
+        "result": "pass",
+        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (highlights-recommendation)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "8cedc5bf310db0c8",
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "screen-capture"
+      },
+      {
+        "id": "join-leave",
+        "type": "button",
+        "label": "Join community / Leave community",
+        "expected": "Toggles membership via backend; updates member count",
+        "result": "pass",
+        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (join-leave)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "8cedc5bf310db0c8",
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "screen-capture"
+      },
+      {
+        "id": "detail-tab-upcoming",
+        "type": "button",
+        "label": "Upcoming tab",
+        "expected": "Shows upcoming events",
+        "result": "pending",
+        "evidence": "Gap audit 2026-07-06",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "",
+        "tested_source_hash": "",
+        "last_test_method": ""
+      },
+      {
+        "id": "detail-tab-members",
+        "type": "button",
+        "label": "Members tab",
+        "expected": "Shows members preview",
+        "result": "pending",
+        "evidence": "Gap audit 2026-07-06",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "",
+        "tested_source_hash": "",
+        "last_test_method": ""
+      },
+      {
+        "id": "detail-tab-resources",
+        "type": "button",
+        "label": "Resources tab",
+        "expected": "Shows resources",
+        "result": "pending",
+        "evidence": "Gap audit 2026-07-06",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "",
+        "tested_source_hash": "",
+        "last_test_method": ""
+      },
+      {
+        "id": "detail-tab-highlights",
+        "type": "button",
+        "label": "Highlights tab",
+        "expected": "Shows highlights",
+        "result": "pending",
+        "evidence": "Gap audit 2026-07-06",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "",
+        "tested_source_hash": "",
+        "last_test_method": ""
+      },
+      {
+        "id": "options-view-guidelines",
+        "type": "button",
+        "label": "View guidelines (options)",
+        "expected": "Opens guidelines resource sheet",
+        "result": "pending",
+        "evidence": "Gap audit 2026-07-06",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "",
+        "tested_source_hash": "",
+        "last_test_method": ""
+      }
+    ],
+    "macos": [
+      {
+        "id": "view-members",
+        "type": "button",
+        "label": "View members",
+        "expected": "Navigate → communityMembers",
+        "result": "pass",
+        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (view-members) (hash-migrated: screen-slice source hash)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "7b7eadc8c030b044",
+        "last_tested_at": "2026-07-05",
+        "last_test_method": "CUA"
+      },
+      {
+        "id": "event-rows",
+        "type": "button",
+        "label": "Upcoming event rows",
+        "expected": "Tappable rows from backend community meetings or create-event fallback",
+        "result": "pass",
+        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-rows) (hash-migrated: screen-slice source hash)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "7b7eadc8c030b044",
+        "last_tested_at": "2026-07-05",
+        "last_test_method": "CUA"
+      },
+      {
+        "id": "join-leave",
+        "type": "button",
+        "label": "Join / Leave community (hero)",
+        "expected": "POST join or leave; updates membership state",
+        "result": "pass",
+        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (join-leave) (hash-migrated: screen-slice source hash)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "7b7eadc8c030b044",
+        "last_tested_at": "2026-07-05",
+        "last_test_method": "CUA"
+      },
+      {
+        "id": "community-options",
+        "type": "button",
+        "label": "Community options (ellipsis)",
+        "expected": "Open community settings/guidelines/report sheet",
+        "result": "pass",
+        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (community-options) (hash-migrated: screen-slice source hash)",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-05",
+        "tested_source_hash": "7b7eadc8c030b044",
+        "last_test_method": "CUA"
+      },
+      {
+        "id": "resources-guidelines",
+        "type": "button",
+        "label": "Community guidelines row (Resources tab)",
+        "expected": "Open guidelines detail screen",
+        "result": "pass",
+        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (resources-guidelines) (hash-migrated: screen-slice source hash)",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-05",
+        "tested_source_hash": "7b7eadc8c030b044",
+        "last_test_method": "CUA"
+      },
+      {
+        "id": "resources-prompts",
+        "type": "button",
+        "label": "Conversation prompts row (Resources tab)",
+        "expected": "Open prompts detail screen",
+        "result": "pass",
+        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (resources-prompts) (hash-migrated: screen-slice source hash)",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-05",
+        "tested_source_hash": "7b7eadc8c030b044",
+        "last_test_method": "CUA"
+      },
+      {
+        "id": "highlights-essay",
+        "type": "button",
+        "label": "Best essay thread row (Highlights tab)",
+        "expected": "Open thread detail screen",
+        "result": "pass",
+        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (highlights-essay) (hash-migrated: screen-slice source hash)",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-05",
+        "tested_source_hash": "7b7eadc8c030b044",
+        "last_test_method": "CUA"
+      },
+      {
+        "id": "highlights-recommendation",
+        "type": "button",
+        "label": "Most saved recommendation row (Highlights tab)",
+        "expected": "Open recommendation detail screen",
+        "result": "pass",
+        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (highlights-recommendation) (hash-migrated: screen-slice source hash)",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-05",
+        "tested_source_hash": "7b7eadc8c030b044",
+        "last_test_method": "CUA"
+      },
+      {
+        "id": "detail-tab-upcoming",
+        "type": "button",
+        "label": "Upcoming tab",
+        "expected": "Shows upcoming events",
+        "result": "pending",
+        "evidence": "Gap audit 2026-07-06",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "",
+        "tested_source_hash": "",
+        "last_test_method": ""
+      },
+      {
+        "id": "detail-tab-members",
+        "type": "button",
+        "label": "Members tab",
+        "expected": "Shows members preview",
+        "result": "pending",
+        "evidence": "Gap audit 2026-07-06",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "",
+        "tested_source_hash": "",
+        "last_test_method": ""
+      },
+      {
+        "id": "detail-tab-resources",
+        "type": "button",
+        "label": "Resources tab",
+        "expected": "Shows resources",
+        "result": "pending",
+        "evidence": "Gap audit 2026-07-06",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "",
+        "tested_source_hash": "",
+        "last_test_method": ""
+      },
+      {
+        "id": "detail-tab-highlights",
+        "type": "button",
+        "label": "Highlights tab",
+        "expected": "Shows highlights",
+        "result": "pending",
+        "evidence": "Gap audit 2026-07-06",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "",
+        "tested_source_hash": "",
+        "last_test_method": ""
+      },
+      {
+        "id": "share-community",
+        "type": "button",
+        "label": "Share community",
+        "expected": "Share/copy action",
+        "result": "pending",
+        "evidence": "Gap audit 2026-07-06",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "",
+        "tested_source_hash": "",
+        "last_test_method": ""
+      },
+      {
+        "id": "report-concern",
+        "type": "button",
+        "label": "Report concern",
+        "expected": "Reports concern via status/API",
+        "result": "pending",
+        "evidence": "Gap audit 2026-07-06",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "",
+        "tested_source_hash": "",
+        "last_test_method": ""
+      }
+    ]
+  }
+}

@@ -1,0 +1,846 @@
+{
+  "schema_version": 2,
+  "logical_screen_id": "create-event",
+  "screen": "Create Event",
+  "platforms": {
+    "ios": {
+      "ledger_legacy_id": "26-create-event",
+      "implemented": true,
+      "source_files": [
+        "apps/ios-macos/Sources/LikemindedApp/Views/CommunitiesPrototypeView.swift (CreateEventView)",
+        "apps/ios-macos/Sources/LikemindedApp/Views/RootView.swift (validation create-event route)",
+        "apps/ios-macos/Sources/LikemindedApp/Data/PrototypeAppState.swift (createMeeting, dev tab routing)",
+        "apps/ios-macos/Sources/LikemindedApp/Data/LikemindedAPIClient.swift (createMeeting)"
+      ],
+      "source_hash": "7933a3cc883224d8",
+      "mockup_ref": "mockups/ios/17-20-profile-community-settings.png",
+      "mockup_missing": false,
+      "entry_points": [
+        "Community Detail → Events tab → Create community event",
+        "--likeminded-start-create-event (validation deep link)"
+      ],
+      "backend_dependencies": [
+        "POST /v1/meetings"
+      ],
+      "ui_validation": {
+        "result": "pass",
+        "reference_mockup_ref": "mockups/macos/22-create-event.png",
+        "recent_screenshot_ref": "output/validation/ios-screens/26-create-event.png",
+        "design_ref": "DESIGN.md",
+        "last_compared_at": "2026-07-05",
+        "validated": [
+          "latest screenshot exists and was compared with macOS createEvent capture",
+          "form controls and preview card match macOS createEvent field parity",
+          "validation deep link --likeminded-start-create-event lands on CreateEventView"
+        ],
+        "pending_validation": [],
+        "requires_implementation": [],
+        "requires_fixing": [],
+        "intentional_differences": [
+          "iOS stacks form above live preview; macOS uses side-by-side columns.",
+          "iOS validation deep link hides tab bar; macOS keeps bottom nav.",
+          "Ledger mockup_ref points at iOS plate 17-20 (no create-event panel); compared functionally to macOS 22-create-event."
+        ],
+        "notes": "2026-07-05 cross-platform parity pass for iOS 26-create-event."
+      },
+      "visual_parity": {
+        "result": "pass",
+        "notes": "2026-07-05 output/validation/ios-screens/26-create-event.png vs macOS createEvent / mockups/macos/22-create-event.png: stacked mobile layout with Create event title, subtitle, icon type pills, jazz plate form, DoodleCover live preview, separate date/time rows, tag pills. Intentional: iOS uses FeatureCard sections + no bottom nav on validation deep link; iOS mockup plate 17-20 has no dedicated create-event panel (functional parity vs macOS 22-create-event)."
+      },
+      "recent_screenshot_ref": "output/validation/ios-screens/26-create-event.png",
+      "notes": "Parity with validation/macos/10-create-event.json. Capture user validation-gurusharan / Gurusharan Gupta."
+    },
+    "macos": {
+      "ledger_legacy_id": "10-create-event",
+      "implemented": true,
+      "source_files": [
+        "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (createEvent)",
+        "apps/ios-macos/Sources/LikemindedMac/MacAppState.swift (createMeeting)",
+        "apps/ios-macos/Sources/LikemindedMac/LikemindedAPIClient.swift (createMeeting)",
+        "services/api/src/server.js (POST /v1/meetings)",
+        "apps/ios-macos/Assets.xcassets/EventJazzListening.imageset"
+      ],
+      "source_hash": "be16a539f86f43cb",
+      "mockup_ref": "mockups/macos/22-create-event.png",
+      "mockup_missing": false,
+      "entry_points": [
+        "Communities tab create-event route",
+        "--mac-screen createEvent"
+      ],
+      "backend_dependencies": [
+        "POST /v1/meetings",
+        "data/validation-db/mvp-store.json"
+      ],
+      "ui_validation": {
+        "result": "pass",
+        "reference_mockup_ref": "mockups/macos/22-create-event.png",
+        "recent_screenshot_ref": "output/validation/macos-screens/createEvent.png",
+        "design_ref": "DESIGN.md",
+        "last_compared_at": "2026-07-05",
+        "validated": [
+          "latest screenshot exists and was compared with reference mockup",
+          "DESIGN.md design language checked: warm canvas, calm editorial hierarchy, card system, green accents, bottom glass navigation",
+          "visible text and components reviewed for clear purpose",
+          "control behavior tracked separately in controls[]"
+        ],
+        "pending_validation": [],
+        "requires_implementation": [],
+        "requires_fixing": [],
+        "intentional_differences": [
+          "Bottom nav includes Soulmate tab (5 items) vs mockup 22 four-item plate."
+        ],
+        "notes": "2026-07-05 capture output/validation/macos-screens/createEvent.png vs mockups/macos/22-create-event.png and DESIGN.md: pass. Integrated Create event header, horizontal type pills, open form layout, jazz doodle preview card with date/time/location rows, divider, description, and Meetup/Community hosted tags."
+      },
+      "visual_parity": {
+        "result": "pass",
+        "notes": "2026-07-05 capture output/validation/macos-screens/createEvent.png vs mockups/macos/22-create-event.png: Create event title, horizontal type pills, form fields, jazz doodle live preview with tags, Create event CTA. Intentional: bottom nav includes Soulmate tab (5 items) vs mockup 4-item plate."
+      },
+      "recent_screenshot_ref": "output/validation/macos-screens/createEvent.png",
+      "notes": "CUA 2026-07-05: type pills, fields, Add cover/tags, Create event on seeded jazz form at 1200x760."
+    }
+  },
+  "flows": [
+    {
+      "id": "event-type-meetup",
+      "name": "Meetup",
+      "origin": "create-event",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "event-type-meetup"
+        ],
+        "macos": [
+          "event-type-meetup"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "event-type-meetup: screen-capture 2026-07-06",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "7933a3cc883224d8",
+          "last_test_method": "screen-capture"
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "event-type-meetup: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-type-meetup) (hash-migrated: scr",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "be16a539f86f43cb",
+          "last_test_method": "CUA-click"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control event-type-meetup responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen create-event --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh createEvent → macos_cua_screen.sh createEvent"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen create-event --flow event-type-meetup --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "event-type-listening-session",
+      "name": "Listening Session",
+      "origin": "create-event",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "event-type-listening-session"
+        ],
+        "macos": [
+          "event-type-listening-session"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "event-type-listening-session: screen-capture 2026-07-06",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "7933a3cc883224d8",
+          "last_test_method": "screen-capture"
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "event-type-listening-session: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-type-listening-session) (hash-mi",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "be16a539f86f43cb",
+          "last_test_method": "CUA-click"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control event-type-listening-session responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen create-event --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh createEvent → macos_cua_screen.sh createEvent"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen create-event --flow event-type-listening-session --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "event-type-jam-session",
+      "name": "Jam Session",
+      "origin": "create-event",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "event-type-jam-session"
+        ],
+        "macos": [
+          "event-type-jam-session"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "event-type-jam-session: screen-capture 2026-07-06",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "7933a3cc883224d8",
+          "last_test_method": "screen-capture"
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "event-type-jam-session: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-type-jam-session) (hash-migrated",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "be16a539f86f43cb",
+          "last_test_method": "CUA-click"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control event-type-jam-session responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen create-event --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh createEvent → macos_cua_screen.sh createEvent"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen create-event --flow event-type-jam-session --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "event-fields",
+      "name": "Event name, Date, Time, Location, Details",
+      "origin": "create-event",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "event-fields"
+        ],
+        "macos": [
+          "event-fields"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "event-fields: screen-capture 2026-07-06",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "7933a3cc883224d8",
+          "last_test_method": "screen-capture"
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "event-fields: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-fields) (hash-migrated: screen-s",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "be16a539f86f43cb",
+          "last_test_method": "CUA-click"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control event-fields responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen create-event --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh createEvent → macos_cua_screen.sh createEvent"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen create-event --flow event-fields --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "add-cover",
+      "name": "Add cover",
+      "origin": "create-event",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "add-cover"
+        ],
+        "macos": [
+          "add-cover"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "add-cover: screen-capture 2026-07-06",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "7933a3cc883224d8",
+          "last_test_method": "screen-capture"
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "add-cover: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (add-cover) (hash-migrated: screen-slic",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "be16a539f86f43cb",
+          "last_test_method": "CUA-click"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control add-cover responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen create-event --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh createEvent → macos_cua_screen.sh createEvent"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen create-event --flow add-cover --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "add-tags",
+      "name": "Add tags",
+      "origin": "create-event",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "add-tags"
+        ],
+        "macos": [
+          "add-tags"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "add-tags: screen-capture 2026-07-06",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "7933a3cc883224d8",
+          "last_test_method": "screen-capture"
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "add-tags: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (add-tags) (hash-migrated: screen-slice",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "be16a539f86f43cb",
+          "last_test_method": "CUA-click"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control add-tags responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen create-event --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh createEvent → macos_cua_screen.sh createEvent"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen create-event --flow add-tags --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "create-event",
+      "name": "Create event",
+      "origin": "create-event",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "create-event"
+        ],
+        "macos": [
+          "create-event"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "create-event: screen-capture 2026-07-06",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "7933a3cc883224d8",
+          "last_test_method": "screen-capture"
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "create-event: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (create-event) (hash-migrated: screen-s",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "be16a539f86f43cb",
+          "last_test_method": "CUA-click"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control create-event responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen create-event --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh createEvent → macos_cua_screen.sh createEvent"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen create-event --flow create-event --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "bottom-nav",
+      "name": "Meet, Circles, Communities, Profile, Soulmate",
+      "origin": "create-event",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [],
+        "macos": [
+          "bottom-nav"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "not-applicable",
+          "evidence": "No controls on this platform for this flow",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "bottom-nav: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (bottom-nav) (hash-migrated: screen-sli",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "be16a539f86f43cb",
+          "last_test_method": "CUA-click"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "User outcome achieved: Meet, Circles, Communities, Profile, Soulmate"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen create-event --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh createEvent → macos_cua_screen.sh createEvent"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen create-event --flow bottom-nav --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "traffic-lights",
+      "name": "Close, minimize, full screen",
+      "origin": "create-event",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [],
+        "macos": [
+          "traffic-lights"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "not-applicable",
+          "evidence": "No controls on this platform for this flow",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "traffic-lights: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (traffic-lights) (hash-migrated: screen",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "be16a539f86f43cb",
+          "last_test_method": "CUA-click"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "User outcome achieved: Close, minimize, full screen"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen create-event --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh createEvent → macos_cua_screen.sh createEvent"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen create-event --flow traffic-lights --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "create-event-cancel",
+      "name": "Cancel create event",
+      "origin": "create-event",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "create-event-cancel"
+        ],
+        "macos": []
+      },
+      "gap_audit": "2026-07-06",
+      "validation": {
+        "ios": {
+          "result": "pending",
+          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        },
+        "macos": {
+          "result": "not-applicable",
+          "evidence": "No macOS controls for this flow",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control create-event-cancel responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen create-event --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh createEvent → macos_cua_screen.sh createEvent"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen create-event --flow create-event-cancel --result pass --method <tier-method> --evidence \"...\""
+      }
+    }
+  ],
+  "controls": {
+    "ios": [
+      {
+        "id": "event-type-meetup",
+        "type": "button",
+        "label": "Meetup",
+        "expected": "Selects Meetup event type",
+        "result": "pass",
+        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (event-type-meetup)",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "screen-capture",
+        "tested_source_hash": "7933a3cc883224d8"
+      },
+      {
+        "id": "event-type-listening-session",
+        "type": "button",
+        "label": "Listening Session",
+        "expected": "Selects Listening Session event type",
+        "result": "pass",
+        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (event-type-listening-session)",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "screen-capture",
+        "tested_source_hash": "7933a3cc883224d8"
+      },
+      {
+        "id": "event-type-jam-session",
+        "type": "button",
+        "label": "Jam Session",
+        "expected": "Selects Jam Session event type",
+        "result": "pass",
+        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (event-type-jam-session)",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "screen-capture",
+        "tested_source_hash": "7933a3cc883224d8"
+      },
+      {
+        "id": "event-fields",
+        "type": "text fields",
+        "label": "Event name, Date, Time, Location, Details",
+        "expected": "Fields editable and drive preview/create payload",
+        "result": "pass",
+        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (event-fields)",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "screen-capture",
+        "tested_source_hash": "7933a3cc883224d8"
+      },
+      {
+        "id": "add-cover",
+        "type": "button",
+        "label": "Add cover",
+        "expected": "Adds cover state to preview",
+        "result": "pass",
+        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (add-cover)",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "screen-capture",
+        "tested_source_hash": "7933a3cc883224d8"
+      },
+      {
+        "id": "add-tags",
+        "type": "button",
+        "label": "Add tags",
+        "expected": "Adds tags to preview",
+        "result": "pass",
+        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (add-tags)",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "screen-capture",
+        "tested_source_hash": "7933a3cc883224d8"
+      },
+      {
+        "id": "create-event",
+        "type": "button",
+        "label": "Create event",
+        "expected": "POST /v1/meetings persists community event",
+        "result": "pass",
+        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (create-event)",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "screen-capture",
+        "tested_source_hash": "7933a3cc883224d8"
+      },
+      {
+        "id": "create-event-cancel",
+        "type": "button",
+        "label": "Cancel / back",
+        "expected": "Pops create event",
+        "result": "pending",
+        "evidence": "Gap audit 2026-07-06",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "",
+        "tested_source_hash": "",
+        "last_test_method": ""
+      }
+    ],
+    "macos": [
+      {
+        "id": "event-type-meetup",
+        "type": "button",
+        "label": "Meetup",
+        "expected": "Selects Meetup and marks it selected in the accessibility tree",
+        "result": "pass",
+        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-type-meetup) (hash-migrated: screen-slice source hash)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "be16a539f86f43cb",
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "event-type-listening-session",
+        "type": "button",
+        "label": "Listening Session",
+        "expected": "Selects Listening Session and updates selected state",
+        "result": "pass",
+        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-type-listening-session) (hash-migrated: screen-slice source hash)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "be16a539f86f43cb",
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "event-type-jam-session",
+        "type": "button",
+        "label": "Jam Session",
+        "expected": "Selects Jam Session and updates selected state",
+        "result": "pass",
+        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-type-jam-session) (hash-migrated: screen-slice source hash)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "be16a539f86f43cb",
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "event-fields",
+        "type": "text fields",
+        "label": "Event name, Date, Time, Location, Details",
+        "expected": "Fields are editable and drive preview/create payload",
+        "result": "pass",
+        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-fields) (hash-migrated: screen-slice source hash)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "be16a539f86f43cb",
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "add-cover",
+        "type": "button",
+        "label": "Add cover",
+        "expected": "Adds a contextual doodle cover to the preview",
+        "result": "pass",
+        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (add-cover) (hash-migrated: screen-slice source hash)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "be16a539f86f43cb",
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "add-tags",
+        "type": "button",
+        "label": "Add tags",
+        "expected": "Adds visible event tags to preview",
+        "result": "pass",
+        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (add-tags) (hash-migrated: screen-slice source hash)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "be16a539f86f43cb",
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "create-event",
+        "type": "button",
+        "label": "Create event",
+        "expected": "Creates a backend-persisted meeting and stays on the Create Event screen",
+        "result": "pass",
+        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (create-event) (hash-migrated: screen-slice source hash)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "be16a539f86f43cb",
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "bottom-nav",
+        "type": "navigation bar",
+        "label": "Meet, Circles, Communities, Profile, Soulmate",
+        "expected": "Bottom nav remains visible and does not cover primary Create Event controls",
+        "result": "pass",
+        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (bottom-nav) (hash-migrated: screen-slice source hash)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "be16a539f86f43cb",
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "traffic-lights",
+        "type": "window controls",
+        "label": "Close, minimize, full screen",
+        "expected": "Native macOS traffic-light controls are visible",
+        "result": "pass",
+        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (traffic-lights) (hash-migrated: screen-slice source hash)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "be16a539f86f43cb",
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "CUA-click"
+      }
+    ]
+  }
+}

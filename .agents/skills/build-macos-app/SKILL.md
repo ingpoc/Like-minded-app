@@ -101,7 +101,7 @@ open -F -n .build/macos/Build/Products/Debug/LikemindedMac.app --args \
 
 ## Hard rules
 
-- **Ledger owns status** — `validation/macos/*.json`; no parallel pass/fail tables.
+- **Ledger owns status** — `validation/screens/*.json`; no parallel pass/fail tables.
 - **Scripts, not improvisation** — no hand-built Quartz capture one-liners in agent loops.
 - **Sequential proof** — one `xcodebuild` / one app instance for capture+CUA batch; see `validation.md` § Parallel.
 - **`LIKEMINDED_API_BASE_URL`** in Info.plist — never hardcode URLs in Swift.

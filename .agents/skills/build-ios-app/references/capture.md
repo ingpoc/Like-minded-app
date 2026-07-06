@@ -15,6 +15,9 @@ Wrapper: `script/cross_platform_screen_validate.sh` — locks, API check, build,
 2. Lock `xcodebuild-ios` → build **or** install-only when binary is fresh (see below)
 3. Lock `ios-sim` → `simctl launch` with screen-specific args → `sleep IOS_CAPTURE_WAIT` (default **15s**) → `simctl io screenshot`
 4. PNG → `output/validation/ios-screens/<slug>.png` (fail if &lt; 10KB)
+5. **Ledger closeout** (automatic): `ledger_capture_closeout.js` updates `recent_screenshot_ref`, stamps controls (`ios_screen_stamp_map.js`), syncs `flows[]`
+
+Disable closeout: `LIKEMINDED_LEDGER_CLOSEOUT=0`. Stale batch: `LIKEMINDED_LEDGER_STALE_ONLY=1` (via `verify:ios-screens -- --stale-only`).
 
 ## Build vs install-only
 

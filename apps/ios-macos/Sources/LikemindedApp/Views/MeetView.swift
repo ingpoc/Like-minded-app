@@ -29,6 +29,10 @@ private enum MeetValidationFlags {
 }
 #endif
 
+private enum MeetRoute: Hashable {
+    case messages
+}
+
 struct MeetView: View {
     @EnvironmentObject private var appState: PrototypeAppState
     @State private var showingNotifications = MeetValidationFlags.opensNotificationsDirectly
@@ -37,7 +41,7 @@ struct MeetView: View {
 
     var body: some View {
         NavigationStack(path: $navigationPath) {
-            ScreenContainer(title: "Meet", subtitle: "When you meet.") {
+            ScreenContainer(title: "Meet", subtitle: "When you meet.", trailingHeader: { meetTitleActions }) {
                 RSVPCard(rsvps: appState.meetingRsvps) { kind, available in
                     Task { await appState.updateMeetingRSVP(kind: kind, available: available) }
                 }
@@ -77,30 +81,12 @@ struct MeetView: View {
                 PastMeetDetailView(meeting: meeting)
                     .environmentObject(appState)
             }
-            .overlay(alignment: .topTrailing) {
-                Button {
-                    showingNotifications = true
-                } label: {
-                    ZStack(alignment: .topTrailing) {
-                        Image(systemName: "bell")
-                            .font(PrototypeTypography.bodyStrong)
-                            .foregroundStyle(PrototypePalette.ink)
-                            .frame(width: 42, height: 42)
-                            .background(PrototypePalette.surface)
-                            .clipShape(Circle())
-                            .shadow(color: Color.black.opacity(0.06), radius: 14, y: 8)
-
-                        if !appState.notifications.isEmpty {
-                            Circle()
-                                .fill(PrototypePalette.coral)
-                                .frame(width: 9, height: 9)
-                                .offset(x: -4, y: 4)
-                        }
-                    }
+            .navigationDestination(for: MeetRoute.self) { route in
+                switch route {
+                case .messages:
+                    ConversationListView(matches: appState.soulmateMatches)
+                        .environmentObject(appState)
                 }
-                .buttonStyle(.plain)
-                .padding(.top, 42)
-                .padding(.trailing, 20)
             }
             .toolbar(.hidden, for: .navigationBar)
             .sheet(isPresented: $showingNotifications) {
@@ -109,6 +95,7 @@ struct MeetView: View {
             }
             .task {
                 await appState.fetchMeetings()
+                await appState.fetchSoulmateStatus()
                 openPendingPastMeetDetailIfNeeded()
                 if MeetValidationFlags.opensVideoCallDirectly, appState.upcomingMeetings.first != nil {
                     showVideoCall = true
@@ -127,6 +114,53 @@ struct MeetView: View {
                 }
             }
         }
+    }
+
+    private var meetTitleActions: some View {
+        HStack(spacing: 10) {
+            Button {
+                navigationPath.append(MeetRoute.messages)
+            } label: {
+                Image(systemName: "bubble.left.and.bubble.right")
+                    .font(PrototypeTypography.bodyStrong)
+                    .foregroundStyle(PrototypePalette.ink)
+                    .frame(width: 42, height: 42)
+                    .background(PrototypePalette.surface)
+                    .clipShape(Circle())
+                    .shadow(color: Color.black.opacity(0.06), radius: 14, y: 8)
+            }
+            .buttonStyle(.plain)
+            .accessibilityElement(children: .ignore)
+            .accessibilityAddTraits(.isButton)
+            .accessibilityLabel("Messages")
+            .accessibilityIdentifier("title-messages")
+
+            Button {
+                showingNotifications = true
+            } label: {
+                ZStack(alignment: .topTrailing) {
+                    Image(systemName: "bell")
+                        .font(PrototypeTypography.bodyStrong)
+                        .foregroundStyle(PrototypePalette.ink)
+                        .frame(width: 42, height: 42)
+                        .background(PrototypePalette.surface)
+                        .clipShape(Circle())
+                        .shadow(color: Color.black.opacity(0.06), radius: 14, y: 8)
+
+                    if !appState.notifications.isEmpty {
+                        Circle()
+                            .fill(PrototypePalette.coral)
+                            .frame(width: 9, height: 9)
+                            .offset(x: -4, y: 4)
+                    }
+                }
+            }
+            .buttonStyle(.plain)
+            .accessibilityElement(children: .ignore)
+            .accessibilityAddTraits(.isButton)
+            .accessibilityLabel("Notifications")
+        }
+        .accessibilitySortPriority(100)
     }
 
     private func openPendingPastMeetDetailIfNeeded() {

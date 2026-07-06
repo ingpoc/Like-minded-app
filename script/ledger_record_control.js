@@ -11,9 +11,10 @@
 const {
   findLedgerByScreenArg,
   loadScreenLedger,
-  recordControl,
-  writeLedger,
-  refreshScreenSourceHash
+  recordControlLedger,
+  syncFlowsFromControls,
+  persistLedger,
+  getPlatformHash
 } = require("./ledger_hash");
 
 function arg(name) {
@@ -40,8 +41,10 @@ const ledger = file
   ? loadScreenLedger(platform, file)
   : findLedgerByScreenArg(platform, screen);
 
-refreshScreenSourceHash(ledger.data);
-recordControl(ledger.data, controlId, { result, evidence, method });
-writeLedger(ledger.abs, ledger.data);
+recordControlLedger(ledger, platform, controlId, { result, evidence, method });
+const synced = syncFlowsFromControls(ledger, platform);
+persistLedger(ledger);
 
-console.log(`recorded ${platform}/${ledger.file} ${controlId} -> ${result} @ ${ledger.data.source_hash}`);
+console.log(
+  `recorded ${platform}/${ledger.logicalId || ledger.file} ${controlId} -> ${result} @ ${getPlatformHash(ledger, platform)} flows_synced=${synced}`
+);

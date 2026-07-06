@@ -654,7 +654,7 @@ struct CommunitiesPrototypeView: View {
 
     var body: some View {
         NavigationStack(path: $navigationPath) {
-            ScreenContainer(title: "Communities", subtitle: "What you're into.") {
+            ScreenContainer(title: "Communities", subtitle: "Explore communities that inspire you.") {
                 HStack(spacing: 10) {
                     HStack(spacing: 8) {
                         Image(systemName: "magnifyingglass")

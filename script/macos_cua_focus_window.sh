@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
-# Frame LikemindedMac on MACOS_CUA_DISPLAY (default DELL) + align cua-driver overlay.
+# Focus LikemindedMac + align cua-driver overlay on the window's display (multi-monitor).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # shellcheck source=macos_canonical_app.sh
 source "$ROOT/script/macos_canonical_app.sh"
 
-export MACOS_CUA_DISPLAY="${MACOS_CUA_DISPLAY:-DELL}"
+export MACOS_CUA_FOLLOW_WINDOW="${MACOS_CUA_FOLLOW_WINDOW:-1}"
+# Pin with MACOS_CUA_FORCE_DISPLAY=1 MACOS_CUA_DISPLAY=DELL (otherwise follow window).
 export MACOS_CUA_APP_PROCESS="${MACOS_CUA_APP_PROCESS:-LikemindedMac}"
 export MACOS_CUA_APP_QUARTZ="${MACOS_CUA_APP_QUARTZ:-Likeminded}"
 export MACOS_CUA_VIRTUAL_OVERLAY="${MACOS_CUA_VIRTUAL_OVERLAY:-1}"
@@ -57,6 +58,12 @@ align_json="$(python3 "$ROOT/script/macos_cua_align_displays.py")" || {
   exit 1
 }
 
+export MACOS_CUA_DISPLAY="$(python3 -c "
+import json, sys
+d = json.loads(sys.stdin.read())
+print(d.get('target_token') or d.get('display') or 'DELL')
+" <<<"$align_json")"
+
 read -r X Y BW BH <<<"$(python3 -c "
 import json, sys
 d = json.loads(sys.stdin.read())
@@ -82,3 +89,6 @@ APPLESCRIPT
 
 sleep 0.35
 "$ROOT/script/macos_cua_window.sh"
+
+# Batch clicks after this entry point must not re-spawn overlay/cursor per click.
+export MACOS_CUA_SKIP_OVERLAY=1

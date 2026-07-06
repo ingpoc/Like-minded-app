@@ -6,7 +6,7 @@ Global `/Users/gurusharan/.codex/AGENTS.md` owns instruction control. This file 
 
 ## Current Status
 
-- Route: `npm run goal:next` → `first_command`. Control status: `validation/{ios,macos}/*.json` only.
+- Route: `npm run goal:next` → `first_command`. Control status: `validation/screens/*.json` (`flows[]` primary). Session brief: `npm run ledger:brief`.
 - Design: `DESIGN.md`. Product behavior: `docs/product-direction.md`. Commands: `docs/workflows/validation.md`.
 - **macOS track** — `stale_pass` clean; infra-blocked only (`01-welcome`, `21-meet-video-call` join).
 - **iOS track** — `stale_pass` clean; infra-blocked only (Apple sign-in, LiveKit on device).
@@ -14,17 +14,17 @@ Global `/Users/gurusharan/.codex/AGENTS.md` owns instruction control. This file 
 
 ## Track — macOS Visual Parity + Ledger Closeout
 
-Status: `validation/macos/*.json`. Proof: `docs/workflows/validation.md` § macOS proof.
+Status: `validation/screens/*.json` (macOS `flows[].validation.macos`). Proof: `docs/workflows/validation.md` § macOS proof.
 
 - [x] macOS stale_pass reproof after `MacScreens.swift` / `DoodleArt` edits (`npm run macos:validation-batch -- --stale-only --cua-only`).
-- [ ] macOS infra-blocked (Phase 9/10): Apple sign-in (`01-welcome.json`), LiveKit join (`21-meet-video-call.json` `join-room`).
+- [ ] macOS infra-blocked (Phase 9/10): Apple sign-in (`auth` / `sign-in-apple`), LiveKit join (`video-call` / `join-room`).
 
 ## Track — iOS Ledger Honesty
 
-Status: `validation/ios/*.json`.
+Status: `validation/screens/*.json` (iOS `flows[].validation.ios`).
 
 - [x] iOS stale_pass reproof (`npm run verify:ios-screens -- --stale-only`).
-- [ ] iOS infra-blocked (Phase 9/10): real Apple sign-in + LiveKit on device.
+- [ ] iOS infra-blocked (Phase 9/10): real Apple sign-in (`auth` / `sign-in-apple`) + LiveKit (`meet` / `join-live-meetup`).
 
 ## Phase 9 — External TestFlight Readiness
 

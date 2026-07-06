@@ -26,6 +26,12 @@ struct MacRootView: View {
     private var displayedScreen: MacPrototypeScreen {
         #if DEBUG
         if let macScreenDeepLink {
+            if selectedScreen.tab != macScreenDeepLink.tab {
+                return selectedScreen
+            }
+            if macScreenDeepLink.allowsValidationDrillDown(to: selectedScreen) {
+                return selectedScreen
+            }
             return macScreenDeepLink
         }
         #endif
@@ -48,6 +54,9 @@ struct MacRootView: View {
 
     private func applyMacScreenDeepLinkIfNeeded() {
         guard let macScreenDeepLink else { return }
+        if macScreenDeepLink.allowsValidationDrillDown(to: selectedScreen) {
+            return
+        }
         selectedScreen = macScreenDeepLink
     }
 
@@ -62,7 +71,10 @@ struct MacRootView: View {
                     ScrollView(.vertical, showsIndicators: true) {
                         VStack(spacing: 18) {
                             MacScreenView(screen: displayedScreen, appState: appState) { destination in
-                                guard !macScreenDeepLinkLocked else { return }
+                                if macScreenDeepLinkLocked {
+                                    guard let entry = macScreenDeepLink,
+                                          entry.allowsValidationDrillDown(to: destination) else { return }
+                                }
                                 guard destination != selectedScreen else { return }
                                 returnScreen = selectedScreen
                                 selectedScreen = destination
@@ -81,7 +93,6 @@ struct MacRootView: View {
             .overlay(alignment: .bottom) {
                 if appState.isSignedIn, displayedScreen != .welcome {
                     MacBottomNav(selectedTab: activeTab, soulmateEnabled: appState.soulmateEnabled) { tab in
-                        guard !macScreenDeepLinkLocked else { return }
                         returnScreen = nil
                         selectedScreen = tab.primaryScreen
                     }
@@ -91,8 +102,7 @@ struct MacRootView: View {
             .overlay(alignment: .topLeading) {
                 if appState.isSignedIn,
                    displayedScreen != .welcome,
-                   returnScreen != nil,
-                   !macScreenDeepLinkLocked {
+                   returnScreen != nil {
                     MacBackButton {
                         navigateBack()
                     }
@@ -144,23 +154,18 @@ struct MacRootView: View {
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .macPrototypeSelectMeet)) { _ in
-            guard !macScreenDeepLinkLocked else { return }
             selectedScreen = .meetOverview
         }
         .onReceive(NotificationCenter.default.publisher(for: .macPrototypeSelectCircles)) { _ in
-            guard !macScreenDeepLinkLocked else { return }
             selectedScreen = .circlesRoom
         }
         .onReceive(NotificationCenter.default.publisher(for: .macPrototypeSelectCommunities)) { _ in
-            guard !macScreenDeepLinkLocked else { return }
             selectedScreen = .communitiesBrowse
         }
         .onReceive(NotificationCenter.default.publisher(for: .macPrototypeSelectProfile)) { _ in
-            guard !macScreenDeepLinkLocked else { return }
             selectedScreen = .myProfile
         }
         .onReceive(NotificationCenter.default.publisher(for: .macPrototypeSelectSoulmate)) { _ in
-            guard !macScreenDeepLinkLocked else { return }
             selectedScreen = .soulmateDiscover
         }
         .onAppear {
@@ -175,7 +180,9 @@ struct MacRootView: View {
                 return
             }
             if let macScreenDeepLink {
-                selectedScreen = macScreenDeepLink
+                if !macScreenDeepLink.allowsValidationDrillDown(to: selectedScreen) {
+                    selectedScreen = macScreenDeepLink
+                }
                 return
             }
             if selectedScreen == .welcome {

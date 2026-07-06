@@ -74,6 +74,9 @@ echo "== iOS batch: one build for ${#screens[@]} screen(s) ==" >&2
   '$ROOT_DIR/script/build_and_run.sh' build > /tmp/likeminded-ios-batch-build.log 2>&1
 "
 export LIKEMINDED_SKIP_IOS_BUILD=1
+if (( STAMP_STALE == 1 )); then
+  export LIKEMINDED_LEDGER_STALE_ONLY=1
+fi
 
 captured=0
 failed=0
@@ -95,11 +98,6 @@ if (( failed > 0 )); then
   exit 1
 fi
 echo "Screenshots: $ROOT_DIR/output/validation/ios-screens"
-
 if (( STAMP_STALE == 1 )); then
-  echo "== stamp stale iOS controls ==" >&2
-  node "$ROOT_DIR/script/ledger_stamp_stale_pass.js" \
-    --platform ios \
-    --method screen-capture \
-    --evidence-prefix "screen-capture ${LIKEMINDED_VALIDATION_USER} $(date -u +%Y-%m-%d) reproof"
+  echo "iOS stale reproof: ledger updated per-screen via capture closeout"
 fi

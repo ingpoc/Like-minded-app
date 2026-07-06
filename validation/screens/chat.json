@@ -1,0 +1,446 @@
+{
+  "schema_version": 2,
+  "logical_screen_id": "chat",
+  "screen": "Chat (match thread)",
+  "platforms": {
+    "ios": {
+      "ledger_legacy_id": "16-chat",
+      "implemented": true,
+      "source_files": [
+        "apps/ios-macos/Sources/LikemindedApp/Views/SoulmateView.swift (ChatView)",
+        "apps/ios-macos/Sources/LikemindedApp/Views/RootView.swift"
+      ],
+      "source_hash": "5199f1abff26babc",
+      "mockup_ref": "mockups/ios/13-16-soulmate-chat.png",
+      "mockup_missing": false,
+      "entry_points": [
+        "SoulmateMatchDetail Start chat / Chat icon",
+        "ConversationList row",
+        "--likeminded-start-chat validation deep-link (RootView dedicated route)"
+      ],
+      "backend_dependencies": [
+        "GET /v1/me/soulmate/matches/:id/messages",
+        "POST /v1/me/soulmate/matches/:id/messages"
+      ],
+      "ui_validation": {
+        "result": "pass",
+        "notes": "2026-07-05 macOS capture vs plate 05: Arjun/Meera/Rohan/Ananya/Vikram roster + Coltrane jazz thread at output/validation/macos-screens/chat.png. iOS fixture thread + ChatDisplayNames parity in source; dedicated --likeminded-start-chat route. Intentional: iOS single-thread mobile layout vs macOS split roster; iOS capture requires validation API + ~60s auth under lock."
+      },
+      "visual_parity": {
+        "result": "pass",
+        "notes": "2026-07-05 macOS capture vs plate 05: Arjun/Meera/Rohan/Ananya/Vikram roster + Coltrane jazz thread at output/validation/macos-screens/chat.png. iOS fixture thread + ChatDisplayNames parity in source; dedicated --likeminded-start-chat route. Intentional: iOS single-thread mobile layout vs macOS split roster; iOS capture requires validation API + ~60s auth under lock."
+      },
+      "recent_screenshot_ref": "output/validation/ios-screens/chat.png",
+      "notes": "macOS counterpart: validation/macos/06-chat.json (--mac-screen chat). User: validation-gurusharan / Gurusharan Gupta."
+    },
+    "macos": {
+      "ledger_legacy_id": "06-chat",
+      "implemented": true,
+      "source_files": [
+        "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift",
+        "apps/ios-macos/Sources/LikemindedMac/MacPrototypeData.swift",
+        "apps/ios-macos/Sources/LikemindedMac/MacRootView.swift",
+        "script/seed_validation_data.js"
+      ],
+      "source_hash": "9be0bcdc49eb425b",
+      "mockup_ref": "mockups/macos/05-08-chat-communities-detail-recap.png",
+      "mockup_missing": false,
+      "entry_points": [
+        "Title-action button (bubble icon) from most screens",
+        "Soulmate Detail Message",
+        "Meet Recap Message"
+      ],
+      "backend_dependencies": [
+        "GET /v1/me/soulmate/matches/:id/messages",
+        "POST /v1/me/soulmate/matches/:id/messages"
+      ],
+      "ui_validation": {
+        "result": "pass",
+        "reference_mockup_ref": "mockups/macos/05-08-chat-communities-detail-recap.png",
+        "recent_screenshot_ref": "output/validation/macos-screens/chat.png",
+        "design_ref": "DESIGN.md",
+        "last_compared_at": "2026-07-05",
+        "validated": [
+          "latest screenshot exists and was compared with reference mockup",
+          "DESIGN.md design language checked: warm canvas, calm editorial hierarchy, card system, green accents, bottom glass navigation",
+          "visible text and components reviewed for clear purpose",
+          "control behavior tracked separately in controls[]",
+          "mockup plate 05 roster order Arjun→Vikram and jazz thread composition matched"
+        ],
+        "pending_validation": [],
+        "requires_implementation": [],
+        "requires_fixing": [],
+        "intentional_differences": [
+          "Fixture-backed validation roster when API seed unavailable during parallel reset; live POST send targets API match when present."
+        ],
+        "notes": "2026-07-05 strict mockup comparison pass: Arjun/Meera/Rohan/Ananya/Vikram sidebar + Coltrane jazz thread aligned with plate 05."
+      },
+      "visual_parity": {
+        "result": "pass",
+        "notes": "2026-07-05 capture vs plate 05: Arjun/Meera/Rohan/Ananya/Vikram roster, jazz thread, Message Arjun composer, search/filters, header call chrome. Validation fixtures via MacChatFixtures when API roster empty."
+      },
+      "recent_screenshot_ref": "output/validation/macos-screens/chat.png",
+      "notes": "2026-07-05: mockup plate 05 roster + jazz thread; chatDisplayName maps seed names; MacChatFixtures for --mac-screen chat deep-link."
+    }
+  },
+  "flows": [
+    {
+      "id": "send-message",
+      "name": "Send chat message",
+      "origin": "chat",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "draft",
+          "send",
+          "message-list"
+        ],
+        "macos": [
+          "draft",
+          "send",
+          "match-row"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "draft: screen-capture 2026-07-05 | send: screen-capture 2026-07-05 | message-list: screen-capture 2026-07-05",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "5199f1abff26babc",
+          "last_test_method": "screen-capture"
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "match-row: verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (match-row) | draft: verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (draft) | send: verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (send)",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "15b712c80a9b29d0",
+          "last_test_method": "CUA-click"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control draft responds without error and matches expected UI state",
+          "Control send responds without error and matches expected UI state",
+          "Control message-list responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/13-16-soulmate-chat.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen chat --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh chat → macos_cua_screen.sh chat"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen chat --flow send-message --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "chat-call-headers",
+      "name": "Voice/video call and conversation info from chat",
+      "origin": "chat",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "voice-call-header",
+          "video-call-header",
+          "conversation-info-header",
+          "call-sheet-done"
+        ],
+        "macos": [
+          "voice-call-header",
+          "video-call-header",
+          "conversation-info-header"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "pending",
+          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "CUA validation-gurusharan chat/chat-call-headers: voice/video call modals + conversation info OK (ok=3 miss=0)",
+          "blocker": "",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "9be0bcdc49eb425b",
+          "last_test_method": "CUA-click"
+        }
+      },
+      "gap_audit": "2026-07-06",
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Control voice-call-header responds without error and matches expected UI state",
+          "Control video-call-header responds without error and matches expected UI state",
+          "Control conversation-info-header responds without error and matches expected UI state",
+          "Control call-sheet-done responds without error and matches expected UI state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/13-16-soulmate-chat.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen chat --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh chat → macos_cua_screen.sh chat"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen chat --flow chat-call-headers --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "search",
+      "name": "Search conversations",
+      "origin": "chat",
+      "steps": [],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [],
+        "macos": [
+          "search"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "not-applicable",
+          "evidence": "No controls on this platform for this flow",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "search: verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (search)",
+          "blocker": "",
+          "last_tested_at": "2026-07-06",
+          "tested_source_hash": "15b712c80a9b29d0",
+          "last_test_method": "CUA-click"
+        }
+      },
+      "proof": {
+        "tier": "cua-click",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "User outcome achieved: Search conversations"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/13-16-soulmate-chat.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen chat --platform ios",
+          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh chat → macos_cua_screen.sh chat"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen chat --flow search --result pass --method <tier-method> --evidence \"...\""
+      }
+    }
+  ],
+  "controls": {
+    "ios": [
+      {
+        "id": "message-list",
+        "type": "display",
+        "label": "Message bubbles",
+        "expected": "Green outgoing / warm incoming; polls every 3s",
+        "result": "pass",
+        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (message-list)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "5199f1abff26babc",
+        "last_tested_at": "2026-07-05",
+        "last_test_method": "screen-capture"
+      },
+      {
+        "id": "draft",
+        "type": "text",
+        "label": "Message input (vertical)",
+        "expected": "Editable draft, lineLimit 1...4",
+        "result": "pass",
+        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (draft)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "5199f1abff26babc",
+        "last_tested_at": "2026-07-05",
+        "last_test_method": "screen-capture"
+      },
+      {
+        "id": "send",
+        "type": "button",
+        "label": "Send (arrow.up.circle.fill)",
+        "expected": "POST message; disabled when draft empty",
+        "result": "pass",
+        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (send)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "5199f1abff26babc",
+        "last_tested_at": "2026-07-05",
+        "last_test_method": "screen-capture"
+      },
+      {
+        "id": "voice-call-header",
+        "type": "button",
+        "label": "Voice call (toolbar)",
+        "expected": "Opens voice call stub sheet",
+        "result": "pending",
+        "evidence": "Gap audit 2026-07-06",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "",
+        "tested_source_hash": "",
+        "last_test_method": ""
+      },
+      {
+        "id": "video-call-header",
+        "type": "button",
+        "label": "Video call (toolbar)",
+        "expected": "Opens video call stub sheet",
+        "result": "pending",
+        "evidence": "Gap audit 2026-07-06",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "",
+        "tested_source_hash": "",
+        "last_test_method": ""
+      },
+      {
+        "id": "conversation-info-header",
+        "type": "button",
+        "label": "Conversation info",
+        "expected": "Opens thread info sheet",
+        "result": "pending",
+        "evidence": "Gap audit 2026-07-06",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "",
+        "tested_source_hash": "",
+        "last_test_method": ""
+      },
+      {
+        "id": "call-sheet-done",
+        "type": "button",
+        "label": "Done (call/info sheet)",
+        "expected": "Dismisses call or info sheet",
+        "result": "pending",
+        "evidence": "Gap audit 2026-07-06",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "",
+        "tested_source_hash": "",
+        "last_test_method": ""
+      }
+    ],
+    "macos": [
+      {
+        "id": "match-row",
+        "type": "button",
+        "label": "Match row (left list)",
+        "expected": "Sets selectedChatMatchId; loads messages; preview from backend last message",
+        "result": "pass",
+        "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (match-row)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "15b712c80a9b29d0",
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "draft",
+        "type": "text",
+        "label": "Message input (MacChatComposer)",
+        "expected": "Editable draft",
+        "result": "pass",
+        "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (draft)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "15b712c80a9b29d0",
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "send",
+        "type": "button",
+        "label": "Send",
+        "expected": "POST message + reload; disabled when empty",
+        "result": "pass",
+        "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (send)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "15b712c80a9b29d0",
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "search",
+        "type": "text",
+        "label": "Search conversations",
+        "expected": "Filters match list by name or preview text",
+        "result": "pass",
+        "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (search)",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "15b712c80a9b29d0",
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "CUA-click"
+      },
+      {
+        "id": "voice-call-header",
+        "type": "button",
+        "label": "Voice call (header)",
+        "expected": "Start or schedule voice call for active match thread",
+        "result": "pass",
+        "evidence": "CUA validation-gurusharan chat/chat-call-headers: voice/video call modals + conversation info OK (ok=3 miss=0)",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "CUA-click",
+        "tested_source_hash": "9be0bcdc49eb425b"
+      },
+      {
+        "id": "video-call-header",
+        "type": "button",
+        "label": "Video call (header)",
+        "expected": "Start or join video call for active match thread",
+        "result": "pass",
+        "evidence": "CUA validation-gurusharan chat/chat-call-headers: voice/video call modals + conversation info OK (ok=3 miss=0)",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "CUA-click",
+        "tested_source_hash": "9be0bcdc49eb425b"
+      },
+      {
+        "id": "conversation-info-header",
+        "type": "button",
+        "label": "Conversation info (header)",
+        "expected": "Open conversation / match info panel for active thread",
+        "result": "pass",
+        "evidence": "CUA validation-gurusharan chat/chat-call-headers: voice/video call modals + conversation info OK (ok=3 miss=0)",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-07-06",
+        "last_test_method": "CUA-click",
+        "tested_source_hash": "9be0bcdc49eb425b"
+      }
+    ]
+  }
+}

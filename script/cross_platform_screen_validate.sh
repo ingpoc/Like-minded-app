@@ -36,7 +36,7 @@ Single-screen validation with flock coordination. Uses validation-gurusharan / G
   --platform ios    iOS simulator capture only
   --platform both   iOS capture + macOS capture when mac screen resolves from ledger
 
-macOS --mac-screen mapping: read validation/macos/*.json source_files parenthetical,
+macOS --mac-screen mapping: read `validation/screens/*.json` `platforms.macos.source_files` parenthetical,
   e.g. "MacScreens.swift (meetOverview)" → --mac-screen meetOverview
   (same lookup as ./script/macos_audit_prepare.sh)
 
@@ -124,31 +124,53 @@ const fs = require("fs");
 const path = require("path");
 
 const arg = process.argv[2];
-const dir = path.join(process.cwd(), "validation", "macos");
-if (!fs.existsSync(dir)) process.exit(2);
-
 const norm = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
 const needle = norm(arg);
 
-const files = fs.readdirSync(dir).filter((f) => f.endsWith(".json"));
-for (const file of files) {
-  const data = JSON.parse(fs.readFileSync(path.join(dir, file), "utf8"));
-  const stem = norm(file.replace(/\.json$/, ""));
-  if (stem.includes(needle) || needle.includes(stem.replace(/^\d+/, ""))) {
-    const hint = (data.source_files || []).map((s) => {
-      const m = String(s).match(/\(([^)]+)\)\s*$/);
-      return m ? m[1] : "";
-    }).find(Boolean);
-    if (hint) {
-      console.log(hint);
-      process.exit(0);
-    }
-  }
+function hintFromData(data) {
   for (const source of data.source_files || []) {
     const m = String(source).match(/\(([^)]+)\)\s*$/);
-    if (m && norm(m[1]).includes(needle)) {
-      console.log(m[1]);
-      process.exit(0);
+    if (m) return m[1];
+  }
+  return null;
+}
+
+const screensDir = path.join(process.cwd(), "validation", "screens");
+if (fs.existsSync(screensDir)) {
+  for (const file of fs.readdirSync(screensDir).filter((f) => f.endsWith(".json"))) {
+    const data = JSON.parse(fs.readFileSync(path.join(screensDir, file), "utf8"));
+    const logical = norm(data.logical_screen_id || file.replace(/\.json$/, ""));
+    const macLegacy = data.platforms?.macos?.ledger_legacy_id;
+    if (logical === needle || norm(macLegacy) === needle || logical.includes(needle) || needle.includes(logical)) {
+      const hint = hintFromData({ source_files: data.platforms?.macos?.source_files || [] });
+      if (hint) {
+        console.log(hint);
+        process.exit(0);
+      }
+    }
+  }
+}
+
+for (const sub of ["macos", "_legacy/macos"]) {
+  const dir = path.join(process.cwd(), "validation", sub);
+  if (!fs.existsSync(dir)) continue;
+  const files = fs.readdirSync(dir).filter((f) => f.endsWith(".json"));
+  for (const file of files) {
+    const data = JSON.parse(fs.readFileSync(path.join(dir, file), "utf8"));
+    const stem = norm(file.replace(/\.json$/, ""));
+    if (stem.includes(needle) || needle.includes(stem.replace(/^\d+/, ""))) {
+      const hint = hintFromData(data);
+      if (hint) {
+        console.log(hint);
+        process.exit(0);
+      }
+    }
+    for (const source of data.source_files || []) {
+      const m = String(source).match(/\(([^)]+)\)\s*$/);
+      if (m && norm(m[1]).includes(needle)) {
+        console.log(m[1]);
+        process.exit(0);
+      }
     }
   }
 }
@@ -408,6 +430,16 @@ validate_ios_screen() {
     return 1
   fi
   echo "iOS captured $outfile (${size}B)"
+
+  if [[ "${LIKEMINDED_LEDGER_CLOSEOUT:-1}" != "0" ]]; then
+    local closeout_args=(--platform ios --screen "$SCREEN" --screenshot "$outfile" --method screen-capture)
+    if [[ "${LIKEMINDED_LEDGER_STALE_ONLY:-0}" == "1" ]]; then
+      closeout_args+=(--stale-only --stamp none)
+    else
+      closeout_args+=(--stamp auto)
+    fi
+    node "$ROOT/script/ledger_capture_closeout.js" "${closeout_args[@]}" || echo "WARN: iOS ledger closeout failed" >&2
+  fi
 }
 
 macos_capture_window() {
@@ -476,7 +508,7 @@ macos_launch_args_for_screen() {
 validate_macos_screen() {
   local mac_screen outfile
   if ! mac_screen="$(resolve_mac_screen "$SCREEN")"; then
-    echo "macOS: no --mac-screen mapping for ledger '$SCREEN' (see validation/macos source_files hints)" >&2
+    echo "macOS: no --mac-screen mapping for ledger '$SCREEN' (see validation/screens/*.json platforms.macos.source_files hints)" >&2
     return 1
   fi
 
@@ -510,6 +542,16 @@ macos_capture_window $(printf '%q' "$outfile")
 EOS
 
   echo "macOS captured $outfile"
+
+  if [[ "${LIKEMINDED_LEDGER_CLOSEOUT:-1}" != "0" ]]; then
+    node "$ROOT/script/ledger_capture_closeout.js" \
+      --platform macos \
+      --screen "$SCREEN" \
+      --mac-screen "$mac_screen" \
+      --screenshot "$outfile" \
+      --stamp auto \
+      --method screen-capture || echo "WARN: macOS ledger closeout failed" >&2
+  fi
 }
 
 ensure_validation_api

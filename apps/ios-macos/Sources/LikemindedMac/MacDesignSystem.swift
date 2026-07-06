@@ -120,254 +120,110 @@ struct MacPill: View {
     }
 }
 
-/// Welcome-screen generative field — organic iso-contour "topographic map" lines
-/// from a handful of slowly drifting wave sources spread across the whole panel,
-/// matching the fingerprint-like contour art in the approved mockup
-/// (mockups/macos/24-auth-login-convergence-field.png).
+/// Welcome-screen generative field — a bundle of fine, near-parallel lines that
+/// flow top-to-bottom, gathering around a meandering vertical spine and pinching
+/// together near the panel's midpoint, matching the approved mockup
+/// (mockups/macos/24-auth-login-convergence-field.png). Inspired by the drifting
+/// line art of thewayofcode.com: the whole bundle breathes slowly over ~40s.
 struct MacConvergenceField: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
-    /// A single directional (planar) sine wave. Summing several at different
-    /// angles/frequencies — rather than circular point-source ripples —
-    /// avoids a "bullseye" look and instead produces the flowing, fingerprint-like
-    /// interference pattern seen in the mockup.
-    private struct PlaneWave {
-        var angle: Double
-        var frequency: Double
-        var amplitude: Double
-        var phase: Double
-    }
 
     var body: some View {
         GeometryReader { geo in
             TimelineView(.animation(minimumInterval: 1.0 / 30.0, paused: reduceMotion)) { timeline in
-                let time = reduceMotion ? 0 : timeline.date.timeIntervalSinceReferenceDate
+                let time = reduceMotion ? 0 : timeline.date.timeIntervalSinceReferenceDate * 0.15
                 Canvas { context, size in
-                    drawField(context: &context, size: size, time: time * 0.05)
+                    drawStreamlines(context: &context, size: size, time: time)
                 }
                 .frame(width: geo.size.width, height: geo.size.height)
             }
-            .mask(fadeMask(in: geo.size))
+            .mask(horizontalFade)
+            .mask(verticalFade)
         }
         .accessibilityHidden(true)
     }
 
-    /// Gentle vignette that only trims the extreme corners so the contour art
-    /// reads edge-to-edge like the mockup, rather than shrinking to a blob.
-    private func fadeMask(in size: CGSize) -> some View {
-        RadialGradient(
+    /// Keeps the leading side (next to the sign-in column) clean and lets the
+    /// art dissolve softly before the trailing edge, like the mockup.
+    private var horizontalFade: LinearGradient {
+        LinearGradient(
             gradient: Gradient(stops: [
-                .init(color: .black, location: 0),
-                .init(color: .black.opacity(0.92), location: 0.72),
-                .init(color: .black.opacity(0.55), location: 0.92),
-                .init(color: .clear, location: 1.18)
+                .init(color: .clear, location: 0),
+                .init(color: .black.opacity(0.55), location: 0.16),
+                .init(color: .black, location: 0.38),
+                .init(color: .black, location: 0.9),
+                .init(color: .black.opacity(0.7), location: 1)
             ]),
-            center: UnitPoint(x: 0.5, y: 0.5),
-            startRadius: 0,
-            endRadius: max(size.width, size.height) * 0.75
+            startPoint: .leading,
+            endPoint: .trailing
         )
     }
 
-    private func drawField(context: inout GraphicsContext, size: CGSize, time: Double) {
-        let waves = planeWaves(time: time)
-        let resolution = 110
-        let margin: CGFloat = min(size.width, size.height) * 0.03
-        let fieldWidth = size.width - margin * 2
-        let fieldHeight = size.height - margin * 2
-        let origin = CGPoint(x: margin, y: margin)
-        let stepX = fieldWidth / CGFloat(resolution)
-        let stepY = fieldHeight / CGFloat(resolution)
-        let heightMap = buildHeightMap(
-            resolution: resolution,
-            stepX: stepX,
-            stepY: stepY,
-            origin: origin,
-            waves: waves,
-            time: time,
-            size: size
+    private var verticalFade: LinearGradient {
+        LinearGradient(
+            gradient: Gradient(stops: [
+                .init(color: .black.opacity(0.35), location: 0),
+                .init(color: .black, location: 0.14),
+                .init(color: .black, location: 0.86),
+                .init(color: .black.opacity(0.35), location: 1)
+            ]),
+            startPoint: .top,
+            endPoint: .bottom
         )
+    }
 
-        let levels: [Double] = stride(from: -1.3, through: 1.3, by: 0.028).map { $0 }
-        for (index, level) in levels.enumerated() {
+    private func drawStreamlines(context: inout GraphicsContext, size: CGSize, time: Double) {
+        let lineCount = 190
+        let samples = 110
+
+        for index in 0..<lineCount {
+            let t = Double(index) / Double(lineCount - 1)
+            // Signed offset in -1…1, biased toward 0 so lines cluster near the spine.
+            let signed = (t - 0.5) * 2
+            let offset = (signed < 0 ? -1.0 : 1.0) * pow(abs(signed), 1.3)
+
             var path = Path()
-            appendContourSegments(
-                to: &path,
-                map: heightMap,
-                level: level,
-                resolution: resolution,
-                origin: origin,
-                stepX: stepX,
-                stepY: stepY
-            )
-            let envelope = contourEnvelope(level: level, index: index)
-            let color = index.isMultiple(of: 7) ? MacPalette.accent : MacPalette.sage
-            let alpha = 0.05 + envelope * 0.16
-            guard alpha > 0.02 else { continue }
+            for sample in 0...samples {
+                let fy = Double(sample) / Double(samples)
+                let x = xPosition(offset: offset, fy: fy, index: index, time: time)
+                let point = CGPoint(
+                    x: CGFloat(x) * size.width,
+                    y: CGFloat(fy) * size.height
+                )
+                if sample == 0 {
+                    path.move(to: point)
+                } else {
+                    path.addLine(to: point)
+                }
+            }
+
+            // Lines close to the spine read slightly stronger, echoing the
+            // denser convergence at the mockup's pinch point.
+            let proximity = 1.0 - min(1.0, abs(offset))
+            let alpha = 0.07 + proximity * 0.12
+            let color = index.isMultiple(of: 11) ? MacPalette.accent : MacPalette.sage
             context.stroke(path, with: .color(color.opacity(alpha)), lineWidth: 0.55)
         }
     }
 
-    private func contourEnvelope(level: Double, index: Int) -> Double {
-        let levelWeight = 1.0 - abs(level) * 0.3
-        let indexWeight = 0.6 + Double(index % 5) * 0.08
-        return levelWeight * indexWeight
-    }
+    /// Horizontal position (normalized 0…1) of one streamline at height `fy`.
+    /// A shared meandering spine + a pinch envelope give the convergence; a tiny
+    /// per-line wobble keeps neighboring lines from looking machine-parallel.
+    /// All phases drift with `time` for the slow, breathing animation.
+    private func xPosition(offset: Double, fy: Double, index: Int, time: Double) -> Double {
+        let spine = 0.58
+            + 0.09 * sin(fy * .pi * 1.7 + time * 0.35 + 0.6)
+            + 0.045 * sin(fy * .pi * 3.4 - time * 0.22 + 2.1)
 
-    private func appendContourSegments(
-        to path: inout Path,
-        map: [[Double]],
-        level: Double,
-        resolution: Int,
-        origin: CGPoint,
-        stepX: CGFloat,
-        stepY: CGFloat
-    ) {
-        for row in 0..<resolution {
-            for column in 0..<resolution {
-                let bl = map[row][column]
-                let br = map[row][column + 1]
-                let tr = map[row + 1][column + 1]
-                let tl = map[row + 1][column]
+        // Fan out at the top and bottom, pinch together near fy ≈ 0.52.
+        let pinchCenter = 0.52 + 0.04 * sin(time * 0.18)
+        let deviation = (fy - pinchCenter) / 0.38
+        let spread = 0.55 - 0.33 * exp(-deviation * deviation)
 
-                let x0 = origin.x + CGFloat(column) * stepX
-                let y0 = origin.y + CGFloat(row) * stepY
-                let x1 = x0 + stepX
-                let y1 = y0 + stepY
+        let wobble = 0.010 * sin(fy * .pi * 4.5 + Double(index) * 0.83 + time * 0.5)
+            + 0.005 * sin(fy * .pi * 8 - Double(index) * 0.41 - time * 0.3)
 
-                let caseIndex =
-                    (bl >= level ? 1 : 0) |
-                    (br >= level ? 2 : 0) |
-                    (tr >= level ? 4 : 0) |
-                    (tl >= level ? 8 : 0)
-
-                switch caseIndex {
-                case 0, 15:
-                    break
-                case 1, 14:
-                    segment(path: &path, from: interpolate(x0, y0, x1, y0, bl, br, level),
-                            to: interpolate(x0, y0, x0, y1, bl, tl, level))
-                case 2, 13:
-                    segment(path: &path, from: interpolate(x0, y0, x1, y0, bl, br, level),
-                            to: interpolate(x1, y0, x1, y1, br, tr, level))
-                case 3, 12:
-                    segment(path: &path, from: interpolate(x0, y0, x0, y1, bl, tl, level),
-                            to: interpolate(x1, y0, x1, y1, br, tr, level))
-                case 4, 11:
-                    segment(path: &path, from: interpolate(x1, y0, x1, y1, br, tr, level),
-                            to: interpolate(x0, y1, x1, y1, tl, tr, level))
-                case 5:
-                    segment(path: &path, from: interpolate(x0, y0, x1, y0, bl, br, level),
-                            to: interpolate(x0, y0, x0, y1, bl, tl, level))
-                    segment(path: &path, from: interpolate(x1, y0, x1, y1, br, tr, level),
-                            to: interpolate(x0, y1, x1, y1, tl, tr, level))
-                case 6, 9:
-                    segment(path: &path, from: interpolate(x0, y0, x1, y0, bl, br, level),
-                            to: interpolate(x0, y1, x1, y1, tl, tr, level))
-                case 7, 8:
-                    segment(path: &path, from: interpolate(x0, y0, x0, y1, bl, tl, level),
-                            to: interpolate(x0, y1, x1, y1, tl, tr, level))
-                case 10:
-                    segment(path: &path, from: interpolate(x0, y0, x0, y1, bl, tl, level),
-                            to: interpolate(x1, y0, x1, y1, br, tr, level))
-                default:
-                    break
-                }
-            }
-        }
-    }
-
-    private func segment(path: inout Path, from start: CGPoint, to end: CGPoint) {
-        path.move(to: start)
-        path.addLine(to: end)
-    }
-
-    private func interpolate(
-        _ x0: CGFloat, _ y0: CGFloat,
-        _ x1: CGFloat, _ y1: CGFloat,
-        _ v0: Double, _ v1: Double,
-        _ level: Double
-    ) -> CGPoint {
-        let delta = v1 - v0
-        let t = delta == 0 ? 0.5 : (level - v0) / delta
-        let clamped = max(0, min(1, t))
-        return CGPoint(
-            x: x0 + (x1 - x0) * clamped,
-            y: y0 + (y1 - y0) * clamped
-        )
-    }
-
-    /// Six planar waves at golden-angle-spaced directions, each drifting slowly.
-    /// No single wave dominates, so their sum produces flowing, curved
-    /// interference lines rather than concentric "bullseye" rings.
-    private func planeWaves(time: Double) -> [PlaneWave] {
-        let goldenAngle = Double.pi * (3 - 2.236)
-        var waves: [PlaneWave] = []
-        waves.reserveCapacity(6)
-        for index in 0..<6 {
-            let baseAngle = Double(index) * goldenAngle
-            waves.append(
-                PlaneWave(
-                    angle: baseAngle + sin(time * 0.05 + Double(index)) * 0.12,
-                    frequency: 9.0 + Double(index) * 2.6,
-                    amplitude: 0.5 + 0.08 * Double(index % 3),
-                    phase: Double(index) * 1.9 + time * (0.5 + Double(index) * 0.07)
-                )
-            )
-        }
-        return waves
-    }
-
-    private func buildHeightMap(
-        resolution: Int,
-        stepX: CGFloat,
-        stepY: CGFloat,
-        origin: CGPoint,
-        waves: [PlaneWave],
-        time: Double,
-        size: CGSize
-    ) -> [[Double]] {
-        var map = [[Double]](repeating: [Double](repeating: 0, count: resolution + 1), count: resolution + 1)
-        for row in 0...resolution {
-            for column in 0...resolution {
-                let x = origin.x + CGFloat(column) * stepX
-                let y = origin.y + CGFloat(row) * stepY
-                map[row][column] = fieldValue(x: x, y: y, waves: waves, time: time, size: size)
-            }
-        }
-        return map
-    }
-
-    /// Coordinates are normalized to the panel diagonal (not fixed pixels) so
-    /// contour spacing stays smooth across window sizes instead of aliasing
-    /// into noise when sampled by the marching-squares grid. A gentle domain
-    /// warp bends the otherwise-straight plane waves into organic curves, and
-    /// one soft radial term near the mockup's pinch point (~0.6, 0.55) adds
-    /// the denser convergence seen there without producing a plain bullseye.
-    private func fieldValue(x: CGFloat, y: CGFloat, waves: [PlaneWave], time: Double, size: CGSize) -> Double {
-        let diag = Double(hypot(size.width, size.height))
-        let nx = Double(x) / diag
-        let ny = Double(y) / diag
-
-        let warpX = sin(ny * .pi * 2 * 1.6 + time * 0.35) * 0.10
-            + sin(nx * .pi * 2 * 0.9 - time * 0.22) * 0.07
-        let warpY = cos(nx * .pi * 2 * 1.4 - time * 0.3) * 0.10
-            + cos(ny * .pi * 2 * 1.1 + time * 0.18) * 0.07
-        let wx = nx + warpX
-        let wy = ny + warpY
-
-        var height = 0.0
-        for wave in waves {
-            let projected = wx * cos(wave.angle) + wy * sin(wave.angle)
-            height += sin(projected * .pi * 2 * wave.frequency - wave.phase) * wave.amplitude
-        }
-
-        let coreX = 0.6, coreY = 0.55
-        let cdx = wx - coreX
-        let cdy = wy - coreY
-        let coreDistance = sqrt(cdx * cdx + cdy * cdy)
-        height += sin(coreDistance * .pi * 2 * 14 - time * 0.8) * 0.45 * exp(-coreDistance * 2.6)
-
-        return height / 3.0
+        return spine + offset * spread + wobble * (0.4 + abs(offset))
     }
 }
 

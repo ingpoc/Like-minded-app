@@ -152,7 +152,6 @@ struct MacScreenView: View {
     let screen: MacPrototypeScreen
     @ObservedObject var appState: MacAppState
     var navigate: ((MacPrototypeScreen) -> Void)?
-    @State private var showWelcomePrivacyPolicy = false
     @State private var showSignOutConfirm = false
     @State private var selectedCommunityId: String?
     @State private var selectedRecapMeetingId: String?
@@ -177,6 +176,8 @@ struct MacScreenView: View {
     @State private var notificationFilter = "All"
     @State private var activityFilter = "All"
     @State private var selectedSoulmateMatchId: String?
+    @State private var discoverFilterUnmetOnly = true
+    @State private var discoverFilterActiveWeek = false
     @State private var soulmateMatchDetail: SoulmateMatchDetail?
     @State private var showAllInterests = false
     @State private var draftProfileName = ""
@@ -419,8 +420,7 @@ struct MacScreenView: View {
 
                 AuthTermsFooter(
                     accent: MacPalette.accent,
-                    muted: MacPalette.muted,
-                    onPrivacyTap: { showWelcomePrivacyPolicy = true }
+                    muted: MacPalette.muted
                 )
             }
             .frame(width: 420)
@@ -428,13 +428,6 @@ struct MacScreenView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .frame(maxWidth: .infinity, minHeight: 560, maxHeight: .infinity, alignment: .topLeading)
-        .sheet(isPresented: $showWelcomePrivacyPolicy) {
-            ScrollView {
-                macPrivacyPolicyContent
-                    .padding(24)
-            }
-            .frame(minWidth: 520, minHeight: 420)
-        }
     }
 
     // MARK: - 2. meetOverview
@@ -821,13 +814,17 @@ struct MacScreenView: View {
                 let display = circleDisplay(myCircle, index: 0)
                 HStack(alignment: .top, spacing: 18) {
                     Button {
-                        appState.circleDetail = myCircle
-                        navigate?(.circleDetail)
+                        openCircleDetail(myCircle)
                     } label: {
                         featuredCircleCard(myCircle)
+                            .contentShape(Rectangle())
+                            .accessibilityHidden(true)
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel("Open your circle \(display.name)")
+                    .accessibilityInputLabels(["Open your circle \(myCircle.name)"])
+                    .accessibilityIdentifier("hero-circle-macos")
+                    .accessibilityAddTraits(.isButton)
                     concernCard
                         .frame(width: 300)
                 }
@@ -950,11 +947,16 @@ struct MacScreenView: View {
         .frame(height: 170)
     }
 
+    private func openCircleDetail(_ circle: PlacementCircle) {
+        appState.circleDetail = circle
+        navigate?(.circleDetail)
+        Task { await appState.loadCircleDetail(id: circle.id) }
+    }
+
     private func circleCardButton(_ circle: PlacementCircle, index: Int) -> some View {
         let display = circleDisplay(circle, index: index + 1)
         return Button {
-            appState.circleDetail = circle
-            navigate?(.circleDetail)
+            openCircleDetail(circle)
         } label: {
             circleCard(circle, index: index)
         }
@@ -1272,15 +1274,15 @@ struct MacScreenView: View {
                                 .foregroundStyle(MacPalette.accent)
                         }
                         Spacer()
-                        chatHeaderAction("phone", label: "Voice call") {
+                        chatHeaderAction("phone", label: "Voice call", controlId: "voice-call-header") {
                             chatCallMode = "voice"
                             showChatCallSheet = true
                         }
-                        chatHeaderAction("video", label: "Video call") {
+                        chatHeaderAction("video", label: "Video call", controlId: "video-call-header") {
                             chatCallMode = "video"
                             showChatCallSheet = true
                         }
-                        chatHeaderAction("info.circle", label: "Conversation info") {
+                        chatHeaderAction("info.circle", label: "Conversation info", controlId: "conversation-info-header") {
                             selectedSoulmateMatchId = selectedMatch.matchId
                             navigate?(.soulmateDetail)
                         }
@@ -1377,9 +1379,11 @@ struct MacScreenView: View {
 
     private func chatCallRequestSheet(match: SoulmateMatch?) -> some View {
         let modeLabel = chatCallMode == "video" ? "video" : "voice"
+        let sheetTitle = "Request a \(modeLabel) call"
         return VStack(alignment: .leading, spacing: 18) {
-            Text("Request a \(modeLabel) call")
+            Text(sheetTitle)
                 .font(MacType.section)
+                .accessibilityAddTraits(.isHeader)
             Text("1:1 \(modeLabel) calls are not live yet. Send a message to suggest a time and keep chatting here.")
                 .font(MacType.body)
                 .foregroundStyle(MacPalette.muted)
@@ -1417,10 +1421,18 @@ struct MacScreenView: View {
         }
         .padding(24)
         .frame(width: 420)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(sheetTitle)
     }
 
-    private func chatHeaderAction(_ systemName: String, label: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
+    @ViewBuilder
+    private func chatHeaderAction(
+        _ systemName: String,
+        label: String,
+        controlId: String? = nil,
+        action: @escaping () -> Void
+    ) -> some View {
+        let button = Button(action: action) {
             Image(systemName: systemName)
                 .font(.system(size: 15, weight: .medium))
                 .foregroundStyle(MacPalette.accent)
@@ -1431,6 +1443,11 @@ struct MacScreenView: View {
         .buttonStyle(.plain)
         .accessibilityLabel(label)
         .accessibilityAddTraits(.isButton)
+        if let controlId {
+            button.accessibilityIdentifier(controlId)
+        } else {
+            button
+        }
     }
 
     private func chatHeaderIcon(_ systemName: String, label: String) -> some View {
@@ -1868,6 +1885,7 @@ struct MacScreenView: View {
                         .background(circleDetailTab == tab ? MacPalette.accentSoft : .clear, in: Capsule())
                         .foregroundStyle(circleDetailTab == tab ? MacPalette.accent : MacPalette.muted)
                         .accessibilityLabel(tab)
+                        .accessibilityIdentifier("circle-tab-\(tab.lowercased())")
                         .accessibilityAddTraits(.isButton)
                         .accessibilityValue(circleDetailTab == tab ? "Selected" : "Not selected")
                 }
@@ -1952,20 +1970,25 @@ struct MacScreenView: View {
             .font(MacType.body)
             .foregroundStyle(MacPalette.muted)
         case "Events":
-            if let nextMeeting {
-                Button {
-                    selectedRecapMeetingId = nextMeeting.id
-                    navigate?(.meetOverview)
-                } label: {
-                    pastMeetRow(nextMeeting)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Upcoming circle meet row")
-            } else {
-                Text("RSVP on Meet to get scheduled for the next Sunday circle meetup.")
+            let eventsStatus = nextMeeting != nil ? "RSVP on Meet" : "No upcoming circle meetup"
+            VStack(alignment: .leading, spacing: 10) {
+                Text(eventsStatus)
                     .font(MacType.body)
                     .foregroundStyle(MacPalette.muted)
+                if let nextMeeting {
+                    Button {
+                        selectedRecapMeetingId = nextMeeting.id
+                        navigate?(.meetOverview)
+                    } label: {
+                        pastMeetRow(nextMeeting)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Upcoming circle meet row")
+                }
             }
+            .accessibilityElement(children: .contain)
+            .accessibilityLabel(eventsStatus)
+            .accessibilityIdentifier("circle-tab-events-panel")
         case "Discussions":
             resourceRow("What's a book that changed how you think?", date: "12 replies · 2h ago") {
                 circleConcernStatus = "Discussion thread opened."
@@ -2025,6 +2048,13 @@ struct MacScreenView: View {
                 showCircleOptions = false
             }
             .buttonStyle(.bordered)
+            .accessibilityIdentifier("share-circle")
+            Button("Leave circle", role: .destructive) {
+                circleConcernStatus = "Left \(circle?.name ?? "this circle"). Check Circles for placement refresh."
+                showCircleOptions = false
+            }
+            .buttonStyle(.bordered)
+            .accessibilityIdentifier("leave-circle-macos")
             Button("Close") { showCircleOptions = false }
                 .buttonStyle(.plain)
         }
@@ -2745,10 +2775,12 @@ struct MacScreenView: View {
                 .accessibilityLabel("Add interest")
                 Divider()
                 tagWrap(["Calm", "Thoughtful", "Adventurous", "+2"])
-                Toggle("People I haven't met yet", isOn: .constant(true))
+                Toggle("People I haven't met yet", isOn: $discoverFilterUnmetOnly)
                     .toggleStyle(.checkbox)
-                Toggle("Active this week", isOn: .constant(false))
+                    .accessibilityLabel("People I haven't met yet")
+                Toggle("Active this week", isOn: $discoverFilterActiveWeek)
                     .toggleStyle(.checkbox)
+                    .accessibilityLabel("Active this week")
             }
             .frame(width: 260)
 
@@ -2767,20 +2799,22 @@ struct MacScreenView: View {
                     .accessibilityLabel("New matches")
                 }
                 LazyVGrid(columns: Array(repeating: GridItem(.fixed(210), spacing: 18), count: 3), spacing: 18) {
-                    ForEach(Array(soulmateDisplayMatches.enumerated()), id: \.offset) { index, display in
+                    ForEach(filteredSoulmateDiscoverCandidates) { candidate in
                         Button {
                             selectedSoulmateMatchId = appState.soulmateMatches.first?.matchId
                             navigate?(.soulmateDetail)
                         } label: {
-                            matchCard(name: display.name, gender: display.gender)
+                            matchCard(name: candidate.name, gender: candidate.gender)
                         }
                         .buttonStyle(.plain)
-                        .accessibilityLabel("Open \(display.name)")
+                        .accessibilityLabel("Open \(candidate.name)")
                     }
                 }
 
-                if appState.soulmateMatches.isEmpty {
-                    Text("Matches will appear here after your meetups.")
+                if filteredSoulmateDiscoverCandidates.isEmpty {
+                    Text(discoverFilterUnmetOnly || discoverFilterActiveWeek
+                        ? "No matches match your filters. Try adjusting the sidebar toggles."
+                        : "Matches will appear here after your meetups.")
                         .font(MacType.body)
                         .foregroundStyle(MacPalette.muted)
                         .frame(maxWidth: .infinity, alignment: .center)
@@ -2796,8 +2830,28 @@ struct MacScreenView: View {
         }
     }
 
-    private var soulmateDisplayMatches: [(name: String, gender: String)] {
-        [("Arjun", "male"), ("Meera", "female"), ("Rohan", "male")]
+    private struct SoulmateDiscoverCandidate: Identifiable {
+        let id: String
+        let name: String
+        let gender: String
+        let hasMet: Bool
+        let activeThisWeek: Bool
+    }
+
+    private var soulmateDiscoverCandidates: [SoulmateDiscoverCandidate] {
+        [
+            SoulmateDiscoverCandidate(id: "fixture-arjun", name: "Arjun", gender: "male", hasMet: false, activeThisWeek: true),
+            SoulmateDiscoverCandidate(id: "fixture-meera", name: "Meera", gender: "female", hasMet: true, activeThisWeek: true),
+            SoulmateDiscoverCandidate(id: "fixture-rohan", name: "Rohan", gender: "male", hasMet: false, activeThisWeek: false),
+        ]
+    }
+
+    private var filteredSoulmateDiscoverCandidates: [SoulmateDiscoverCandidate] {
+        soulmateDiscoverCandidates.filter { candidate in
+            if discoverFilterUnmetOnly && candidate.hasMet { return false }
+            if discoverFilterActiveWeek && !candidate.activeThisWeek { return false }
+            return true
+        }
     }
 
     private func matchCard(name displayName: String, gender: String) -> some View {
@@ -4662,6 +4716,7 @@ struct MacScreenView: View {
                 Text(LikemindedPrivacyPolicy.title)
                     .font(.system(size: 24, weight: .medium, design: .serif))
                     .foregroundStyle(MacPalette.ink)
+                    .accessibilityIdentifier("privacy-policy-title")
 
                 Text(LikemindedPrivacyPolicy.intro)
                     .font(MacType.body)
