@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 extension View {
@@ -76,6 +77,31 @@ struct MacPanel<Content: View>: View {
         } else {
             shape.fill(MacPalette.surface)
         }
+    }
+}
+
+struct MacBackButton: View {
+    let label: String
+    let action: () -> Void
+
+    init(label: String = "Back", action: @escaping () -> Void) {
+        self.label = label
+        self.action = action
+    }
+
+    var body: some View {
+        Button(action: action) {
+            Label(label, systemImage: "chevron.left")
+                .font(MacType.button)
+                .foregroundStyle(MacPalette.ink)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(MacPalette.surface, in: Capsule())
+                .overlay(Capsule().stroke(MacPalette.line, lineWidth: 1))
+        }
+        .buttonStyle(.plain)
+        .focusable(false)
+        .accessibilityLabel(label)
     }
 }
 
@@ -381,5 +407,28 @@ struct MacFilterTab: View {
             .padding(.horizontal, 16).padding(.vertical, 8)
             .background(isSelected ? MacPalette.accent : .clear, in: Capsule())
     }
+}
+
+struct MacWindowChromeHider: NSViewRepresentable {
+    func makeNSView(context: Context) -> NSView {
+        let view = NSView(frame: .zero)
+        DispatchQueue.main.async {
+            guard let window = view.window else { return }
+            window.titlebarAppearsTransparent = true
+            window.titleVisibility = .hidden
+            window.styleMask.insert(.fullSizeContentView)
+        }
+        return view
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {}
+}
+
+extension Notification.Name {
+    static let macPrototypeSelectMeet = Notification.Name("macPrototypeSelectMeet")
+    static let macPrototypeSelectCircles = Notification.Name("macPrototypeSelectCircles")
+    static let macPrototypeSelectCommunities = Notification.Name("macPrototypeSelectCommunities")
+    static let macPrototypeSelectSoulmate = Notification.Name("macPrototypeSelectSoulmate")
+    static let macPrototypeSelectProfile = Notification.Name("macPrototypeSelectProfile")
 }
 

@@ -376,7 +376,10 @@ async function handleRequest(req, res) {
       service: "likeminded-api",
       version: "0.1.0",
       db: process.env.DATABASE_URL ? "postgres" : dbExists ? "local-json" : "none",
-      dbPath: process.env.DATABASE_URL ? undefined : MVP_STORE_PATH
+      dbPath: process.env.DATABASE_URL ? undefined : MVP_STORE_PATH,
+      livekit: Boolean(process.env.LIVEKIT_API_KEY && process.env.LIVEKIT_API_SECRET && process.env.LIVEKIT_URL),
+      googleAuth: Boolean(process.env.GOOGLE_CLIENT_IDS),
+      walletAuth: Boolean(process.env.WALLETCONNECT_PROJECT_ID) || process.env.WALLET_AUTH_BYPASS === "1"
     });
     return;
   }
