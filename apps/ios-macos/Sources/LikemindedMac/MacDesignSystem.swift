@@ -120,151 +120,35 @@ struct MacPill: View {
     }
 }
 
-/// Welcome-screen generative field — a bundle of fine, near-parallel lines that
-/// flow top-to-bottom, gathering around a meandering vertical spine and pinching
-/// together near the panel's midpoint, matching the approved mockup
-/// (mockups/macos/24-auth-login-convergence-field.png). Inspired by the drifting
-/// line art of thewayofcode.com: the whole bundle breathes slowly over ~40s.
+/// Welcome-screen convergence field — thewayofcode.com-inspired flowing line
+/// art, rendered per pixel by a Metal shader (Sources/Shared/ConvergenceField.metal)
+/// via SwiftUI's colorEffect. GPU does all the work: 60 fps fluid drift at
+/// near-zero CPU. Shared with the iOS welcome screen.
 struct MacConvergenceField: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    private let startDate = Date()
+    private let displayScale = Float(NSScreen.main?.backingScaleFactor ?? 2)
 
     var body: some View {
-        GeometryReader { geo in
-            TimelineView(.animation(minimumInterval: 1.0 / 30.0, paused: reduceMotion)) { timeline in
-                let time = reduceMotion ? 0 : timeline.date.timeIntervalSinceReferenceDate * 0.15
-                Canvas { context, size in
-                    drawResonanceContours(context: &context, size: size, time: time)
-                    drawStreamlines(context: &context, size: size, time: time)
+        TimelineView(.animation(minimumInterval: 1.0 / 20.0, paused: reduceMotion)) { context in
+            let elapsed = reduceMotion ? 0 : context.date.timeIntervalSince(startDate)
+            // Barely-there drift: the field breathes rather than flows —
+            // a noise feature takes ~2 min to cross.
+            let fieldTime = 0.4 + elapsed * 0.05
+            Rectangle()
+                .fill(MacPalette.background)
+                .visualEffect { [displayScale] content, proxy in
+                    content.colorEffect(
+                        ShaderLibrary.convergenceField(
+                            .float2(Float(proxy.size.width), Float(proxy.size.height)),
+                            .float(Float(fieldTime)),
+                            .float(displayScale)
+                        )
+                    )
                 }
-                .frame(width: geo.size.width, height: geo.size.height)
-            }
-            .mask(horizontalFade)
-            .mask(verticalFade)
         }
         .accessibilityHidden(true)
-    }
-
-    /// Keeps the leading side (next to the sign-in column) clean and lets the
-    /// art dissolve softly before the trailing edge, like the mockup.
-    private var horizontalFade: LinearGradient {
-        LinearGradient(
-            gradient: Gradient(stops: [
-                .init(color: .clear, location: 0),
-                .init(color: .black.opacity(0.72), location: 0.11),
-                .init(color: .black, location: 0.28),
-                .init(color: .black, location: 0.92),
-                .init(color: .black.opacity(0.76), location: 1)
-            ]),
-            startPoint: .leading,
-            endPoint: .trailing
-        )
-    }
-
-    private var verticalFade: LinearGradient {
-        LinearGradient(
-            gradient: Gradient(stops: [
-                .init(color: .black.opacity(0.52), location: 0),
-                .init(color: .black, location: 0.1),
-                .init(color: .black, location: 0.88),
-                .init(color: .black.opacity(0.42), location: 1)
-            ]),
-            startPoint: .top,
-            endPoint: .bottom
-        )
-    }
-
-    private func drawResonanceContours(context: inout GraphicsContext, size: CGSize, time: Double) {
-        let centers: [(x: Double, y: Double, radius: Double, stretch: Double)] = [
-            (0.66, 0.20, 0.34, 1.16),
-            (0.74, 0.52, 0.31, 1.28),
-            (0.55, 0.72, 0.24, 1.05)
-        ]
-
-        for (centerIndex, center) in centers.enumerated() {
-            for ring in 0..<42 {
-                let progress = Double(ring) / 41
-                let radius = center.radius * (0.18 + progress * 1.02)
-                let phase = time * (0.08 + Double(centerIndex) * 0.02) + Double(ring) * 0.17
-                var path = Path()
-
-                for sample in 0...180 {
-                    let theta = (Double(sample) / 180) * .pi * 2
-                    let ripple = 1
-                        + 0.065 * sin(theta * 3 + phase)
-                        + 0.038 * sin(theta * 5 - phase * 0.7 + Double(centerIndex))
-                    let driftX = 0.018 * sin(time * 0.11 + progress * 2.4 + Double(centerIndex))
-                    let driftY = 0.014 * cos(time * 0.09 + progress * 1.8)
-                    let x = center.x + driftX + cos(theta) * radius * ripple
-                    let y = center.y + driftY + sin(theta) * radius * center.stretch * ripple
-                    let point = CGPoint(x: CGFloat(x) * size.width, y: CGFloat(y) * size.height)
-
-                    if sample == 0 {
-                        path.move(to: point)
-                    } else {
-                        path.addLine(to: point)
-                    }
-                }
-
-                let falloff = 1 - progress
-                let alpha = 0.018 + falloff * 0.036
-                let color = ring.isMultiple(of: 9) ? MacPalette.accent : MacPalette.sage
-                context.stroke(path, with: .color(color.opacity(alpha)), lineWidth: 0.45)
-            }
-        }
-    }
-
-    private func drawStreamlines(context: inout GraphicsContext, size: CGSize, time: Double) {
-        let lineCount = 236
-        let samples = 132
-
-        for index in 0..<lineCount {
-            let t = Double(index) / Double(lineCount - 1)
-            // Signed offset in -1…1, biased toward 0 so lines cluster near the spine.
-            let signed = (t - 0.5) * 2
-            let offset = (signed < 0 ? -1.0 : 1.0) * pow(abs(signed), 1.3)
-
-            var path = Path()
-            for sample in 0...samples {
-                let fy = Double(sample) / Double(samples)
-                let x = xPosition(offset: offset, fy: fy, index: index, time: time)
-                let point = CGPoint(
-                    x: CGFloat(x) * size.width,
-                    y: CGFloat(fy) * size.height
-                )
-                if sample == 0 {
-                    path.move(to: point)
-                } else {
-                    path.addLine(to: point)
-                }
-            }
-
-            // Lines close to the spine read slightly stronger, echoing the
-            // denser convergence at the mockup's pinch point.
-            let proximity = 1.0 - min(1.0, abs(offset))
-            let alpha = 0.09 + proximity * 0.15
-            let color = index.isMultiple(of: 11) ? MacPalette.accent : MacPalette.sage
-            context.stroke(path, with: .color(color.opacity(alpha)), lineWidth: 0.5)
-        }
-    }
-
-    /// Horizontal position (normalized 0…1) of one streamline at height `fy`.
-    /// A shared meandering spine + a pinch envelope give the convergence; a tiny
-    /// per-line wobble keeps neighboring lines from looking machine-parallel.
-    /// All phases drift with `time` for the slow, breathing animation.
-    private func xPosition(offset: Double, fy: Double, index: Int, time: Double) -> Double {
-        let spine = 0.58
-            + 0.09 * sin(fy * .pi * 1.7 + time * 0.35 + 0.6)
-            + 0.045 * sin(fy * .pi * 3.4 - time * 0.22 + 2.1)
-
-        // Fan out at the top and bottom, pinch together near fy ≈ 0.52.
-        let pinchCenter = 0.52 + 0.04 * sin(time * 0.18)
-        let deviation = (fy - pinchCenter) / 0.38
-        let spread = 0.55 - 0.33 * exp(-deviation * deviation)
-
-        let wobble = 0.010 * sin(fy * .pi * 4.5 + Double(index) * 0.83 + time * 0.5)
-            + 0.005 * sin(fy * .pi * 8 - Double(index) * 0.41 - time * 0.3)
-
-        return spine + offset * spread + wobble * (0.4 + abs(offset))
+        .allowsHitTesting(false)
     }
 }
 

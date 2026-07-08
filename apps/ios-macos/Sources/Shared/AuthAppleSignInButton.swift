@@ -28,7 +28,7 @@ struct AuthAppleSignInButton: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
-            .background(background, in: RoundedRectangle(cornerRadius: style == .accentGreen ? 18 : 14, style: .continuous))
+            .background(background, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
             .foregroundStyle(.white)
         }
         .buttonStyle(.plain)

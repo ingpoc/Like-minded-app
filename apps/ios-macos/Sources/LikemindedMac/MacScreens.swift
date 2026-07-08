@@ -374,14 +374,9 @@ struct MacScreenView: View {
 
     private var welcome: some View {
         ZStack(alignment: .leading) {
-            HStack(spacing: 0) {
-                Spacer()
-                    .frame(width: 392)
-                MacConvergenceField()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .scaleEffect(x: 1.08, y: 1.04, anchor: .center)
-            }
-            .allowsHitTesting(false)
+            MacConvergenceField()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .allowsHitTesting(false)
 
             VStack(alignment: .leading, spacing: 28) {
                 Text("Likeminded")
@@ -389,7 +384,7 @@ struct MacScreenView: View {
                     .foregroundStyle(MacPalette.accent)
                 VStack(alignment: .leading, spacing: 8) {
                     Text("When you meet,\nit matters.")
-                        .font(.system(size: 44, weight: .semibold, design: .serif))
+                        .font(.system(size: 48, weight: .semibold, design: .serif))
                         .lineSpacing(1)
                         .foregroundStyle(MacPalette.ink)
                         .fixedSize(horizontal: false, vertical: true)
@@ -433,9 +428,9 @@ struct MacScreenView: View {
                     muted: MacPalette.muted
                 )
             }
-            .frame(width: 390)
-            .padding(.leading, 42)
-            .padding(.top, 8)
+            .frame(width: 430)
+            .padding(.leading, 56)
+            .padding(.top, 10)
         }
         .frame(maxWidth: .infinity, minHeight: 600, maxHeight: .infinity, alignment: .topLeading)
     }
