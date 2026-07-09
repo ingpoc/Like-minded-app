@@ -1,0 +1,25 @@
+{
+  "decision_key": "convergence-field-visual-motif",
+  "decision_type": "precedent",
+  "category": "architecture",
+  "scope_key": "ui-design-system",
+  "owner_surface": "docs/references/convergence-field-pattern.md",
+  "title": "Convergence field is the shared visual motif for auth/meet/circles",
+  "summary": "Use the GPU topographic convergence field (thewayofcode.com-inspired isolines on warm cream) as the shared visual grammar for auth, Meet hero, and Circles placement surfaces. Implementation lives in ConvergenceField.metal + ConvergenceFieldView.swift; promoted plates live under mockups/{ios,macos}/.",
+  "rationale": "Operator chose convergence pattern over orb/generic AI aesthetics for brand distinctiveness. Auth and Meet were migrated to this motif; Circles inherits the same field language for placement surfaces.",
+  "task": "Align native UI with concept plates",
+  "situation": "Agents shipped layouts without the convergence pattern visible; operator flagged mismatch vs concept.",
+  "inputs_considered": [
+    "DESIGN.md",
+    "docs/references/convergence-field-pattern.md",
+    "mockups/macos/auth-login-convergence.png",
+    "mockups/macos/concepts/mockup-meet-overview-convergence.png",
+    "apps/ios-macos/Sources/Shared/ConvergenceField.metal"
+  ],
+  "evidence": [
+    "Cursor prompt 2026-07-09: convergence pattern missing vs concept",
+    "convergence-field-pattern.md",
+    "https://www.thewayofcode.com/"
+  ],
+  "confidence": 1.0
+}

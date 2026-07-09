@@ -1,0 +1,22 @@
+{
+  "decision_key": "ios-short-copy-icon-led",
+  "decision_type": "precedent",
+  "category": "architecture",
+  "scope_key": "ui-content-density",
+  "owner_surface": "DESIGN.md",
+  "title": "iOS UI uses short copy, icons, and subtle native motion",
+  "summary": "Prefer icon/image + clear short labels over long explanatory prose on iOS surfaces. Motion is native SwiftUI, subtle and atmospheric — not forced or web-style (no GSAP on native). Brand identity must be recognizable across screens.",
+  "rationale": "Operator: 'People dont like seeing long long prose on the ios app, icon, image and clear text is what is prefered' and 'animation should not feel forced yet beautiful'.",
+  "task": "Refine iOS identity and motion",
+  "situation": "Prototype screens used paragraph-length copy and over-animated motion.",
+  "inputs_considered": [
+    "DESIGN.md",
+    "PrototypeComponents.swift",
+    "Codex rollout 2026-06-19 likeminded_ios_identity_motion_refinement"
+  ],
+  "evidence": [
+    "Codex preference signal 2026-06-19",
+    "apps/ios-macos/Sources/LikemindedApp/Views/Shared/PrototypeComponents.swift"
+  ],
+  "confidence": 1.0
+}

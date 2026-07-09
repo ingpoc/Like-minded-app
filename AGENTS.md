@@ -15,17 +15,16 @@
 - `validation/screens/*.json` — **control status owner** (schema v2: `flows[]` + `controls.{ios,macos}`; legacy archive: `validation/_legacy/{ios,macos}/`).
 - `validation/production-contract.json` — **production scope contract** (TestFlight MVP; `npm run verify:production-ready`).
 
-## Context doctrine (all agents)
+## Context doctrine (repo)
 
-1. **Lazy retrieval** — minimum high-signal context for the task. Progressive disclosure only when blocked.
-2. **Lazy authoring** — no new docs/workflows when an owner already holds the fact. Edit the owner.
-3. **Proactive prune** — delete stale triggers, duplicate status tables, sibling ledgers, historical prose sold as current truth.
-4. **Single control chain** — JSON ledger (status) → `PROGRESS.md` track (roadmap) → code. No parallel backlogs.
+Inherits global **Context doctrine** (`~/.codex/AGENTS.md`).
+
+**Control chain here:** `validation/screens/*.json` (status) → `PROGRESS.md` active track (roadmap) → code. No sibling `validation/**/*.md` ledgers or pass/fail tables.
 
 ### First commands (stop when the question is answered)
 
 | Lane | Run | Do not preload |
-|------|-----|----------------|
+| ------ | ----- | ---------------- |
 | Any session | `npm run goal:next` | Full `PROGRESS.md`, `GOAL.md` |
 | Native UI (one screen) | `npm run ledger:screen -- --platform ios\|macos --screen <id>` + `source_files` | All validation JSON, mockup dirs |
 | Gap / all open controls | `npm run ledger:open` (`ledger:stale` after source edits) | Source trees, mockup images |
@@ -43,11 +42,8 @@
 
 ## Session start
 
-1. `resume-session` only: read `.claude/session-data/CURRENT.md` once if `route_contract.first_command` present.
-2. `goal.json` + active slice of `PROGRESS.md` (track named in `goal:next`).
-3. `npm run goal:next` → run `first_command`; do not expand retrieval if it answers the task.
-4. `git status --short` before edits; `npm run verify:ledger-progress` before claiming track/goal complete.
-5. Phase edits: `npm run phase:preflight -- <N>` once, then implement scoped unchecked list.
+1. `npm run goal:next` → run `first_command`; stop when answered — do not preload other routing surfaces.
+2. `git status --short` before edits; `npm run verify:ledger-progress` before claiming track/goal complete.
 
 Next-goal: smallest full-session surface (one screen family, endpoint family, or track)—not a single checkbox unless it is the only blocker.
 
@@ -95,7 +91,7 @@ After `codex-review`: fix blocking P0/P1 yourself or report blockers; do not com
 ### Lane → harness map
 
 | Lane | Harness | Model |
-|------|---------|-------|
+| ------ | --------- | ------- |
 | Session start / gap | Deterministic scripts | — |
 | **Trivial UI fix** (single file, &lt;~30 lines, user screenshot, no ledger proof) | **Cursor main thread** — no subagent | Auto |
 | Build (Swift, API, UI) | Cursor Auto main | Auto |
@@ -127,7 +123,7 @@ Do **not** spawn a background worker for these. If a subagent stalls &gt;5 minut
 **Two waves:** parallel **code** per ledger screen; **sequential proof** (seed → build → capture). See `docs/workflows/validation.md` § Parallel screen validation.
 
 | Phase | Parallel? | Tool |
-|-------|-----------|------|
+| ------- | ----------- | ------ |
 | UI implementation per screen | Yes — disjoint ledger JSON + platform source slices | Subagents or main thread |
 | `xcodebuild` (either platform) | **No** — one derived-data owner | `cross_platform_validation_lock.sh` |
 | iOS screenshot / `simctl launch` | **No** | `cross_platform_screen_validate.sh` |
@@ -142,7 +138,6 @@ Scripts own proof. Subagents own bounded sidecars. Main thread owns integration 
 ## Session alignment (project hooks)
 
 - `.cursor/hooks.json` → `sessionStart` runs `npm run goal:next` compact route via `script/session_route.js`.
-- `.cursor/rules/context-alignment.mdc` → 4-line always-on entry (backup when hook injection is dropped).
 - `npm run verify:ledger-progress` / `verify:goal` → fail if duplicate context surfaces return (status tables, phase graveyard, sibling ledgers).
 
 ## Project agents
