@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-07-09T19:55:38.760Z",
+  "source": "session:stamp",
+  "summary": "Meet convergence/cover art migrated (Jul 9). Circles concept migration next — AI places primary circle; user picks one AI-suggested secondary; browse-only for other circle types. Compare hero + browse vs concept mockup before claiming pass.",
+  "primary_surface": {
+    "screen_id": "circles",
+    "screen_title": "Circles (your circle + browse + concern)",
+    "ledger": "validation/screens/circles.json",
+    "platforms": [
+      "ios",
+      "macos"
+    ],
+    "mockups": {
+      "ios": "mockups/ios/05-08-circles-meet-communities.png",
+      "macos": "mockups/macos/01-04-auth-meet-circles-profile.png"
+    },
+    "score": 999,
+    "reasons": [
+      "stamp_override"
+    ]
+  },
+  "secondary_surfaces": [
+    {
+      "screen_id": "meet",
+      "screen_title": "Meet (RSVP + upcoming + past)",
+      "ledger": "validation/screens/meet.json",
+      "platforms": [
+        "ios",
+        "macos"
+      ],
+      "mockups": {
+        "ios": "mockups/ios/05-08-circles-meet-communities.png",
+        "macos": "mockups/macos/01-04-auth-meet-circles-profile.png"
+      },
+      "score": 40,
+      "reasons": [
+        "path_hint"
+      ]
+    },
+    {
+      "screen_id": "auth",
+      "screen_title": "Auth / Sign in",
+      "ledger": "validation/screens/auth.json",
+      "platforms": [
+        "ios",
+        "macos"
+      ],
+      "mockups": {
+        "ios": "mockups/ios/27-auth-login.png",
+        "macos": "mockups/macos/23-auth-login-theme-consistent.png"
+      },
+      "score": 35,
+      "reasons": [
+        "ledger_source",
+        "path_hint",
+        "mockup",
+        "ledger_json"
+      ]
+    },
+    {
+      "screen_id": "communities",
+      "screen_title": "Communities (browse + search)",
+      "ledger": "validation/screens/communities.json",
+      "platforms": [
+        "ios"
+      ],
+      "mockups": {
+        "ios": "mockups/ios/05-08-circles-meet-communities.png",
+        "macos": "mockups/macos/05-08-chat-communities-detail-recap.png"
+      },
+      "score": 32,
+      "reasons": [
+        "ledger_source",
+        "path_hint"
+      ]
+    }
+  ],
+  "dirty_files": [
+    ".agents/skills/build-ios-app/references/launch-args.md",
+    ".agents/skills/build-ios-app/references/layout.md",
+    ".agents/skills/build-macos-app/SKILL.md",
+    "AGENTS.md",
+    "apps/ios-macos/Likeminded.xcodeproj/project.pbxproj",
+    "apps/ios-macos/Sources/DoodleArt/DoodleArt.swift",
+    "apps/ios-macos/Sources/LikemindedApp/Data/LikemindedAPIClient.swift",
+    "apps/ios-macos/Sources/LikemindedApp/Data/PrototypeAppState.swift",
+    "apps/ios-macos/Sources/LikemindedApp/Data/PrototypeData.swift",
+    "apps/ios-macos/Sources/LikemindedApp/Models/PrototypeModels.swift",
+    "apps/ios-macos/Sources/LikemindedApp/Views/AuthGateView.swift",
+    "apps/ios-macos/Sources/LikemindedApp/Views/CommunitiesPrototypeView.swift",
+    "apps/ios-macos/Sources/LikemindedMac/LikemindedAPIClient.swift",
+    "apps/ios-macos/Sources/LikemindedMac/LikemindedMacApp.swift",
+    "apps/ios-macos/Sources/LikemindedMac/MacAppState.swift",
+    "apps/ios-macos/Sources/LikemindedMac/MacDesignSystem.swift",
+    "apps/ios-macos/Sources/LikemindedMac/Models.swift",
+    "apps/ios-macos/Sources/Shared/ConvergenceField.metal",
+    "docs/references/convergence-field-pattern.md",
+    "docs/workflows/setup.md",
+    "docs/workflows/validation.md",
+    "mockups/ios/27-auth-login.png",
+    "mockups/ios/28-auth-login-theme-consistent.png",
+    "mockups/macos/23-auth-login-theme-consistent.png"
+  ],
+  "dirty_path_count": 544,
+  "continue_command": "npm run ledger:screen -- --platform macos --screen circles --section all",
+  "stop_condition": "Screenshot-compare vs mockup_ref before claiming pass. Do not start Phase 9 while macOS/iOS stale_pass tracks are open."
+}

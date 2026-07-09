@@ -99,16 +99,26 @@ function routeCommandForTrack(track, ledger) {
 
 const { ownershipReport, formatGoalNextLines } = require("./ledger_progress");
 const { reproofCommand, wave2ReproofCommand } = require("./ledger_stale_screens");
+const {
+  resolveBucket,
+  formatLines: formatWorkBucketLines,
+  shouldPreferContinue
+} = require("./session_work_bucket");
 
 const goal = readJson("goal.json");
 const dirty = gitStatus();
+const dirtyPathCount = dirty ? dirty.split("\n").length : 0;
+const dirtyFirst = dirty.length > 0;
+const compact = process.argv.includes("--compact");
+const workBucket = resolveBucket();
+const workBucketLines = formatWorkBucketLines(workBucket, { compact });
 const progress = read("PROGRESS.md");
 const nextPhase = phaseSections(progress).find((phase) => phase.unchecked > 0);
 const activeCommand = activeFirstCommand(progress);
 const ledger = ownershipReport(progress);
 const activeTrack = pickActiveTrack(ledger, dirty);
 const trackRoute = routeCommandForTrack(activeTrack, ledger);
-const dirtyFirst = dirty.length > 0;
+const continueCommand = workBucket?.continue_command || trackRoute;
 
 const routeCommand =
   trackRoute ||
@@ -122,21 +132,27 @@ const contract = goal.route_contract;
 const useContract =
   !dirtyFirst && goal.status !== "completed" && contract?.first_command;
 
-const compact = process.argv.includes("--compact");
+const preferContinue =
+  shouldPreferContinue(workBucket, dirtyPathCount) && Boolean(workBucket?.continue_command);
 
-const firstCommand = dirtyFirst
-  ? "git status --short"
-  : useContract
-    ? contract.first_command
-    : goal.status !== "completed" && !trackRoute && !activeCommand
-      ? `./script/project_context.sh query --task ${JSON.stringify(goal.goal)}`
-      : routeCommand;
+const firstCommand = preferContinue
+  ? workBucket.continue_command
+  : dirtyFirst
+    ? "git status --short"
+    : useContract
+      ? contract.first_command
+      : goal.status !== "completed" && !trackRoute && !activeCommand
+        ? `./script/project_context.sh query --task ${JSON.stringify(goal.goal)}`
+        : continueCommand || routeCommand;
 
 if (compact) {
+  for (const line of workBucketLines) {
+    console.log(line);
+  }
   console.log(`first_command: ${firstCommand}`);
   if (useContract && contract.lane) console.log(`session_lane: ${contract.lane}`);
   console.log(`dirty_work_required: ${dirtyFirst ? "yes" : "no"}`);
-  if (dirtyFirst) console.log(`after_dirty_resolved: ${routeCommand}`);
+  if (dirtyFirst && !preferContinue) console.log(`after_dirty_resolved: ${continueCommand || routeCommand}`);
   for (const line of formatGoalNextLines(ledger)) {
     console.log(line);
   }
@@ -145,11 +161,15 @@ if (compact) {
   process.exit(0);
 }
 
+for (const line of workBucketLines) {
+  console.log(line);
+}
+
 console.log(`# Goal Next
 current_status: ${goal.status}
 current_goal: ${goal.goal}
 dirty_work_required: ${dirtyFirst ? "yes" : "no"}
-dirty_path_count: ${dirty ? dirty.split("\n").length : 0}
+dirty_path_count: ${dirtyPathCount}
 next_phase: ${nextPhase ? nextPhase.title : "none"}
 next_phase_unchecked: ${nextPhase ? nextPhase.unchecked : 0}
 active_track: ${activeTrack}
@@ -164,8 +184,8 @@ for (const line of formatGoalNextLines(ledger)) {
   console.log(line);
 }
 
-if (dirtyFirst) {
-  console.log(`after_dirty_resolved: ${routeCommand}`);
+if (dirtyFirst && !preferContinue) {
+  console.log(`after_dirty_resolved: ${continueCommand || routeCommand}`);
 }
 
 if (!ledger.ok) {

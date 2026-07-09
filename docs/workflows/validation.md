@@ -4,7 +4,7 @@ Global `AGENTS.md` owns instruction control. Commands and control owners only.
 
 ## Lazy retrieval
 
-1. `npm run goal:next`
+1. `npm run goal:next` — **work bucket first** (`session/work-bucket.json`), then `first_command`
 2. **One screen:** `npm run ledger:screen -- --platform ios|macos --screen <id> --section ui|controls|all`
 3. **Gap audit only:** `npm run ledger:open` / `ledger:stale` — not for a single known screen
 4. Touch open ledger JSON + active `PROGRESS.md` track section only
@@ -14,7 +14,7 @@ Do not load `GOAL.md`, `DESIGN.md`, full `PROGRESS.md`, `validation/README.md` s
 ## Control owners
 
 | What | Owner |
-|------|--------|
+| ------ | -------- |
 | Logical screen + flow status (both platforms) | `validation/screens/*.json` |
 | Flow pass/fail per platform | `flows[].validation.{ios,macos}` |
 | Atomic UI controls (optional regression) | `controls.{ios,macos}[]` |
@@ -37,7 +37,8 @@ export LIKEMINDED_VALIDATION_NAME="Gurusharan Gupta"
 ```
 
 | Need | Command |
-|------|---------|
+| ------ | --------- |
+| Continue previous session | `npm run session:work` / `npm run session:stamp -- --summary "…"` |
 | Route | `npm run goal:next` |
 | One screen ledger | `npm run ledger:screen -- --platform macos --screen <logical-id> --section flows\|controls\|all` |
 | All open controls (gap) | `npm run ledger:open` / `ledger:stale` |
@@ -80,7 +81,7 @@ export LIKEMINDED_VALIDATION_NAME="Gurusharan Gupta"
 Contract: `validation/production-contract.json` — defines in-scope screens, out-of-scope features, and when **production-ready** is claimable.
 
 | Need | Command |
-|------|---------|
+| ------ | --------- |
 | One flow agent packet | `npm run ledger:flow -- --platform ios\|macos --screen <id> --flow <flow-id>` |
 | Text packet (compact) | add `--text` |
 | Backfill `flows[].proof` | `npm run ledger:apply-proof` |
@@ -105,7 +106,7 @@ npm run testing:ledger-next   # one open flow — do not use ledger:open as queu
 ```
 
 | Question | Command | Do **not** load |
-|----------|---------|-----------------|
+| ---------- | --------- | ----------------- |
 | Next flow to prove (macOS) | `npm run testing:ledger-next` | `ledger:open` full gap scan |
 | What's open? | `npm run ledger:open` | Full source trees, mockup dirs |
 | What's stale after edits? | `npm run ledger:stale` | All validation JSON |
@@ -117,7 +118,7 @@ npm run testing:ledger-next   # one open flow — do not use ledger:open as queu
 ### Status hierarchy (single chain)
 
 | Layer | Owner | Purpose |
-|-------|-------|---------|
+| ------- | ------- | --------- |
 | **Primary** | `flows[].validation.{ios,macos}` | User journey pass/fail/pending/blocked |
 | **Atomic** | `controls.{ios,macos}[]` | Per-button regression detail |
 | **Visual** | `platforms.*.ui_validation` | Mockup parity (screen-level) |
@@ -127,7 +128,7 @@ After CUA/capture: stamp controls → `npm run ledger:sync-flows` (or `ledger:re
 ### Success criteria (where it lives)
 
 | Field | Location | Meaning |
-|-------|----------|---------|
+| ------- | ---------- | --------- |
 | Journey steps | `flows[].steps[]` | What the user does |
 | Atomic expectation | `controls.*.expected` | Per-control success |
 | Proof | `flows[].validation.*.evidence` | Dated method + outcome |
@@ -136,7 +137,7 @@ After CUA/capture: stamp controls → `npm run ledger:sync-flows` (or `ledger:re
 ### Proof tiers (pick one; default Tier A)
 
 | Tier | When | Commands |
-|------|------|----------|
+| ------ | ------ | ---------- |
 | **A — Status scan** | Session start, "what's pending?" | `goal:next` → `ledger:brief` → `ledger:open` |
 | **B — One screen** | Fix/verify one open flow | Tier A + `ledger:screen` + platform proof script |
 | **C — Batch closeout** | Multi-screen stale reproof | `validation:wave2-reproof` or `macos:validation-batch --stale-only` |
@@ -161,7 +162,7 @@ After CUA/capture: stamp controls → `npm run ledger:sync-flows` (or `ledger:re
 Copy before adding a screen or flow:
 
 | Template | Path |
-|----------|------|
+| ---------- | ------ |
 | New logical screen | `validation/screens/_template.screen.json` |
 | New flow object | `validation/screens/_template.flow.json` |
 | Gap backlog (batch apply) | `validation/gap-flows-registry.json` → `npm run ledger:apply-gaps` |
@@ -179,7 +180,7 @@ Copy before adding a screen or flow:
 ### Validation result values
 
 | `result` | When |
-|----------|------|
+| ---------- | ------ |
 | `pending` | Implemented in app; not runtime-validated yet |
 | `pass` | Proven with evidence + `last_test_method` + `tested_source_hash` |
 | `blocked` | Infra only (Apple sign-in, LiveKit) — set `blocker` |
@@ -219,7 +220,7 @@ Project hooks (`.cursor/hooks.json`): `sessionStart` injects compact `goal:next`
 See § Parallel screen validation for locks and two-wave model. iOS single-screen: `cross_platform_screen_validate.sh --platform ios`.
 
 | Situation | Command |
-|-----------|---------|
+| ----------- | --------- |
 | One screen, API up | `macos_cua_preflight.sh` → `macos_audit_prepare.sh <screen>` → `macos_cua_screen.sh <screen>` |
 | After parallel UI edits (full macOS closeout) | `npm run macos:validation-batch` |
 | Captures only | `npm run verify:macos-screens` |
@@ -247,7 +248,7 @@ After wave 1 finishes: `./script/cross_platform_screen_validate.sh --screen <id>
 Never raw `pkill`, `open`, or `simctl launch` without `./script/cross_platform_validation_lock.sh`. Never bare `pkill -9 LikemindedMac` — use `macos_kill_if_lock_holder` from `script/macos_canonical_app.sh` (holder sets `LIKEMINDED_HOLDS_MACOS_APP_LOCK=1`).
 
 | Resource | Lock | Serialize |
-|----------|------|-----------|
+| ---------- | ------ | ----------- |
 | `api` | `:8787` validation API start/stop | yes |
 | `seed` | `npm run reset:validation-data` | yes |
 | `ios-sim` | `simctl launch` / booted simulator app | yes |
@@ -279,6 +280,7 @@ Use full ledger id: `npm run ledger:screen -- --platform ios --screen 22-setting
 
 ### iOS capture hygiene
 
+- Auth gate capture: `--screen auth-gate` (unsigned; `--likeminded-reset-auth-session` only). `--screen auth` uses dev bypass → signed-in Meet, not the gate.
 - Target one simulator UDID from `./script/build_and_run.sh` — not `booted` when multiple simulators are running.
 - Prefer build-only + explicit `simctl launch` with validation args; `./script/build_and_run.sh run` auto-launches without deep links.
 - `verify:ios-screens` builds **once** then sets `LIKEMINDED_SKIP_IOS_BUILD=1` per screen; single `validate:screen` auto-skips xcodebuild when `.build/ios-simulator/.../Likeminded.app` is fresh (still installs to sim) — `LIKEMINDED_FORCE_IOS_BUILD=1` to force rebuild.

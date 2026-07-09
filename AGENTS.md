@@ -12,6 +12,7 @@
 - `GOAL.md` — ultimate product goal (scope disputes only).
 - `PROGRESS.md` — roadmap checkboxes (active track section only during work).
 - `goal.json` — per-session goal, graders, routing.
+- `session/work-bucket.json` — **continue previous session** (screen, ledger, mockups, `continue_command`); stamped via `npm run session:stamp`.
 - `validation/screens/*.json` — **control status owner** (schema v2: `flows[]` + `controls.{ios,macos}`; legacy archive: `validation/_legacy/{ios,macos}/`).
 - `validation/production-contract.json` — **production scope contract** (TestFlight MVP; `npm run verify:production-ready`).
 
@@ -42,8 +43,9 @@ Inherits global **Context doctrine** (`~/.codex/AGENTS.md`).
 
 ## Session start
 
-1. `npm run goal:next` → run `first_command`; stop when answered — do not preload other routing surfaces.
+1. `npm run goal:next` → **work bucket first** (previous session surface + ledger + mockups), then `first_command`; stop when answered.
 2. `git status --short` before edits; `npm run verify:ledger-progress` before claiming track/goal complete.
+3. **Session end:** `npm run session:stamp -- --summary "…"` — owner file `session/work-bucket.json`.
 
 Next-goal: smallest full-session surface (one screen family, endpoint family, or track)—not a single checkbox unless it is the only blocker.
 
