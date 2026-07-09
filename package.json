@@ -52,6 +52,7 @@
     "optimization:status": "node script/optimization_validate.js status",
     "optimization:record": "node script/optimization_validate.js record",
     "optimization:validate": "node script/optimization_validate.js validate",
+    "verify:optimization": "node script/verify_optimization.js",
     "seed:validation-data": "LIKEMINDED_DB_DIR=${LIKEMINDED_VALIDATION_DB_DIR:-data/validation-db} node script/seed_validation_data.js seed",
     "remove:validation-data": "LIKEMINDED_DB_DIR=${LIKEMINDED_VALIDATION_DB_DIR:-data/validation-db} node script/seed_validation_data.js remove",
     "reset:validation-data": "LIKEMINDED_DB_DIR=${LIKEMINDED_VALIDATION_DB_DIR:-data/validation-db} node script/seed_validation_data.js reset",

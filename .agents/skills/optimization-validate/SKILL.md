@@ -21,7 +21,8 @@ Musk loop for agent-workflow changes: **question the claim → measure sessions 
 | ------ | ------ |
 | Registry (one row per wave) | `session/optimization-registry.json` |
 | Validator | `npm run optimization:status` / `optimization:validate` |
-| Transcripts | `~/.cursor/projects/.../agent-transcripts/<session-id>/*.jsonl` |
+| Transcripts | `CURSOR_TRANSCRIPT_ROOT` or auto-discover under `~/.cursor/projects/*like-minded*/agent-transcripts` |
+| Grader | `npm run verify:optimization` |
 
 Do not add parallel optimization ledgers or markdown status tables.
 
@@ -62,19 +63,29 @@ npm run optimization:status
 ```bash
 npm run optimization:validate -- --id <slug> --sessions 10          # post-fix (default)
 npm run optimization:validate -- --mode baseline --sessions 10        # pre-fix proof only
-npm run optimization:validate -- --mode after --sessions 10 --force # re-run after merge
+npm run optimization:validate -- --mode after --sessions 10 --min-sessions 3
+npm run optimization:validate -- --transcript-dir ~/.cursor/projects/<slug>/agent-transcripts
 ```
 
 `--mode baseline` writes `baseline_validation` only — does **not** close the row. Only `--mode after` sets `validated_at`.
+
+**Scoring (v2):**
+
+- Failure signals mined from **user turns only** (frustration / re-teach)
+- Success signals from **assistant turns** (echo is weak signal)
+- **Behavioral:** tool trace — `Read GOAL.md`/`PROGRESS.md` before `ledger:screen`/`goal:next` = fail; `ledger:screen` without forbidden read = strong success
+- **Verdict:** `helped` only if after fail-rate **< 50% of baseline** fail-rate AND behavior success ≥40% AND min 3 sessions / 5 user prompts
+- `insufficient_data` / `no_data` — row stays pending
 
 Script mines Cursor sessions relative to `recorded_at`:
 
 | Verdict | Meaning |
 | --------- | --------- |
-| `helped` | failure signals rare; success signals present |
-| `partial` | both sides still firing |
-| `not_helped` | failure signals dominate |
-| `no_data` | no transcripts after anchor (wait or lower `--sessions`) |
+| `helped` | after fail-rate < 50% baseline; behavioral success ≥40%; min sessions met |
+| `partial` | mixed — failure signals or behavior not consistently better |
+| `not_helped` | after worse than baseline or behavior regressions |
+| `insufficient_data` | transcripts exist but below `--min-sessions` / `--min-user-prompts` |
+| `no_data` | no transcripts after anchor — row stays **pending** |
 
 Agent adds **human judgment** (not script-only):
 
@@ -109,14 +120,16 @@ Re-record only if claims changed; otherwise update same registry row `validated_
 ```bash
 npm run optimization:record -- \
   --id agent-routing-work-bucket-2026-07-10 \
-  --session "<cursor-transcript-uuid-if-known>" \
+  --session "<cursor-transcript-uuid>" \
   --claims "claim one;claim two;claim three" \
   --changes "path or command;path or command" \
   --failure-signals "still nowhere near;we just completed;Phase 9" \
   --success-signals "work_surface;continue_command;forbidden_until_continue"
 ```
 
-Capture `anchor_session_id` from Cursor transcript folder when possible.
+**Record gate:** blocks new row while another is `validated_at: null` (use `--replace` to override).
+
+Capture `anchor_session_id` from Cursor transcript folder — filters after-window to sessions **after** that ID.
 
 ---
 
@@ -152,5 +165,8 @@ After editing this skill or `script/optimization_validate.js`:
 
 ```bash
 node --check script/optimization_validate.js
+node --check script/lib/optimization_validate_lib.js
+node --check script/verify_optimization.js
+npm run verify:optimization
 npm run optimization:status
 ```
