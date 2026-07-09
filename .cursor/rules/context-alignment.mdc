@@ -1,8 +1,0 @@
----
-description: Session entry — goal:next before docs; JSON sole status owner
-alwaysApply: true
----
-
-# Context alignment
-
-1. Run `npm run goal:next` and execute `first_command` — sole session entry. Do not preload PROGRESS, GOAL, validation dirs, mockups, or CURRENT.md for routing.

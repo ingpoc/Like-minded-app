@@ -6,7 +6,7 @@ Global `/Users/gurusharan/.codex/AGENTS.md` owns instruction control. This file 
 
 ## Current Status
 
-- **Session entry:** `npm run goal:next` only → run `first_command`; do not read this file, `GOAL.md`, or `CURRENT.md` for routing.
+- **Session entry:** `npm run goal:next` only → run `first_command`; do not read this file or `GOAL.md` for routing.
 - Control status: `validation/screens/*.json`. Roadmap checkboxes: this file (active track sections only).
 - Design: `DESIGN.md`. Product: `docs/product-direction.md`. Commands: `docs/workflows/validation.md`.
 - **macOS track** — `stale_pass` rows open (reproof required). Infra-blocked: Apple sign-in, LiveKit join.

@@ -43,8 +43,7 @@ Inherits global **Context doctrine** (`~/.codex/AGENTS.md`).
 ## Session start
 
 1. `npm run goal:next` → run `first_command`; stop when answered — do not preload other routing surfaces.
-2. `resume-session` only: read `.claude/session-data/CURRENT.md` if present (tactical notes; **not** work queue).
-3. `git status --short` before edits; `npm run verify:ledger-progress` before claiming track/goal complete.
+2. `git status --short` before edits; `npm run verify:ledger-progress` before claiming track/goal complete.
 
 Next-goal: smallest full-session surface (one screen family, endpoint family, or track)—not a single checkbox unless it is the only blocker.
 
@@ -139,7 +138,6 @@ Scripts own proof. Subagents own bounded sidecars. Main thread owns integration 
 ## Session alignment (project hooks)
 
 - `.cursor/hooks.json` → `sessionStart` runs `npm run goal:next` compact route via `script/session_route.js`.
-- `.cursor/rules/context-alignment.mdc` → 4-line always-on entry (backup when hook injection is dropped).
 - `npm run verify:ledger-progress` / `verify:goal` → fail if duplicate context surfaces return (status tables, phase graveyard, sibling ledgers).
 
 ## Project agents
