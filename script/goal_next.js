@@ -145,10 +145,14 @@ const firstCommand = preferContinue
         ? `./script/project_context.sh query --task ${JSON.stringify(goal.goal)}`
         : continueCommand || routeCommand;
 
+const FORBIDDEN_UNTIL_CONTINUE =
+  "GOAL.md, PROGRESS.md, ledger:open, Phase 9, mockup directory walks";
+
 if (compact) {
   for (const line of workBucketLines) {
     console.log(line);
   }
+  console.log(`forbidden_until_continue: ${FORBIDDEN_UNTIL_CONTINUE}`);
   console.log(`first_command: ${firstCommand}`);
   if (useContract && contract.lane) console.log(`session_lane: ${contract.lane}`);
   console.log(`dirty_work_required: ${dirtyFirst ? "yes" : "no"}`);
@@ -177,6 +181,8 @@ next_phase_unchecked: ${nextPhase ? nextPhase.unchecked : 0}
 active_track: ${activeTrack}
 ledger_progress_ok: ${ledger.ok ? "yes" : "no"}
 first_command: ${firstCommand}`);
+
+console.log(`forbidden_until_continue: ${FORBIDDEN_UNTIL_CONTINUE}`);
 
 if (useContract && contract.lane) {
   console.log(`session_lane: ${contract.lane}`);

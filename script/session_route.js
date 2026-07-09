@@ -15,7 +15,7 @@ function sessionBrief(compact) {
 
 function hookPayload() {
   const brief = sessionBrief(true);
-  const context = `Work bucket is first — run continue_command before Phase 9 or broad retrieval.\n${brief}`;
+  const context = `Work bucket first. Run first_command end-to-end; forbidden_until_continue applies until continue_command completes.\n${brief}`;
   return { additional_context: context, additionalContext: context };
 }
 
