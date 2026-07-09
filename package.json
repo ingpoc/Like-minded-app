@@ -48,6 +48,7 @@
     "session:route": "node script/session_route.js",
     "session:work": "node script/session_work_bucket.js",
     "session:stamp": "node script/session_work_bucket.js --stamp",
+    "session:stamp-auto": "node script/session_work_bucket.js --auto",
     "seed:validation-data": "LIKEMINDED_DB_DIR=${LIKEMINDED_VALIDATION_DB_DIR:-data/validation-db} node script/seed_validation_data.js seed",
     "remove:validation-data": "LIKEMINDED_DB_DIR=${LIKEMINDED_VALIDATION_DB_DIR:-data/validation-db} node script/seed_validation_data.js remove",
     "reset:validation-data": "LIKEMINDED_DB_DIR=${LIKEMINDED_VALIDATION_DB_DIR:-data/validation-db} node script/seed_validation_data.js reset",

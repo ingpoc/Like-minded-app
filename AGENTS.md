@@ -45,7 +45,7 @@ Inherits global **Context doctrine** (`~/.codex/AGENTS.md`).
 
 1. `npm run goal:next` → **work bucket first** (previous session surface + ledger + mockups), then `first_command`; stop when answered.
 2. `git status --short` before edits; `npm run verify:ledger-progress` before claiming track/goal complete.
-3. **Session end:** `npm run session:stamp -- --screen <id> --summary "…"` — owner `session/work-bucket.json` (auto-enriches from ledger + `project_context query` + capture proof).
+3. **Session end (automatic):** `.cursor/hooks.json` runs `session:stamp-auto` on `preCompact` and `sessionEnd`. Optional override: `npm run session:stamp -- --screen <id> --summary "…"`.
 
 Next-goal: smallest full-session surface (one screen family, endpoint family, or track)—not a single checkbox unless it is the only blocker.
 

@@ -428,6 +428,32 @@ function formatLines(bucket, { compact = false } = {}) {
   return lines;
 }
 
+function autoStamp({ trigger = "hook" } = {}) {
+  const existing = readBucket();
+  const dirty = gitDirtyPaths();
+  if (!dirty.length && !existing?.primary_surface) {
+    return { written: null, bucket: existing, skipped: "no_dirty_no_bucket" };
+  }
+
+  const forcedScreen = existing?.primary_surface?.screen_id || null;
+  const preserveSummary =
+    existing?.summary && (existing.source === "session:stamp" || existing.source === "auto-stamp")
+      ? existing.summary
+      : null;
+
+  let bucket = inferBucket(dirty, preserveSummary, forcedScreen);
+  if (!bucket.primary_surface && existing?.primary_surface) {
+    bucket.primary_surface = existing.primary_surface;
+    bucket.continue_command = existing.continue_command || bucket.continue_command;
+  }
+  bucket = enrichBucket(bucket);
+  bucket.source = preserveSummary && existing?.source === "session:stamp" ? "session:stamp" : "auto-stamp";
+  bucket.auto_stamp_trigger = trigger;
+  bucket.auto_stamped_at = new Date().toISOString();
+  const written = writeBucket(bucket);
+  return { written, bucket, skipped: null };
+}
+
 function stampFromArgv(argv) {
   const summaryIdx = argv.indexOf("--summary");
   const summary = summaryIdx >= 0 ? argv[summaryIdx + 1] : null;
@@ -455,6 +481,21 @@ function shouldPreferContinue(bucket, dirtyCount) {
 if (require.main === module) {
   const asJson = process.argv.includes("--json");
   const doStamp = process.argv.includes("--stamp");
+  const doAuto = process.argv.includes("--auto");
+
+  if (doAuto) {
+    const triggerIdx = process.argv.indexOf("--trigger");
+    const trigger = triggerIdx >= 0 ? process.argv[triggerIdx + 1] : "hook";
+    const result = autoStamp({ trigger });
+    if (asJson) {
+      process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+    } else if (result.skipped) {
+      console.log(`session-stamp-auto: skipped (${result.skipped})`);
+    } else {
+      console.log(`session-stamp-auto: ${result.written} (${trigger})`);
+    }
+    process.exit(0);
+  }
 
   if (doStamp) {
     const { written, bucket } = stampFromArgv(process.argv);
@@ -483,6 +524,7 @@ module.exports = {
   inferBucket,
   formatLines,
   stampFromArgv,
+  autoStamp,
   shouldPreferContinue,
   enrichBucket,
   gitDirtyPaths
