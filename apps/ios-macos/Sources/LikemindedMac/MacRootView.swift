@@ -60,31 +60,52 @@ struct MacRootView: View {
         selectedScreen = macScreenDeepLink
     }
 
+    private func navigateToScreen(_ destination: MacPrototypeScreen) {
+        if macScreenDeepLinkLocked {
+            guard let entry = macScreenDeepLink,
+                  entry.allowsValidationDrillDown(to: destination) else { return }
+        }
+        guard destination != selectedScreen else { return }
+        returnScreen = selectedScreen
+        selectedScreen = destination
+    }
+
+    @ViewBuilder
+    private var screenContent: some View {
+        MacScreenView(screen: displayedScreen, appState: appState, navigate: navigateToScreen)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+    }
+
+    private var isCirclesPlacementScreen: Bool {
+        displayedScreen == .circlesRoom
+    }
+
     var body: some View {
         ZStack {
             MacPalette.background.ignoresSafeArea()
-            RadialGradient(colors: [MacPalette.accentSoft.opacity(0.45), .clear], center: .topTrailing, startRadius: 30, endRadius: 520)
-                .ignoresSafeArea()
+            if displayedScreen != .welcome, !isCirclesPlacementScreen {
+                RadialGradient(colors: [MacPalette.accentSoft.opacity(0.45), .clear], center: .topTrailing, startRadius: 30, endRadius: 520)
+                    .ignoresSafeArea()
+            }
 
-            VStack(spacing: 0) {
-                GeometryReader { proxy in
-                    ScrollView(.vertical, showsIndicators: true) {
-                        VStack(spacing: 18) {
-                            MacScreenView(screen: displayedScreen, appState: appState) { destination in
-                                if macScreenDeepLinkLocked {
-                                    guard let entry = macScreenDeepLink,
-                                          entry.allowsValidationDrillDown(to: destination) else { return }
+            Group {
+                if displayedScreen == .welcome || isCirclesPlacementScreen {
+                    screenContent
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                } else {
+                    VStack(spacing: 0) {
+                        GeometryReader { proxy in
+                            ScrollView(.vertical, showsIndicators: true) {
+                                VStack(spacing: 18) {
+                                    screenContent
                                 }
-                                guard destination != selectedScreen else { return }
-                                returnScreen = selectedScreen
-                                selectedScreen = destination
+                                .frame(maxWidth: .infinity, minHeight: max(0, proxy.size.height - (appState.isSignedIn ? 170 : 72)), alignment: .top)
+                                .padding(.horizontal, 28)
+                                .padding(.top, 54)
+                                .padding(.bottom, appState.isSignedIn ? 116 : 18)
                             }
-                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
                         }
-                        .frame(maxWidth: .infinity, minHeight: max(0, proxy.size.height - (appState.isSignedIn && displayedScreen != .welcome ? 170 : 72)), alignment: .top)
-                        .padding(.horizontal, 28)
-                        .padding(.top, 54)
-                        .padding(.bottom, appState.isSignedIn && displayedScreen != .welcome ? 116 : 18)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
@@ -130,9 +151,14 @@ struct MacRootView: View {
                 }
             }
         }
+        .containerBackground(MacPalette.background, for: .window)
+        .toolbarBackground(.hidden, for: .windowToolbar)
         .foregroundStyle(MacPalette.ink)
         .macSuppressFocusRing()
-        .frame(minWidth: 1200, minHeight: 760)
+        .frame(
+            minWidth: MacWindowMetrics.minWidth,
+            minHeight: MacWindowMetrics.minHeight
+        )
         .task {
             applyMacScreenDeepLinkIfNeeded()
             if macScreenDeepLink == nil, ProcessInfo.processInfo.arguments.contains("--likeminded-validation-welcome") {
@@ -285,5 +311,5 @@ struct MacBottomNav: View {
 #Preview {
     MacRootView()
         .environmentObject(MacAppState())
-        .frame(width: 1200, height: 760)
+        .frame(width: MacWindowMetrics.defaultWidth, height: MacWindowMetrics.defaultHeight)
 }

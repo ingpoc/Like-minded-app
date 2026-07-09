@@ -4,26 +4,18 @@
 
 Global `/Users/gurusharan/.codex/AGENTS.md` owns instruction control. This file holds **open roadmap checkboxes only**. Phases 0–8 are complete (historical — see git); they are not ledger owners.
 
-## Current Status
-
-- Route: `npm run goal:next` → `first_command`. Control status: `validation/screens/*.json` (`flows[]` primary). Session brief: `npm run ledger:brief`.
-- Design: `DESIGN.md`. Product behavior: `docs/product-direction.md`. Commands: `docs/workflows/validation.md`.
-- **macOS track** — `stale_pass` clean; infra-blocked only (`01-welcome`, `21-meet-video-call` join).
-- **iOS track** — `stale_pass` clean; infra-blocked only (Apple sign-in, LiveKit on device).
-- Phase 9 (external TestFlight) starts only when ledger tracks are clean and `npm run verify:ledger-progress` passes.
-
 ## Track — macOS Visual Parity + Ledger Closeout
 
 Status: `validation/screens/*.json` (macOS `flows[].validation.macos`). Proof: `docs/workflows/validation.md` § macOS proof.
 
-- [x] macOS stale_pass reproof after `MacScreens.swift` / `DoodleArt` edits (`npm run macos:validation-batch -- --stale-only --cua-only`).
+- [ ] macOS stale_pass reproof after source edits (`npm run macos:validation-batch -- --stale-only --cua-only` or `npm run validation:wave2-reproof`).
 - [ ] macOS infra-blocked (Phase 9/10): Apple sign-in (`auth` / `sign-in-apple`), LiveKit join (`video-call` / `join-room`).
 
 ## Track — iOS Ledger Honesty
 
 Status: `validation/screens/*.json` (iOS `flows[].validation.ios`).
 
-- [x] iOS stale_pass reproof (`npm run verify:ios-screens -- --stale-only`).
+- [ ] iOS stale_pass reproof (`npm run verify:ios-screens -- --stale-only` or `npm run validation:wave2-reproof`).
 - [ ] iOS infra-blocked (Phase 9/10): real Apple sign-in (`auth` / `sign-in-apple`) + LiveKit (`meet` / `join-live-meetup`).
 
 ## Phase 9 — External TestFlight Readiness

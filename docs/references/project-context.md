@@ -1,8 +1,6 @@
 # Project Context
 
-**Lazy load only** for boundary disputes or `project_context query` with `decision_count > 0`. Not for gap audits or single-screen work — use `npm run goal:next`, `npm run ledger:screen`, and one `validation/*/*.json`.
-
-Commands and proof: `docs/workflows/validation.md`. Ultimate goal: `GOAL.md`. Session goal: `goal.json`.
+**Lazy load only** for boundary disputes or `project_context query` with `decision_count > 0`. Session routing: `npm run goal:next`. Commands: `docs/workflows/validation.md`.
 
 ## Boundaries
 
