@@ -153,6 +153,7 @@ if (compact) {
   if (useContract && contract.lane) console.log(`session_lane: ${contract.lane}`);
   console.log(`dirty_work_required: ${dirtyFirst ? "yes" : "no"}`);
   if (dirtyFirst && !preferContinue) console.log(`after_dirty_resolved: ${continueCommand || routeCommand}`);
+  if (workBucket?.proof_command) console.log(`proof_before_pass: ${workBucket.proof_command}`);
   for (const line of formatGoalNextLines(ledger)) {
     console.log(line);
   }
@@ -166,8 +167,9 @@ for (const line of workBucketLines) {
 }
 
 console.log(`# Goal Next
+active_work_goal: ${workBucket?.summary || "none"}
 current_status: ${goal.status}
-current_goal: ${goal.goal}
+phase_goal_when_tracks_clean: ${goal.goal}
 dirty_work_required: ${dirtyFirst ? "yes" : "no"}
 dirty_path_count: ${dirtyPathCount}
 next_phase: ${nextPhase ? nextPhase.title : "none"}
@@ -186,6 +188,9 @@ for (const line of formatGoalNextLines(ledger)) {
 
 if (dirtyFirst && !preferContinue) {
   console.log(`after_dirty_resolved: ${continueCommand || routeCommand}`);
+}
+if (workBucket?.proof_command) {
+  console.log(`proof_before_pass: ${workBucket.proof_command}`);
 }
 
 if (!ledger.ok) {

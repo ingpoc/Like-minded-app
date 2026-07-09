@@ -9,7 +9,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { execFileSync } = require("node:child_process");
-const { root, parseSourcePath } = require("./ledger_hash");
+const { root, parseSourcePath, parseSourceHint } = require("./ledger_hash");
 const { listScreenFiles, loadScreenFile } = require("./ledger_screens");
 
 const BUCKET_PATH = path.join(root, "session", "work-bucket.json");
@@ -293,14 +293,110 @@ function mergeBuckets(stamped, inferred) {
   };
 }
 
+function findConceptMockup(screenId, platform) {
+  const dir = path.join(root, "mockups", platform, "concepts");
+  if (!fs.existsSync(dir)) return null;
+  const needle = screenId.toLowerCase();
+  const hit = fs
+    .readdirSync(dir)
+    .filter((f) => /\.(png|jpg|webp)$/i.test(f))
+    .find((f) => f.toLowerCase().includes(needle) || f.toLowerCase().includes("placement"));
+  return hit ? `mockups/${platform}/concepts/${hit}` : null;
+}
+
+function queryDecisions(task) {
+  try {
+    const out = execFileSync("./script/project_context.sh", ["query", "--task", task], {
+      cwd: root,
+      encoding: "utf8",
+      maxBuffer: 1024 * 1024
+    });
+    const parsed = JSON.parse(out);
+    return (parsed.decisions || []).slice(0, 3).map((d) => ({
+      key: d.decision_key,
+      title: d.title,
+      summary: d.summary
+    }));
+  } catch {
+    return [];
+  }
+}
+
+function macEntryForScreen(screenId, platform = "macos") {
+  try {
+    const { data } = loadScreenFile(screenId);
+    const slice = data.platforms?.[platform];
+    for (const src of slice?.source_files || []) {
+      const hint = parseSourceHint(src);
+      if (hint) return hint;
+    }
+    const notes = String(slice?.notes || "");
+    const match = notes.match(/--mac-screen\s+(\w+)/);
+    if (match) return match[1];
+  } catch {
+    /* ignore */
+  }
+  return screenId;
+}
+
+function enrichBucket(bucket) {
+  if (!bucket?.primary_surface) return bucket;
+
+  const screenId = bucket.primary_surface.screen_id;
+  const platform =
+    bucket.work_platform ||
+    platformFromPaths(bucket.dirty_files || []) ||
+    (bucket.continue_command?.includes("--platform ios") ? "ios" : "macos");
+  const task = `${screenId} ${bucket.summary || "visual parity migration"}`;
+  const decisions = queryDecisions(task);
+
+  let recentScreenshot = null;
+  let plateMockup = bucket.primary_surface.mockups?.[platform] || null;
+  try {
+    const { data } = loadScreenFile(screenId);
+    const slice = data.platforms?.[platform] || {};
+    recentScreenshot = slice.recent_screenshot_ref || null;
+    plateMockup = slice.mockup_ref || plateMockup;
+  } catch {
+    /* ignore */
+  }
+
+  const conceptMockup =
+    findConceptMockup(screenId, platform) ||
+    findConceptMockup(screenId, platform === "ios" ? "macos" : "ios");
+  const referenceMockup = conceptMockup || plateMockup;
+  const macEntry = macEntryForScreen(screenId, "macos");
+
+  const proof_command =
+    platform === "ios"
+      ? `./script/cross_platform_screen_validate.sh --screen ${screenId} --platform ios`
+      : `./script/macos_cua_preflight.sh && ./script/macos_audit_prepare.sh ${macEntry} && ./script/macos_cua_screen.sh ${macEntry}`;
+
+  return {
+    ...bucket,
+    work_platform: platform,
+    decisions,
+    reference_mockup: referenceMockup,
+    concept_mockup: conceptMockup,
+    recent_screenshot: recentScreenshot,
+    proof_command,
+    compare_before_pass: referenceMockup
+      ? `Capture then open side-by-side: ${recentScreenshot || "fresh capture"} vs ${referenceMockup}`
+      : "Capture screenshot and compare to ledger mockup_ref before pass"
+  };
+}
+
 function resolveBucket({ refreshFromDirty = true } = {}) {
   const stamped = readBucket();
   const dirty = gitDirtyPaths();
+  let bucket;
   if (!refreshFromDirty || dirty.length === 0) {
-    return stamped || inferBucket([], "No stamped session — run npm run session:stamp at session end");
+    bucket = stamped || inferBucket([], "No stamped session — run npm run session:stamp at session end");
+  } else {
+    const inferred = inferBucket(dirty);
+    bucket = mergeBuckets(stamped, inferred);
   }
-  const inferred = inferBucket(dirty);
-  return mergeBuckets(stamped, inferred);
+  return enrichBucket(bucket);
 }
 
 function formatLines(bucket, { compact = false } = {}) {
@@ -314,11 +410,20 @@ function formatLines(bucket, { compact = false } = {}) {
     lines.push(`work_surface: ${primary.screen_id}`);
     lines.push(`work_screen: ${primary.screen_title}`);
     lines.push(`work_ledger: ${primary.ledger}`);
-    if (primary.mockups?.ios) lines.push(`work_mockup_ios: ${primary.mockups.ios}`);
-    if (primary.mockups?.macos) lines.push(`work_mockup_macos: ${primary.mockups.macos}`);
+    if (bucket.work_platform) lines.push(`work_platform: ${bucket.work_platform}`);
+    if (bucket.concept_mockup) lines.push(`work_concept_mockup: ${bucket.concept_mockup}`);
+    else if (bucket.reference_mockup) lines.push(`work_reference_mockup: ${bucket.reference_mockup}`);
+    if (primary.mockups?.ios) lines.push(`work_plate_ios: ${primary.mockups.ios}`);
+    if (primary.mockups?.macos) lines.push(`work_plate_macos: ${primary.mockups.macos}`);
+    if (bucket.recent_screenshot) lines.push(`work_last_capture: ${bucket.recent_screenshot}`);
+  }
+  for (const [index, decision] of (bucket.decisions || []).entries()) {
+    lines.push(`work_decision_${index + 1}: ${decision.key} — ${decision.summary}`);
   }
   if (bucket.dirty_path_count) lines.push(`work_dirty_paths: ${bucket.dirty_path_count}`);
   if (bucket.continue_command) lines.push(`continue_command: ${bucket.continue_command}`);
+  if (bucket.proof_command) lines.push(`proof_command: ${bucket.proof_command}`);
+  if (bucket.compare_before_pass) lines.push(`compare_before_pass: ${bucket.compare_before_pass}`);
   if (!compact && bucket.stop_condition) lines.push(`stop_condition: ${bucket.stop_condition}`);
   return lines;
 }
@@ -329,7 +434,8 @@ function stampFromArgv(argv) {
   const screenIdx = argv.indexOf("--screen");
   const forcedScreen = screenIdx >= 0 ? argv[screenIdx + 1] : null;
   const dirty = gitDirtyPaths();
-  const bucket = inferBucket(dirty, summary, forcedScreen);
+  let bucket = inferBucket(dirty, summary, forcedScreen);
+  bucket = enrichBucket(bucket);
   const written = writeBucket(bucket);
   return { written, bucket };
 }
@@ -378,5 +484,6 @@ module.exports = {
   formatLines,
   stampFromArgv,
   shouldPreferContinue,
+  enrichBucket,
   gitDirtyPaths
 };
