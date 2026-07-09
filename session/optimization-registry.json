@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "owner": "session/optimization-registry.json — one row per optimization wave; validate before adding the next",
+  "optimizations": [
+    {
+      "id": "agent-routing-work-bucket-2026-07-09",
+      "recorded_at": "2026-07-09T20:15:00.000Z",
+      "anchor_commit": "43d4ed54",
+      "branch": "cursor/session-work-bucket-8f70",
+      "anchor_session_id": null,
+      "anchor_note": "Set anchor_session_id to Cursor transcript UUID when known. Use --mode baseline for pre-fix sessions; --mode after for post-fix (default).",
+      "claims": [
+        "Session entry shows work bucket first — agents continue previous screen without re-mining transcripts",
+        "forbidden_until_continue stops GOAL.md / PROGRESS / Phase 9 preload before continue_command",
+        "auto-stamp on preCompact/sessionEnd removes need to remember session:stamp",
+        "ledger:record-flow pass requires screenshot-ref + mockup compare evidence when mockup_ref exists",
+        "Duplicate routing surfaces pruned — goal:next is sole session router"
+      ],
+      "changes": [
+        "session/work-bucket.json",
+        "script/session_work_bucket.js",
+        "script/goal_next.js",
+        "script/session_route.js",
+        ".cursor/hooks.json preCompact sessionEnd",
+        "script/ledger_record_flow.js screenshot gate",
+        "forbidden_until_continue in goal:next"
+      ],
+      "failure_signals": [
+        "still nowhere near",
+        "not yet migrated",
+        "we just completed",
+        "placing into a circle is not",
+        "are you duplicating surfaces",
+        "what is the current personality",
+        "Phase 9",
+        "iterate a lot",
+        "no swap",
+        "check what implementation"
+      ],
+      "success_signals": [
+        "work_surface",
+        "continue_command",
+        "forbidden_until_continue",
+        "compare vs mockup",
+        "ledger:screen",
+        "work_decision_",
+        "proof_command",
+        "session:stamp-auto"
+      ],
+      "validated_at": "2026-07-09T20:20:34.628Z",
+      "validation_verdict": "baseline_confirmed",
+      "last_validation": {
+        "optimization_id": "agent-routing-work-bucket-2026-07-09",
+        "recorded_at": "2026-07-09T20:15:00.000Z",
+        "mode": "baseline",
+        "sessions_analyzed": 10,
+        "verdict": "baseline_confirmed",
+        "failure_hits": {
+          "we just completed": 1,
+          "placing into a circle is not": 1,
+          "no swap": 1,
+          "check what implementation": 1,
+          "not yet migrated": 1,
+          "Phase 9": 1,
+          "are you duplicating surfaces": 1,
+          "what is the current personality": 1
+        },
+        "success_hits": {},
+        "per_session": [
+          {
+            "session_id": "cf659859-eb63-47b3-b1db-9823657e17e6",
+            "user_prompts": 16,
+            "failure_hits": [
+              "we just completed",
+              "placing into a circle is not",
+              "no swap",
+              "check what implementation"
+            ],
+            "success_hits": []
+          },
+          {
+            "session_id": "d450ccb6-2125-4e51-997d-05d2c5406ff3",
+            "user_prompts": 16,
+            "failure_hits": [],
+            "success_hits": []
+          },
+          {
+            "session_id": "40e7ea50-a7ec-4c16-af21-4f391b074a46",
+            "user_prompts": 34,
+            "failure_hits": [
+              "not yet migrated",
+              "Phase 9"
+            ],
+            "success_hits": []
+          },
+          {
+            "session_id": "b6dc4ae7-1c41-470b-a92e-59d010ad2a05",
+            "user_prompts": 0,
+            "failure_hits": [],
+            "success_hits": []
+          },
+          {
+            "session_id": "ed0b6142-2a64-4cd0-91f0-ea389f43ac19",
+            "user_prompts": 1,
+            "failure_hits": [],
+            "success_hits": []
+          },
+          {
+            "session_id": "fcea0580-1221-4ff9-9b50-2be108d0b6d5",
+            "user_prompts": 14,
+            "failure_hits": [
+              "are you duplicating surfaces",
+              "what is the current personality"
+            ],
+            "success_hits": []
+          },
+          {
+            "session_id": "968551c5-3a86-47d9-bb9f-73a372514ecb",
+            "user_prompts": 7,
+            "failure_hits": [],
+            "success_hits": []
+          },
+          {
+            "session_id": "0e03d448-14f8-46cb-88c6-d75313abaf75",
+            "user_prompts": 18,
+            "failure_hits": [],
+            "success_hits": []
+          },
+          {
+            "session_id": "4531e2e4-3020-43fd-a631-da8d55a3ff70",
+            "user_prompts": 1,
+            "failure_hits": [],
+            "success_hits": []
+          },
+          {
+            "session_id": "b4494353-3e3b-4e1a-ae8a-6a531f4cc512",
+            "user_prompts": 18,
+            "failure_hits": [],
+            "success_hits": []
+          }
+        ],
+        "musk": {
+          "question": "Did the optimization remove a part or add ceremony?",
+          "simplify": [
+            "Keep registry row; system is earning its keep"
+          ],
+          "fix": [
+            "No fix — gather more sessions or tighten failure_signals"
+          ]
+        }
+      }
+    }
+  ]
+}

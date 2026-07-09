@@ -12,7 +12,8 @@
 - `GOAL.md` — ultimate product goal (scope disputes only).
 - `PROGRESS.md` — roadmap checkboxes (active track section only during work).
 - `goal.json` — per-session goal, graders, routing.
-- `session/work-bucket.json` — **continue previous session** (screen, ledger, mockups, `continue_command`); stamped via `npm run session:stamp`.
+- `session/work-bucket.json` — **continue previous session** (screen, ledger, mockups, `continue_command`); auto-stamp via hooks; optional `npm run session:stamp`.
+- `session/optimization-registry.json` — optimization waves for `@optimization-validate` skill (`npm run optimization:status`).
 - `validation/screens/*.json` — **control status owner** (schema v2: `flows[]` + `controls.{ios,macos}`; legacy archive: `validation/_legacy/{ios,macos}/`).
 - `validation/production-contract.json` — **production scope contract** (TestFlight MVP; `npm run verify:production-ready`).
 
