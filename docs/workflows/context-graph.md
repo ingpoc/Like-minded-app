@@ -12,7 +12,7 @@ Owner for:
 Should not contain:
 
 - global Codex routing doctrine owned by `/Users/gurusharan/.codex/AGENTS.md`
-- reusable `save-session` or `resume-session` skill behavior
+- session checkpoint files or resume routing outside `npm run goal:next`
 - beta tracking policy owned by the global beta registry
 - generated viewer, export, or reporting artifacts
 

@@ -4,15 +4,6 @@
 
 Global `/Users/gurusharan/.codex/AGENTS.md` owns instruction control. This file holds **open roadmap checkboxes only**. Phases 0–8 are complete (historical — see git); they are not ledger owners.
 
-## Current Status
-
-- **Session entry:** `npm run goal:next` only → run `first_command`; do not read this file or `GOAL.md` for routing.
-- Control status: `validation/screens/*.json`. Roadmap checkboxes: this file (active track sections only).
-- Design: `DESIGN.md`. Product: `docs/product-direction.md`. Commands: `docs/workflows/validation.md`.
-- **macOS track** — `stale_pass` rows open (reproof required). Infra-blocked: Apple sign-in, LiveKit join.
-- **iOS track** — `stale_pass` rows open (reproof required). Infra-blocked: Apple sign-in, LiveKit join.
-- Phase 9 starts only when `npm run verify:ledger-progress` passes and both tracks have zero actionable `fail`/`pending`/`stale_pass` (infra `blocked` excepted).
-
 ## Track — macOS Visual Parity + Ledger Closeout
 
 Status: `validation/screens/*.json` (macOS `flows[].validation.macos`). Proof: `docs/workflows/validation.md` § macOS proof.

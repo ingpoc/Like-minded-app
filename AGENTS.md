@@ -65,7 +65,7 @@ Cursor Auto is the always-on orchestrator. **Classify every turn internally**; n
 
 ### Decision order (first match wins)
 
-1. **Session boundary** — fresh/resume turn, "what's next", gap audit → `npm run goal:next` or resume checkpoint; **no LLM sidecar**
+1. **Session boundary** — fresh turn, "what's next", gap audit → `npm run goal:next`; **no LLM sidecar**
 2. **Deterministic proof** — ledger, build, verify script exists → run it; **no LLM sidecar**
 3. **Build lane** — implementing, fixing, iterating, build failing, task incomplete → **Cursor main thread** (Read → edit → build loop)
 4. **Merge gate** — signals below → **`codex-review` subagent** before commit/PR/push; integrate findings; fix P0/P1; then proceed
