@@ -14,12 +14,16 @@
 ## `--mac-screen` values (22)
 
 ```
-welcome, meetOverview, circlesRoom, profileEdit, chat, communitiesBrowse,
+welcome, meetOverview, meetOverviewConcept, circlesRoom, circlesRoomConcept, profileEdit, chat, communitiesBrowse,
 communityDetail, meetRecap, myProfile, soulmateOverview, soulmateDiscover,
 soulmateDetail, communityMembers, createEvent, createCommunity, messages,
 notifications, profileOnboarding, profileSignals, circleDetail,
 settingsSoulmate, meetVideoCall
 ```
+
+`meetOverview` / `meetOverviewConcept` — same Meet plate (`MacMeetOverviewConceptView`); venue map uses `meetVenueConvergenceField` (thewayofcode MorphingContours grammar).
+
+`circlesRoom` / `circlesRoomConcept` — same production view (`MacCirclesRoomView`); concept launch arg kept for capture routing until operator retires it.
 
 ## Default validation recipe (signed-in screens)
 

@@ -9,7 +9,9 @@ apps/ios-macos/
   Sources/LikemindedMac/
     LikemindedMacApp.swift       # app entry / scene
     MacRootView.swift            # root layout
-    MacScreens.swift             # --mac-screen switch
+    MacScreens.swift             # --mac-screen switch (production screens)
+    MacMeetOverviewConceptView.swift  # Meet plate (meetOverview + meetOverviewConcept)
+    MacCirclesRoomView.swift          # Circles tab (circlesRoom + circlesRoomConcept alias)
     MacAppState.swift            # auth + placement state
     MacPrototypeData.swift       # validation fixtures
     MacDesignSystem.swift        # macOS colors/typography/materials
@@ -44,4 +46,6 @@ apps/ios-macos/
 
 ## Mockups
 
-Per-screen path is ledger **`mockup_ref`** (e.g. `mockups/macos/24-auth-login-convergence-field.png`). Montage plates in `mockups/macos/` are reference only — do not walk the directory for routing.
+Per-screen path is ledger **`mockup_ref`** (e.g. `mockups/macos/auth-login-convergence.png`). Promote `mockups/<platform>/concepts/mockup-<screen>.png` → `mockups/<platform>/<screen>.png` as SSOT — do not walk mockup dirs for routing.
+
+**Concept preview lane:** add `Mac<Screen>ConceptView.swift` + `MacPrototypeScreen.<screen>Concept` + `--mac-screen <screen>Concept`. Keeps production screen + `MacTab.primaryScreen` unchanged; signed-in shell + `MacBottomNav` unchanged. Operator compares capture vs concept plate; on approval, promote plate and replace production view in `MacScreens.swift`.

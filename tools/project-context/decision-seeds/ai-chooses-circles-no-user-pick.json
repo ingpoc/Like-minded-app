@@ -1,0 +1,22 @@
+{
+  "decision_key": "ai-chooses-circles-no-user-pick",
+  "decision_type": "precedent",
+  "category": "product",
+  "scope_key": "placement-ux",
+  "owner_surface": "services/api/src/lib/model-placement.js",
+  "title": "AI assigns primary circle; users do not browse-join circles",
+  "summary": "Users do not browse or self-select into circles. AI assigns the primary circle from the voice interview (personality + interests + city). Users may view circle types for education but cannot join by preference alone. Secondary circle selection is AI-suggested and user-confirmed inside circle detail (see secondary-circle-detail-only).",
+  "rationale": "Operator rejected circle-browsing UX. AI hears the full interview and knows personality fit better than self-selection. Clarified Jul 9: primary is AI-only; secondary is pick-from-AI-suggestions, not free browse.",
+  "task": "Circle placement product rules",
+  "situation": "Agents implemented browse/join and swap semantics inconsistent with placement model.",
+  "inputs_considered": [
+    "model-placement.js",
+    "architecture.js buildPlacement",
+    "Cursor prompts 2026-07-09"
+  ],
+  "evidence": [
+    "Cursor prompt 2026-07-09: placing into circle is not users choice",
+    "realtime-model-profile-placement"
+  ],
+  "confidence": 1.0
+}
