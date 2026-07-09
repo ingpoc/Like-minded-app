@@ -5,7 +5,4 @@ alwaysApply: true
 
 # Context alignment
 
-1. Run `npm run goal:next` and execute `first_command` before loading PROGRESS, GOAL, validation dirs, or mockups.
-2. Control status lives in `validation/screens/*.json` only — never add pass/fail tables or sibling `.md` ledgers.
-3. One screen → `npm run ledger:screen`; one flow → `npm run ledger:flow`; gap audit → `npm run ledger:open`.
-4. Edit owners in place (AGENTS.md, validation.md, PROGRESS track) — do not add parallel reference docs.
+1. Run `npm run goal:next` and execute `first_command` — sole session entry. Do not preload PROGRESS, GOAL, validation dirs, mockups, or CURRENT.md for routing.
