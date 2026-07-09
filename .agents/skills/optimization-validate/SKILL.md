@@ -52,14 +52,20 @@ npm run optimization:status
 
   > Validate optimization `<id>` recorded at `<recorded_at>`? (yes/no)
 
+  If `baseline_validation` exists but `validated_at` is null, note baseline already confirmed the problem — this run is **post-fix** (`--mode after`).
+
 - **yes** → step 2. **no** → stop or record new wave if user directs.
+- **Already validated** (`validated_at` set) → offer `--force` re-validate only if user asks.
 
 ### 2. Validate (deterministic mine + Musk judgment)
 
 ```bash
-npm run optimization:validate -- --id <slug> --sessions 10
-npm run optimization:validate -- --mode baseline --sessions 10   # pre-fix proof problem was real
+npm run optimization:validate -- --id <slug> --sessions 10          # post-fix (default)
+npm run optimization:validate -- --mode baseline --sessions 10        # pre-fix proof only
+npm run optimization:validate -- --mode after --sessions 10 --force # re-run after merge
 ```
+
+`--mode baseline` writes `baseline_validation` only — does **not** close the row. Only `--mode after` sets `validated_at`.
 
 Script mines Cursor sessions relative to `recorded_at`:
 

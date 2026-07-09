@@ -162,7 +162,16 @@ function status() {
   const reg = readRegistry();
   const pending = reg.optimizations.filter((o) => !o.validated_at);
   const latest = reg.optimizations[reg.optimizations.length - 1] || null;
-  return { registry: REGISTRY_PATH, pending_validation: pending, latest };
+  const needsAfterValidation =
+    latest &&
+    !latest.validated_at &&
+    latest.baseline_validation?.verdict === "baseline_confirmed";
+  return {
+    registry: REGISTRY_PATH,
+    pending_validation: pending,
+    latest,
+    needs_after_validation: Boolean(needsAfterValidation)
+  };
 }
 
 function record() {
@@ -206,17 +215,36 @@ function record() {
 
 function validate() {
   const reg = readRegistry();
-  const id = arg("--id") || reg.optimizations.find((o) => !o.validated_at)?.id;
+  const mode = arg("--mode", "after");
+  const force = process.argv.includes("--force");
+  const id =
+    arg("--id") ||
+    reg.optimizations.find((o) => !o.validated_at || (force && mode === "after"))?.id;
   const opt = reg.optimizations.find((o) => o.id === id);
   if (!opt) {
     console.error("no optimization to validate");
     process.exit(1);
   }
+  if (opt.validated_at && mode === "after" && !force) {
+    console.error(
+      `optimization already validated (${opt.validation_verdict}). Use --force to re-run after-mode.`
+    );
+    process.exit(1);
+  }
   const limit = Number(arg("--sessions", "10"));
   const report = validateOptimization(opt, limit);
-  opt.validated_at = new Date().toISOString();
-  opt.validation_verdict = report.verdict;
-  opt.last_validation = report;
+  if (mode === "baseline") {
+    opt.baseline_validation = { ...report, validated_at: new Date().toISOString() };
+  } else if (report.verdict === "no_data" && !force) {
+    opt.last_validation_attempt = { ...report, attempted_at: new Date().toISOString() };
+    console.error(
+      "no post-fix sessions yet — validated_at unchanged. Re-run after more sessions or pass --force to stamp no_data."
+    );
+  } else {
+    opt.validated_at = new Date().toISOString();
+    opt.validation_verdict = report.verdict;
+    opt.last_validation = report;
+  }
   writeRegistry(reg);
   if (process.argv.includes("--json")) {
     process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
@@ -242,7 +270,15 @@ if (cmd === "status" || process.argv.includes("--status")) {
   } else {
     console.log(`registry: ${s.registry}`);
     console.log(`pending_validation: ${s.pending_validation.map((o) => o.id).join(", ") || "none"}`);
-    if (s.latest) console.log(`latest: ${s.latest.id} (validated: ${s.latest.validated_at || "no"})`);
+    if (s.latest) {
+      const baseline = s.latest.baseline_validation?.verdict;
+      console.log(
+        `latest: ${s.latest.id} (after: ${s.latest.validated_at || "pending"}, baseline: ${baseline || "none"})`
+      );
+    }
+    if (s.needs_after_validation) {
+      console.log("action: run npm run optimization:validate -- --mode after --sessions 10");
+    }
   }
 } else if (cmd === "record" || process.argv.includes("--record")) {
   record();

@@ -47,14 +47,15 @@
         "proof_command",
         "session:stamp-auto"
       ],
-      "validated_at": "2026-07-09T20:20:34.628Z",
-      "validation_verdict": "baseline_confirmed",
-      "last_validation": {
+      "validated_at": null,
+      "validation_verdict": null,
+      "baseline_validation": {
         "optimization_id": "agent-routing-work-bucket-2026-07-09",
         "recorded_at": "2026-07-09T20:15:00.000Z",
         "mode": "baseline",
         "sessions_analyzed": 10,
         "verdict": "baseline_confirmed",
+        "validated_at": "2026-07-09T20:20:34.628Z",
         "failure_hits": {
           "we just completed": 1,
           "placing into a circle is not": 1,
@@ -148,6 +149,26 @@
             "No fix — gather more sessions or tighten failure_signals"
           ]
         }
+      },
+      "last_validation_attempt": {
+        "optimization_id": "agent-routing-work-bucket-2026-07-09",
+        "recorded_at": "2026-07-09T20:15:00.000Z",
+        "mode": "after",
+        "sessions_analyzed": 0,
+        "verdict": "no_data",
+        "failure_hits": {},
+        "success_hits": {},
+        "per_session": [],
+        "musk": {
+          "question": "Did the optimization remove a part or add ceremony?",
+          "simplify": [
+            "Keep registry row; system is earning its keep"
+          ],
+          "fix": [
+            "No fix — gather more sessions or tighten failure_signals"
+          ]
+        },
+        "attempted_at": "2026-07-09T20:22:27.563Z"
       }
     }
   ]
