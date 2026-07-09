@@ -164,7 +164,6 @@ struct MacScreenView: View {
     @State private var memberSearch = ""
     @State private var memberActivityFilter = "All"
     @State private var circleConcernStatus: String?
-    @State private var showAllCircles = false
     @State private var recapNote = ""
     @State private var recapNoteStatus: String?
     @State private var isSavingRecapNote = false
@@ -248,7 +247,7 @@ struct MacScreenView: View {
         Group {
             if screen == .welcome {
                 content
-            } else if screen == .chat || screen == .messages || screen == .circleDetail || screen == .communityMembers || screen == .createEvent || screen == .meetVideoCall {
+            } else if screen == .chat || screen == .messages || screen == .circleDetail || screen == .communityMembers || screen == .createEvent || screen == .meetVideoCall || screen == .meetOverview || screen == .circlesRoom {
                 content
             } else {
                 VStack(alignment: .leading, spacing: 24) {
@@ -346,8 +345,10 @@ struct MacScreenView: View {
     private var content: some View {
         switch screen {
         case .welcome: welcome
-        case .meetOverview: meetOverview
-        case .circlesRoom: circlesRoom
+        case .meetOverview:
+            MacMeetOverviewConceptView(appState: appState, navigate: navigate)
+        case .circlesRoom:
+            MacCirclesRoomView(appState: appState, navigate: navigate)
         case .profileEdit: profileEdit
         case .chat: chat(title: "Chats", compact: false)
         case .communitiesBrowse: communitiesBrowse
@@ -373,66 +374,68 @@ struct MacScreenView: View {
     // MARK: - 1. welcome
 
     private var welcome: some View {
-        ZStack(alignment: .leading) {
+        ZStack(alignment: .topLeading) {
             MacConvergenceField()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .ignoresSafeArea()
                 .allowsHitTesting(false)
 
             VStack(alignment: .leading, spacing: 28) {
                 Text("Likeminded")
-                    .font(.system(size: 25, weight: .semibold, design: .serif))
-                    .foregroundStyle(MacPalette.accent)
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("When you meet,\nit matters.")
-                        .font(.system(size: 48, weight: .semibold, design: .serif))
-                        .lineSpacing(1)
-                        .foregroundStyle(MacPalette.ink)
-                        .fixedSize(horizontal: false, vertical: true)
-                    Text("AI helps you meet the right people in the right rooms.")
-                        .font(MacType.body)
-                        .foregroundStyle(MacPalette.muted)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-                VStack(alignment: .leading, spacing: 16) {
-                    featureRow(icon: "waveform", title: "Voice profile", detail: "Speak naturally. We understand you.", accessibilityLabel: "Voice profile")
-                    featureRow(icon: "shield.lefthalf.filled", title: "Private by design", detail: "Your data is yours. Always.", accessibilityLabel: "Private by design")
-                    featureRow(icon: "person.3", title: "Circle placement", detail: "We place you where you'll belong.", accessibilityLabel: "Circle placement")
-                }
-                .padding(.vertical, 8)
-                AuthAppleSignInButton(style: .black, isAuthenticating: appState.isAuthenticating) {
-                    Task { await appState.signInWithApple(using: appleSignInController) }
-                }
+                        .font(.system(size: 25, weight: .semibold, design: .serif))
+                        .foregroundStyle(MacPalette.accent)
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("When you meet,\nit matters.")
+                            .font(.system(size: 48, weight: .semibold, design: .serif))
+                            .lineSpacing(1)
+                            .foregroundStyle(MacPalette.ink)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Text("AI helps you meet the right people in the right rooms.")
+                            .font(MacType.body)
+                            .foregroundStyle(MacPalette.muted)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    VStack(alignment: .leading, spacing: 16) {
+                        featureRow(icon: "waveform", title: "Voice profile", detail: "Speak naturally. We understand you.", accessibilityLabel: "Voice profile")
+                        featureRow(icon: "shield.lefthalf.filled", title: "Private by design", detail: "Your data is yours. Always.", accessibilityLabel: "Private by design")
+                        featureRow(icon: "person.3", title: "Circle placement", detail: "We place you where you'll belong.", accessibilityLabel: "Circle placement")
+                    }
+                    .padding(.vertical, 8)
+                    AuthAppleSignInButton(style: .black, isAuthenticating: appState.isAuthenticating) {
+                        Task { await appState.signInWithApple(using: appleSignInController) }
+                    }
 
-                SocialAuthButtonsView(
-                    isAuthenticating: appState.isAuthenticating,
-                    titleColor: MacPalette.ink,
-                    borderColor: MacPalette.line,
-                    onGoogleSignIn: { Task { await appState.signInWithGoogle() } },
-                    onMetaMaskSignIn: { Task { await appState.signInWithWallet(.metamask, controller: WalletSignInController()) } },
-                    onSolflareSignIn: { Task { await appState.signInWithWallet(.solflare, controller: WalletSignInController()) } }
-                )
-                if appState.isAuthenticating {
-                    ProgressView("Signing in")
-                        .font(MacType.small)
-                        .foregroundStyle(MacPalette.muted)
-                }
+                    SocialAuthButtonsView(
+                        isAuthenticating: appState.isAuthenticating,
+                        titleColor: MacPalette.ink,
+                        borderColor: MacPalette.line,
+                        onGoogleSignIn: { Task { await appState.signInWithGoogle() } },
+                        onMetaMaskSignIn: { Task { await appState.signInWithWallet(.metamask, controller: WalletSignInController()) } },
+                        onSolflareSignIn: { Task { await appState.signInWithWallet(.solflare, controller: WalletSignInController()) } }
+                    )
+                    if appState.isAuthenticating {
+                        ProgressView("Signing in")
+                            .font(MacType.small)
+                            .foregroundStyle(MacPalette.muted)
+                    }
 
-                if let authError = appState.authError {
-                    Text(authError)
-                        .font(MacType.small)
-                        .foregroundStyle(MacPalette.clay)
-                }
+                    if let authError = appState.authError {
+                        Text(authError)
+                            .font(MacType.small)
+                            .foregroundStyle(MacPalette.clay)
+                    }
 
-                AuthTermsFooter(
-                    accent: MacPalette.accent,
-                    muted: MacPalette.muted
-                )
+                    AuthTermsFooter(
+                        accent: MacPalette.accent,
+                        muted: MacPalette.muted
+                    )
+
+                Spacer(minLength: 0)
             }
-            .frame(width: 430)
+            .frame(width: 430, alignment: .topLeading)
             .padding(.leading, 56)
-            .padding(.top, 10)
+            .padding(.top, 28)
         }
-        .frame(maxWidth: .infinity, minHeight: 600, maxHeight: .infinity, alignment: .topLeading)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
     // MARK: - 2. meetOverview
@@ -808,200 +811,6 @@ struct MacScreenView: View {
                 .accessibilityValue(!available ? "Selected" : "Not selected")
             }
         }
-    }
-
-    // MARK: - 3. circlesRoom
-
-    private var circlesRoom: some View {
-        VStack(alignment: .leading, spacing: 22) {
-            if !appState.joinedCircles.isEmpty {
-                let myCircle = appState.joinedCircles.first!
-                let display = circleDisplay(myCircle, index: 0)
-                HStack(alignment: .top, spacing: 18) {
-                    Button {
-                        openCircleDetail(myCircle)
-                    } label: {
-                        featuredCircleCard(myCircle)
-                            .contentShape(Rectangle())
-                            .accessibilityHidden(true)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("Open your circle \(display.name)")
-                    .accessibilityInputLabels(["Open your circle \(myCircle.name)"])
-                    .accessibilityIdentifier("hero-circle-macos")
-                    .accessibilityAddTraits(.isButton)
-                    concernCard
-                        .frame(width: 300)
-                }
-            } else if appState.isSignedIn {
-                MacPanel(title: "No joined circle yet") {
-                    Text("Your starter circle will appear here after profile placement. Explore available rooms below for now.")
-                        .font(MacType.body)
-                        .foregroundStyle(MacPalette.muted)
-                }
-            }
-            VStack(alignment: .leading, spacing: 14) {
-                HStack {
-                    Text("Available circles")
-                        .font(MacType.section)
-                        .foregroundStyle(MacPalette.ink)
-                    Spacer()
-                    Button(showAllCircles ? "Show less" : "Browse all circles") {
-                        showAllCircles.toggle()
-                    }
-                    .font(MacType.button)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 8)
-                    .background(MacPalette.surface, in: Capsule())
-                    .overlay(Capsule().stroke(MacPalette.line, lineWidth: 1))
-                    .buttonStyle(.plain)
-                    .accessibilityLabel(showAllCircles ? "Show fewer circles" : "Browse all circles")
-                }
-                if showAllCircles {
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 240, maximum: 260), spacing: 16, alignment: .leading)], alignment: .leading, spacing: 16) {
-                        ForEach(Array(appState.circles.enumerated()), id: \.element.id) { index, circle in
-                            circleCardButton(circle, index: index)
-                        }
-                    }
-                } else {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 16) {
-                            ForEach(Array(appState.circles.enumerated()), id: \.element.id) { index, circle in
-                                circleCardButton(circle, index: index)
-                            }
-                        }
-                        .padding(.horizontal, 2)
-                    }
-                }
-            }
-        }
-        .task {
-            await appState.fetchCircles()
-        }
-    }
-
-    private let gradientTones: [Color] = [MacPalette.accent, MacPalette.sage, MacPalette.clay, MacPalette.accent, MacPalette.sage]
-
-    private func featuredCircleCard(_ circle: PlacementCircle) -> some View {
-        let display = circleDisplay(circle, index: 0)
-        return ZStack(alignment: .bottomLeading) {
-            DoodleCover(assetName: DoodleArt.circle(circle.id), height: 240, cornerRadius: 18, scrimStyle: .heroOverlay)
-            VStack(alignment: .leading, spacing: 14) {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(display.name)
-                        .font(MacType.coverTitle)
-                        .foregroundStyle(.white)
-                    Text(display.subtitle)
-                        .font(MacType.coverMeta)
-                        .foregroundStyle(.white.opacity(0.92))
-                }
-                FlowLayout(spacing: 8) {
-                    ForEach(display.tags, id: \.self) { tag in
-                        Text(tag)
-                            .font(MacType.small.weight(.medium))
-                            .foregroundStyle(.white)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(.white.opacity(0.18), in: Capsule())
-                            .overlay(Capsule().stroke(.white.opacity(0.25), lineWidth: 1))
-                    }
-                }
-                HStack(spacing: 20) {
-                    Label("Sunday 7pm", systemImage: "clock")
-                    Label("\(display.members) members", systemImage: "person.2")
-                }
-                .font(MacType.coverMeta)
-                .foregroundStyle(.white.opacity(0.9))
-            }
-            .doodleOverlayText()
-            .padding(24)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .frame(height: 240)
-    }
-
-    private var concernCard: some View {
-        MacPanel {
-            VStack(alignment: .leading, spacing: 12) {
-                Image(systemName: "hand.raised.slash")
-                    .font(.title2)
-                    .foregroundStyle(MacPalette.accent)
-                Text("This doesn't feel like my circle")
-                    .font(MacType.button)
-                    .foregroundStyle(MacPalette.ink)
-                Text(circleConcernStatus ?? "Ask for a placement refresh when the room feels off.")
-                    .font(MacType.small)
-                    .foregroundStyle(MacPalette.muted)
-                Button("Request refresh") {
-                    circleConcernStatus = "Requesting a placement refresh..."
-                    Task {
-                        await appState.reportCircleConcern("macOS circle concern")
-                        circleConcernStatus = appState.loadError ?? "Placement refresh requested."
-                    }
-                }
-                .font(MacType.button)
-                .buttonStyle(.plain)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 8)
-                .background(MacPalette.accent, in: Capsule())
-                .foregroundStyle(.white)
-                .accessibilityLabel("Request circle placement refresh")
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .frame(height: 170)
-    }
-
-    private func openCircleDetail(_ circle: PlacementCircle) {
-        appState.circleDetail = circle
-        navigate?(.circleDetail)
-        Task { await appState.loadCircleDetail(id: circle.id) }
-    }
-
-    private func circleCardButton(_ circle: PlacementCircle, index: Int) -> some View {
-        let display = circleDisplay(circle, index: index + 1)
-        return Button {
-            openCircleDetail(circle)
-        } label: {
-            circleCard(circle, index: index)
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel("Open \(display.name) circle")
-        .accessibilityValue("\(display.members) members")
-    }
-
-    private func circleCard(_ circle: PlacementCircle, index: Int) -> some View {
-        let display = circleDisplay(circle, index: index + 1)
-        return ZStack(alignment: .bottomLeading) {
-            DoodleCover(assetName: DoodleArt.circle(circle.id), height: 170, cornerRadius: 18, scrimStyle: .bottomBand)
-            VStack(alignment: .leading, spacing: 4) {
-                Text(display.name)
-                    .font(MacType.coverTitleSmall)
-                    .foregroundStyle(.white)
-                Text(display.subtitle)
-                    .font(MacType.small)
-                    .foregroundStyle(.white.opacity(0.9))
-                Text("\(display.members) members")
-                    .font(MacType.coverMeta)
-                    .foregroundStyle(.white.opacity(0.9))
-            }
-            .doodleOverlayText()
-            .padding(18)
-        }
-        .frame(width: 240, height: 170)
-    }
-
-    private func circleDisplay(_ circle: PlacementCircle, index: Int) -> (name: String, subtitle: String, tags: [String], members: Int) {
-        let displays = [
-            ("The Quiet Builders", "Thoughtful - Deep - Intentional", ["Honesty", "Depth", "Growth", "Mindset"], 12),
-            ("Open Hearts", "Warm - Expressive - Supportive", ["Warm", "Expressive", "Supportive"], 18),
-            ("The Thinkers' Room", "Analytical - Calm - Curious", ["Analytical", "Calm", "Curious"], 22),
-            ("Visionaries", "Vision - Ambitious - Growth", ["Vision", "Ambitious", "Growth"], 16),
-            ("Kindred Souls", "Creative - Gentle - Authentic", ["Creative", "Gentle", "Authentic"], 20),
-            ("The Explorers", "Adventurous - Bold - Spontaneous", ["Adventurous", "Bold", "Spontaneous"], 14)
-        ]
-        if displays.indices.contains(index) { return displays[index] }
-        return (circle.name, circle.roomEnergy, Array(circle.themes.prefix(4)), displayMemberCount(for: circle))
     }
 
     // MARK: - 4. profileEdit
@@ -1880,6 +1689,10 @@ struct MacScreenView: View {
                 statItem("calendar", "Started Jan 2024")
             }
 
+            if let circle {
+                secondaryCircleAction(for: circle)
+            }
+
             HStack(spacing: 8) {
                 ForEach(["About", "Members", "Events", "Discussions", "Resources"], id: \.self) { tab in
                     Button(tab) { circleDetailTab = tab }
@@ -1955,6 +1768,7 @@ struct MacScreenView: View {
             circleOptionsSheet(circle: circle)
         }
         .task {
+            await appState.loadCurrentPlacement()
             if let id = appState.circleDetail?.id ?? appState.joinedCircles.first?.id {
                 await appState.loadCircleDetail(id: id)
             } else {
@@ -2031,6 +1845,42 @@ struct MacScreenView: View {
                 resourceRow("What's a book that changed how you think?", date: "12 replies · 2h ago") {
                     circleConcernStatus = "Discussion thread opened."
                 }
+            }
+        }
+    }
+
+    private func secondaryCircleAction(for circle: PlacementCircle) -> some View {
+        let placement = appState.placement?.placement
+        let isPrimary = placement?.primaryCircle.id == circle.id
+        let isSelectedSecondary = placement?.selectedSecondaryCircleId == circle.id
+        let isSuggestedSecondary = placement?.secondaryCircles.contains(where: { $0.id == circle.id }) == true
+
+        return Group {
+            if isSelectedSecondary {
+                Label("Your second circle", systemImage: "checkmark.circle.fill")
+                    .font(MacType.button)
+                    .foregroundStyle(MacPalette.accent)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(MacPalette.accentSoft, in: Capsule())
+                    .accessibilityLabel("Your second circle")
+            } else if !isPrimary && isSuggestedSecondary {
+                Button {
+                    Task {
+                        await appState.selectSecondaryCircle(id: circle.id)
+                        circleConcernStatus = "This is now your second circle."
+                    }
+                } label: {
+                    Text(placement?.actions.secondaryAction ?? "Make this my second circle")
+                        .font(MacType.button)
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 18)
+                        .padding(.vertical, 10)
+                        .background(Color.black, in: Capsule())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Make this my second circle")
+                .accessibilityIdentifier("make-secondary-circle")
             }
         }
     }

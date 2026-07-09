@@ -11,19 +11,19 @@
 | `--likeminded-dev-profile-empty` | Empty profile (onboarding) |
 | `--likeminded-validation-welcome` | Welcome validation mode |
 
-## `--mac-screen` values (22)
+## `--mac-screen` values (20)
 
 ```
-welcome, meetOverview, meetOverviewConcept, circlesRoom, circlesRoomConcept, profileEdit, chat, communitiesBrowse,
+welcome, meetOverview, circlesRoom, profileEdit, chat, communitiesBrowse,
 communityDetail, meetRecap, myProfile, soulmateOverview, soulmateDiscover,
 soulmateDetail, communityMembers, createEvent, createCommunity, messages,
 notifications, profileOnboarding, profileSignals, circleDetail,
 settingsSoulmate, meetVideoCall
 ```
 
-`meetOverview` / `meetOverviewConcept` — same Meet plate (`MacMeetOverviewConceptView`); venue map uses `meetVenueConvergenceField` (thewayofcode MorphingContours grammar).
+`meetOverview` — Meet tab (`MacMeetOverviewConceptView`); venue map uses `meetVenueConvergenceField` (thewayofcode MorphingContours grammar).
 
-`circlesRoom` / `circlesRoomConcept` — same production view (`MacCirclesRoomView`); concept launch arg kept for capture routing until operator retires it.
+`circlesRoom` — Circles tab (`MacCirclesRoomView`); placement-first layout.
 
 ## Default validation recipe (signed-in screens)
 
