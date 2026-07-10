@@ -105,10 +105,11 @@ function placementFromModel(profile, modelResult) {
     sourceReflectionSignals: stringArray(modelResult.sourceReflectionSignals).slice(0, 6),
     primaryCircle,
     secondaryCircles,
+    selectedSecondaryCircleId: null,
     userState: "proposed",
     actions: {
       primaryAction: "Accept this circle",
-      swapAction: "Try another circle",
+      secondaryAction: "Make this my second circle",
       deferAction: "Defer for now"
     },
     isNewCircle: false

@@ -97,7 +97,8 @@ open -F -n .build/macos/Build/Products/Debug/LikemindedMac.app --args \
 2. Swift in `MacScreens.swift` (or `MacDesignSystem`)
 3. `xcodebuild` compile
 4. Proof via **lane table** above (not ad-hoc `screencapture`)
-5. `ui_validation.result=pass` only when plate + `DESIGN.md` agree
+5. **Capture vs reference** — `output/validation/macos-screens/<screen>.png` compared to ledger/concept `mockup_ref` **before** claiming parity or done; fix gaps and recapture if mismatch
+6. `ui_validation.result=pass` only when plate + `DESIGN.md` agree
 
 ## Hard rules
 

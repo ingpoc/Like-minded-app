@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-07-09T20:00:59.578Z",
+  "updated_at": "2026-07-09T20:04:03.531Z",
   "source": "session:stamp",
   "summary": "Circles concept migration — AI primary placement + one AI-suggested secondary; browse types only.",
   "primary_surface": {
@@ -80,6 +80,8 @@
     ".agents/skills/build-ios-app/references/launch-args.md",
     ".agents/skills/build-ios-app/references/layout.md",
     ".agents/skills/build-macos-app/SKILL.md",
+    ".cursor/hooks.json",
+    "AGENTS.md",
     "apps/ios-macos/Likeminded.xcodeproj/project.pbxproj",
     "apps/ios-macos/Sources/DoodleArt/DoodleArt.swift",
     "apps/ios-macos/Sources/LikemindedApp/Data/LikemindedAPIClient.swift",
@@ -98,11 +100,9 @@
     "docs/workflows/setup.md",
     "mockups/ios/27-auth-login.png",
     "mockups/ios/28-auth-login-theme-consistent.png",
-    "mockups/macos/23-auth-login-theme-consistent.png",
-    "mockups/macos/24-auth-login-convergence-field.png",
-    "mockups/macos/concepts/mockup-auth-login-convergence.png"
+    "mockups/macos/23-auth-login-theme-consistent.png"
   ],
-  "dirty_path_count": 539,
+  "dirty_path_count": 542,
   "continue_command": "npm run ledger:screen -- --platform macos --screen circles --section all",
   "stop_condition": "Screenshot-compare vs mockup_ref before claiming pass. Do not start Phase 9 while macOS/iOS stale_pass tracks are open.",
   "work_platform": "macos",
@@ -127,5 +127,7 @@
   "concept_mockup": "mockups/macos/concepts/mockup-circles-placement-convergence.png",
   "recent_screenshot": "output/validation/macos-screens/circlesRoom.png",
   "proof_command": "./script/macos_cua_preflight.sh && ./script/macos_audit_prepare.sh circlesRoom && ./script/macos_cua_screen.sh circlesRoom",
-  "compare_before_pass": "Capture then open side-by-side: output/validation/macos-screens/circlesRoom.png vs mockups/macos/concepts/mockup-circles-placement-convergence.png"
+  "compare_before_pass": "Capture then open side-by-side: output/validation/macos-screens/circlesRoom.png vs mockups/macos/concepts/mockup-circles-placement-convergence.png",
+  "auto_stamp_trigger": "preCompact",
+  "auto_stamped_at": "2026-07-09T20:04:03.735Z"
 }

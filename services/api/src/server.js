@@ -779,11 +779,11 @@ async function handleRequest(req, res) {
     try {
       const body = await readJsonBody(req);
       const action = String(body.action || "");
-      if (!["accept", "defer", "swap"].includes(action)) {
-        json(res, 400, { error: "invalid_placement_action", message: "Use action accept, defer, or swap." });
+      if (!["accept", "defer", "select_secondary"].includes(action)) {
+        json(res, 400, { error: "invalid_placement_action", message: "Use action accept, defer, or select_secondary." });
         return;
       }
-      const placed = await updateLatestPlacement(user.id, action);
+      const placed = await updateLatestPlacement(user.id, action, body);
       if (!placed) {
         json(res, 404, { error: "placement_not_found", message: "No placement has been created yet." });
         return;
@@ -802,7 +802,14 @@ async function handleRequest(req, res) {
     const profile = await getLatestProfile(user.id);
     const placed = await getLatestPlacement(user.id);
     const placementCircles = placed?.placement
-      ? [placed.placement.primaryCircle, ...(placed.placement.secondaryCircles || [])].filter(Boolean)
+      ? (() => {
+          const primary = placed.placement.primaryCircle;
+          const secondaryId = placed.placement.selectedSecondaryCircleId;
+          const secondary = secondaryId
+            ? (placed.placement.secondaryCircles || []).find((circle) => circle.id === secondaryId)
+            : null;
+          return [primary, secondary].filter(Boolean);
+        })()
       : [];
     const circleList = placementCircles.length > 0
       ? placementCircles.map(circleSummary)

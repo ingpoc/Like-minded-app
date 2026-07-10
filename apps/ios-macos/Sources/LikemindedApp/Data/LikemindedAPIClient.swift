@@ -227,12 +227,12 @@ struct LikemindedAPIClient {
         return try JSONDecoder().decode(UserProfileResponse.self, from: data).profile
     }
 
-    func updatePlacement(action: String) async throws -> ProfileCircleMatchResult {
+    func updatePlacement(action: String, circleId: String? = nil) async throws -> ProfileCircleMatchResult {
         let url = baseURL.appendingPathComponent("/v1/me/placement/actions")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         applyCommonHeaders(&request)
-        request.httpBody = try JSONEncoder().encode(PlacementActionRequest(action: action))
+        request.httpBody = try JSONEncoder().encode(PlacementActionRequest(action: action, circleId: circleId))
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
             throw URLError(.badServerResponse)

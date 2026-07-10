@@ -147,9 +147,9 @@ final class PrototypeAppState: ObservableObject {
         case .accepted:
             return "Your circle is live with member and meetup details."
         case .swapped:
-            return "Room swapped. Let the new fit settle."
+            return "Your secondary circle is set."
         case .proposed:
-            return "Accept or swap a room before full browsing."
+            return "Open a suggested circle to make it your second circle."
         case .deferred:
             return "Connections paused until placement resumes."
         }
@@ -460,8 +460,8 @@ final class PrototypeAppState: ObservableObject {
         Task { await updatePlacementAction("defer") }
     }
 
-    func swapPrimaryCircle() {
-        Task { await updatePlacementAction("swap") }
+    func selectSecondaryCircle(id: String) {
+        Task { await updatePlacementAction("select_secondary", circleId: id) }
     }
 
     func confirmConnection() {
@@ -836,11 +836,11 @@ final class PrototypeAppState: ObservableObject {
         ].joined(separator: "\n")
     }
 
-    private func updatePlacementAction(_ action: String) async {
+    private func updatePlacementAction(_ action: String, circleId: String? = nil) async {
         do {
-            let result = try await client.updatePlacement(action: action)
+            let result = try await client.updatePlacement(action: action, circleId: circleId)
             applyProfileResult(result, source: "Placement updated")
-            if action != "accept" {
+            if action != "accept" && action != "select_secondary" {
                 hasConfirmedConnection = false
             }
             loadError = nil

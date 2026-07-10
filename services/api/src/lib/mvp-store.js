@@ -469,19 +469,23 @@ async function updateLatestProfile(userId, updates) {
   return profile;
 }
 
-async function updateLatestPlacement(userId, action) {
+async function updateLatestPlacement(userId, action, options = {}) {
   const current = await getLatestPlacement(userId);
   if (!current) return null;
   const placement = current.placement;
   if (action === "accept") placement.userState = "accepted";
   if (action === "defer") placement.userState = "deferred";
-  if (action === "swap") {
-    const [nextPrimary, ...rest] = placement.secondaryCircles || [];
-    if (nextPrimary) {
-      placement.secondaryCircles = [...rest, placement.primaryCircle];
-      placement.primaryCircle = nextPrimary;
-      placement.userState = "swapped";
+  if (action === "select_secondary") {
+    const circleId = String(options.circleId || "");
+    const allowed = new Set((placement.secondaryCircles || []).map((circle) => circle.id));
+    if (!circleId || !allowed.has(circleId)) {
+      throw new Error("circleId must be one of the suggested secondary circles.");
     }
+    if (circleId === placement.primaryCircle?.id) {
+      throw new Error("Primary circle cannot be selected as secondary.");
+    }
+    placement.selectedSecondaryCircleId = circleId;
+    if (placement.userState === "proposed") placement.userState = "accepted";
   }
   const data = JSON.stringify(placement);
   if (isPostgres) {

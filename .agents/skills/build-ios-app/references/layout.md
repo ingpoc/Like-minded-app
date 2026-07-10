@@ -13,7 +13,7 @@ apps/ios-macos/
     Data/                        # API client, auth, voice, LiveKit tokens, state
     Views/                       # AuthGateView, RootView, tabs, flows
     Models/
-  Sources/Shared/                # SocialAuthButtonsView, LiveKitMeetSession
+  Sources/Shared/                # ConvergenceFieldView, ConvergenceField.metal, auth buttons, LiveKitMeetSession
 ```
 
 ## Target facts
@@ -30,8 +30,8 @@ apps/ios-macos/
 
 ## Conventions
 
-- iOS-only SwiftUI → `Sources/LikemindedApp`; shared auth/LiveKit → `Sources/Shared`.
-- Auth gate: `AuthGateView` — Apple, Google, MetaMask, Solflare.
+- iOS-only SwiftUI → `Sources/LikemindedApp`; shared auth/LiveKit/convergence → `Sources/Shared`.
+- Auth gate: `AuthGateView` — `ConvergenceFieldView` + Apple, Google, MetaMask, Solflare.
 - Dev bypass: `--likeminded-dev-auth-bypass` + `npm run dev:api:local-auth`.
 - LiveKit join needs `LIVEKIT_*` on API; preview tiles when join fails.
-- Mockup path per screen: ledger **`mockup_ref`** — montages in `mockups/ios/` are reference only.
+- Mockup path per screen: ledger **`mockup_ref`**. Promote `mockups/ios/concepts/mockup-<screen>.png` → `mockups/ios/<screen>.png` as SSOT — do not walk `mockups/ios/` for routing.

@@ -175,7 +175,7 @@ async function expectStatus(status, pathname, options) {
     const circleDetail = await expectStatus(200, "/v1/circles/reflective-builders", { method: "GET", token: auth.sessionToken });
     assert.equal(circleDetail.circle.id, "reflective-builders");
 
-    for (const [action, expectedState] of [["defer", "deferred"], ["swap", "swapped"], ["accept", "accepted"]]) {
+    for (const [action, expectedState] of [["defer", "deferred"], ["accept", "accepted"]]) {
       const updated = await expectStatus(200, "/v1/me/placement/actions", {
         method: "POST",
         token: auth.sessionToken,
@@ -183,6 +183,13 @@ async function expectStatus(status, pathname, options) {
       });
       assert.equal(updated.placement.userState, expectedState);
     }
+
+    const secondaryPick = await expectStatus(200, "/v1/me/placement/actions", {
+      method: "POST",
+      token: auth.sessionToken,
+      body: { action: "select_secondary", circleId: "longform-thinkers" }
+    });
+    assert.equal(secondaryPick.placement.selectedSecondaryCircleId, "longform-thinkers");
 
     await expectStatus(201, "/v1/feedback", {
       method: "POST",

@@ -120,36 +120,99 @@ struct MacPill: View {
     }
 }
 
-/// Welcome-screen convergence field — thewayofcode.com-inspired flowing line
-/// art, rendered per pixel by a Metal shader (Sources/Shared/ConvergenceField.metal)
-/// via SwiftUI's colorEffect. GPU does all the work: 60 fps fluid drift at
-/// near-zero CPU. Shared with the iOS welcome screen.
+/// Welcome-screen convergence field — see `ConvergenceFieldView` in Shared/.
 struct MacConvergenceField: View {
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    private let startDate = Date()
-    private let displayScale = Float(NSScreen.main?.backingScaleFactor ?? 2)
+    var body: some View {
+        ConvergenceFieldView(background: MacPalette.background)
+    }
+}
+
+/// Meet hero atmosphere — generated at render size, so line sharpness survives resizing.
+struct MacMeetVenueConvergenceField: View {
+    private let contourCount = 74
+    private let pointsPerContour = 150
+    private let shapeCount = 3
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 20.0, paused: reduceMotion)) { context in
-            let elapsed = reduceMotion ? 0 : context.date.timeIntervalSince(startDate)
-            // Barely-there drift: the field breathes rather than flows —
-            // a noise feature takes ~2 min to cross.
-            let fieldTime = 0.4 + elapsed * 0.05
-            Rectangle()
-                .fill(MacPalette.background)
-                .visualEffect { [displayScale] content, proxy in
-                    content.colorEffect(
-                        ShaderLibrary.convergenceField(
-                            .float2(Float(proxy.size.width), Float(proxy.size.height)),
-                            .float(Float(fieldTime)),
-                            .float(displayScale)
-                        )
+        GeometryReader { geo in
+            Canvas { context, size in
+                let focus = Self.pinPosition(in: size)
+                let minSide = min(size.width, size.height)
+                let reach = Self.maxDistanceToCorner(from: focus, in: size) * 1.08
+
+                for shape in 0..<shapeCount {
+                    let shapePhase = Double(shape) * .pi * 2.0 / Double(shapeCount)
+                    let center = CGPoint(
+                        x: focus.x + CGFloat(sin(shapePhase * 0.7)) * minSide * 0.12,
+                        y: focus.y + CGFloat(cos(shapePhase * 0.9)) * minSide * 0.08
                     )
+
+                    for contour in 0..<contourCount {
+                        let t = CGFloat(contour) / CGFloat(contourCount - 1)
+                        let radius = minSide * 0.035 + reach * t
+                        var path = Path()
+                        var started = false
+
+                        for pointIndex in 0...pointsPerContour {
+                            let p = Double(pointIndex) / Double(pointsPerContour)
+                            let angle = p * .pi * 2.0
+                            let wave = 1.0
+                                + 0.055 * sin(angle * 3.0 + shapePhase)
+                                + 0.032 * cos(angle * 5.0 - shapePhase * 0.65)
+                                + 0.016 * sin(angle * 8.0 + Double(contour) * 0.12)
+
+                            let x = center.x + CGFloat(cos(angle) * wave) * radius
+                            let y = center.y + CGFloat(sin(angle) * wave) * radius * 0.44
+
+                            if x < size.width * 0.08 {
+                                started = false
+                                continue
+                            }
+
+                            let next = CGPoint(x: x, y: y)
+                            if started {
+                                path.addLine(to: next)
+                            } else {
+                                path.move(to: next)
+                                started = true
+                            }
+                        }
+
+                        let rightWeight = Self.smoothstep(0.22, 0.62, center.x / max(size.width, 1))
+                        let alpha = (0.018 + 0.046 * rightWeight) * (1.0 - 0.24 * t)
+                        context.stroke(path, with: .color(MacPalette.ink.opacity(alpha)), lineWidth: 0.42)
+                    }
                 }
+            }
         }
-        .accessibilityHidden(true)
+        .background(MacPalette.background)
         .allowsHitTesting(false)
+        .accessibilityHidden(true)
     }
+
+    static func pinPosition(in size: CGSize) -> CGPoint {
+        CGPoint(
+            x: size.width * 0.76,
+            y: size.height * 0.50
+        )
+    }
+
+    private static func maxDistanceToCorner(from point: CGPoint, in size: CGSize) -> CGFloat {
+        [
+            CGPoint(x: 0, y: 0),
+            CGPoint(x: size.width, y: 0),
+            CGPoint(x: 0, y: size.height),
+            CGPoint(x: size.width, y: size.height),
+        ]
+        .map { hypot($0.x - point.x, $0.y - point.y) }
+        .max() ?? max(size.width, size.height)
+    }
+
+    private static func smoothstep(_ edge0: CGFloat, _ edge1: CGFloat, _ value: CGFloat) -> CGFloat {
+        let t = min(max((value - edge0) / (edge1 - edge0), 0), 1)
+        return t * t * (3 - 2 * t)
+    }
+
 }
 
 struct MacOrb: View {
@@ -441,19 +504,56 @@ struct MacFilterTab: View {
     }
 }
 
+enum MacWindowMetrics {
+    static let minWidth: CGFloat = 1200
+    static let minHeight: CGFloat = 820
+    static let defaultWidth: CGFloat = 1200
+    static let defaultHeight: CGFloat = 820
+}
+
+enum MacWindowChrome {
+    static let creamNSColor = NSColor(red: 0.980, green: 0.969, blue: 0.945, alpha: 1.0)
+}
+
 struct MacWindowChromeHider: NSViewRepresentable {
     func makeNSView(context: Context) -> NSView {
         let view = NSView(frame: .zero)
         DispatchQueue.main.async {
-            guard let window = view.window else { return }
-            window.titlebarAppearsTransparent = true
-            window.titleVisibility = .hidden
-            window.styleMask.insert(.fullSizeContentView)
+            Self.configure(window: view.window)
         }
         return view
     }
 
-    func updateNSView(_ nsView: NSView, context: Context) {}
+    func updateNSView(_ nsView: NSView, context: Context) {
+        DispatchQueue.main.async {
+            Self.configure(window: nsView.window)
+        }
+    }
+
+    private static func configure(window: NSWindow?) {
+        guard let window else { return }
+        window.styleMask.insert(.fullSizeContentView)
+        window.titlebarAppearsTransparent = true
+        window.titleVisibility = .hidden
+        window.titlebarSeparatorStyle = .none
+        window.isMovableByWindowBackground = true
+        window.backgroundColor = MacWindowChrome.creamNSColor
+        window.isOpaque = true
+
+        let minSize = NSSize(width: MacWindowMetrics.minWidth, height: MacWindowMetrics.minHeight)
+        window.contentMinSize = minSize
+        window.minSize = minSize
+
+        var frame = window.frame
+        let needsResize = frame.width < minSize.width || frame.height < minSize.height
+        if needsResize {
+            frame.size = NSSize(
+                width: max(frame.width, minSize.width),
+                height: max(frame.height, minSize.height)
+            )
+            window.setFrame(frame, display: true)
+        }
+    }
 }
 
 extension Notification.Name {

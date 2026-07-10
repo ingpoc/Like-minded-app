@@ -334,14 +334,15 @@ final class MacAppState: ObservableObject {
         isLoading = false
     }
 
-    func swapPrimaryCircle() async {
+    func selectSecondaryCircle(id: String) async {
         guard isSignedIn else { return }
         isLoading = true
         do {
-            placement = try await client.updatePlacement(action: "swap")
+            placement = try await client.updatePlacement(action: "select_secondary", circleId: id)
+            await fetchCircles()
             loadError = nil
         } catch {
-            loadError = "Placement update failed. Please retry."
+            loadError = "Secondary circle could not be saved. Please retry."
         }
         isLoading = false
     }

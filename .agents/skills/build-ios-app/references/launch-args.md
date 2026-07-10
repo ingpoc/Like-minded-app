@@ -41,9 +41,9 @@ xcrun simctl launch --terminate-running-process <SIMULATOR_UDID> com.likeminded.
 
 Prefer **`npm run validate:screen`** — script supplies args per ledger id.
 
-## Auth gate (01-auth-gate)
+## Auth gate (`auth-gate` / `01-auth-gate`)
 
-No dev bypass — only `--likeminded-reset-auth-session`. Real Apple sign-in blocked locally; ledger control often `blocked`.
+`npm run validate:screen -- --screen auth-gate --platform ios` — only `--likeminded-reset-auth-session` (no dev bypass). Reference: `mockups/ios/auth-login-convergence.png`. Do **not** use `--screen auth` for the gate (that id applies dev bypass).
 
 ## build_and_run.sh modes
 

@@ -49,7 +49,7 @@ Copy from `.env.example` if starting fresh. `GET /health` reports `livekit`, `go
 
 ## Sign-in (iOS + macOS)
 
-Both natives share the same auth UI pattern: **Sign in with Apple**, **Google**, **MetaMask**, and **Solflare** (`AuthGateView` on iOS; `MacScreens` welcome on macOS). Shared implementation lives in `Sources/Shared/` (`AppleSignInSupport`, `GoogleSignInSupport`, `WalletSignInSupport`, `SocialAuthButtonsView`).
+Both natives share auth providers (**Apple**, **Google**, **MetaMask**, **Solflare**) and `Sources/Shared/` (`ConvergenceFieldView`, `SocialAuthButtonsView`, wallet/Google helpers). UI: `AuthGateView` (iOS) and `MacScreens` welcome (macOS) — convergence field + aligned copy; reference `mockups/*/auth-login-convergence.png`.
 
 | Provider | Native flow | API route |
 |----------|-------------|-----------|
