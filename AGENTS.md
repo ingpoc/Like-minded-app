@@ -23,6 +23,8 @@ Inherits global **Context doctrine** (`~/.codex/AGENTS.md`).
 
 **Control chain here:** `validation/screens/*.json` (status) → `PROGRESS.md` active track (roadmap) → code. No sibling `validation/**/*.md` ledgers or pass/fail tables.
 
+**Context authoring (default):** When an agent creates or updates a context surface, write **high-signal facts for agent re-consumption only** — commands, ids, verdicts, next action. Not user-facing prose, narrative status, or docs meant for humans to browse. Prefer deterministic compact output (`goal:next`, `*:status`) over raw owner files.
+
 ### First commands (stop when the question is answered)
 
 | Lane | Run | Do not preload |
