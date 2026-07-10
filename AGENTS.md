@@ -23,19 +23,6 @@ Inherits global **Context doctrine** (`~/.codex/AGENTS.md`).
 
 **Control chain here:** `validation/screens/*.json` (status) → `PROGRESS.md` active track (roadmap) → code. No sibling `validation/**/*.md` ledgers or pass/fail tables.
 
-### Agent nature (default)
-
-Every state surface this repo asks agents to read or maintain follows the **compact machine** pattern (optimization registry is the reference instance):
-
-1. **Append-only, never delete** — archive+collapse in the owner file; history stays, tokens don't.
-2. **One active record** per concern — no parallel pending rows, ledgers, or status prose.
-3. **Agents consume compact commands** — `npm run goal:next`, `optimization:status`, `ledger:screen`; do not `Read` owner JSON/MD wholesale unless debugging (`--full`).
-4. **High-signal only in owners** — ids, verdicts, next command, top failures; never per-session dumps, hit maps, or duplicated SKILL prose.
-5. **Validate before next wave** — record → measure → simplify (Musk); ceremony gets deleted after proof, not accumulated.
-6. **Lazy authoring** — edit the named owner; no sibling docs, tables, or "helpful" reference copies.
-
-When adding a new session/state owner, ship the compact status command in the same change.
-
 ### First commands (stop when the question is answered)
 
 | Lane | Run | Do not preload |
