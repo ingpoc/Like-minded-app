@@ -28,8 +28,6 @@ Do not add parallel optimization ledgers or markdown status tables.
 
 ## Registry machine (token discipline)
 
-Registry rows are **agent-facing context** — high-signal, compact, for future agent sessions; not operator documentation.
-
 - **Never delete** rows — archive+collapse in place on after-validate.
 - **One active row** at a time; `optimization:record` blocked until active is archived.
 - **Agents read compact status only:** `npm run optimization:status` (~10 lines). Use `--full` only for debugging.

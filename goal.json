@@ -70,7 +70,6 @@
     "external_preflight": "Run npm run verify:external-preflight only after Render, Neon, Apple Developer, App Store Connect/TestFlight, and manual device proof are ready."
   },
   "agent_guardrails": [
-    "Author high-signal context for agent re-consumption only — see AGENTS.md Context authoring (default).",
     "Agent routing and context doctrine: see AGENTS.md (repo) and ~/.codex/AGENTS.md (global). Session entry: npm run goal:next → first_command.",
     "Reuse validation_inventory scripts and ledger scripts before creating new ones.",
     "Before claiming phase/track/goal complete, run npm run verify:ledger-progress."
