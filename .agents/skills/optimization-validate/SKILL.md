@@ -26,6 +26,15 @@ Musk loop for agent-workflow changes: **question the claim → measure sessions 
 
 Do not add parallel optimization ledgers or markdown status tables.
 
+## Registry machine (token discipline)
+
+- **Never delete** rows — archive+collapse in place on after-validate.
+- **One active row** at a time; `optimization:record` blocked until active is archived.
+- **Agents read compact status only:** `npm run optimization:status` (~10 lines). Use `--full` only for debugging.
+- **What belongs in registry:** id, ≤5 claims (≤120 chars), anchor commit/session, collapsed verdict summary.
+- **What does NOT belong:** per_session blobs, full failure hit maps, musk prose, duplicate SKILL content.
+- **After validate:** row auto-archived; `npm run optimization:compact` if verbose blobs creep in.
+
 ---
 
 ## When to run
@@ -47,6 +56,8 @@ Do not add parallel optimization ledgers or markdown status tables.
 ```bash
 npm run optimization:status
 ```
+
+Compact output only — do not `Read` `optimization-registry.json` unless `--full`.
 
 - **No rows** → ask user what optimization to record, then record.
 - **Pending validation** (`validated_at: null`) → ask user:
@@ -99,7 +110,7 @@ Delete before adding:
 
 - Duplicate lines in hook / AGENTS / goal:next that repeat work bucket
 - Manual `session:stamp` docs if auto-stamp covers 100% of sessions
-- Registry rows that passed validation → mark `archived: true` in place (do not add sibling file)
+- Registry rows that passed validation → auto-archived+collapsed (never deleted)
 
 Ship smallest follow-up PR: **one deletion or one grader**, not a new surface.
 
@@ -127,9 +138,11 @@ npm run optimization:record -- \
   --success-signals "work_surface;continue_command;forbidden_until_continue"
 ```
 
-**Record gate:** blocks new row while another is `validated_at: null` (use `--replace` to override).
+**Record gate:** one active row max — validate+archive before next record.
 
 Capture `anchor_session_id` from Cursor transcript folder — filters after-window to sessions **after** that ID.
+
+**Limits:** ≤5 claims, ≤7 changes, ≤8 signals per kind, claims ≤120 chars.
 
 ---
 

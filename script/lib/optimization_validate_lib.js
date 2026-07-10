@@ -290,10 +290,12 @@ function computeVerdict(report, options = {}) {
 
   if (mode === "baseline") {
     const failCount = Object.values(report.failure_hits).reduce((n, v) => n + v, 0);
+    const failRate = sessionFailRate(perSession);
     return {
       verdict: failCount > 0 ? "baseline_confirmed" : "baseline_unclear",
       confidence: sessions_analyzed >= minSessions ? "medium" : "low",
-      reason: failCount > 0 ? "pre-fix failure signals present" : "no failure signals in baseline window"
+      reason: failCount > 0 ? "pre-fix failure signals present" : "no failure signals in baseline window",
+      baseline_fail_rate: failRate
     };
   }
 
@@ -307,7 +309,9 @@ function computeVerdict(report, options = {}) {
 
   const afterFailRate = sessionFailRate(perSession);
   const behaviorRate = sessionBehaviorSuccessRate(perSession);
-  const baselineFailRate = baselinePerSession ? sessionFailRate(baselinePerSession) : null;
+  const baselineFailRate =
+    options.baselineFailRate ??
+    (baselinePerSession ? sessionFailRate(baselinePerSession) : null);
 
   let verdict = "partial";
   let confidence = "medium";
@@ -408,15 +412,19 @@ function validateOptimization(opt, roots, options = {}) {
   };
 
   let baselinePerSession = null;
+  let baselineFailRate = null;
   if (mode === "after" && opt.baseline_validation?.per_session) {
     baselinePerSession = opt.baseline_validation.per_session;
+  } else if (mode === "after" && opt.baseline_validation?.baseline_fail_rate != null) {
+    baselineFailRate = opt.baseline_validation.baseline_fail_rate;
   }
 
   const verdictMeta = computeVerdict(report, {
     mode,
     minSessions,
     minUserPrompts,
-    baselinePerSession
+    baselinePerSession,
+    baselineFailRate
   });
   report.verdict = verdictMeta.verdict;
   report.confidence = verdictMeta.confidence;
@@ -461,18 +469,182 @@ function validateOptimization(opt, roots, options = {}) {
   return report;
 }
 
+function summarizeHits(hits, topN = 3) {
+  return Object.entries(hits || {})
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, topN)
+    .map(([k, v]) => `${k}:${v}`)
+    .join(", ");
+}
+
+/** Strip verbose validation blobs — keep only what agents need to decide next action. */
+function collapseValidationReport(report) {
+  if (!report) return null;
+  const perSession = report.per_session;
+  const baselineFailRate =
+    report.baseline_fail_rate ??
+    (perSession?.length ? sessionFailRate(perSession) : undefined);
+  return {
+    verdict: report.verdict,
+    confidence: report.confidence,
+    reason: report.verdict_reason,
+    sessions_analyzed: report.sessions_analyzed,
+    total_user_prompts: report.total_user_prompts,
+    after_fail_rate: report.after_fail_rate,
+    baseline_fail_rate: baselineFailRate,
+    behavior_success_rate: report.behavior_success_rate,
+    top_failures: summarizeHits(report.failure_hits),
+    top_success: summarizeHits(report.success_hits),
+    behavioral: report.behavioral_hits,
+    validated_at: report.validated_at || report.attempted_at || null
+  };
+}
+
+/** Pending row: keep signals for miner; drop per_session after each validate pass. */
+function slimActiveEntry(opt) {
+  const slim = {
+    id: opt.id,
+    recorded_at: opt.recorded_at,
+    anchor_commit: opt.anchor_commit,
+    branch: opt.branch || undefined,
+    anchor_session_id: opt.anchor_session_id || undefined,
+    merged_at: opt.merged_at || undefined,
+    claims: opt.claims,
+    changes: opt.changes,
+    failure_signals: opt.failure_signals,
+    success_signals: opt.success_signals,
+    validated_at: opt.validated_at,
+    validation_verdict: opt.validation_verdict,
+    archived: false
+  };
+  if (opt.baseline_validation) {
+    slim.baseline_validation = collapseValidationReport(opt.baseline_validation);
+  }
+  if (opt.last_validation_attempt) {
+    slim.last_validation_attempt = collapseValidationReport(opt.last_validation_attempt);
+  }
+  if (opt.last_validation) {
+    slim.last_validation = collapseValidationReport(opt.last_validation);
+  }
+  return slim;
+}
+
+/** After conclusive after-mode: archive in place — never delete, only compact. */
+function archiveEntry(opt, report) {
+  return {
+    id: opt.id,
+    recorded_at: opt.recorded_at,
+    anchor_commit: opt.anchor_commit,
+    anchor_session_id: opt.anchor_session_id || undefined,
+    claims: opt.claims,
+    archived: true,
+    archived_at: new Date().toISOString(),
+    validated_at: opt.validated_at,
+    validation_verdict: opt.validation_verdict,
+    summary: collapseValidationReport(report)
+  };
+}
+
+function activeEntry(reg) {
+  return reg.optimizations.find((o) => !o.archived) || null;
+}
+
+function archivedEntries(reg) {
+  return reg.optimizations.filter((o) => o.archived);
+}
+
+const ROUTING_SIGNAL_PACK = {
+  failure_signals: [
+    "we just completed",
+    "check what implementation",
+    "are you duplicating surfaces",
+    "still nowhere near",
+    "not yet migrated",
+    "placing into a circle is not",
+    "Phase 9"
+  ],
+  success_signals: [
+    "continue_command",
+    "forbidden_until_continue",
+    "work_surface",
+    "ledger:screen",
+    "proof_command"
+  ]
+};
+
+const MAX_CLAIMS = 5;
+const MAX_CHANGES = 7;
+const MAX_SIGNALS = 8;
+
+function validateRecordShape(entry) {
+  const errors = [];
+  if (!entry.claims?.length) errors.push("at least one claim required");
+  if (entry.claims?.length > MAX_CLAIMS) errors.push(`max ${MAX_CLAIMS} claims`);
+  if (entry.changes?.length > MAX_CHANGES) errors.push(`max ${MAX_CHANGES} changes`);
+  if (entry.failure_signals?.length > MAX_SIGNALS) errors.push(`max ${MAX_SIGNALS} failure_signals`);
+  if (entry.success_signals?.length > MAX_SIGNALS) errors.push(`max ${MAX_SIGNALS} success_signals`);
+  for (const claim of entry.claims || []) {
+    if (claim.length > 120) errors.push(`claim too long (120 chars max): ${claim.slice(0, 40)}…`);
+  }
+  return errors;
+}
+
+function compactStatus(registryPath) {
+  const reg = readRegistry(registryPath);
+  const active = activeEntry(reg);
+  const archived = archivedEntries(reg);
+  return {
+    doctrine:
+      "Append-only machine: one active row; archive+collapse on after-validate; never delete; agents read compact status only.",
+    active: active ? slimActiveEntry(active) : null,
+    archived: archived.map((o) => ({
+      id: o.id,
+      verdict: o.validation_verdict,
+      validated_at: o.validated_at,
+      summary: o.summary?.reason || o.summary?.verdict
+    })),
+    pending_validation: active && !active.validated_at ? [active.id] : [],
+    requires_user_confirm: Boolean(active && !active.validated_at)
+  };
+}
+
+function compactRegistry(registryPath) {
+  const reg = readRegistry(registryPath);
+  reg.optimizations = reg.optimizations.map((o) => {
+    if (o.archived) {
+      return {
+        id: o.id,
+        recorded_at: o.recorded_at,
+        anchor_commit: o.anchor_commit,
+        anchor_session_id: o.anchor_session_id || undefined,
+        claims: o.claims,
+        archived: true,
+        archived_at: o.archived_at || o.validated_at,
+        validated_at: o.validated_at,
+        validation_verdict: o.validation_verdict,
+        summary: o.summary || collapseValidationReport(o.last_validation || o.baseline_validation)
+      };
+    }
+    return slimActiveEntry(o);
+  });
+  writeRegistry(registryPath, reg);
+  return reg;
+}
+
 function status(registryPath) {
   const reg = readRegistry(registryPath);
-  const pending = reg.optimizations.filter((o) => !o.validated_at);
-  const latest = reg.optimizations[reg.optimizations.length - 1] || null;
+  const active = activeEntry(reg);
+  const pending = active && !active.validated_at ? [active] : [];
   const needsAfterValidation =
-    latest &&
-    !latest.validated_at &&
-    latest.baseline_validation?.verdict === "baseline_confirmed";
+    active &&
+    !active.validated_at &&
+    active.baseline_validation?.verdict === "baseline_confirmed";
   return {
     registry: registryPath,
+    active,
+    archived_count: archivedEntries(reg).length,
     pending_validation: pending,
-    latest,
+    latest: active || reg.optimizations[reg.optimizations.length - 1] || null,
     needs_after_validation: Boolean(needsAfterValidation),
     requires_user_confirm: pending.length > 0
   };
@@ -489,6 +661,16 @@ module.exports = {
   analyzeBehavior,
   validateOptimization,
   status,
+  compactStatus,
+  compactRegistry,
+  slimActiveEntry,
+  archiveEntry,
+  collapseValidationReport,
+  validateRecordShape,
+  activeEntry,
+  archivedEntries,
+  ROUTING_SIGNAL_PACK,
+  MAX_CLAIMS,
   sessionFailRate,
   sessionBehaviorSuccessRate
 };

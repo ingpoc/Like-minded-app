@@ -39,9 +39,17 @@ function main() {
     console.log(`verify:optimization: transcript roots=${roots.length}`);
   }
 
-  const pending = reg.optimizations.filter((o) => !o.validated_at);
+  const pending = reg.optimizations.filter((o) => !o.archived && !o.validated_at);
   if (pending.length > 1) {
-    fail(`multiple pending optimizations (${pending.length}) — validate or --replace before next record`);
+    fail(`multiple active optimizations (${pending.length}) — only one active row allowed`);
+  }
+
+  const active = lib.activeEntry(reg);
+  if (active) {
+    const hasBlob = JSON.stringify(active).includes("per_session");
+    if (hasBlob) {
+      warn(`${active.id}: verbose per_session blob present — run npm run optimization:compact`);
+    }
   }
 
   for (const opt of pending) {

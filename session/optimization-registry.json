@@ -1,14 +1,11 @@
 {
   "schema_version": 1,
-  "owner": "session/optimization-registry.json — one row per optimization wave; validate before adding the next",
+  "owner": "Append-only machine: one active row max; archive+collapse on after-validate; never delete. Agents use npm run optimization:status (compact), not raw JSON.",
   "optimizations": [
     {
       "id": "agent-routing-work-bucket-2026-07-09",
       "recorded_at": "2026-07-09T20:15:00.000Z",
       "anchor_commit": "43d4ed54",
-      "branch": "cursor/session-work-bucket-8f70",
-      "anchor_session_id": null,
-      "anchor_note": "Set anchor_session_id to Cursor transcript UUID when known. Use --mode baseline for pre-fix sessions; --mode after for post-fix (default).",
       "claims": [
         "Session entry shows work bucket first — agents continue previous screen without re-mining transcripts",
         "forbidden_until_continue stops GOAL.md / PROGRESS / Phase 9 preload before continue_command",
@@ -21,266 +18,53 @@
         "script/session_work_bucket.js",
         "script/goal_next.js",
         "script/session_route.js",
-        ".cursor/hooks.json preCompact sessionEnd",
-        "script/ledger_record_flow.js screenshot gate",
-        "forbidden_until_continue in goal:next"
+        ".cursor/hooks.json",
+        "script/ledger_record_flow.js",
+        "forbidden_until_continue"
       ],
       "failure_signals": [
+        "we just completed",
+        "check what implementation",
+        "are you duplicating surfaces",
         "still nowhere near",
         "not yet migrated",
-        "we just completed",
         "placing into a circle is not",
-        "are you duplicating surfaces",
-        "what is the current personality",
-        "Phase 9",
-        "iterate a lot",
-        "no swap",
-        "check what implementation"
+        "Phase 9"
       ],
       "success_signals": [
-        "work_surface",
         "continue_command",
         "forbidden_until_continue",
-        "compare vs mockup",
+        "work_surface",
         "ledger:screen",
-        "work_decision_",
-        "proof_command",
-        "session:stamp-auto"
+        "proof_command"
       ],
       "validated_at": null,
       "validation_verdict": null,
+      "archived": false,
       "baseline_validation": {
-        "optimization_id": "agent-routing-work-bucket-2026-07-09",
-        "recorded_at": "2026-07-09T20:15:00.000Z",
-        "mode": "baseline",
-        "transcript_roots": [
-          "/Users/gurusharan/.cursor/projects/Users-gurusharan-Documents-remote-claude-active-apps-Like-minded-app/agent-transcripts"
-        ],
+        "verdict": "baseline_confirmed",
+        "confidence": "medium",
+        "reason": "pre-fix failure signals present",
         "sessions_analyzed": 10,
         "total_user_prompts": 125,
-        "failure_hits": {
-          "we just completed": 1,
-          "placing into a circle is not": 1,
-          "no swap": 1,
-          "check what implementation": 1,
-          "not yet migrated": 1,
-          "are you duplicating surfaces": 1,
-          "what is the current personality": 1
-        },
-        "success_hits": {},
-        "behavioral_hits": {
+        "baseline_fail_rate": 0.5,
+        "top_failures": "we just completed:1, check what implementation:1, placing into a circle is not:1",
+        "top_success": "",
+        "behavioral": {
           "early_forbidden_reads": 0,
           "ran_ledger_screen": 4,
           "ran_goal_next": 6,
           "mockup_directory_walk": 5
         },
-        "per_session": [
-          {
-            "session_id": "cf659859-eb63-47b3-b1db-9823657e17e6",
-            "user_prompts": 16,
-            "user_failure_hits": [
-              "we just completed",
-              "placing into a circle is not",
-              "no swap",
-              "check what implementation"
-            ],
-            "assistant_success_hits": [],
-            "user_success_hits": [],
-            "behavioral": {
-              "early_forbidden_reads": 0,
-              "violations": [],
-              "ran_ledger_screen": true,
-              "ran_goal_next": true,
-              "mockup_directory_walk": true,
-              "continue_command_seen": true
-            }
-          },
-          {
-            "session_id": "d450ccb6-2125-4e51-997d-05d2c5406ff3",
-            "user_prompts": 16,
-            "user_failure_hits": [],
-            "assistant_success_hits": [],
-            "user_success_hits": [],
-            "behavioral": {
-              "early_forbidden_reads": 0,
-              "violations": [],
-              "ran_ledger_screen": true,
-              "ran_goal_next": true,
-              "mockup_directory_walk": false,
-              "continue_command_seen": true
-            }
-          },
-          {
-            "session_id": "40e7ea50-a7ec-4c16-af21-4f391b074a46",
-            "user_prompts": 34,
-            "user_failure_hits": [
-              "not yet migrated"
-            ],
-            "assistant_success_hits": [],
-            "user_success_hits": [],
-            "behavioral": {
-              "early_forbidden_reads": 0,
-              "violations": [],
-              "ran_ledger_screen": true,
-              "ran_goal_next": true,
-              "mockup_directory_walk": true,
-              "continue_command_seen": true
-            }
-          },
-          {
-            "session_id": "b6dc4ae7-1c41-470b-a92e-59d010ad2a05",
-            "user_prompts": 0,
-            "user_failure_hits": [],
-            "assistant_success_hits": [],
-            "user_success_hits": [],
-            "behavioral": {
-              "early_forbidden_reads": 0,
-              "violations": [],
-              "ran_ledger_screen": false,
-              "ran_goal_next": false,
-              "mockup_directory_walk": false,
-              "continue_command_seen": false
-            }
-          },
-          {
-            "session_id": "ed0b6142-2a64-4cd0-91f0-ea389f43ac19",
-            "user_prompts": 1,
-            "user_failure_hits": [],
-            "assistant_success_hits": [],
-            "user_success_hits": [],
-            "behavioral": {
-              "early_forbidden_reads": 0,
-              "violations": [],
-              "ran_ledger_screen": false,
-              "ran_goal_next": true,
-              "mockup_directory_walk": true,
-              "continue_command_seen": true
-            }
-          },
-          {
-            "session_id": "fcea0580-1221-4ff9-9b50-2be108d0b6d5",
-            "user_prompts": 14,
-            "user_failure_hits": [
-              "are you duplicating surfaces",
-              "what is the current personality"
-            ],
-            "assistant_success_hits": [],
-            "user_success_hits": [],
-            "behavioral": {
-              "early_forbidden_reads": 0,
-              "violations": [],
-              "ran_ledger_screen": true,
-              "ran_goal_next": true,
-              "mockup_directory_walk": true,
-              "continue_command_seen": true
-            }
-          },
-          {
-            "session_id": "968551c5-3a86-47d9-bb9f-73a372514ecb",
-            "user_prompts": 7,
-            "user_failure_hits": [],
-            "assistant_success_hits": [],
-            "user_success_hits": [],
-            "behavioral": {
-              "early_forbidden_reads": 0,
-              "violations": [],
-              "ran_ledger_screen": false,
-              "ran_goal_next": false,
-              "mockup_directory_walk": false,
-              "continue_command_seen": false
-            }
-          },
-          {
-            "session_id": "0e03d448-14f8-46cb-88c6-d75313abaf75",
-            "user_prompts": 18,
-            "user_failure_hits": [],
-            "assistant_success_hits": [],
-            "user_success_hits": [],
-            "behavioral": {
-              "early_forbidden_reads": 0,
-              "violations": [],
-              "ran_ledger_screen": false,
-              "ran_goal_next": false,
-              "mockup_directory_walk": false,
-              "continue_command_seen": false
-            }
-          },
-          {
-            "session_id": "4531e2e4-3020-43fd-a631-da8d55a3ff70",
-            "user_prompts": 1,
-            "user_failure_hits": [],
-            "assistant_success_hits": [],
-            "user_success_hits": [],
-            "behavioral": {
-              "early_forbidden_reads": 0,
-              "violations": [],
-              "ran_ledger_screen": false,
-              "ran_goal_next": false,
-              "mockup_directory_walk": false,
-              "continue_command_seen": false
-            }
-          },
-          {
-            "session_id": "b4494353-3e3b-4e1a-ae8a-6a531f4cc512",
-            "user_prompts": 18,
-            "user_failure_hits": [],
-            "assistant_success_hits": [],
-            "user_success_hits": [],
-            "behavioral": {
-              "early_forbidden_reads": 0,
-              "violations": [],
-              "ran_ledger_screen": false,
-              "ran_goal_next": true,
-              "mockup_directory_walk": true,
-              "continue_command_seen": true
-            }
-          }
-        ],
-        "verdict": "baseline_confirmed",
-        "confidence": "medium",
-        "verdict_reason": "pre-fix failure signals present",
-        "musk": {
-          "question": "Did the optimization remove a part or add ceremony?",
-          "simplify": [
-            "Keep registry row; system is earning its keep"
-          ],
-          "fix": [
-            "No fix — gather more sessions or tighten failure_signals"
-          ]
-        },
-        "validated_at": "2026-07-09T20:29:06.604Z"
+        "validated_at": "2026-07-10T02:16:28.735Z"
       },
       "last_validation_attempt": {
-        "optimization_id": "agent-routing-work-bucket-2026-07-09",
-        "recorded_at": "2026-07-09T20:15:00.000Z",
-        "mode": "after",
-        "transcript_roots": [
-          "/Users/gurusharan/.cursor/projects/Users-gurusharan-Documents-remote-claude-active-apps-Like-minded-app/agent-transcripts"
-        ],
-        "sessions_analyzed": 0,
-        "total_user_prompts": 0,
-        "failure_hits": {},
-        "success_hits": {},
-        "behavioral_hits": {
-          "early_forbidden_reads": 0,
-          "ran_ledger_screen": 0,
-          "ran_goal_next": 0,
-          "mockup_directory_walk": 0
-        },
-        "per_session": [],
         "verdict": "no_data",
         "confidence": "none",
-        "verdict_reason": "no transcripts in window",
-        "musk": {
-          "question": "Did the optimization remove a part or add ceremony?",
-          "simplify": [
-            "Keep registry row; system is earning its keep"
-          ],
-          "fix": [
-            "No fix — gather more sessions or tighten failure_signals"
-          ]
-        },
-        "attempted_at": "2026-07-09T20:29:10.448Z"
+        "sessions_analyzed": 0,
+        "top_failures": "",
+        "top_success": "",
+        "validated_at": "2026-07-09T20:29:10.448Z"
       }
     }
   ]
