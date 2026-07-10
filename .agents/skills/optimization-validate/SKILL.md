@@ -28,6 +28,8 @@ Do not add parallel optimization ledgers or markdown status tables.
 
 ## Registry machine (token discipline)
 
+Instance of **AGENTS.md § Agent nature (default)** — optimization registry is the reference pattern for all session/state owners.
+
 - **Never delete** rows — archive+collapse in place on after-validate.
 - **One active row** at a time; `optimization:record` blocked until active is archived.
 - **Agents read compact status only:** `npm run optimization:status` (~10 lines). Use `--full` only for debugging.
