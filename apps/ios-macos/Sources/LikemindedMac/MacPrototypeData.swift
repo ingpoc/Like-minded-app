@@ -94,7 +94,7 @@ enum MacPrototypeScreen: String, CaseIterable, Identifiable {
         switch self {
         case .welcome: "When you meet, matters."
         case .meetOverview: "When you meet."
-        case .circlesRoom: "Your room."
+        case .circlesRoom: "Your circle."
         case .profileEdit: "Who you are."
         case .chat: "Chats"
         case .communitiesBrowse: "Explore communities that inspire you."
@@ -129,8 +129,8 @@ enum MacPrototypeScreen: String, CaseIterable, Identifiable {
     var subtitle: String {
         switch self {
         case .welcome: "AI helps you meet the right people in the right rooms."
-        case .meetOverview: "Good evening, Priya. Your next room is ready."
-        case .circlesRoom: "A space of people who get you."
+        case .meetOverview: "AI helps you meet the right people in the right rooms."
+        case .circlesRoom: "Placed from your interview. Pick a second circle from AI suggestions."
         case .profileEdit: "Private signals, editable interests, and your living profile."
         case .chat: "Stay close to the people you met."
         case .communitiesBrowse: "Find rooms around music, design, slow living, writing, and thoughtful ideas."

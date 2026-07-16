@@ -70,16 +70,9 @@
     "external_preflight": "Run npm run verify:external-preflight only after Render, Neon, Apple Developer, App Store Connect/TestFlight, and manual device proof are ready."
   },
   "agent_guardrails": [
-    "Lazy context: goal:next + narrowest lane command first; stop when answered. Do not preload GOAL.md, full PROGRESS, mockups, or source trees for status questions.",
-    "Lazy authoring: edit control owners (validation JSON, PROGRESS track, workflow command table) — do not add parallel docs or status tables.",
-    "Proactive prune: delete stale triggers, sibling ledgers, duplicate routing, historical prose posing as current truth in the same pass as fixes.",
-    "If goal.json status is completed, select the next coherent unchecked surface from PROGRESS.md before expanding retrieval.",
-    "Avoid tiny one-checkbox goals unless they are the only blocker; group adjacent small items under the same owner surface.",
-    "Check validation_state / ledger:open before rerunning completed proof; re-test stale_pass rows only.",
+    "Agent routing and context doctrine: see AGENTS.md (repo) and ~/.codex/AGENTS.md (global). Session entry: npm run goal:next → first_command.",
     "Reuse validation_inventory scripts and ledger scripts before creating new ones.",
-    "Before claiming phase/track/goal complete, run npm run verify:ledger-progress. Actionable fail/pending/stale_pass/stale-blocked controls need unchecked PROGRESS owners; JSON is sole control-status owner.",
-    "Remove goal.json route_contract when a validation slice ships; never pin reproof first_command after ledger stale_pass=0 — npm run goal:next derives reproof from ledger_stale_screens.js.",
-    "When a control is fail or stub, add or keep an unchecked PROGRESS item in the same session."
+    "Before claiming phase/track/goal complete, run npm run verify:ledger-progress."
   ],
   "deterministic_graders": [
     {

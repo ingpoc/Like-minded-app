@@ -275,6 +275,7 @@ module.exports = {
   buildDefaultProof,
   buildAgentPacket,
   findFlow,
+  resolveMockupRef,
   validatePassTier,
   auditProductionUi,
   defaultCommands
