@@ -6,7 +6,7 @@ set -euo pipefail
 _SCRIPT_SELF="${BASH_SOURCE[0]:-$0}"
 ROOT="$(cd "$(dirname "$_SCRIPT_SELF")/.." && pwd)"
 export MACOS_CANONICAL_APP="$ROOT/.build/macos/Build/Products/Debug/LikemindedMac.app"
-export MACOS_CANONICAL_BUNDLE_ID="com.likeminded.mac"
+export MACOS_CANONICAL_BUNDLE_ID="com.gurusharan.likeminded"
 export MACOS_CANONICAL_SCHEME="LikemindedMac"
 export MACOS_CANONICAL_EXEC="LikemindedMac"
 export MACOS_CUA_CACHE_DIR="${MACOS_CUA_CACHE_DIR:-$HOME/.cache/macos-cua}"
@@ -52,7 +52,7 @@ macos_kill_all() {
     echo "[macos_kill_all] macos-app lock held by pid $holder_pid; skipping kill" >&2
     return 0
   fi
-  # Terminate every running instance of com.likeminded.mac (any copy/path).
+  # Terminate every running instance of com.gurusharan.likeminded (any copy/path).
   python3 -c "
 from AppKit import NSWorkspace, NSApplicationActivateIgnoringOtherApps
 import time

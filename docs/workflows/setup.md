@@ -19,13 +19,13 @@ One-time setup for new agents working on this repo.
 
 ```
 OPENAI_API_KEY=***
-OPENAI_REALTIME_MODEL=gpt-realtime-1.5
+OPENAI_REALTIME_MODEL=gpt-realtime-mini
 OPENAI_REALTIME_VOICE=marin
 SESSION_SECRET=replace-with-at-least-24-characters
-APPLE_BUNDLE_ID=com.likeminded.app
-APPLE_CLIENT_ID=com.likeminded.app
-APPLE_MAC_BUNDLE_ID=com.likeminded.mac
-APPLE_CLIENT_IDS=com.likeminded.app,com.likeminded.mac
+APPLE_BUNDLE_ID=com.gurusharan.likeminded
+APPLE_CLIENT_ID=com.gurusharan.likeminded
+APPLE_MAC_BUNDLE_ID=com.gurusharan.likeminded
+APPLE_CLIENT_IDS=com.gurusharan.likeminded
 APPLE_REQUIRE_NONCE=1
 APPLE_AUTH_BYPASS=0
 GOOGLE_CLIENT_ID_IOS=your-ios-client-id.apps.googleusercontent.com
@@ -63,7 +63,7 @@ Both natives share auth providers (**Apple**, **Google**, **MetaMask**, **Solfla
 
 - iOS entitlement: `Entitlements/Likeminded.entitlements`
 - macOS entitlement: `Entitlements/LikemindedMac.entitlements`
-- Server: set `APPLE_CLIENT_IDS=com.likeminded.app,com.likeminded.mac`, `APPLE_REQUIRE_NONCE=1`, `APPLE_AUTH_BYPASS=0` for real device/TestFlight.
+- Server: set `APPLE_CLIENT_IDS=com.gurusharan.likeminded`, `APPLE_REQUIRE_NONCE=1`, `APPLE_AUTH_BYPASS=0` for real device/TestFlight.
 - Local bypass (API only): `APPLE_AUTH_BYPASS=1` or app launch arg `--likeminded-dev-auth-bypass` with `npm run dev:api:local-auth`.
 
 ### Google
@@ -84,7 +84,7 @@ Google OAuth redirect must include both bundle IDs in the Google Cloud console.
 ### Wallet (MetaMask / Solflare)
 
 - Server: `WALLETCONNECT_PROJECT_ID` (WalletConnect Cloud) for the hosted sign page; `WALLET_AUTH_BYPASS=1` for local API-only testing.
-- Native callback scheme: `com.likeminded.app://auth/wallet` (iOS) and `com.likeminded.mac://auth/wallet` (macOS).
+- Native callback scheme: `com.gurusharan.likeminded://auth/wallet` on iOS and macOS.
 - iOS handles wallet callbacks in `LikemindedApp.onOpenURL`; macOS in `LikemindedMacApp.onOpenURL`.
 
 ## LiveKit (group video meets)

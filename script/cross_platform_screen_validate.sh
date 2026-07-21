@@ -14,7 +14,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 LOCK="$ROOT/script/cross_platform_validation_lock.sh"
 PORT="${PORT:-8787}"
-BUNDLE_ID="${BUNDLE_ID:-com.likeminded.app}"
+BUNDLE_ID="${BUNDLE_ID:-com.gurusharan.likeminded}"
 USER_TOKEN="${LIKEMINDED_VALIDATION_USER:-validation-gurusharan}"
 USER_NAME="${LIKEMINDED_VALIDATION_NAME:-Gurusharan Gupta}"
 IOS_CAPTURE_WAIT="${IOS_CAPTURE_WAIT:-15}"

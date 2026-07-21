@@ -7,8 +7,8 @@ Complete before disabling `APPLE_AUTH_BYPASS` for real auth testing.
 1. Create a project at [Google Cloud Console](https://console.cloud.google.com/).
 2. Enable **Google Sign-In API** / configure OAuth consent screen (External, test users).
 3. Create OAuth client IDs:
-   - **iOS** — bundle id `com.likeminded.app`
-   - **macOS** — bundle id `com.likeminded.mac` (or reuse iOS client if single-app)
+   - **iOS** — bundle id `com.gurusharan.likeminded`
+   - **macOS** — bundle id `com.gurusharan.likeminded` (shared universal app record)
 
 ## 2. Repo configuration
 

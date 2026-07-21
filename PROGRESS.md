@@ -24,8 +24,8 @@ Status: `validation/screens/*.json` (iOS `flows[].validation.ios`).
 - [ ] Create Render web service from `render.yaml`.
 - [ ] Set production env vars: `SESSION_SECRET`, `OPENAI_API_KEY`, `OPENAI_REALTIME_MODEL`, `OPENAI_REALTIME_VOICE`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`, `LIVEKIT_URL`, `APPLE_BUNDLE_ID`, `APPLE_CLIENT_ID`, `APPLE_AUTH_BYPASS=0`.
 - [ ] Provision LiveKit server (self-hosted or LiveKit Cloud). Set `LIVEKIT_URL` to the WebSocket endpoint.
-- [ ] Configure Apple Developer bundle id `com.likeminded.app`.
-- [ ] Enable Sign in with Apple capability for the app id.
+- [x] Configure universal Apple Developer bundle id `com.gurusharan.likeminded` for iOS and macOS.
+- [x] Enable Sign in with Apple capability for the primary app id.
 - [ ] Configure App Store Connect/TestFlight metadata and privacy policy.
 - [x] Add `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` to `Info.plist`.
 - [x] Add repo-side account deletion readiness (`DELETE /v1/me/account`, Settings entry, `npm run smoke:mvp` proof).

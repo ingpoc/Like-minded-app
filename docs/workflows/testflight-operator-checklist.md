@@ -4,11 +4,12 @@ Subscribe to [Apple Developer Program](https://developer.apple.com/programs/) on
 
 ## Apple Developer + App Store Connect
 
-- [ ] Enroll in Apple Developer Program ($99/yr)
-- [ ] Register App ID `com.likeminded.app` — Sign in with Apple, camera, microphone
-- [ ] Register App ID `com.likeminded.mac` — Sign in with Apple (Release entitlements in `LikemindedMac.entitlements`)
+- [x] Enroll in Apple Developer Program ($99/yr)
+- [x] Register universal App ID `com.gurusharan.likeminded` — Sign in with Apple for iOS and macOS
+- [x] Configure macOS Release App Sandbox, outbound network, camera, audio input, and hardened runtime
 - [ ] Re-sign macOS Release builds in Xcode with healthy Apple account
-- [ ] Create App Store Connect app + TestFlight internal group
+- [x] Create App Store Connect universal app (`6792839764`) for iOS and macOS
+- [ ] Create TestFlight internal group
 - [ ] Upload privacy policy from [`docs/references/privacy-policy-testflight.md`](../references/privacy-policy-testflight.md)
 
 ## Production hardening (Render)
@@ -18,7 +19,7 @@ Confirm on Render:
 ```sh
 APPLE_AUTH_BYPASS=0
 APPLE_REQUIRE_NONCE=1
-APPLE_CLIENT_IDS=com.likeminded.app,com.likeminded.mac
+APPLE_CLIENT_IDS=com.gurusharan.likeminded
 GOOGLE_AUTH_BYPASS=0
 WALLET_AUTH_BYPASS=0
 ```

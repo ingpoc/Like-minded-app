@@ -18,7 +18,8 @@ function assertNotIncludes(file, content, rejected) {
 }
 
 const project = read("apps/ios-macos/project.yml");
-assertIncludes("apps/ios-macos/project.yml", project, "PRODUCT_BUNDLE_IDENTIFIER: com.likeminded.app");
+assertIncludes("apps/ios-macos/project.yml", project, "PRODUCT_BUNDLE_IDENTIFIER: com.gurusharan.likeminded");
+assertIncludes("apps/ios-macos/project.yml", project, "DEVELOPMENT_TEAM: 9UPQL479Z5");
 assertIncludes("apps/ios-macos/project.yml", project, "CODE_SIGN_ENTITLEMENTS: Entitlements/Likeminded.entitlements");
 assertIncludes("apps/ios-macos/project.yml", project, "INFOPLIST_KEY_NSMicrophoneUsageDescription");
 assertIncludes("apps/ios-macos/project.yml", project, "INFOPLIST_KEY_NSCameraUsageDescription");
@@ -31,14 +32,19 @@ assertIncludes("apps/ios-macos/Entitlements/Likeminded.entitlements", entitlemen
 
 const macEntitlements = read("apps/ios-macos/Entitlements/LikemindedMac.entitlements");
 assertIncludes("apps/ios-macos/Entitlements/LikemindedMac.entitlements", macEntitlements, "com.apple.developer.applesignin");
+assertIncludes("apps/ios-macos/Entitlements/LikemindedMac.entitlements", macEntitlements, "com.apple.security.app-sandbox");
+assertIncludes("apps/ios-macos/Entitlements/LikemindedMac.entitlements", macEntitlements, "com.apple.security.network.client");
+assertIncludes("apps/ios-macos/Entitlements/LikemindedMac.entitlements", macEntitlements, "com.apple.security.device.camera");
+assertIncludes("apps/ios-macos/Entitlements/LikemindedMac.entitlements", macEntitlements, "com.apple.security.device.audio-input");
 assertIncludes("apps/ios-macos/project.yml", project, "CODE_SIGN_ENTITLEMENTS: Entitlements/LikemindedMac.entitlements");
 assertIncludes("apps/ios-macos/project.yml", project, "CODE_SIGN_ENTITLEMENTS: Entitlements/LikemindedMac.Debug.entitlements");
+assertIncludes("apps/ios-macos/project.yml", project, "ENABLE_HARDENED_RUNTIME: YES");
 
 const macDebugEntitlements = read("apps/ios-macos/Entitlements/LikemindedMac.Debug.entitlements");
 assertNotIncludes("apps/ios-macos/Entitlements/LikemindedMac.Debug.entitlements", macDebugEntitlements, "com.apple.developer.applesignin");
 
 assertIncludes("apps/ios-macos/Info/Likeminded-Info.plist", read("apps/ios-macos/Info/Likeminded-Info.plist"), "GIDClientID");
-assertIncludes("apps/ios-macos/Info/LikemindedMac-Info.plist", read("apps/ios-macos/Info/LikemindedMac-Info.plist"), "com.likeminded.mac");
+assertIncludes("apps/ios-macos/Info/LikemindedMac-Info.plist", read("apps/ios-macos/Info/LikemindedMac-Info.plist"), "$(PRODUCT_BUNDLE_IDENTIFIER)");
 
 const apiClient = read("apps/ios-macos/Sources/LikemindedApp/Data/LikemindedAPIClient.swift");
 assertIncludes("LikemindedAPIClient.swift", apiClient, "https://likeminded-api.onrender.com");
@@ -77,10 +83,10 @@ for (const key of [
   "LIVEKIT_API_KEY=",
   "LIVEKIT_API_SECRET=",
   "LIVEKIT_URL=",
-  "APPLE_BUNDLE_ID=com.likeminded.app",
-  "APPLE_CLIENT_ID=com.likeminded.app",
-  "APPLE_MAC_BUNDLE_ID=com.likeminded.mac",
-  "APPLE_CLIENT_IDS=com.likeminded.app,com.likeminded.mac",
+  "APPLE_BUNDLE_ID=com.gurusharan.likeminded",
+  "APPLE_CLIENT_ID=com.gurusharan.likeminded",
+  "APPLE_MAC_BUNDLE_ID=com.gurusharan.likeminded",
+  "APPLE_CLIENT_IDS=com.gurusharan.likeminded",
   "APPLE_REQUIRE_NONCE=1",
   "APPLE_AUTH_BYPASS=0",
   "GOOGLE_CLIENT_ID_IOS=",
@@ -98,7 +104,7 @@ for (const phrase of ["Voice interview transcript", "AI Processing", "Retention 
 }
 
 const buildScript = read("script/build_and_run.sh");
-assertIncludes("script/build_and_run.sh", buildScript, "com.likeminded.app");
+assertIncludes("script/build_and_run.sh", buildScript, "com.gurusharan.likeminded");
 assertNotIncludes("script/build_and_run.sh", buildScript, "com.likeminded.prototype");
 
 const packageJson = read("package.json");

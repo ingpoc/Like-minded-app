@@ -31,7 +31,7 @@ Full per-screen mapping lives in the script `case` block — add new screens the
 ## Default validation recipe
 
 ```bash
-xcrun simctl launch --terminate-running-process <SIMULATOR_UDID> com.likeminded.app \
+xcrun simctl launch --terminate-running-process <SIMULATOR_UDID> com.gurusharan.likeminded \
   --likeminded-reset-auth-session \
   --likeminded-dev-auth-bypass \
   --likeminded-dev-auth-token "${LIKEMINDED_VALIDATION_USER:-validation-gurusharan}" \

@@ -42,7 +42,7 @@ curl http://127.0.0.1:8787/health
 curl http://127.0.0.1:8787/v1/system/architecture
 ```
 
-The default native run path generates the Xcode project, builds the `Likeminded` iOS app, boots an available `iPhone 17` simulator, installs the app, and launches bundle id `com.likeminded.app`.
+The default native run path generates the Xcode project, builds the `Likeminded` iOS app, boots an available `iPhone 17` simulator, installs the app, and launches bundle id `com.gurusharan.likeminded`.
 
 Run validation (narrow route first):
 

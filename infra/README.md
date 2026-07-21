@@ -17,8 +17,8 @@ SESSION_SECRET=
 OPENAI_API_KEY=
 OPENAI_REALTIME_MODEL=gpt-realtime-2
 OPENAI_REALTIME_VOICE=marin
-APPLE_BUNDLE_ID=com.likeminded.app
-APPLE_CLIENT_ID=com.likeminded.app
+APPLE_BUNDLE_ID=com.gurusharan.likeminded
+APPLE_CLIENT_ID=com.gurusharan.likeminded
 APPLE_AUTH_BYPASS=0
 ```
 

@@ -34,6 +34,7 @@
 		4662D50BD9BFCB596D1B3824 /* DoodleArt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 296DEAB93269CB0949442024 /* DoodleArt.swift */; };
 		526F3648A81F8B47AA9EFC97 /* LiveKit in Frameworks */ = {isa = PBXBuildFile; productRef = EF71AD29363DA78174557635 /* LiveKit */; };
 		537F95835B944C12426E2846 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = F6DE61824C693F67847A8C36 /* GoogleSignIn */; };
+		59125D4886ED0C554BD0884E /* RealtimeVoiceClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70685EA3FAE20FBC4827812B /* RealtimeVoiceClient.swift */; };
 		5BF328C460E5D74DB230A51F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E4A27335D18C85FF61CE549E /* Assets.xcassets */; };
 		5F0E79024B1B152EBBD80D88 /* LiveKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9109FD768D670024E68556DC /* LiveKit */; };
 		638037123B69B011D78BF5A7 /* LikemindedApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 704749A39D4B879E03561B1B /* LikemindedApp.swift */; };
@@ -338,9 +339,11 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					243BAC188F1EBCA2009DA9DC = {
+						DevelopmentTeam = 9UPQL479Z5;
 						ProvisioningStyle = Automatic;
 					};
 					7EDE60F74566683E3AA458E5 = {
+						DevelopmentTeam = 9UPQL479Z5;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -456,6 +459,7 @@
 				7CB71404A390802C745BF8F1 /* MacScreens.swift in Sources */,
 				AF441928B59342BA1A398EBD /* MeetVenueStreamlineFieldView.swift in Sources */,
 				F5B8DF9B8360B797123A8F3F /* Models.swift in Sources */,
+				59125D4886ED0C554BD0884E /* RealtimeVoiceClient.swift in Sources */,
 				24652FD0AE7CDCBFD6449A33 /* SocialAuthButtonsView.swift in Sources */,
 				23566B8035FB78DD26018713 /* WalletSignInSupport.swift in Sources */,
 			);
@@ -500,6 +504,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 9UPQL479Z5;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -530,6 +535,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"\"";
+				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				GOOGLE_CLIENT_ID_IOS = "";
 				GOOGLE_REVERSED_CLIENT_ID = "";
@@ -544,7 +550,7 @@
 				);
 				LIKEMINDED_API_BASE_URL = "";
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.likeminded.mac;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gurusharan.likeminded;
 				PRODUCT_NAME = LikemindedMac;
 				SDKROOT = macosx;
 			};
@@ -576,7 +582,7 @@
 					"@executable_path/Frameworks",
 				);
 				LIKEMINDED_API_BASE_URL = "";
-				PRODUCT_BUNDLE_IDENTIFIER = com.likeminded.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gurusharan.likeminded;
 				PRODUCT_NAME = Likeminded;
 				SDKROOT = iphoneos;
 				SUPPORTS_MACCATALYST = NO;
@@ -592,6 +598,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"\"";
+				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				GOOGLE_CLIENT_ID_IOS = "";
 				GOOGLE_REVERSED_CLIENT_ID = "";
@@ -606,7 +613,7 @@
 				);
 				LIKEMINDED_API_BASE_URL = "";
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.likeminded.mac;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gurusharan.likeminded;
 				PRODUCT_NAME = LikemindedMac;
 				SDKROOT = macosx;
 			};
@@ -648,6 +655,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 9UPQL479Z5;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -703,7 +711,7 @@
 					"@executable_path/Frameworks",
 				);
 				LIKEMINDED_API_BASE_URL = "";
-				PRODUCT_BUNDLE_IDENTIFIER = com.likeminded.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gurusharan.likeminded;
 				PRODUCT_NAME = Likeminded;
 				SDKROOT = iphoneos;
 				SUPPORTS_MACCATALYST = NO;

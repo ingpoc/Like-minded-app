@@ -480,10 +480,12 @@ struct SoulmateMatchDetailView: View {
             }
         }
         .task {
+            #if DEBUG
             if IOSMatchDetailFixtures.isActive, match.matchId == IOSMatchDetailFixtures.preferredMatch.matchId {
                 detail = IOSMatchDetailFixtures.detail
                 return
             }
+            #endif
             do {
                 detail = try await appState.fetchSoulmateMatchDetail(id: match.matchId)
             } catch {

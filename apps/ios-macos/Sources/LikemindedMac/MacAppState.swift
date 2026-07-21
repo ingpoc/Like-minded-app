@@ -674,7 +674,7 @@ struct MacAuthSession: Codable, Equatable {
 }
 
 enum MacAuthSessionStore {
-    private static let service = "com.likeminded.mac.auth"
+    private static let service = "com.gurusharan.likeminded.auth.macos"
     private static let account = "session"
 
     static func load() -> MacAuthSession? {

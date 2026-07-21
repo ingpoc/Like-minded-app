@@ -20,7 +20,7 @@ apps/ios-macos/
 
 | Field | Value |
 | --- | --- |
-| Bundle id | `com.likeminded.app` |
+| Bundle id | `com.gurusharan.likeminded` |
 | Scheme | `Likeminded` |
 | Deployment | iOS 18.0, iPhone + iPad |
 | Build output | `.build/ios-simulator/Build/Products/Debug-iphonesimulator/Likeminded.app` |

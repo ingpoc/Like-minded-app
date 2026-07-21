@@ -217,7 +217,7 @@ struct RootView: View {
         #if DEBUG
         IOSChatFixtures.preferredMatch
         #else
-        SoulmateMatch(matchId: "fixture", userId: "fixture", name: "Chat", meetingId: "fixture", createdAt: "")
+        SoulmateMatch(matchId: "fixture", userId: "fixture", name: "Chat", meetingId: "fixture", meetingDate: nil, createdAt: "")
         #endif
     }
 

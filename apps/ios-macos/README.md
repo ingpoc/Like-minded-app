@@ -23,8 +23,8 @@ cd apps/ios-macos && xcodegen generate
 
 | Target | Bundle ID | Entitlements | Info plist |
 |--------|-----------|--------------|------------|
-| `Likeminded` (iOS) | `com.likeminded.app` | `Entitlements/Likeminded.entitlements` | `Info/Likeminded-Info.plist` |
-| `LikemindedMac` | `com.likeminded.mac` | `Entitlements/LikemindedMac.entitlements` | `Info/LikemindedMac-Info.plist` |
+| `Likeminded` (iOS) | `com.gurusharan.likeminded` | `Entitlements/Likeminded.entitlements` | `Info/Likeminded-Info.plist` |
+| `LikemindedMac` | `com.gurusharan.likeminded` | `Entitlements/LikemindedMac.entitlements` | `Info/LikemindedMac-Info.plist` |
 
 Info plists hold Google `GIDClientID`, OAuth URL schemes, and wallet callback schemes. Other keys use `INFOPLIST_KEY_*` in `project.yml`.
 

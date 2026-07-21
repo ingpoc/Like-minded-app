@@ -6,7 +6,7 @@
 
 - SwiftUI natives + Node HTTP API; production persistence Neon/Postgres via `DATABASE_URL`; local dev uses `data/` or `LIKEMINDED_DB_DIR`.
 - TestFlight path: authenticated `/v1/*` MVP routes — not legacy mock/profile routes.
-- iOS bundle `com.likeminded.app`; macOS `com.likeminded.mac`; shared `LIKEMINDED_API_BASE_URL`.
+- Universal iOS/macOS bundle `com.gurusharan.likeminded`; Apple team `9UPQL479Z5`; App Store Connect Apple ID `6792839764`; shared `LIKEMINDED_API_BASE_URL`.
 - Auth: Apple + Google + wallet on both natives (`Sources/Shared/`); sessions via Keychain (`AuthSessionStore` / `MacAuthSessionStore`).
 - LiveKit group meets: `POST /v1/meetings/:id/join` + `Sources/Shared/LiveKitMeetSession.swift` on iOS and macOS.
 - XcodeGen owner: `apps/ios-macos/project.yml` — never hand-edit `.xcodeproj`.

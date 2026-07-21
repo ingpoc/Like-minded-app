@@ -11,6 +11,7 @@ Node HTTP backend for the Likeminded TestFlight MVP placement loop.
 - `GET /v1/auth/wallet/sign` - WalletConnect signing page used by native clients through `ASWebAuthenticationSession`.
 - `POST /v1/auth/wallet/verify` - verifies wallet signature and returns an app session token.
 - `POST /v1/discover` - authenticated voice/reflection input -> profile signals -> circle placement.
+- `POST /v1/profile-interview/turn` - authenticated multi-turn typed AI interviewer; returns one follow-up and completion readiness.
 - `GET /v1/me/profile` - latest signed-in user's profile.
 - `PATCH /v1/me/profile` - signed-in user's profile corrections.
 - `GET /v1/me/placement` - latest signed-in user's placement.
@@ -35,11 +36,13 @@ npm run check
 npm run smoke:mvp
 ```
 
-For voice sessions, set `OPENAI_API_KEY` on the API server. Production defaults to `gpt-realtime-2`; local cost-sensitive testing can use `npm run dev:api:realtime-test`.
+For voice sessions, set `OPENAI_API_KEY` on the API server. Production defaults to `gpt-realtime-2`; local cost-sensitive testing uses `gpt-realtime-mini` via `npm run dev:api:realtime-test`.
+
+iOS and macOS request a fully configured ephemeral client secret from `POST /v1/realtime/session`, then exchange SDP directly with OpenAI. The permanent API key and private placement prompt remain server-owned. macOS also offers the typed `/v1/profile-interview/turn` path; both input modes persist through the same profile-placement contracts.
 
 `APPLE_AUTH_BYPASS=1` is only for isolated local API smoke checks. Do not enable it in TestFlight or production.
 
-Production should set `APPLE_CLIENT_IDS=com.likeminded.app,com.likeminded.mac`, keep `APPLE_AUTH_BYPASS=0`, and enable `APPLE_REQUIRE_NONCE=1` so clients must send the raw nonce used during Sign in with Apple.
+Production should set `APPLE_CLIENT_IDS=com.gurusharan.likeminded`, keep `APPLE_AUTH_BYPASS=0`, and enable `APPLE_REQUIRE_NONCE=1` so clients must send the raw nonce used during Sign in with Apple.
 
 ## Scope
 
