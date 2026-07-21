@@ -334,6 +334,16 @@ struct AppleAuthRequest: Encodable {
     let nonce: String?
 }
 
+struct AppleAccountDeletionProof: Encodable {
+    let identityToken: String
+    let authorizationCode: String
+    let nonce: String
+}
+
+struct AccountDeletionRequest: Encodable {
+    let appleAuthorization: AppleAccountDeletionProof
+}
+
 struct AppleAuthResponse: Decodable {
     let user: APIUser
     let sessionToken: String

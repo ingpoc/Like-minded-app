@@ -6,6 +6,7 @@ struct SettingsPrototypeView: View {
     @State private var showingDeleteConfirm = false
     @State private var isDeletingAccount = false
     @State private var activeSheet: SettingsSheet?
+    @State private var appleSignInController = AppleSignInController()
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -136,7 +137,7 @@ struct SettingsPrototypeView: View {
             Button("Delete account", role: .destructive) {
                 Task {
                     isDeletingAccount = true
-                    _ = await appState.deleteAccount()
+                    _ = await appState.deleteAccount(using: appleSignInController)
                     isDeletingAccount = false
                 }
             }
@@ -360,35 +361,25 @@ struct PrivacyPolicySheet: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    Text("Likeminded TestFlight Privacy Policy")
+                    Text(LikemindedPrivacyPolicy.title)
                         .font(PrototypeTypography.cardTitle)
                         .foregroundStyle(PrototypePalette.ink)
 
-                    Text("Likeminded uses voice conversation to build private profile signals and suggest a starter circle placement.")
+                    Text(LikemindedPrivacyPolicy.intro)
                         .font(PrototypeTypography.body)
                         .foregroundStyle(PrototypePalette.ink)
 
-                    policySection("Data Collected", items: [
-                        "Sign in with Apple identifier, and email/name only when Apple provides them.",
-                        "Voice interview transcript generated during onboarding.",
-                        "Profile signals inferred from onboarding, such as communication style, social energy, trust pattern, and personality traits.",
-                        "Circle placement, placement actions, and tester feedback.",
-                        "Basic technical metadata needed to run the service, such as app version and request timing."
-                    ])
+                    ForEach(LikemindedPrivacyPolicy.sections, id: \.title) { section in
+                        policySection(section.title, items: section.items)
+                    }
 
-                    policySection("How Data Is Used", items: [
-                        "To create and restore the tester's private profile.",
-                        "To suggest a starter circle based on personality fit.",
-                        "To improve placement and host selection across the TestFlight cohort.",
-                        "Profile signals are never shown to other testers."
-                    ])
+                    Text(LikemindedPrivacyPolicy.footer)
+                        .font(PrototypeTypography.body)
+                        .foregroundStyle(PrototypePalette.ink)
 
-                    policySection("Your Controls", items: [
-                        "You can re-take the voice interview at any time from Profile.",
-                        "You can flag a circle that does not feel right and prompt a re-evaluation.",
-                        "Soulmate is opt-in only and visible when both people choose each other.",
-                        "Delete account removes your backend tester data and clears this device session."
-                    ])
+                    Link("Open public privacy policy", destination: LikemindedPrivacyPolicy.publicURL)
+                        .font(PrototypeTypography.bodyStrong)
+                        .foregroundStyle(PrototypePalette.accent)
                 }
                 .padding(20)
             }

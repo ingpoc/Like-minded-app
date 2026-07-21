@@ -17,7 +17,8 @@ const {
   generateId
 } = require("./lib/architecture");
 const { savePlacement, getAllPlacements, getPlacementsByProfile, saveTranscript, registerDevice, getDevice, getProfilesByDevice } = require("./lib/db");
-const { bearerToken, createSessionToken, verifyAppleIdentityToken, verifySessionToken } = require("./lib/auth");
+const { AppleIdentityServiceError, bearerToken, createSessionToken, verifyAppleIdentityToken, verifySessionToken } = require("./lib/auth");
+const { AppleOAuthError, exchangeAppleAuthorizationCode, revokeAppleRefreshToken } = require("./lib/apple-oauth");
 const { verifyGoogleIdentityToken } = require("./lib/google-auth");
 const {
   createWalletChallenge,
@@ -129,6 +130,25 @@ function html(res, statusCode, body) {
     "content-length": Buffer.byteLength(payload)
   });
   res.end(payload);
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function renderPrivacyPolicy() {
+  const policyPath = path.resolve(__dirname, "../../../docs/references/privacy-policy-testflight.md");
+  const policy = escapeHtml(fs.readFileSync(policyPath, "utf8"));
+  return `<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Likeminded TestFlight Privacy Policy</title>
+<style>body{margin:0;background:#f7f4ee;color:#24211d;font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}main{max-width:760px;margin:auto;padding:48px 24px 80px}pre{font:inherit;white-space:pre-wrap;word-wrap:break-word}</style>
+</head><body><main><pre>${policy}</pre></main></body></html>`;
 }
 
 function renderWalletSignPage({ wallet, challengeId }) {
@@ -381,6 +401,11 @@ async function handleRequest(req, res) {
       googleAuth: Boolean(process.env.GOOGLE_CLIENT_IDS),
       walletAuth: Boolean(process.env.WALLETCONNECT_PROJECT_ID) || process.env.WALLET_AUTH_BYPASS === "1"
     });
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/privacy") {
+    html(res, 200, renderPrivacyPolicy());
     return;
   }
 
@@ -1303,6 +1328,50 @@ async function handleRequest(req, res) {
   if (req.method === "DELETE" && url.pathname === "/v1/me/account") {
     const user = await requireUser(req, res);
     if (!user) return;
+    if (user.authProvider === "apple") {
+      try {
+        const body = await readJsonBody(req);
+        const proof = body.appleAuthorization;
+        if (!proof?.identityToken || !proof?.authorizationCode || !proof?.nonce) {
+          json(res, 400, { error: "apple_reauthentication_required" });
+          return;
+        }
+        const applePayload = await verifyAppleIdentityToken(proof.identityToken, {
+          nonce: proof.nonce,
+          requireNonce: true
+        });
+        if (applePayload.sub !== user.appleSub) {
+          json(res, 401, { error: "apple_identity_mismatch" });
+          return;
+        }
+        if (process.env.APPLE_AUTH_BYPASS !== "1") {
+          const exchanged = await exchangeAppleAuthorizationCode(proof.authorizationCode);
+          const exchangedPayload = await verifyAppleIdentityToken(exchanged.identityToken, {
+            nonce: proof.nonce,
+            requireNonce: true
+          });
+          if (exchangedPayload.sub !== applePayload.sub || exchangedPayload.sub !== user.appleSub) {
+            json(res, 401, { error: "apple_identity_mismatch" });
+            return;
+          }
+          await revokeAppleRefreshToken(exchanged.refreshToken, {
+            config: exchanged.config,
+            clientSecret: exchanged.clientSecret
+          });
+        }
+      } catch (error) {
+        if (error instanceof AppleOAuthError) {
+          json(res, error.statusCode, { error: error.code });
+          return;
+        }
+        if (error instanceof AppleIdentityServiceError) {
+          json(res, 502, { error: error.code });
+          return;
+        }
+        json(res, 401, { error: "apple_reauthentication_failed" });
+        return;
+      }
+    }
     await deleteUserAccount(user.id);
     json(res, 200, { status: "deleted" });
     return;

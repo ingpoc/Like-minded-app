@@ -24,6 +24,8 @@ assertIncludes("apps/ios-macos/project.yml", project, "CODE_SIGN_ENTITLEMENTS: E
 assertIncludes("apps/ios-macos/project.yml", project, "INFOPLIST_KEY_NSMicrophoneUsageDescription");
 assertIncludes("apps/ios-macos/project.yml", project, "INFOPLIST_KEY_NSCameraUsageDescription");
 assertIncludes("apps/ios-macos/project.yml", project, "INFOPLIST_KEY_LIKEMINDED_API_BASE_URL");
+assertIncludes("apps/ios-macos/project.yml", project, "INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO");
+assertIncludes("apps/ios-macos/project.yml", project, "Resources/PrivacyInfo.xcprivacy");
 assertNotIncludes("apps/ios-macos/project.yml", project, "com.likeminded.prototype");
 
 const entitlements = read("apps/ios-macos/Entitlements/Likeminded.entitlements");
@@ -41,10 +43,24 @@ assertIncludes("apps/ios-macos/project.yml", project, "CODE_SIGN_ENTITLEMENTS: E
 assertIncludes("apps/ios-macos/project.yml", project, "ENABLE_HARDENED_RUNTIME: YES");
 
 const macDebugEntitlements = read("apps/ios-macos/Entitlements/LikemindedMac.Debug.entitlements");
-assertNotIncludes("apps/ios-macos/Entitlements/LikemindedMac.Debug.entitlements", macDebugEntitlements, "com.apple.developer.applesignin");
+assertIncludes("apps/ios-macos/Entitlements/LikemindedMac.Debug.entitlements", macDebugEntitlements, "com.apple.developer.applesignin");
 
-assertIncludes("apps/ios-macos/Info/Likeminded-Info.plist", read("apps/ios-macos/Info/Likeminded-Info.plist"), "GIDClientID");
-assertIncludes("apps/ios-macos/Info/LikemindedMac-Info.plist", read("apps/ios-macos/Info/LikemindedMac-Info.plist"), "$(PRODUCT_BUNDLE_IDENTIFIER)");
+const privacyManifest = read("apps/ios-macos/Resources/PrivacyInfo.xcprivacy");
+assertIncludes("PrivacyInfo.xcprivacy", privacyManifest, "NSPrivacyAccessedAPICategoryUserDefaults");
+assertIncludes("PrivacyInfo.xcprivacy", privacyManifest, "CA92.1");
+assertIncludes("PrivacyInfo.xcprivacy", privacyManifest, "NSPrivacyTracking");
+
+const iosInfo = read("apps/ios-macos/Info/Likeminded-Info.plist");
+assertIncludes("apps/ios-macos/Info/Likeminded-Info.plist", iosInfo, "GIDClientID");
+assertIncludes("apps/ios-macos/Info/Likeminded-Info.plist", iosInfo, "$(GOOGLE_CLIENT_ID_IOS)");
+assertIncludes("apps/ios-macos/Info/Likeminded-Info.plist", iosInfo, "$(GOOGLE_REVERSED_CLIENT_ID_IOS)");
+assertIncludes("apps/ios-macos/Info/Likeminded-Info.plist", iosInfo, "$(PRODUCT_BUNDLE_IDENTIFIER)");
+
+const macInfo = read("apps/ios-macos/Info/LikemindedMac-Info.plist");
+assertIncludes("apps/ios-macos/Info/LikemindedMac-Info.plist", macInfo, "GIDClientID");
+assertIncludes("apps/ios-macos/Info/LikemindedMac-Info.plist", macInfo, "$(GOOGLE_CLIENT_ID_MAC)");
+assertIncludes("apps/ios-macos/Info/LikemindedMac-Info.plist", macInfo, "$(GOOGLE_REVERSED_CLIENT_ID_MAC)");
+assertIncludes("apps/ios-macos/Info/LikemindedMac-Info.plist", macInfo, "$(PRODUCT_BUNDLE_IDENTIFIER)");
 
 const apiClient = read("apps/ios-macos/Sources/LikemindedApp/Data/LikemindedAPIClient.swift");
 assertIncludes("LikemindedAPIClient.swift", apiClient, "https://likeminded-api.onrender.com");
@@ -68,6 +84,9 @@ for (const key of [
   "APPLE_CLIENT_ID",
   "APPLE_MAC_BUNDLE_ID",
   "APPLE_CLIENT_IDS",
+  "APPLE_TEAM_ID",
+  "APPLE_KEY_ID",
+  "APPLE_PRIVATE_KEY",
   "APPLE_REQUIRE_NONCE",
   "APPLE_AUTH_BYPASS"
 ]) {
@@ -87,11 +106,15 @@ for (const key of [
   "APPLE_CLIENT_ID=com.gurusharan.likeminded",
   "APPLE_MAC_BUNDLE_ID=com.gurusharan.likeminded",
   "APPLE_CLIENT_IDS=com.gurusharan.likeminded",
+  "APPLE_TEAM_ID=9UPQL479Z5",
+  "APPLE_KEY_ID=",
+  "APPLE_PRIVATE_KEY=",
   "APPLE_REQUIRE_NONCE=1",
   "APPLE_AUTH_BYPASS=0",
   "GOOGLE_CLIENT_ID_IOS=",
   "GOOGLE_CLIENT_ID_MAC=",
-  "GOOGLE_REVERSED_CLIENT_ID=",
+  "GOOGLE_REVERSED_CLIENT_ID_IOS=",
+  "GOOGLE_REVERSED_CLIENT_ID_MAC=",
   "GOOGLE_CLIENT_IDS=",
   "WALLETCONNECT_PROJECT_ID="
 ]) {
@@ -99,7 +122,7 @@ for (const key of [
 }
 
 const privacy = read("docs/references/privacy-policy-testflight.md");
-for (const phrase of ["Voice interview transcript", "AI Processing", "Retention And Deletion"]) {
+for (const phrase of ["voice interview transcripts", "AI And Media Processing", "Retention And Deletion"]) {
   assertIncludes("privacy-policy-testflight.md", privacy, phrase);
 }
 
@@ -110,6 +133,21 @@ assertNotIncludes("script/build_and_run.sh", buildScript, "com.likeminded.protot
 const packageJson = read("package.json");
 assertIncludes("package.json", packageJson, "verify:simulator-local");
 assertIncludes("package.json", packageJson, "verify:external-preflight");
+assertIncludes("package.json", packageJson, "verify:ios-release-candidate");
+
+const iosReleaseVerifier = read("script/verify_ios_release_candidate.sh");
+for (const phrase of ["GIDClientID", "PrivacyInfo.xcprivacy", "get-task-allow", "LIKEMINDED_DEV_AUTH_BYPASS"]) {
+  assertIncludes("script/verify_ios_release_candidate.sh", iosReleaseVerifier, phrase);
+}
+
+const appleOAuth = read("services/api/src/lib/apple-oauth.js");
+for (const phrase of ["APPLE_TEAM_ID", "APPLE_KEY_ID", "APPLE_PRIVATE_KEY", "/auth/token", "/auth/revoke"]) {
+  assertIncludes("services/api/src/lib/apple-oauth.js", appleOAuth, phrase);
+}
+
+const server = read("services/api/src/server.js");
+assertIncludes("services/api/src/server.js", server, 'url.pathname === "/privacy"');
+assertIncludes("services/api/src/server.js", server, "appleAuthorization");
 
 const setupDoc = read("docs/workflows/setup.md");
 assertIncludes("docs/workflows/setup.md", setupDoc, "LiveKitMeetSession");
@@ -120,7 +158,7 @@ assertIncludes("docs/workflows/validation.md", validation, "npm run verify:simul
 assertIncludes("docs/workflows/validation.md", validation, "npm run verify:external-preflight");
 
 const externalEvidenceTemplate = read("release/testflight-evidence.template.json");
-for (const phrase of ["service_url", "database_configured", "sign_in_with_apple_enabled", "spoken_audio_to_profile_verified"]) {
+for (const phrase of ["service_url", "database_configured", "sign_in_with_apple_enabled", "spoken_audio_to_profile_verified", "ios_build_number", "beta_review_status", "Likeminded Early Access"]) {
   assertIncludes("release/testflight-evidence.template.json", externalEvidenceTemplate, phrase);
 }
 

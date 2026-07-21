@@ -1,4 +1,5 @@
 import AppKit
+import AuthenticationServices
 import SwiftUI
 #if canImport(GoogleSignIn)
 import GoogleSignIn
@@ -6,6 +7,7 @@ import GoogleSignIn
 
 @main
 struct LikemindedMacApp: App {
+    @Environment(\.scenePhase) private var scenePhase
     @StateObject private var appState = MacAppState()
 
     init() {
@@ -24,6 +26,13 @@ struct LikemindedMacApp: App {
                 )
                 .preferredColorScheme(.light)
                 .background(MacWindowChromeHider())
+                .onChange(of: scenePhase) { _, phase in
+                    guard phase == .active else { return }
+                    Task { await appState.validateStoredAppleCredentialIfNeeded() }
+                }
+                .onReceive(NotificationCenter.default.publisher(for: ASAuthorizationAppleIDProvider.credentialRevokedNotification)) { _ in
+                    appState.handleAppleCredentialRevoked()
+                }
                 .onOpenURL { url in
                     #if canImport(GoogleSignIn)
                     _ = GIDSignIn.sharedInstance.handle(url)

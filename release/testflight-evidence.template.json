@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "render": {
     "service_url": "",
     "health_checked_at": "",
@@ -22,12 +22,24 @@
   },
   "testflight": {
     "signed_build_uploaded": false,
+    "ios_build_number": "",
+    "uploaded_at": "",
+    "beta_review_status": "not_submitted",
     "privacy_policy_added": false,
-    "tester_group_configured": false
+    "tester_group_configured": false,
+    "external_group_name": "Likeminded Early Access",
+    "external_group_limit": 25,
+    "public_link_enabled": false,
+    "first_install_verified": false,
+    "first_install_checked_at": "",
+    "first_cohort_count": 0
   },
   "manual_proof": {
     "real_apple_sign_in_verified": false,
     "spoken_audio_to_profile_verified": false,
+    "livekit_room_verified": false,
+    "cross_user_privacy_verified": false,
+    "account_deletion_verified": false,
     "tester_loop_verified": false
   },
   "notes": ""

@@ -24,6 +24,7 @@
 		31D1987C09EEBD76447D0DF7 /* MacPrototypeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 181BFC9B2D93330133F5C993 /* MacPrototypeData.swift */; };
 		3790F3067C86B1DF4F11FF86 /* NotificationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F51BCAB677E4C2BEAE840EE /* NotificationsView.swift */; };
 		379D8BA56E5821E1680248E7 /* CircleCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4895BAF5408C8A7CEDEB5EC3 /* CircleCard.swift */; };
+		392090F8F29609187D4E6947 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A06162A83CAB5C8246F34918 /* PrivacyInfo.xcprivacy */; };
 		399834A377ADFBCE54D30DF9 /* PrototypeAppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C615B2CB5D4009DE9EDF7F48 /* PrototypeAppState.swift */; };
 		3C82F0006DF2BAE5048D0B43 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3A363F271D17248AADFD13 /* OnboardingView.swift */; };
 		3CD3E682BA4AF263823BF3D3 /* MacCirclesRoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8EEC5ED76303942DDB78154 /* MacCirclesRoomView.swift */; };
@@ -34,6 +35,7 @@
 		4662D50BD9BFCB596D1B3824 /* DoodleArt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 296DEAB93269CB0949442024 /* DoodleArt.swift */; };
 		526F3648A81F8B47AA9EFC97 /* LiveKit in Frameworks */ = {isa = PBXBuildFile; productRef = EF71AD29363DA78174557635 /* LiveKit */; };
 		537F95835B944C12426E2846 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = F6DE61824C693F67847A8C36 /* GoogleSignIn */; };
+		54AAFAC390B98CB3AF2FA510 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A06162A83CAB5C8246F34918 /* PrivacyInfo.xcprivacy */; };
 		59125D4886ED0C554BD0884E /* RealtimeVoiceClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70685EA3FAE20FBC4827812B /* RealtimeVoiceClient.swift */; };
 		5BF328C460E5D74DB230A51F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E4A27335D18C85FF61CE549E /* Assets.xcassets */; };
 		5F0E79024B1B152EBBD80D88 /* LiveKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9109FD768D670024E68556DC /* LiveKit */; };
@@ -108,6 +110,7 @@
 		8C8C121E18E6BF523CE92D82 /* PrototypeModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrototypeModels.swift; sourceTree = "<group>"; };
 		99419D847C29F69421A296E7 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		9D7107FDFB96FB4B6E50291C /* MeetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetView.swift; sourceTree = "<group>"; };
+		A06162A83CAB5C8246F34918 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		A931FF701084ED1753234F3A /* LiveKitTokenProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveKitTokenProvider.swift; sourceTree = "<group>"; };
 		BC3A363F271D17248AADFD13 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		C615B2CB5D4009DE9EDF7F48 /* PrototypeAppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrototypeAppState.swift; sourceTree = "<group>"; };
@@ -187,6 +190,14 @@
 			path = LikemindedApp;
 			sourceTree = "<group>";
 		};
+		45059C5E5884F2B2DDBBFCF6 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				A06162A83CAB5C8246F34918 /* PrivacyInfo.xcprivacy */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		4AC2D9EA82E8721EDE36BEF0 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -239,6 +250,7 @@
 			isa = PBXGroup;
 			children = (
 				E4A27335D18C85FF61CE549E /* Assets.xcassets */,
+				45059C5E5884F2B2DDBBFCF6 /* Resources */,
 				9DF60F32DDF0F8B7C3C61E6E /* Sources */,
 				4AC2D9EA82E8721EDE36BEF0 /* Products */,
 			);
@@ -379,6 +391,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3D96591126672068AD6125E9 /* Assets.xcassets in Resources */,
+				54AAFAC390B98CB3AF2FA510 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -387,6 +400,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5BF328C460E5D74DB230A51F /* Assets.xcassets in Resources */,
+				392090F8F29609187D4E6947 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -537,10 +551,11 @@
 				DEVELOPMENT_ASSET_PATHS = "\"\"";
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				GOOGLE_CLIENT_ID_IOS = "";
-				GOOGLE_REVERSED_CLIENT_ID = "";
+				GOOGLE_CLIENT_ID_MAC = "783810031677-acl8e4radj0ud4pqflbo5c3f23e5cqid.apps.googleusercontent.com";
+				GOOGLE_REVERSED_CLIENT_ID_MAC = "com.googleusercontent.apps.783810031677-acl8e4radj0ud4pqflbo5c3f23e5cqid";
 				INFOPLIST_FILE = "Info/LikemindedMac-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Likeminded;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LIKEMINDED_API_BASE_URL = "$(LIKEMINDED_API_BASE_URL)";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Likeminded uses your camera for scheduled group video meets.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Likeminded uses your voice to build private profile signals and suggest a starter circle.";
@@ -548,7 +563,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIKEMINDED_API_BASE_URL = "";
+				LIKEMINDED_API_BASE_URL = "https://likeminded-api.onrender.com";
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.gurusharan.likeminded;
 				PRODUCT_NAME = LikemindedMac;
@@ -565,10 +580,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"\"";
 				GENERATE_INFOPLIST_FILE = YES;
-				GOOGLE_CLIENT_ID_IOS = "";
-				GOOGLE_REVERSED_CLIENT_ID = "";
+				GOOGLE_CLIENT_ID_IOS = "783810031677-afiec2d9r2og5hg3hru9n59fjregn7nk.apps.googleusercontent.com";
+				GOOGLE_REVERSED_CLIENT_ID_IOS = "com.googleusercontent.apps.783810031677-afiec2d9r2og5hg3hru9n59fjregn7nk";
 				INFOPLIST_FILE = "Info/Likeminded-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Likeminded;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LIKEMINDED_API_BASE_URL = "$(LIKEMINDED_API_BASE_URL)";
 				INFOPLIST_KEY_LSRequiresIPhoneOS = YES;
 				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsLocalNetworking = YES;
@@ -600,10 +616,11 @@
 				DEVELOPMENT_ASSET_PATHS = "\"\"";
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				GOOGLE_CLIENT_ID_IOS = "";
-				GOOGLE_REVERSED_CLIENT_ID = "";
+				GOOGLE_CLIENT_ID_MAC = "783810031677-acl8e4radj0ud4pqflbo5c3f23e5cqid.apps.googleusercontent.com";
+				GOOGLE_REVERSED_CLIENT_ID_MAC = "com.googleusercontent.apps.783810031677-acl8e4radj0ud4pqflbo5c3f23e5cqid";
 				INFOPLIST_FILE = "Info/LikemindedMac-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Likeminded;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LIKEMINDED_API_BASE_URL = "$(LIKEMINDED_API_BASE_URL)";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Likeminded uses your camera for scheduled group video meets.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Likeminded uses your voice to build private profile signals and suggest a starter circle.";
@@ -694,10 +711,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"\"";
 				GENERATE_INFOPLIST_FILE = YES;
-				GOOGLE_CLIENT_ID_IOS = "";
-				GOOGLE_REVERSED_CLIENT_ID = "";
+				GOOGLE_CLIENT_ID_IOS = "783810031677-afiec2d9r2og5hg3hru9n59fjregn7nk.apps.googleusercontent.com";
+				GOOGLE_REVERSED_CLIENT_ID_IOS = "com.googleusercontent.apps.783810031677-afiec2d9r2og5hg3hru9n59fjregn7nk";
 				INFOPLIST_FILE = "Info/Likeminded-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Likeminded;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LIKEMINDED_API_BASE_URL = "$(LIKEMINDED_API_BASE_URL)";
 				INFOPLIST_KEY_LSRequiresIPhoneOS = YES;
 				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsLocalNetworking = YES;
@@ -710,7 +728,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				LIKEMINDED_API_BASE_URL = "";
+				LIKEMINDED_API_BASE_URL = "https://likeminded-api.onrender.com";
 				PRODUCT_BUNDLE_IDENTIFIER = com.gurusharan.likeminded;
 				PRODUCT_NAME = Likeminded;
 				SDKROOT = iphoneos;

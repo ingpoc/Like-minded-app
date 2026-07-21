@@ -30,8 +30,9 @@ APPLE_REQUIRE_NONCE=1
 APPLE_AUTH_BYPASS=0
 GOOGLE_CLIENT_ID_IOS=your-ios-client-id.apps.googleusercontent.com
 GOOGLE_CLIENT_ID_MAC=your-mac-client-id.apps.googleusercontent.com
-GOOGLE_REVERSED_CLIENT_ID=com.googleusercontent.apps.your-ios-client-id
-GOOGLE_CLIENT_IDS=your-ios-client-id.apps.googleusercontent.com
+GOOGLE_REVERSED_CLIENT_ID_IOS=com.googleusercontent.apps.your-ios-client-id
+GOOGLE_REVERSED_CLIENT_ID_MAC=com.googleusercontent.apps.your-mac-client-id
+GOOGLE_CLIENT_IDS=your-ios-client-id.apps.googleusercontent.com,your-mac-client-id.apps.googleusercontent.com
 GOOGLE_AUTH_BYPASS=0
 WALLETCONNECT_PROJECT_ID=your-walletconnect-cloud-project-id
 WALLET_AUTH_BYPASS=0
@@ -64,6 +65,9 @@ Both natives share auth providers (**Apple**, **Google**, **MetaMask**, **Solfla
 - iOS entitlement: `Entitlements/Likeminded.entitlements`
 - macOS entitlement: `Entitlements/LikemindedMac.entitlements`
 - Server: set `APPLE_CLIENT_IDS=com.gurusharan.likeminded`, `APPLE_REQUIRE_NONCE=1`, `APPLE_AUTH_BYPASS=0` for real device/TestFlight.
+- Account deletion revocation also requires `APPLE_TEAM_ID=9UPQL479Z5`, `APPLE_KEY_ID`, and `APPLE_PRIVATE_KEY` from a Sign in with Apple key tied to the primary App ID. Keep the `.p8` value in Render secrets only.
+- Apple accounts must reauthenticate before `DELETE /v1/me/account`; the API verifies the same Apple subject, exchanges the one-time authorization code, revokes the refresh token, and only then deletes app data.
+- The public App Store privacy URL is `GET /privacy` on the production API.
 - Local bypass (API only): `APPLE_AUTH_BYPASS=1` or app launch arg `--likeminded-dev-auth-bypass` with `npm run dev:api:local-auth`.
 
 ### Google
@@ -72,14 +76,15 @@ Set in `.env.local` (API) **and** pass into Xcode builds:
 
 ```
 GOOGLE_CLIENT_ID_IOS=your-client-id.apps.googleusercontent.com
-GOOGLE_CLIENT_ID_MAC=your-mac-client-id.apps.googleusercontent.com   # optional; falls back to iOS client
-GOOGLE_REVERSED_CLIENT_ID=com.googleusercontent.apps.your-client-id
-GOOGLE_CLIENT_IDS=your-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_ID_MAC=your-mac-client-id.apps.googleusercontent.com
+GOOGLE_REVERSED_CLIENT_ID_IOS=com.googleusercontent.apps.your-ios-client-id
+GOOGLE_REVERSED_CLIENT_ID_MAC=com.googleusercontent.apps.your-mac-client-id
+GOOGLE_CLIENT_IDS=your-ios-client-id.apps.googleusercontent.com,your-mac-client-id.apps.googleusercontent.com
 ```
 
 Native URL schemes and `GIDClientID` are in `Info/Likeminded-Info.plist` and `Info/LikemindedMac-Info.plist` (Google reversed client ID + bundle-id wallet callback). After editing `project.yml` or Info plists, run `cd apps/ios-macos && xcodegen generate`.
 
-Google OAuth redirect must include both bundle IDs in the Google Cloud console.
+Google Cloud uses an iOS client bound to `com.gurusharan.likeminded` and a separate Desktop client for macOS.
 
 ### Wallet (MetaMask / Solflare)
 

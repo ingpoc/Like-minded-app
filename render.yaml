@@ -35,6 +35,12 @@ services:
         value: com.gurusharan.likeminded
       - key: APPLE_CLIENT_IDS
         value: com.gurusharan.likeminded
+      - key: APPLE_TEAM_ID
+        value: 9UPQL479Z5
+      - key: APPLE_KEY_ID
+        sync: false
+      - key: APPLE_PRIVATE_KEY
+        sync: false
       - key: APPLE_REQUIRE_NONCE
         value: "1"
       - key: APPLE_AUTH_BYPASS

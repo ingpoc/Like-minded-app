@@ -17,13 +17,14 @@ Add to `.env.local`:
 ```sh
 GOOGLE_CLIENT_ID_IOS=your-id.apps.googleusercontent.com
 GOOGLE_CLIENT_ID_MAC=your-mac-id.apps.googleusercontent.com
-GOOGLE_REVERSED_CLIENT_ID=com.googleusercontent.apps.your-id
-GOOGLE_CLIENT_IDS=your-id.apps.googleusercontent.com
+GOOGLE_REVERSED_CLIENT_ID_IOS=com.googleusercontent.apps.your-ios-id
+GOOGLE_REVERSED_CLIENT_ID_MAC=com.googleusercontent.apps.your-mac-id
+GOOGLE_CLIENT_IDS=your-ios-id.apps.googleusercontent.com,your-mac-id.apps.googleusercontent.com
 GOOGLE_AUTH_BYPASS=0
 APPLE_AUTH_BYPASS=0
 ```
 
-Set the same `GOOGLE_CLIENT_ID_IOS` and `GOOGLE_REVERSED_CLIENT_ID` in `apps/ios-macos/project.yml`, then:
+Set each target's client ID and reversed client ID in `apps/ios-macos/project.yml`, then:
 
 ```sh
 cd apps/ios-macos && xcodegen generate

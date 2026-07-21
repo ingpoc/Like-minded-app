@@ -62,6 +62,7 @@ export LIKEMINDED_VALIDATION_NAME="Gurusharan Gupta"
 | macOS minimum window | `./script/macos_audit_window_matrix.sh small` = 1120×901 |
 | Phase checklist | `npm run phase:preflight -- <N>` |
 | External gate | `npm run verify:external-preflight` |
+| Signed iOS export gate | `npm run verify:ios-release-candidate -- /absolute/path/to/export/Payload/Likeminded.app` |
 | Hash refresh | `npm run ledger:refresh-hashes` |
 | Record flow proof | `npm run ledger:record-flow` |
 | Sync flows from controls | `npm run ledger:sync-flows` |
@@ -86,6 +87,8 @@ Contract: `validation/production-contract.json` — defines in-scope screens, ou
 | Text packet (compact) | add `--text` |
 | Backfill `flows[].proof` | `npm run ledger:apply-proof` |
 | Production gate (composite) | `npm run verify:production-ready` |
+
+External TestFlight evidence uses `release/testflight-evidence.json` schema 2. It requires the processed iOS build number and upload time, approved external Beta App Review, the invite-only `Likeminded Early Access` group with public links disabled, first external installation, real Apple sign-in, LiveKit, cross-user isolation, and Apple-revoked account deletion proof.
 
 **Proof tiers** (`flows[].proof.tier`): `capture` < `cua-click` < `api-persist` < `real-auth` / `real-livekit`.
 `ledger:record-flow` rejects `pass` when `last_test_method` is below tier (unless `--force-tier`).
