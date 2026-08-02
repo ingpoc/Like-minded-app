@@ -23,11 +23,11 @@
       "label": "Share profile",
       "expected": "Navigate → profileSignals (white outline button on dark card)",
       "result": "pass",
-      "evidence": "CUA-click validation-priya 2026-07-05: Share profile navigates to profileSignals (post layout fix, source hash 690d02978d2b2e6b)",
+      "evidence": "CUA-click validation-gurusharan 2026-07-17: share-profile",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "5f58d68c4fb27018",
-      "last_tested_at": "2026-07-06",
+      "tested_source_hash": "be094038d0f216e6",
+      "last_tested_at": "2026-07-17",
       "last_test_method": "CUA-click"
     },
     {
@@ -36,11 +36,11 @@
       "label": "Edit profile (pencil + link)",
       "expected": "Navigate → profileEdit living profile",
       "result": "pass",
-      "evidence": "CUA-click validation-priya 2026-07-05: Edit profile pencil + link (post layout fix, source hash 690d02978d2b2e6b)",
+      "evidence": "CUA-click validation-gurusharan 2026-07-17: edit-profile",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "5f58d68c4fb27018",
-      "last_tested_at": "2026-07-06",
+      "tested_source_hash": "be094038d0f216e6",
+      "last_tested_at": "2026-07-17",
       "last_test_method": "CUA-click"
     },
     {
@@ -49,12 +49,12 @@
       "label": "Retake voice profile",
       "expected": "Start macOS voice interview session or open dedicated voice retake flow",
       "result": "pass",
-      "evidence": "CUA-click validation-priya 2026-07-05: Retake voice profile opens onboarding step 2 (post layout fix, source hash 690d02978d2b2e6b)",
+      "evidence": "CUA-click validation-gurusharan 2026-07-17: retake-voice",
       "blocker": "",
       "stub": false,
-      "last_tested_at": "2026-07-06",
+      "last_tested_at": "2026-07-17",
       "last_test_method": "CUA-click",
-      "tested_source_hash": "5f58d68c4fb27018"
+      "tested_source_hash": "be094038d0f216e6"
     },
     {
       "id": "signal-cards",
@@ -62,11 +62,11 @@
       "label": "4 personality signal cards",
       "expected": "Display-only cards from profile.signals (Communication, Energy, Trust, Mindset)",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05: 4-column signal grid with semantic icons (post layout fix, source hash 690d02978d2b2e6b)",
+      "evidence": "CUA-click validation-gurusharan 2026-07-17: signal-cards",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "5f58d68c4fb27018",
-      "last_tested_at": "2026-07-06",
+      "tested_source_hash": "be094038d0f216e6",
+      "last_tested_at": "2026-07-17",
       "last_test_method": "CUA-click"
     },
     {
@@ -75,11 +75,11 @@
       "label": "Top interests + vibe + stats",
       "expected": "Interests/vibe from profile; Circles/Connections/Events counts from backend lists",
       "result": "pass",
-      "evidence": "screen-capture 2026-07-05: metrics row + interest pills + distinct My vibe copy (post layout fix, source hash 690d02978d2b2e6b)",
+      "evidence": "CUA-click validation-gurusharan 2026-07-17: interest-tags",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "5f58d68c4fb27018",
-      "last_tested_at": "2026-07-06",
+      "tested_source_hash": "be094038d0f216e6",
+      "last_tested_at": "2026-07-17",
       "last_test_method": "CUA-click"
     }
   ],
@@ -88,7 +88,7 @@
     "notes": "2026-07-05 capture vs plate 09: MacProfilePortrait glow rings, dark card metrics, 4-column signal grid, Top interests, My vibe orb. Intentional: DoodlePortraitFemale asset vs mockup photo; backend signal labels not mockup copy."
   },
   "notes": "2026-07-05: retake-voice routes to profileOnboarding step 2 (honest MVP).",
-  "source_hash": "5f58d68c4fb27018",
+  "source_hash": "be094038d0f216e6",
   "recent_screenshot_ref": "output/validation/macos-screens/myProfile.png",
   "ui_validation": {
     "result": "pass",

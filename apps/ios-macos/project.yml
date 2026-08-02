@@ -41,6 +41,21 @@ targets:
         product: GoogleSignIn
     info:
       path: Info/Likeminded-Info.plist
+      properties:
+        GIDClientID: "$(GOOGLE_CLIENT_ID_IOS)"
+        LIKEMINDED_API_BASE_URL: "$(LIKEMINDED_API_BASE_URL)"
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        "UISupportedInterfaceOrientations~ipad":
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        CFBundleURLTypes:
+          - CFBundleURLSchemes:
+              - "$(GOOGLE_REVERSED_CLIENT_ID_IOS)"
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.gurusharan.likeminded
@@ -62,7 +77,7 @@ targets:
         DEVELOPMENT_ASSET_PATHS: "\"\""
         LIKEMINDED_API_BASE_URL: ""
         GOOGLE_CLIENT_ID_IOS: ""
-        GOOGLE_REVERSED_CLIENT_ID: ""
+        GOOGLE_REVERSED_CLIENT_ID_IOS: ""
     scheme:
       gatherCoverageData: false
       testTargets: []
@@ -84,6 +99,13 @@ targets:
         product: GoogleSignIn
     info:
       path: Info/LikemindedMac-Info.plist
+      properties:
+        GIDClientID: "$(GOOGLE_CLIENT_ID_MAC)"
+        LIKEMINDED_API_BASE_URL: "$(LIKEMINDED_API_BASE_URL)"
+        LSApplicationCategoryType: public.app-category.social-networking
+        CFBundleURLTypes:
+          - CFBundleURLSchemes:
+              - "$(GOOGLE_REVERSED_CLIENT_ID_MAC)"
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.gurusharan.likeminded
@@ -99,8 +121,8 @@ targets:
         ENABLE_HARDENED_RUNTIME: YES
         DEVELOPMENT_ASSET_PATHS: "\"\""
         LIKEMINDED_API_BASE_URL: ""
-        GOOGLE_CLIENT_ID_IOS: ""
-        GOOGLE_REVERSED_CLIENT_ID: ""
+        GOOGLE_CLIENT_ID_MAC: ""
+        GOOGLE_REVERSED_CLIENT_ID_MAC: ""
       configs:
         Debug:
           CODE_SIGN_ENTITLEMENTS: Entitlements/LikemindedMac.Debug.entitlements

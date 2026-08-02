@@ -310,6 +310,37 @@ struct ReflectPlaceConnectRequest: Encodable {
     let reflectionAnswers: [String]
 }
 
+struct ProfileInterviewMessage: Codable, Identifiable {
+    let id: UUID
+    let role: String
+    let content: String
+
+    init(id: UUID = UUID(), role: String, content: String) {
+        self.id = id
+        self.role = role
+        self.content = content
+    }
+
+    private enum CodingKeys: String, CodingKey { case role, content }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = UUID()
+        role = try container.decode(String.self, forKey: .role)
+        content = try container.decode(String.self, forKey: .content)
+    }
+}
+
+struct ProfileInterviewTurnRequest: Encodable {
+    let messages: [ProfileInterviewMessage]
+}
+
+struct ProfileInterviewTurnResponse: Decodable {
+    let assistantMessage: String
+    let readyToComplete: Bool
+    let synthesisMode: String
+}
+
 struct RealtimeSessionRequest: Encodable {
     let safetyIdentifier: String
 }
@@ -361,7 +392,7 @@ struct BasicInfoUpdate: Encodable, Equatable {
 
 struct BasicInfo: Codable, Equatable {
     let name: String
-    let gender: Gender
+    let gender: Gender?
     let dateOfBirth: String
     let city: String
     /// Omitted on draft profiles until the user sets one; API PATCH may not echo pincode.
@@ -686,8 +717,10 @@ struct PlacementCircle: Codable, Identifiable {
     let easiestFirstAction: String
     let fitLabel: String
     let placementReason: String
-    let membersOnline: Int
+    let membersCount: Int
     let themes: [String]
+
+    var membersOnline: Int { membersCount }
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -721,7 +754,7 @@ struct PlacementCircle: Codable, Identifiable {
         easiestFirstAction: String,
         fitLabel: String,
         placementReason: String,
-        membersOnline: Int,
+        membersCount: Int,
         themes: [String]
     ) {
         self.id = id
@@ -736,7 +769,7 @@ struct PlacementCircle: Codable, Identifiable {
         self.easiestFirstAction = easiestFirstAction
         self.fitLabel = fitLabel
         self.placementReason = placementReason
-        self.membersOnline = membersOnline
+        self.membersCount = membersCount
         self.themes = themes
     }
 
@@ -755,8 +788,8 @@ struct PlacementCircle: Codable, Identifiable {
         easiestFirstAction = try container.decodeIfPresent(String.self, forKey: .easiestFirstAction) ?? "Review placement."
         fitLabel = try container.decodeIfPresent(String.self, forKey: .fitLabel) ?? "Fit"
         placementReason = try container.decodeIfPresent(String.self, forKey: .placementReason) ?? description ?? "Matched from your profile signals."
-        membersOnline = try container.decodeIfPresent(Int.self, forKey: .membersOnline)
-            ?? container.decodeIfPresent(Int.self, forKey: .membersCount)
+        membersCount = try container.decodeIfPresent(Int.self, forKey: .membersCount)
+            ?? container.decodeIfPresent(Int.self, forKey: .membersOnline)
             ?? 0
         themes = try container.decodeIfPresent([String].self, forKey: .themes) ?? []
     }
@@ -775,7 +808,7 @@ struct PlacementCircle: Codable, Identifiable {
         try container.encode(easiestFirstAction, forKey: .easiestFirstAction)
         try container.encode(fitLabel, forKey: .fitLabel)
         try container.encode(placementReason, forKey: .placementReason)
-        try container.encode(membersOnline, forKey: .membersOnline)
+        try container.encode(membersCount, forKey: .membersCount)
         try container.encode(themes, forKey: .themes)
     }
 }

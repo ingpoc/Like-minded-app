@@ -14,5 +14,5 @@ When API rows are unstable (parallel seeding, empty threads, roster order), add 
 
 1. Add fixture block if plate copy ≠ seeded API shape
 2. Document in ledger `intentional_differences` / `visual_parity.notes`
-3. Wire `accessibilityLabel` strings to labels in `macos_cua_screen.sh` (see `macos-cua/references/likeminded.md`)
-4. Add screen to `verify_macos_screens.sh` + `macos_validation_batch.sh` screen lists if missing
+3. Wire stable `accessibilityLabel` strings to the flow success signals in `validation/screens/<screen>.json`
+4. Add or update the flow with `npm run testing:ledger-add-flow`, then prove it through the testing-ledger card and bundled `@Computer`

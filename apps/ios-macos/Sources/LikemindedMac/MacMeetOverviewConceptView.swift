@@ -2,7 +2,7 @@ import SwiftUI
 
 /// Meet tab plate — thewayofcode-inspired venue convergence map.
 /// Reference: `mockups/macos/concepts/mockup-meet-overview-convergence.png`
-/// Meet tab production plate (`--mac-screen meetOverview`). Same shell + `MacBottomNav`.
+/// Meet tab production plate (`--mac-screen meetOverview`). Same shell + `MacTopNavigation`.
 struct MacMeetOverviewConceptView: View {
     @ObservedObject var appState: MacAppState
     var navigate: ((MacPrototypeScreen) -> Void)?
@@ -77,6 +77,8 @@ struct MacMeetOverviewConceptView: View {
     // MARK: - Header
 
     private var conceptHeader: some View {
+        // Concept plate (`mockup-meet-overview-convergence.png`) has no in-content
+        // Notifications chrome — shell overlay in MacRootView owns the single bell.
         VStack(alignment: .leading, spacing: 8) {
             Text("Likeminded")
                 .font(.system(size: 22, weight: .semibold, design: .serif))
@@ -137,6 +139,23 @@ struct MacMeetOverviewConceptView: View {
                         heroRSVPButton(option)
                     }
                 }
+
+                // Ledger control join-meetup → meetVideoCall. Venue copy is physical;
+                // CTA must name video modality (UI/UX review) so camera ≠ “show up in room”.
+                Button {
+                    navigate?(.meetVideoCall)
+                } label: {
+                    Label("Join video call", systemImage: "video.fill")
+                        .font(MacType.button)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 11)
+                        .background(MacPalette.accent, in: Capsule())
+                        .foregroundStyle(.white)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Join video call")
+                .accessibilityIdentifier("join-meetup")
+                .accessibilityAddTraits(.isButton)
             }
             .padding(28)
             .frame(width: 400, alignment: .topLeading)
@@ -232,6 +251,9 @@ struct MacMeetOverviewConceptView: View {
                             pastMeetConceptRow(meeting)
                         }
                         .buttonStyle(.plain)
+                        .accessibilityElement(children: .combine)
+                        .accessibilityLabel("Past meet row")
+                        .accessibilityValue(meeting.title)
                     }
                 }
             }
@@ -277,6 +299,30 @@ struct MacMeetOverviewConceptView: View {
 
     private var weeklyAvailabilityPanel: some View {
         VStack(alignment: .leading, spacing: 14) {
+            Text("Available this weekend?")
+                .font(MacType.section)
+                .foregroundStyle(MacPalette.ink)
+
+            VStack(spacing: 12) {
+                weekendAvailabilityRow(
+                    day: "Saturday",
+                    detail: "Community meetup",
+                    available: appState.meetingRsvps.community,
+                    kind: "community"
+                )
+                Divider()
+                weekendAvailabilityRow(
+                    day: "Sunday",
+                    detail: "Circle meetup",
+                    available: appState.meetingRsvps.circle,
+                    kind: "circle"
+                )
+            }
+
+            Label("RSVP closes Friday midnight.", systemImage: "clock")
+                .font(MacType.small)
+                .foregroundStyle(MacPalette.muted)
+
             HStack {
                 Text("Your availability")
                     .font(MacType.section)
@@ -288,7 +334,9 @@ struct MacMeetOverviewConceptView: View {
                         .foregroundStyle(MacPalette.accent)
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel("Edit availability")
             }
+            .padding(.top, 8)
 
             VStack(spacing: 0) {
                 ForEach(Array(weeklySlots.enumerated()), id: \.element.id) { index, slot in
@@ -308,6 +356,39 @@ struct MacMeetOverviewConceptView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(MacPalette.line, lineWidth: 1))
+    }
+
+    private func weekendAvailabilityRow(day: String, detail: String, available: Bool, kind: String) -> some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(day)
+                    .font(MacType.button)
+                    .foregroundStyle(MacPalette.ink)
+                Text(detail)
+                    .font(MacType.small)
+                    .foregroundStyle(MacPalette.muted)
+            }
+            Spacer()
+            HStack(spacing: 8) {
+                Button {
+                    Task { await appState.updateMeetingRSVP(kind: kind, available: true) }
+                } label: {
+                    MacPill(text: "Available", isSelected: available)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("\(day) \(detail) available")
+                .accessibilityValue(available ? "Selected" : "Not selected")
+
+                Button {
+                    Task { await appState.updateMeetingRSVP(kind: kind, available: false) }
+                } label: {
+                    MacPill(text: "Not", isSelected: !available)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("\(day) \(detail) not available")
+                .accessibilityValue(!available ? "Selected" : "Not selected")
+            }
+        }
     }
 
     private func weeklyAvailabilityRow(_ slot: WeeklyAvailabilitySlot) -> some View {

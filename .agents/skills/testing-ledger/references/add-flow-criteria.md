@@ -27,7 +27,7 @@ If an existing flow’s `control_ids` already cover the button, **extend that fl
 
 - Flow starts `pending` with `proof` from `ledger:apply-proof` defaults
 - Re-run proof with `testing-ledger` workflow
-- Do not mark `pass` in the same turn as add without CUA proof
+- Do not mark `pass` in the same turn as add without current native interaction proof
 
 ## Do not add
 

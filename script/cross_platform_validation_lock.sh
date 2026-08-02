@@ -61,7 +61,8 @@ holder_path() {
 }
 
 acquired_pid_file() {
-  echo "$SESSION_DIR/$$.$1"
+  local session_id="${LIKEMINDED_LOCK_SESSION_ID:-$PPID}"
+  echo "$SESSION_DIR/$session_id.$1"
 }
 
 require_resource() {

@@ -10,12 +10,12 @@ Usage: $0 preflight|next|record <screen> <flow-id> [evidence]
 
   preflight  API health + compact open count (run once per session)
   next       Print next open macOS flow (testing:ledger-next)
-  record     Record pass after CUA (tier CUA-click)
+  record     Record pass after bundled Computer proof
 
 Examples:
   $0 preflight
   $0 next
-  $0 record app-shell tab-navigation "CUA validation-gurusharan: all tabs switch"
+  $0 record app-shell tab-navigation "Computer validation-gurusharan: all tabs switch"
 EOF
 }
 
@@ -35,9 +35,9 @@ case "$cmd" in
   record)
     screen="${2:?screen}"
     flow="${3:?flow-id}"
-    evidence="${4:-CUA validation-gurusharan pass}"
+    evidence="${4:-Computer validation-gurusharan pass}"
     npm run ledger:record-flow -- --platform macos --screen "$screen" --flow "$flow" \
-      --result pass --method CUA-click --evidence "$evidence"
+      --result pass --method Computer-use --evidence "$evidence"
     npm run testing:ledger-next 2>/dev/null | head -8 || true
     ;;
   -h|--help) usage ;;

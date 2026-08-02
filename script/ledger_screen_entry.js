@@ -4,6 +4,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { findLedgerByScreenArg, refreshScreenSourceHash } = require("./ledger_hash");
+const { flowValidation, isFlowStale } = require("./ledger_screens");
 
 function arg(name, fallback = null) {
   const index = process.argv.indexOf(name);
@@ -15,7 +16,7 @@ const screen = arg("--screen");
 const section = arg("--section", "all");
 
 if (!screen) {
-  console.error("Usage: ledger_screen_entry.js --platform macos|ios --screen <screen> [--section all|ui|controls|flows|summary]");
+  console.error("Usage: ledger_screen_entry.js --platform macos|ios --screen <screen> [--section route|all|ui|controls|flows|summary]");
   process.exit(2);
 }
 
@@ -32,8 +33,32 @@ const summary = {
   source_hash: ledger.data.source_hash || null
 };
 
+function routeFlow(flow) {
+  const validation = flowValidation(flow, platform);
+  const result = String(validation.result || "pending").toLowerCase();
+  return {
+    id: flow.id,
+    name: flow.name,
+    result: isFlowStale(flow, platform, summary.source_hash) ? "stale-pass" : result,
+    proof_tier: flow.proof?.tier || null,
+    last_test_method: validation.last_test_method || null,
+    tested_source_hash: validation.tested_source_hash || null
+  };
+}
+
 let payload;
 switch (section) {
+  case "route": {
+    const flows = ledger.unified?.flows || ledger.data.flows || [];
+    payload = {
+      ...summary,
+      source_files: ledger.data.source_files || [],
+      entry_points: ledger.data.entry_points || [],
+      ui_validation: ledger.data.ui_validation || ledger.data.visual_parity || null,
+      flows: flows.map(routeFlow)
+    };
+    break;
+  }
   case "summary":
     payload = summary;
     break;

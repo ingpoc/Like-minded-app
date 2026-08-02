@@ -55,6 +55,8 @@
 		94B8BB90A08111BEB7490EEE /* RealtimeVoiceClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70685EA3FAE20FBC4827812B /* RealtimeVoiceClient.swift */; };
 		9917E4D207930B06A316F53D /* MacDesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E35A6097677BF379E314306E /* MacDesignSystem.swift */; };
 		9991EE71916006E89457B6E5 /* LikemindedAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DCB9E92C74E864B793C207 /* LikemindedAPIClient.swift */; };
+		A14FE9747ABCB44C9C8ECA2A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 58C1AFC76AC38474C3503E8B /* PrivacyInfo.xcprivacy */; };
+		A711C5E0A123BD0F807B58AC /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 58C1AFC76AC38474C3503E8B /* PrivacyInfo.xcprivacy */; };
 		AF441928B59342BA1A398EBD /* MeetVenueStreamlineFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1E2884F9FFF95F47CA4932 /* MeetVenueStreamlineFieldView.swift */; };
 		B6865DD6F294D8C495E0F118 /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4CC542091C9D3F04D1DE21 /* CustomTabBar.swift */; };
 		B9E7E4DC406E0482E4C8D26C /* SocialAuthButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F92FDA4C0807BAC3C64DDC /* SocialAuthButtonsView.swift */; };
@@ -91,6 +93,7 @@
 		43D8F9C153E1CAAA2E1D4B53 /* DeviceIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceIdentity.swift; sourceTree = "<group>"; };
 		4895BAF5408C8A7CEDEB5EC3 /* CircleCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleCard.swift; sourceTree = "<group>"; };
 		583CD7AF0A74916366CBF8AF /* Likeminded.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Likeminded.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		58C1AFC76AC38474C3503E8B /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		5F51BCAB677E4C2BEAE840EE /* NotificationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsView.swift; sourceTree = "<group>"; };
 		63D2CC8991B9726CA6E09FED /* LikemindedPrivacyPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikemindedPrivacyPolicy.swift; sourceTree = "<group>"; };
 		63DCB9E92C74E864B793C207 /* LikemindedAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikemindedAPIClient.swift; sourceTree = "<group>"; };
@@ -170,6 +173,7 @@
 				63D2CC8991B9726CA6E09FED /* LikemindedPrivacyPolicy.swift */,
 				000AE075D1E28F6F008AC04D /* LiveKitMeetSession.swift */,
 				0A1E2884F9FFF95F47CA4932 /* MeetVenueStreamlineFieldView.swift */,
+				58C1AFC76AC38474C3503E8B /* PrivacyInfo.xcprivacy */,
 				85F92FDA4C0807BAC3C64DDC /* SocialAuthButtonsView.swift */,
 				CE323EA9FB8B001BE3FD724E /* WalletSignInSupport.swift */,
 			);
@@ -379,6 +383,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3D96591126672068AD6125E9 /* Assets.xcassets in Resources */,
+				A14FE9747ABCB44C9C8ECA2A /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -387,6 +392,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5BF328C460E5D74DB230A51F /* Assets.xcassets in Resources */,
+				A711C5E0A123BD0F807B58AC /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -537,8 +543,8 @@
 				DEVELOPMENT_ASSET_PATHS = "\"\"";
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				GOOGLE_CLIENT_ID_IOS = "";
-				GOOGLE_REVERSED_CLIENT_ID = "";
+				GOOGLE_CLIENT_ID_MAC = "";
+				GOOGLE_REVERSED_CLIENT_ID_MAC = "";
 				INFOPLIST_FILE = "Info/LikemindedMac-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Likeminded;
 				INFOPLIST_KEY_LIKEMINDED_API_BASE_URL = "$(LIKEMINDED_API_BASE_URL)";
@@ -566,7 +572,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"\"";
 				GENERATE_INFOPLIST_FILE = YES;
 				GOOGLE_CLIENT_ID_IOS = "";
-				GOOGLE_REVERSED_CLIENT_ID = "";
+				GOOGLE_REVERSED_CLIENT_ID_IOS = "";
 				INFOPLIST_FILE = "Info/Likeminded-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Likeminded;
 				INFOPLIST_KEY_LIKEMINDED_API_BASE_URL = "$(LIKEMINDED_API_BASE_URL)";
@@ -600,8 +606,8 @@
 				DEVELOPMENT_ASSET_PATHS = "\"\"";
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				GOOGLE_CLIENT_ID_IOS = "";
-				GOOGLE_REVERSED_CLIENT_ID = "";
+				GOOGLE_CLIENT_ID_MAC = "";
+				GOOGLE_REVERSED_CLIENT_ID_MAC = "";
 				INFOPLIST_FILE = "Info/LikemindedMac-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Likeminded;
 				INFOPLIST_KEY_LIKEMINDED_API_BASE_URL = "$(LIKEMINDED_API_BASE_URL)";
@@ -695,7 +701,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"\"";
 				GENERATE_INFOPLIST_FILE = YES;
 				GOOGLE_CLIENT_ID_IOS = "";
-				GOOGLE_REVERSED_CLIENT_ID = "";
+				GOOGLE_REVERSED_CLIENT_ID_IOS = "";
 				INFOPLIST_FILE = "Info/Likeminded-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Likeminded;
 				INFOPLIST_KEY_LIKEMINDED_API_BASE_URL = "$(LIKEMINDED_API_BASE_URL)";

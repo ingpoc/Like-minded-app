@@ -15,6 +15,11 @@ struct ProfileSignalLabel: Identifiable {
 enum ProfileSignalFormatting {
     static func display(_ value: String?) -> String {
         guard let value, !value.isEmpty else { return "From voice profile" }
+        switch value.lowercased() {
+        case "slowtrust": return "Slow trust"
+        case "fasttrust": return "Fast trust"
+        default: break
+        }
         return value
             .replacingOccurrences(of: "([a-z])([A-Z])", with: "$1 $2", options: .regularExpression)
             .capitalized
@@ -45,10 +50,15 @@ struct VoiceProfileView: View {
     @State private var showingVoiceSession = false
     @State private var showSettingsForValidation = false
     @State private var profilePath = NavigationPath()
+    @State private var didOpenProfileRouteForValidation = false
 
     var body: some View {
         NavigationStack(path: $profilePath) {
-            ScreenContainer(title: "Profile", subtitle: "Your profile") {
+            ScreenContainer(
+                title: "Profile",
+                subtitle: "Your profile, in context.",
+                caption: "What we understand about you—and how it shapes your placement."
+            ) {
                 profileHeader
 
                 if shouldShowOnboarding {
@@ -87,6 +97,7 @@ struct VoiceProfileView: View {
             .onAppear {
                 openVoiceSessionForValidationIfNeeded()
                 openSettingsForValidationIfNeeded()
+                openProfileRouteForValidationIfNeeded()
             }
             .background {
                 NavigationLink(isActive: $showSettingsForValidation) {
@@ -97,6 +108,20 @@ struct VoiceProfileView: View {
                 .hidden()
             }
         }
+    }
+
+    private func openProfileRouteForValidationIfNeeded() {
+        #if DEBUG
+        guard !didOpenProfileRouteForValidation else { return }
+        let args = ProcessInfo.processInfo.arguments
+        if args.contains("--likeminded-start-profile-edit") {
+            profilePath.append(ProfileRoute.edit)
+            didOpenProfileRouteForValidation = true
+        } else if args.contains("--likeminded-start-profile-signals") {
+            profilePath.append(ProfileRoute.signals)
+            didOpenProfileRouteForValidation = true
+        }
+        #endif
     }
 
     private func openSettingsForValidationIfNeeded() {
@@ -123,27 +148,84 @@ struct VoiceProfileView: View {
     }
 
     private var profileHeader: some View {
-        HStack(alignment: .firstTextBaseline) {
-            Text(profileHeaderText)
-                .font(PrototypeTypography.metadata)
-                .foregroundStyle(PrototypePalette.ink)
+        let info = appState.slice?.profile.basicInfo ?? appState.basicInfo
+        let name = info?.name ?? "Your profile"
+        let location = info?.city ?? "Your location"
+        let summary = appState.slice?.profile.reflection.summary
+        return VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 14) {
+                DoodlePortrait(assetName: DoodleArt.portrait(for: info?.gender), size: 76)
+                    .accessibilityHidden(true)
 
-            Spacer()
+                VStack(alignment: .leading, spacing: 5) {
+                    Text(name)
+                        .font(PrototypeTypography.sectionTitle)
+                        .foregroundStyle(PrototypePalette.ink)
+                    Label(location, systemImage: "mappin")
+                        .font(PrototypeTypography.metadata)
+                        .foregroundStyle(PrototypePalette.subink)
+                    Label("Voice-informed profile", systemImage: "waveform")
+                        .font(PrototypeTypography.metadata)
+                        .foregroundStyle(PrototypePalette.accent)
+                }
 
-            Button {
-                profilePath.append(ProfileRoute.settings)
-            } label: {
-                Image(systemName: "gearshape")
-                    .font(PrototypeTypography.bodyStrong)
-                    .foregroundStyle(PrototypePalette.ink)
-                    .frame(width: 44, height: 44)
+                Spacer(minLength: 0)
+
+                Button {
+                    profilePath.append(ProfileRoute.settings)
+                } label: {
+                    Image(systemName: "gearshape")
+                        .font(PrototypeTypography.bodyStrong)
+                        .foregroundStyle(PrototypePalette.ink)
+                        .frame(width: 44, height: 44)
+                        .background(PrototypePalette.background, in: Circle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Settings")
+                .accessibilityIdentifier("title-settings")
             }
-            .buttonStyle(.plain)
-            .accessibilityElement(children: .ignore)
-            .accessibilityAddTraits(.isButton)
-            .accessibilityLabel("Settings")
-            .accessibilityIdentifier("title-settings")
+
+            if let summary, !summary.isEmpty {
+                Text(summary)
+                    .font(PrototypeTypography.body)
+                    .foregroundStyle(PrototypePalette.ink)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            if info != nil {
+                HStack(spacing: 10) {
+                    Button {
+                        profilePath.append(ProfileRoute.edit)
+                    } label: {
+                        Label("Edit profile", systemImage: "square.and.pencil")
+                            .font(PrototypeTypography.button)
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity, minHeight: 44)
+                            .background(PrototypePalette.accent, in: Capsule())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("open-profile-update-options")
+
+                    Button {
+                        showingVoiceSession = true
+                        Task { await appState.startReinterview() }
+                    } label: {
+                        Label("Re-interview", systemImage: "arrow.clockwise")
+                            .font(PrototypeTypography.button)
+                            .foregroundStyle(PrototypePalette.ink)
+                            .frame(maxWidth: .infinity, minHeight: 44)
+                            .background(PrototypePalette.surface, in: Capsule())
+                            .overlay(Capsule().stroke(PrototypePalette.rule, lineWidth: 1))
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Re-interview to update profile")
+                }
+            }
         }
+        .padding(16)
+        .background(PrototypePalette.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 24, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
     }
 
     private var shouldShowOnboarding: Bool {
@@ -160,74 +242,6 @@ struct VoiceProfileView: View {
             return appState.basicInfo != nil
         }
         return appState.slice == nil && appState.basicInfo != nil
-    }
-
-    private var profileHeaderText: String {
-        guard let info = appState.slice?.profile.basicInfo ?? appState.basicInfo else {
-            return "Start with the basics"
-        }
-
-        var parts = [info.name, info.gender.label]
-        if let parsed = LikemindedDate.parse(info.dateOfBirth) {
-            let age = Calendar.current.dateComponents([.year], from: parsed, to: Date()).year ?? 0
-            if age > 0 {
-                parts.append("\(age)")
-            }
-        }
-        parts.append(info.city)
-        return parts
-            .filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
-            .joined(separator: " · ")
-    }
-
-    private var profileInterests: [Interest] {
-        appState.slice?.profile.interests ?? []
-    }
-
-    private var profileTraits: [ProfileTraitRowModel] {
-        let bigFive = appState.slice?.signals?.bigFive ?? ProfileSignals.BigFive()
-        let socialEnergy = appState.slice?.signals?.socialEnergy ?? "steady"
-        let trustPattern = appState.slice?.signals?.trustPattern ?? "slowTrust"
-
-        let energyValue: Double = {
-            switch socialEnergy.lowercased() {
-            case "high": return 0.78
-            case "low": return 0.32
-            default: return 0.50
-            }
-        }()
-
-        let trustValue: Double = trustPattern.lowercased() == "fasttrust" ? 0.74 : 0.36
-
-        return [
-            ProfileTraitRowModel(left: "Reserved", right: "Outgoing", value: bigFive.extraversion),
-            ProfileTraitRowModel(left: "Analytical", right: "Intuitive", value: bigFive.openness),
-            ProfileTraitRowModel(left: "Low Energy", right: "High Energy", value: energyValue),
-            ProfileTraitRowModel(left: "Steady", right: "Spontaneous", value: 1.0 - bigFive.conscientiousness),
-            ProfileTraitRowModel(left: "Slow Trust", right: "Fast Trust", value: trustValue)
-        ]
-    }
-
-    private var communicationReadTitle: String {
-        let primary = appState.slice?.signals?.communicationStyle?.primary?.lowercased() ?? ""
-        switch primary {
-        case "warm": return "Warm Communicator"
-        case "direct": return "Direct Communicator"
-        case "expressive": return "Expressive Communicator"
-        case "analytical": return "Thoughtful Communicator"
-        default: return "Honest Communicator"
-        }
-    }
-
-    private var communicationReadDetail: String {
-        let primary = appState.slice?.signals?.communicationStyle?.primary?.lowercased() ?? ""
-        switch primary {
-        case "warm": return "You lead with care and make people feel heard."
-        case "direct": return "You value clarity and get to the point with ease."
-        case "expressive": return "You bring energy and openness to conversations."
-        case "analytical": return "You think before you speak and notice what others miss."
-        default: return "You value clarity and depth in conversations."
-        }
     }
 
     private var profileVoiceEmptyState: some View {
@@ -271,102 +285,109 @@ struct VoiceProfileView: View {
     }
 
     private var livingProfile: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Signals".uppercased())
-                        .font(PrototypeTypography.eyebrow)
-                        .foregroundStyle(PrototypePalette.accent)
-                    Text("Living profile")
-                        .font(PrototypeTypography.sectionTitle)
-                        .foregroundStyle(PrototypePalette.ink)
-                }
-
-                Spacer()
-
-                Button("Update profile") {
-                    showingVoiceSession = true
-                    Task { await appState.startVoiceSession() }
-                }
-                .font(PrototypeTypography.metadata)
-                .foregroundStyle(PrototypePalette.ink)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 10)
-                .background(PrototypePalette.surface)
-                .clipShape(Capsule(style: .continuous))
-                .overlay(Capsule(style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
-                .buttonStyle(.plain)
-                .accessibilityLabel("Update profile")
-            }
-
-            HStack(spacing: 10) {
-                ProfileSignalPill("Communication", selected: true)
-                ProfileSignalPill("Energy")
-                ProfileSignalPill("Trust")
-            }
-            .accessibilityElement(children: .combine)
-            .accessibilityLabel("Communication, Energy, Trust")
-
-            HStack(spacing: 14) {
-                Image(systemName: "ellipsis.message")
-                    .font(.system(size: 24, weight: .regular))
-                    .foregroundStyle(PrototypePalette.accent)
-                    .frame(width: 60, height: 60)
-                    .background(PrototypePalette.accentSoft)
-                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-
-                VStack(alignment: .leading, spacing: 5) {
-                    Text(communicationReadTitle)
-                        .font(PrototypeTypography.bodyStrong)
-                        .foregroundStyle(PrototypePalette.ink)
-                    Text(communicationReadDetail)
-                        .font(PrototypeTypography.caption)
-                        .foregroundStyle(PrototypePalette.ink)
-                }
-
-                Spacer(minLength: 0)
-
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(PrototypePalette.subink)
-            }
-            .padding(16)
-            .background(PrototypePalette.surface)
-            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-            .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
-            .accessibilityElement(children: .combine)
-            .accessibilityLabel("\(communicationReadTitle). \(communicationReadDetail)")
-            .accessibilityAddTraits(.isStaticText)
-
-            VStack(spacing: 15) {
-                ForEach(profileTraits, id: \.left) { trait in
-                    ProfileTraitRow(left: trait.left, right: trait.right, value: trait.value)
-                }
-            }
-
-            Divider().overlay(PrototypePalette.rule)
-
+        VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 14) {
-                Text("Interests".uppercased())
-                    .font(PrototypeTypography.eyebrow)
-                    .foregroundStyle(PrototypePalette.accent)
-                Text("What you're into")
+                Text("Why this placement")
                     .font(PrototypeTypography.sectionTitle)
                     .foregroundStyle(PrototypePalette.ink)
 
-                if profileInterests.isEmpty {
-                    Text("No interests detected yet. Update your voice profile to refine.")
+                Text("Context for your circle—not proof of personality.")
+                    .font(PrototypeTypography.caption)
+                    .foregroundStyle(PrototypePalette.subink)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                ForEach(Array(appState.currentPlacement.fitReasons.prefix(3).enumerated()), id: \.offset) { index, reason in
+                    HStack(alignment: .top, spacing: 10) {
+                        Image(systemName: ["person.2", "target", "mountain.2"][index])
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(PrototypePalette.accent)
+                            .frame(width: 30, height: 30)
+                            .background(PrototypePalette.accentSoft, in: Circle())
+                            .accessibilityHidden(true)
+                        Text(reason)
+                            .font(PrototypeTypography.body)
+                            .foregroundStyle(PrototypePalette.ink)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+
+            }
+            .padding(18)
+            .background(PrototypePalette.surface)
+            .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 22, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text("Voice-informed signals")
+                        .font(PrototypeTypography.sectionTitle)
+                        .foregroundStyle(PrototypePalette.ink)
+                    Spacer(minLength: 12)
+                    Button("Review all") {
+                        profilePath.append(ProfileRoute.signals)
+                    }
+                    .font(PrototypeTypography.metadata)
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 7)
+                    .background(PrototypePalette.accent, in: Capsule())
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Review signals")
+                    .accessibilityIdentifier("review-private-signals")
+                }
+                Text("Inferences from your interview and activity—not a diagnosis.")
+                    .font(PrototypeTypography.caption)
+                    .foregroundStyle(PrototypePalette.subink)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                HStack(spacing: 8) {
+                    ForEach(Array(ProfileSignalFormatting.cards(from: appState.slice?.signals).prefix(2))) { item in
+                        profileSignalPill(item)
+                    }
+                }
+            }
+            .padding(14)
+            .background(PrototypePalette.surface)
+            .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 22, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+
+            VStack(alignment: .leading, spacing: 14) {
+                Text("Top interests")
+                    .font(PrototypeTypography.sectionTitle)
+                    .foregroundStyle(PrototypePalette.ink)
+                let interests = appState.slice?.profile.interests.map(\.label) ?? []
+                if interests.isEmpty {
+                    Text("Interests appear after your voice profile.")
                         .font(PrototypeTypography.caption)
                         .foregroundStyle(PrototypePalette.subink)
                 } else {
-                    ProfileInterestTagLayout(interests: profileInterests)
+                    TokenRow(items: interests)
                 }
             }
+            .padding(18)
+            .background(PrototypePalette.surface)
+            .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 22, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
         }
-        .padding(18)
-        .background(PrototypePalette.surface.opacity(0.58))
-        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 22, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+    }
+
+    private func profileSignalPill(_ item: ProfileSignalLabel) -> some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Text(item.title)
+                .font(PrototypeTypography.metadata)
+                .foregroundStyle(PrototypePalette.subink)
+            Text(item.value)
+                .font(PrototypeTypography.bodyStrong)
+                .foregroundStyle(PrototypePalette.ink)
+                .lineLimit(2)
+        }
+        .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
+        .padding(8)
+        .background(PrototypePalette.background, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(item.title), \(item.value)")
+        .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -420,9 +441,129 @@ private struct ProfileVoiceEmptyCard: View {
     }
 }
 
+private struct TypedProfileUpdateSheet: View {
+    @EnvironmentObject private var appState: PrototypeAppState
+    @Environment(\.dismiss) private var dismiss
+
+    let signal: ProfileSignalLabel?
+    @State private var draft: String
+    @State private var isSaving = false
+    @State private var errorMessage: String?
+
+    init(signal: ProfileSignalLabel? = nil, initialValue: String) {
+        self.signal = signal
+        _draft = State(initialValue: initialValue)
+    }
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    Text(signal == nil ? "Type an update" : "Correct \(signal!.title.lowercased())")
+                        .font(PrototypeTypography.pageTitle)
+                        .foregroundStyle(PrototypePalette.ink)
+                        .accessibilityAddTraits(.isHeader)
+
+                    Text(
+                        signal == nil
+                            ? "This updates your private profile summary. Only you can see it."
+                            : "Replace this interpretation with words that fit you better, or remove it."
+                    )
+                    .font(PrototypeTypography.body)
+                    .foregroundStyle(PrototypePalette.subink)
+
+                    ZStack(alignment: .topLeading) {
+                        if draft.isEmpty {
+                            Text(signal == nil ? "Write what you want Likeminded to understand…" : "Write what fits you better…")
+                                .font(PrototypeTypography.body)
+                                .foregroundStyle(PrototypePalette.muted)
+                                .padding(.horizontal, 17)
+                                .padding(.vertical, 20)
+                                .accessibilityHidden(true)
+                        }
+                        TextEditor(text: $draft)
+                            .font(PrototypeTypography.body)
+                            .foregroundStyle(PrototypePalette.ink)
+                            .frame(minHeight: 150)
+                            .padding(12)
+                            .scrollContentBackground(.hidden)
+                            .accessibilityLabel(signal == nil ? "Typed profile update" : "\(signal!.title) correction")
+                            .accessibilityIdentifier("profile-typed-update-field")
+                    }
+                    .background(PrototypePalette.surface)
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(PrototypePalette.rule))
+
+                    if let errorMessage {
+                        Text(errorMessage)
+                            .font(PrototypeTypography.caption)
+                            .foregroundStyle(PrototypePalette.amber)
+                    }
+
+                    Button {
+                        isSaving = true
+                        Task {
+                            let saved: Bool
+                            if let signal {
+                                saved = await appState.correctProfileSignal(signal.title, value: draft)
+                            } else {
+                                saved = await appState.updateProfileSummary(draft)
+                            }
+                            isSaving = false
+                            if saved {
+                                dismiss()
+                            } else {
+                                errorMessage = "Could not save this update. Please try again."
+                            }
+                        }
+                    } label: {
+                        PrimaryActionButton(title: isSaving ? "Saving update" : "Save typed update", systemImage: "checkmark")
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(isSaving || draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .accessibilityIdentifier("profile-typed-update-save")
+
+                    if let signal {
+                        Button("Remove this interpretation") {
+                            isSaving = true
+                            Task {
+                                if await appState.dismissProfileSignal(signal.title) {
+                                    dismiss()
+                                } else {
+                                    isSaving = false
+                                    errorMessage = "Could not remove this interpretation. Please try again."
+                                }
+                            }
+                        }
+                        .font(PrototypeTypography.button)
+                        .foregroundStyle(PrototypePalette.amber)
+                        .frame(maxWidth: .infinity, minHeight: 48)
+                        .accessibilityIdentifier("profile-typed-update-remove")
+                    }
+                }
+                .padding(20)
+            }
+            .background(PrototypePalette.background.ignoresSafeArea())
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Close") { dismiss() }
+                }
+            }
+            .toolbarBackground(PrototypePalette.background, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+        }
+        .preferredColorScheme(.light)
+    }
+}
+
 private struct VoiceProfileSessionSheet: View {
     @EnvironmentObject private var appState: PrototypeAppState
     @Environment(\.dismiss) private var dismiss
+    @State private var showingTypedUpdate = false
+
+    private var voiceFailed: Bool {
+        appState.realtimeStatus == RealtimeVoicePhase.failed.rawValue
+    }
 
     private var statusLine: String {
         switch appState.realtimeStatus {
@@ -431,7 +572,7 @@ private struct VoiceProfileSessionSheet: View {
         case RealtimeVoicePhase.connecting.rawValue, RealtimeVoicePhase.stopping.rawValue:
             return appState.realtimeStatus + "…"
         case RealtimeVoicePhase.stopped.rawValue:
-            return "Signals captured."
+            return "Review captured signals."
         case RealtimeVoicePhase.failed.rawValue:
             return "Voice issue — try again."
         default:
@@ -450,25 +591,33 @@ private struct VoiceProfileSessionSheet: View {
                         Text("Voice profile")
                             .font(PrototypeTypography.display)
                             .foregroundStyle(.white)
-                        Text(statusLine)
-                            .font(PrototypeTypography.body)
-                            .foregroundStyle(.white.opacity(0.82))
-                            .multilineTextAlignment(.center)
-                            .frame(maxWidth: 280)
+                            .dynamicTypeSize(.xSmall ... .accessibility1)
+                        if !voiceFailed {
+                            Text(statusLine)
+                                .font(PrototypeTypography.body)
+                                .foregroundStyle(.white.opacity(0.82))
+                                .multilineTextAlignment(.center)
+                                .frame(maxWidth: 280)
+                        }
                     }
                     .padding(.top, 8)
 
-                    VoiceListeningCard(isActive: appState.isVoiceStreaming || appState.realtimeStatus == RealtimeVoicePhase.streaming.rawValue)
+                    VoiceListeningCard(
+                        isActive: appState.isVoiceStreaming || appState.realtimeStatus == RealtimeVoicePhase.streaming.rawValue,
+                        isFailed: voiceFailed
+                    )
                         .accessibilityElement(children: .ignore)
                         .accessibilityLabel("Voice orb")
-                        .accessibilityValue(appState.isVoiceStreaming ? "Listening" : appState.realtimeStatus)
+                        .accessibilityValue(voiceFailed ? "Recording off" : (appState.isVoiceStreaming ? "Listening" : appState.realtimeStatus))
 
-                    VoiceWaveformBars(isActive: appState.isVoiceStreaming || appState.realtimeStatus == RealtimeVoicePhase.streaming.rawValue)
-                        .frame(height: 36)
-                        .accessibilityHidden(true)
+                    if !voiceFailed {
+                        VoiceWaveformBars(isActive: appState.isVoiceStreaming || appState.realtimeStatus == RealtimeVoicePhase.streaming.rawValue)
+                            .frame(height: 36)
+                            .accessibilityHidden(true)
+                    }
 
-                    if let error = appState.realtimeError, !error.isEmpty {
-                        Text(error)
+                    if voiceFailed {
+                        Text("Voice could not start. Nothing was recorded or changed.")
                             .font(PrototypeTypography.caption)
                             .foregroundStyle(PrototypePalette.amber)
                             .multilineTextAlignment(.center)
@@ -494,10 +643,15 @@ private struct VoiceProfileSessionSheet: View {
                                         .foregroundStyle(.white.opacity(0.92))
                                         .frame(maxWidth: .infinity, alignment: .leading)
 
-                                    Circle()
-                                        .fill(PrototypePalette.success)
-                                        .frame(width: 8, height: 8)
-                                        .padding(.top, 8)
+                                    Button {
+                                        appState.removeCapturedVoiceSignal(at: index)
+                                    } label: {
+                                        Text("Remove")
+                                            .font(PrototypeTypography.caption)
+                                            .foregroundStyle(PrototypePalette.amber)
+                                    }
+                                    .buttonStyle(.plain)
+                                    .accessibilityLabel("Remove captured signal \(index + 1)")
                                 }
                             }
                         }
@@ -506,23 +660,65 @@ private struct VoiceProfileSessionSheet: View {
                         .background(Color.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                     }
 
-                    Button {
-                        Task { await appState.stopVoiceSession() }
-                    } label: {
-                        Label("Stop and extract signals", systemImage: "stop.fill")
-                            .font(PrototypeTypography.button)
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 16)
-                            .background(PrototypePalette.actionGradient, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                    if voiceFailed {
+                        Button {
+                            appState.resetVoiceSession()
+                            Task { await appState.startVoiceSession() }
+                        } label: {
+                            Label("Try voice again", systemImage: "arrow.clockwise")
+                                .font(PrototypeTypography.button)
+                                .foregroundStyle(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 16)
+                                .background(PrototypePalette.actionGradient, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Try voice again")
+                        .accessibilityIdentifier("voice-profile-retry")
+
+                        Button {
+                            showingTypedUpdate = true
+                        } label: {
+                            Label("Type an update", systemImage: "keyboard")
+                                .font(PrototypeTypography.button)
+                                .foregroundStyle(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 14)
+                                .background(Color.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityIdentifier("voice-profile-type-update")
+                    } else if !appState.didPersistVoiceProfile {
+                        Button {
+                            Task { await appState.stopVoiceSession() }
+                        } label: {
+                            Label("Stop listening", systemImage: "stop.fill")
+                                .font(PrototypeTypography.button)
+                                .foregroundStyle(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 16)
+                                .background(PrototypePalette.actionGradient, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Stop listening")
                     }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("Stop")
 
                     Button {
-                        dismiss()
+                        Task {
+                            if appState.didPersistVoiceProfile {
+                                if await appState.completeVoiceSession() {
+                                    dismiss()
+                                }
+                            } else {
+                                appState.resetVoiceSession()
+                                dismiss()
+                            }
+                        }
                     } label: {
-                        Label("Done", systemImage: "checkmark")
+                        Label(
+                            appState.didPersistVoiceProfile ? "Save voice profile" : "Back to profile",
+                            systemImage: appState.didPersistVoiceProfile ? "checkmark" : "arrow.left"
+                        )
                             .font(PrototypeTypography.button)
                             .foregroundStyle(.white.opacity(0.92))
                             .frame(maxWidth: .infinity)
@@ -530,13 +726,17 @@ private struct VoiceProfileSessionSheet: View {
                             .background(Color.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                     }
                     .buttonStyle(.plain)
-                    .accessibilityLabel("Done")
+                    .accessibilityLabel(appState.didPersistVoiceProfile ? "Save voice profile" : "Back to profile")
 
                     HStack(alignment: .top, spacing: 10) {
                         Image(systemName: "lock.fill")
                             .font(.system(size: 13, weight: .semibold))
                             .foregroundStyle(PrototypePalette.success)
-                        Text("Profile read is private. Circle placement needs confirmation.")
+                        Text(
+                            voiceFailed
+                                ? "Your profile stays private. Retry voice when ready, or return to profile."
+                                : "Your words and captured signals stay private. Review what appears here before choosing Save voice profile."
+                        )
                             .font(PrototypeTypography.caption)
                             .foregroundStyle(.white.opacity(0.78))
                             .fixedSize(horizontal: false, vertical: true)
@@ -556,122 +756,32 @@ private struct VoiceProfileSessionSheet: View {
                 )
                 .ignoresSafeArea()
             }
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Cancel") {
+                        appState.resetVoiceSession()
+                        dismiss()
+                    }
+                    .foregroundStyle(.white)
+                    .accessibilityLabel("Cancel voice update")
+                }
+            }
             .toolbarBackground(.hidden, for: .navigationBar)
         }
         .onAppear {
             appState.seedVoiceSessionPreviewIfNeeded()
         }
-    }
-}
-
-private struct ProfileInterestTagLayout: View {
-    let interests: [Interest]
-
-    var body: some View {
-        ViewThatFits(in: .vertical) {
-            HStack(spacing: 8) {
-                ForEach(interests, id: \.label) { interest in
-                    ProfileInterestTag(interest: interest)
-                }
-            }
-
-            VStack(alignment: .leading, spacing: 8) {
-                ForEach(interests, id: \.label) { interest in
-                    ProfileInterestTag(interest: interest)
-                }
-            }
+        .preferredColorScheme(.dark)
+        .sheet(isPresented: $showingTypedUpdate) {
+            TypedProfileUpdateSheet(initialValue: "")
+            .environmentObject(appState)
         }
-    }
-}
-
-private struct ProfileInterestTag: View {
-    let interest: Interest
-
-    private var isEmphasized: Bool {
-        interest.depth == .deep || interest.depth == .active
-    }
-
-    var body: some View {
-        Text(interest.label)
-            .font(PrototypeTypography.metadata)
-            .foregroundStyle(isEmphasized ? .white : PrototypePalette.ink)
-            .padding(.horizontal, 11)
-            .padding(.vertical, 8)
-            .background(
-                Capsule(style: .continuous)
-                    .fill(isEmphasized ? PrototypePalette.accent : PrototypePalette.surface)
-            )
-            .overlay(
-                Capsule(style: .continuous)
-                    .stroke(isEmphasized ? Color.clear : PrototypePalette.rule, lineWidth: 1)
-            )
-    }
-}
-
-private struct ProfileSignalPill: View {
-    let title: String
-    let selected: Bool
-
-    init(_ title: String, selected: Bool = false) {
-        self.title = title
-        self.selected = selected
-    }
-
-    var body: some View {
-        Text(title)
-            .font(PrototypeTypography.metadata)
-            .foregroundStyle(selected ? .white : PrototypePalette.ink)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 10)
-            .background(selected ? PrototypePalette.actionGradient : LinearGradient(colors: [Color.black.opacity(0.05)], startPoint: .top, endPoint: .bottom))
-            .clipShape(Capsule(style: .continuous))
-    }
-}
-
-private struct ProfileTraitRowModel {
-    let left: String
-    let right: String
-    let value: Double
-}
-
-private struct ProfileTraitRow: View {
-    let left: String
-    let right: String
-    let value: Double
-
-    var body: some View {
-        HStack(spacing: 12) {
-            Text(left)
-                .frame(width: 86, alignment: .leading)
-
-            GeometryReader { proxy in
-                ZStack(alignment: .leading) {
-                    Capsule()
-                        .fill(PrototypePalette.rule)
-                        .frame(height: 2)
-
-                    Capsule()
-                        .fill(PrototypePalette.accent)
-                        .frame(width: proxy.size.width * value, height: 2)
-
-                    Circle()
-                        .fill(PrototypePalette.accent)
-                        .frame(width: 12, height: 12)
-                        .offset(x: max(0, proxy.size.width * value - 6))
-                }
-            }
-            .frame(height: 12)
-
-            Text(right)
-                .frame(width: 92, alignment: .trailing)
-        }
-        .font(PrototypeTypography.metadata)
-        .foregroundStyle(PrototypePalette.ink)
     }
 }
 
 private struct VoiceListeningCard: View {
     var isActive = false
+    var isFailed = false
 
     @State private var pulse = false
 
@@ -679,7 +789,7 @@ private struct VoiceListeningCard: View {
         ZStack {
             ForEach(0..<5, id: \.self) { index in
                 Circle()
-                    .stroke(PrototypePalette.success.opacity(isActive ? 0.22 : 0.12), lineWidth: 1)
+                    .stroke(PrototypePalette.success.opacity(isFailed ? 0.035 : (isActive ? 0.22 : 0.12)), lineWidth: 1)
                     .frame(
                         width: CGFloat(112 + index * 38) * (isActive && pulse ? 1.04 : 1.0),
                         height: CGFloat(112 + index * 38) * (isActive && pulse ? 1.04 : 1.0)
@@ -693,7 +803,9 @@ private struct VoiceListeningCard: View {
             Circle()
                 .fill(
                     RadialGradient(
-                        colors: [PrototypePalette.success.opacity(isActive ? 0.78 : 0.64), PrototypePalette.accent.opacity(0.24), .clear],
+                        colors: isFailed
+                            ? [Color.white.opacity(0.12), Color.white.opacity(0.035), .clear]
+                            : [PrototypePalette.success.opacity(isActive ? 0.78 : 0.64), PrototypePalette.accent.opacity(0.24), .clear],
                         center: .center,
                         startRadius: 6,
                         endRadius: isActive ? 124 : 112
@@ -702,15 +814,17 @@ private struct VoiceListeningCard: View {
                 .frame(width: isActive ? 228 : 216, height: isActive ? 228 : 216)
                 .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: isActive && pulse)
 
-            Image(systemName: "sparkle")
+            Image(systemName: isFailed ? "mic.slash.fill" : "sparkle")
                 .font(.system(size: 18, weight: .semibold))
-                .foregroundStyle(.white.opacity(0.92))
-                .shadow(color: PrototypePalette.success, radius: isActive ? 18 : 10)
+                .foregroundStyle(.white.opacity(isFailed ? 0.72 : 0.92))
+                .shadow(color: isFailed ? .clear : PrototypePalette.success, radius: isActive ? 18 : 10)
 
-            Circle()
-                .fill(PrototypePalette.success.opacity(0.85))
-                .frame(width: 26, height: 26)
-                .shadow(color: PrototypePalette.success, radius: isActive ? 28 : 24)
+            if !isFailed {
+                Circle()
+                    .fill(PrototypePalette.success.opacity(0.85))
+                    .frame(width: 26, height: 26)
+                    .shadow(color: PrototypePalette.success, radius: isActive ? 28 : 24)
+            }
         }
         .frame(height: 260)
         .onAppear {
@@ -767,55 +881,170 @@ private struct VoiceWaveformBars: View {
 
 struct ProfileEditView: View {
     @EnvironmentObject private var appState: PrototypeAppState
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @State private var showingVoiceSession = false
+    @State private var showingTypedUpdate = false
+    @State private var selectedSignal: ProfileSignalLabel?
 
-    private var profileTraits: [ProfileTraitRowModel] {
-        let bigFive = appState.slice?.signals?.bigFive ?? ProfileSignals.BigFive()
-        return [
-            ProfileTraitRowModel(left: "Reserved", right: "Outgoing", value: bigFive.extraversion),
-            ProfileTraitRowModel(left: "Analytical", right: "Intuitive", value: bigFive.openness),
-            ProfileTraitRowModel(left: "Steady", right: "Spontaneous", value: 1.0 - bigFive.conscientiousness),
-            ProfileTraitRowModel(left: "Guarded", right: "Warm", value: bigFive.agreeableness),
-            ProfileTraitRowModel(left: "Steady mood", right: "Reactive", value: bigFive.neuroticism)
-        ]
+    private var signalColumns: [GridItem] {
+        [GridItem(.flexible())]
+    }
+
+    private var interestColumns: [GridItem] {
+        dynamicTypeSize.isAccessibilitySize
+            ? [GridItem(.flexible())]
+            : [GridItem(.adaptive(minimum: 120), spacing: 8)]
+    }
+
+    private var introduction: String {
+        if dynamicTypeSize.isAccessibilitySize {
+            return "Private and revisable—not scores."
+        }
+        return "These are working interpretations from what you chose to share—not fixed facts. They help Likeminded suggest rooms and people, and they are never shown as scores."
+    }
+
+    private func correctSignalButton(_ item: ProfileSignalLabel) -> some View {
+        Button {
+            selectedSignal = item
+        } label: {
+            Label("Edit", systemImage: "pencil")
+                .font(PrototypeTypography.metadata)
+                .foregroundStyle(PrototypePalette.accent)
+                .padding(.horizontal, 12)
+                .frame(minHeight: 44)
+                .background(PrototypePalette.accentSoft)
+                .clipShape(Capsule(style: .continuous))
+                .dynamicTypeSize(.xSmall ... .accessibility1)
+        }
+        .accessibilityLabel("Edit or remove \(item.title) interpretation")
+    }
+
+    private var typedUpdateModeButton: some View {
+        Button {
+            showingTypedUpdate = true
+        } label: {
+            Label("Type update", systemImage: "keyboard")
+                .font(PrototypeTypography.metadata)
+                .foregroundStyle(PrototypePalette.accent)
+                .frame(maxWidth: .infinity, minHeight: 48)
+                .background(PrototypePalette.accentSoft)
+                .clipShape(Capsule(style: .continuous))
+                .dynamicTypeSize(.xSmall ... .accessibility1)
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("profile-update-with-text")
+    }
+
+    private var voiceUpdateModeButton: some View {
+        Button {
+            showingVoiceSession = true
+            #if DEBUG
+            if ProcessInfo.processInfo.arguments.contains("--likeminded-dev-voice-preview") {
+                appState.seedVoiceSessionPreviewIfNeeded()
+                return
+            }
+            #endif
+            Task { await appState.startVoiceSession() }
+        } label: {
+            Label("Use voice", systemImage: "waveform")
+                .font(PrototypeTypography.metadata)
+                .foregroundStyle(PrototypePalette.accent)
+                .frame(maxWidth: .infinity, minHeight: 48)
+                .background(PrototypePalette.accentSoft)
+                .clipShape(Capsule(style: .continuous))
+                .dynamicTypeSize(.xSmall ... .accessibility1)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Update profile with voice")
+        .accessibilityIdentifier("profile-update-with-voice")
+    }
+
+    @ViewBuilder
+    private var updateModeButtons: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(spacing: 10) {
+                typedUpdateModeButton
+                voiceUpdateModeButton
+            }
+        } else {
+            HStack(spacing: 10) {
+                typedUpdateModeButton
+                voiceUpdateModeButton
+            }
+        }
     }
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 18) {
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("Living profile")
-                        .font(PrototypeTypography.sectionTitle)
-                        .foregroundStyle(.white)
-                    Text("Read-only signals from your voice profile")
-                        .font(PrototypeTypography.caption)
-                        .foregroundStyle(.white.opacity(0.75))
-
-                    HStack(spacing: 10) {
-                        ForEach(ProfileSignalFormatting.cards(from: appState.slice?.signals).prefix(3)) { item in
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(item.title)
-                                    .font(PrototypeTypography.metadata)
-                                    .foregroundStyle(.white.opacity(0.7))
-                                Text(item.value)
-                                    .font(PrototypeTypography.bodyStrong)
-                                    .foregroundStyle(.white)
-                            }
-                            .padding(10)
-                            .background(Color.white.opacity(0.12))
-                            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-                        }
+            VStack(alignment: .leading, spacing: 24) {
+                VStack(alignment: .leading, spacing: 12) {
+                    if !dynamicTypeSize.isAccessibilitySize {
+                        Text("Living profile".uppercased())
+                            .font(PrototypeTypography.eyebrow)
+                            .foregroundStyle(PrototypePalette.accent)
                     }
+                    Text(dynamicTypeSize.isAccessibilitySize ? "Profile." : "A private, evolving read of you.")
+                        .font(dynamicTypeSize.isAccessibilitySize ? PrototypeTypography.sectionTitle : PrototypeTypography.pageTitle)
+                        .foregroundStyle(PrototypePalette.ink)
+                        .dynamicTypeSize(.xSmall ... .accessibility1)
+                        .accessibilityAddTraits(.isHeader)
+                    Text(introduction)
+                        .font(PrototypeTypography.body)
+                        .foregroundStyle(PrototypePalette.subink)
+                        .fixedSize(horizontal: false, vertical: true)
 
-                    VStack(spacing: 12) {
-                        ForEach(profileTraits, id: \.left) { trait in
-                            ProfileTraitRow(left: trait.left, right: trait.right, value: trait.value)
-                                .foregroundStyle(.white)
+                    Label("Private to you", systemImage: "lock.fill")
+                        .font(PrototypeTypography.metadata)
+                        .foregroundStyle(PrototypePalette.accent)
+                }
+
+                updateModeButtons
+
+                FeatureCard(
+                    title: dynamicTypeSize.isAccessibilitySize ? "Interpretations" : "What we understood",
+                    eyebrow: dynamicTypeSize.isAccessibilitySize ? "Review or remove" : "From your voice"
+                ) {
+                    let visibleSignals = ProfileSignalFormatting.cards(from: appState.slice?.signals)
+                        .filter { $0.value != "From voice profile" }
+                    if visibleSignals.isEmpty {
+                        Text("No interpretations are being used. You can update again whenever you want.")
+                            .font(PrototypeTypography.caption)
+                            .foregroundStyle(PrototypePalette.subink)
+                    } else {
+                        LazyVGrid(columns: signalColumns, spacing: 0) {
+                            ForEach(visibleSignals) { item in
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text(item.title)
+                                        .font(PrototypeTypography.metadata)
+                                        .foregroundStyle(PrototypePalette.subink)
+                                    if dynamicTypeSize.isAccessibilitySize {
+                                        Text(item.value)
+                                            .font(PrototypeTypography.bodyStrong)
+                                            .foregroundStyle(PrototypePalette.ink)
+                                            .fixedSize(horizontal: false, vertical: true)
+                                        correctSignalButton(item)
+                                    } else {
+                                        HStack(alignment: .firstTextBaseline, spacing: 12) {
+                                            Text(item.value)
+                                                .font(PrototypeTypography.bodyStrong)
+                                                .foregroundStyle(PrototypePalette.ink)
+                                                .fixedSize(horizontal: false, vertical: true)
+                                            Spacer(minLength: 8)
+                                            correctSignalButton(item)
+                                        }
+                                    }
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.vertical, 14)
+                                .overlay(alignment: .bottom) {
+                                    Rectangle()
+                                        .fill(PrototypePalette.rule)
+                                        .frame(height: 1)
+                                }
+                            }
                         }
                     }
                 }
-                .padding(20)
-                .background(PrototypePalette.accent)
-                .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
 
                 FeatureCard(title: "Interests", eyebrow: "Private") {
                     let interests = appState.slice?.profile.interests.map(\.label) ?? []
@@ -824,33 +1053,89 @@ struct ProfileEditView: View {
                             .font(PrototypeTypography.caption)
                             .foregroundStyle(PrototypePalette.subink)
                     } else {
-                        FlexibleTagLayout(items: interests)
+                        LazyVGrid(columns: interestColumns, alignment: .leading, spacing: 8) {
+                            ForEach(interests, id: \.self) { interest in
+                                Text(interest)
+                                    .font(PrototypeTypography.metadata)
+                                    .foregroundStyle(PrototypePalette.ink)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.85)
+                                    .frame(maxWidth: .infinity, minHeight: 44)
+                                    .background(PrototypePalette.background)
+                                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                                    .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+                            }
+                        }
                     }
 
                     Divider().overlay(PrototypePalette.rule)
+
+                    if let confirmation = appState.profileUpdateConfirmation {
+                        Label(confirmation, systemImage: "checkmark.circle.fill")
+                            .font(PrototypeTypography.metadata)
+                            .foregroundStyle(PrototypePalette.accent)
+                            .accessibilityIdentifier("profile-update-confirmation")
+                    }
+
+                    Text("Latest update")
+                        .font(PrototypeTypography.metadata)
+                        .foregroundStyle(PrototypePalette.subink)
 
                     Text(appState.slice?.profile.reflection.summary ?? "Complete your voice profile to see your private read.")
                         .font(PrototypeTypography.caption)
                         .foregroundStyle(PrototypePalette.ink)
                         .fixedSize(horizontal: false, vertical: true)
                 }
+
             }
             .padding(20)
+            .padding(.bottom, 40)
         }
         .background(PrototypePalette.background.ignoresSafeArea())
-        .navigationTitle("Who you are")
-        .navigationBarTitleDisplayMode(.inline)
-        .prototypeBackNavigation(label: "Back to profile")
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                PrototypeBackButton(label: "Back to profile")
+            }
+        }
+        .toolbarBackground(PrototypePalette.background, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .statusBarHidden(dynamicTypeSize.isAccessibilitySize)
+        .likemindedTabBarHidden()
+        .preferredColorScheme(.light)
+        .fullScreenCover(isPresented: $showingVoiceSession) {
+            VoiceProfileSessionSheet()
+                .environmentObject(appState)
+        }
+        .sheet(isPresented: $showingTypedUpdate) {
+            TypedProfileUpdateSheet(initialValue: "")
+            .environmentObject(appState)
+        }
+        .sheet(item: $selectedSignal) { signal in
+            TypedProfileUpdateSheet(signal: signal, initialValue: signal.value)
+                .environmentObject(appState)
+        }
     }
 }
 
 struct ProfileSignalsView: View {
     @EnvironmentObject private var appState: PrototypeAppState
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @State private var showingVoiceSession = false
+
+    private var signalColumns: [GridItem] {
+        dynamicTypeSize.isAccessibilitySize
+            ? [GridItem(.flexible())]
+            : [GridItem(.flexible()), GridItem(.flexible())]
+    }
 
     var body: some View {
-        ScreenContainer(title: "Your personality signals", subtitle: "From your voice, activity, and choices.") {
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+        ScreenContainer(
+            title: "Private signals",
+            subtitle: "What Likeminded understood.",
+            caption: "Working interpretations from your voice and choices. They guide private suggestions, are not shown to other people, and can change when you update your profile."
+        ) {
+            LazyVGrid(columns: signalColumns, spacing: 10) {
                 ForEach(ProfileSignalFormatting.cards(from: appState.slice?.signals)) { item in
                     VStack(alignment: .leading, spacing: 4) {
                         Text(item.title)
@@ -869,14 +1154,27 @@ struct ProfileSignalsView: View {
             }
 
             Button {
-                dismiss()
+                showingVoiceSession = true
+                Task { await appState.startVoiceSession() }
             } label: {
-                PrimaryActionButton(title: "Done", systemImage: "checkmark")
+                Label("Update these signals", systemImage: "waveform")
+                    .font(PrototypeTypography.button)
+                    .frame(maxWidth: .infinity, minHeight: 44)
+                    .foregroundStyle(PrototypePalette.accent)
+                    .background(PrototypePalette.surface)
+                    .clipShape(Capsule(style: .continuous))
+                    .overlay(Capsule(style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
             }
             .buttonStyle(.plain)
-            .accessibilityLabel("Done")
+            .accessibilityLabel("Update profile signals with voice")
+            .accessibilityIdentifier("signals-update-with-voice")
         }
         .toolbar(.hidden, for: .navigationBar)
-        .prototypeBackNavigation()
+        .prototypeBackNavigation(label: "Back to profile")
+        .likemindedTabBarHidden()
+        .sheet(isPresented: $showingVoiceSession) {
+            VoiceProfileSessionSheet()
+                .environmentObject(appState)
+        }
     }
 }

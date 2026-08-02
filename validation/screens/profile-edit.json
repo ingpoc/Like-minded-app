@@ -5,17 +5,56 @@
   "platforms": {
     "ios": {
       "ledger_legacy_id": null,
-      "implemented": false,
-      "source_files": [],
-      "source_hash": null,
-      "mockup_ref": null,
-      "mockup_missing": true,
-      "entry_points": [],
-      "backend_dependencies": [],
-      "ui_validation": null,
-      "visual_parity": null,
-      "recent_screenshot_ref": null,
-      "notes": "No dedicated iOS screen — feature may live under another logical screen"
+      "implemented": true,
+      "source_files": [
+        "apps/ios-macos/Sources/LikemindedApp/Data/PrototypeAppState.swift (PrototypeAppState)",
+        "apps/ios-macos/Sources/LikemindedApp/Views/ProfilePrototypeView.swift (VoiceProfileView)",
+        "apps/ios-macos/Sources/LikemindedApp/Views/ProfilePrototypeView.swift (TypedProfileUpdateSheet)",
+        "apps/ios-macos/Sources/LikemindedApp/Views/ProfilePrototypeView.swift (VoiceProfileSessionSheet)",
+        "apps/ios-macos/Sources/LikemindedApp/Views/ProfilePrototypeView.swift (ProfileEditView)"
+      ],
+      "source_hash": "fa26b75fcc9db9d8",
+      "mockup_ref": "mockups/ios/17-20-profile-community-settings.png",
+      "mockup_missing": false,
+      "entry_points": [
+        "Profile → Edit profile"
+      ],
+      "backend_dependencies": [
+        "GET /v1/me/profile",
+        "PATCH /v1/me/profile"
+      ],
+      "ui_validation": {
+        "result": "pass",
+        "reference_mockup_ref": "mockups/ios/17-20-profile-community-settings.png",
+        "recent_screenshot_ref": "output/validation/ios-screens/profile-edit.png",
+        "design_ref": "DESIGN.md",
+        "last_compared_at": "2026-07-23",
+        "validated": [
+          "Production Profile navigation reaches the single ProfileEditView implementation",
+          "Standard, AX extra-extra-large high-contrast top/bottom, typed update/save, voice review/save/fail-closed, and Profile return captures share source hash 24867971458abab5",
+          "Typed and voice modes expose explicit privacy, correction/removal, cancel/close, save receipts, and recoverable failure",
+          "Two fresh blind screenshot reviewers passed the immutable 10-image acceptance set with no P1 or P2 findings"
+        ],
+        "pending_validation": [
+          "Blind screenshot reviews do not establish VoiceOver focus order or live tap-target behavior; semantic ledger proof is retained separately"
+        ],
+        "requires_implementation": [],
+        "requires_fixing": [],
+        "intentional_differences": [
+          "The reference is a directional multi-screen plate; Profile Edit uses one focused production detail screen",
+          "Scored trait sliders are replaced by private, revisable interpretations that can be edited or removed",
+          "Typed and voice update modes have equal entry weight; voice review is full-screen and fail-closed"
+        ],
+        "notes": "Accepted 2026-07-23 against immutable output/validation/acceptance/24867971458abab5. iOS-owned status-bar and Dynamic-Island chrome were excluded from app-surface scoring.",
+        "last_capture_at": "2026-07-23",
+        "capture_evidence": "output/validation/acceptance/24867971458abab5: 10 hash-versioned PNGs; independent UI and UX verdicts PASS"
+      },
+      "visual_parity": {
+        "result": "pass",
+        "notes": "2026-07-23 directional comparison with mockups/ios/17-20-profile-community-settings.png and DESIGN.md: warm canvas, deep-green system, editorial hierarchy, rounded cards, restrained dividers, privacy-first profile language, and explicit user control. Intentional: no scored trait sliders; interpretations are revisable/removable; typed and voice paths include distinct honest receipts."
+      },
+      "recent_screenshot_ref": "output/validation/ios-screens/profile-edit.png",
+      "notes": "Production Profile navigation, Living Profile review/removal, and voice-update sheet; interpretations are private, revisable, and removable without voice."
     },
     "macos": {
       "ledger_legacy_id": "05-profile-edit",
@@ -23,7 +62,7 @@
       "source_files": [
         "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (profileEdit)"
       ],
-      "source_hash": "bfa0f05606daea73",
+      "source_hash": "798979fff17e2c10",
       "mockup_ref": "mockups/macos/09-12-profile-soulmate-discover-detail.png",
       "mockup_missing": false,
       "entry_points": [
@@ -84,15 +123,16 @@
         },
         "macos": {
           "result": "pass",
-          "evidence": "comm-pills: screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (comm-pills) (hash-migrated: s",
+          "evidence": "Canonical LikemindedMac Computer proof compared with mockups/macos/09-12-profile-soulmate-discover-detail.png: the Living profile renders read-only Communication, Energy, and Trust signal labels with Analytical, Medium, and Slow trust values.",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "bfa0f05606daea73",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/profileEditSemantic-20260802.jpeg",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "798979fff17e2c10",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -104,7 +144,7 @@
         "mockup_note": "No mockup — functional proof only",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen profile-edit --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh profileEdit → macos_cua_screen.sh profileEdit"
+          "macos": "@Computer: npm run dev:macos:validation -- profileEdit; target the canonical app by full path; prove profile-edit/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-edit --flow comm-pills --result pass --method <tier-method> --evidence \"...\""
       }
@@ -134,15 +174,16 @@
         },
         "macos": {
           "result": "pass",
-          "evidence": "trait-sliders: screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (trait-sliders) (hash-migrated",
+          "evidence": "Canonical LikemindedMac Computer proof compared with mockups/macos/09-12-profile-soulmate-discover-detail.png: exactly five read-only trait bars are exposed—Reserved/Outgoing, Analytical/Intuitive, Steady/Spontaneous, Guarded/Warm, and Steady mood/Reactive—with percentage details.",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "bfa0f05606daea73",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/profileEditSemantic-20260802.jpeg",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "798979fff17e2c10",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -154,7 +195,7 @@
         "mockup_note": "No mockup — functional proof only",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen profile-edit --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh profileEdit → macos_cua_screen.sh profileEdit"
+          "macos": "@Computer: npm run dev:macos:validation -- profileEdit; target the canonical app by full path; prove profile-edit/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-edit --flow trait-sliders --result pass --method <tier-method> --evidence \"...\""
       }
@@ -168,31 +209,35 @@
       "spans": [],
       "backend": [],
       "control_ids": {
-        "ios": [],
+        "ios": [
+          "save"
+        ],
         "macos": [
           "save"
         ]
       },
       "validation": {
         "ios": {
-          "result": "not-applicable",
-          "evidence": "Platform screen not implemented",
+          "result": "pass",
+          "evidence": "save: Computer-use 2026-08-02",
           "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "fa26b75fcc9db9d8",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "save: screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (save) (hash-migrated: screen-",
+          "evidence": "Canonical LikemindedMac Computer proof compared with mockups/macos/09-12-profile-soulmate-discover-detail.png: activating Back to profile returned to the redesigned Profile screen, with Profile still selected and the profile summary/signals rendered.",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "bfa0f05606daea73",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/profileEditBackToProfile-20260802.jpeg",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "798979fff17e2c10",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -204,14 +249,167 @@
         "mockup_note": "No mockup — functional proof only",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen profile-edit --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh profileEdit → macos_cua_screen.sh profileEdit"
+          "macos": "@Computer: npm run dev:macos:validation -- profileEdit; target the canonical app by full path; prove profile-edit/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-edit --flow save --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "profile-update-voice",
+      "name": "Update living profile with voice",
+      "origin": "profile-edit",
+      "steps": [
+        "Tap Use voice, review or remove captured signals, choose Save voice profile, persist through the profile API, relaunch and refetch the voice-derived summary, then prove the non-preview attempt fails closed without changing the profile"
+      ],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "profile-update-voice"
+        ],
+        "macos": []
+      },
+      "gap_audit": "2026-07-23",
+      "validation": {
+        "ios": {
+          "result": "blocked",
+          "evidence": "Text-box and non-microphone validation completed; spoken microphone behavior remains assigned to the user for device proof.",
+          "blocker": "Requires user-spoken microphone input and microphone-permission acceptance; the user explicitly assigned microphone validation to themselves.",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "a7ece8a38dbbf557",
+          "last_test_method": "manual"
+        },
+        "macos": {
+          "result": "not-applicable",
+          "evidence": "",
+          "blocker": "",
+          "screenshot_ref": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        }
+      },
+      "proof": {
+        "tier": "computer-use",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Captured signals are reviewable and removable before Save voice profile",
+          "Voice profile saved and a voice-derived summary are visible after API commit",
+          "The exact voice-derived summary remains visible after relaunch and profile refetch",
+          "A failed live attempt states that nothing was recorded or changed"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen profile-edit --platform ios",
+          "macos": "@Computer: npm run dev:macos:validation -- profileEdit; target the canonical app by full path; prove profile-edit/<flow>"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-edit --flow profile-update-voice --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "profile-update-text",
+      "name": "Update living profile without voice",
+      "origin": "profile-edit",
+      "steps": [
+        "Tap Type update, enter a private profile update, save it, and observe the updated Profile summary"
+      ],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "profile-update-text"
+        ],
+        "macos": []
+      },
+      "gap_audit": "2026-07-23",
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "profile-update-text: Computer-use 2026-08-02",
+          "blocker": "",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "fa26b75fcc9db9d8",
+          "last_test_method": "Computer-use"
+        },
+        "macos": {
+          "result": "not-applicable",
+          "evidence": "",
+          "blocker": "",
+          "screenshot_ref": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        }
+      },
+      "proof": {
+        "tier": "computer-use",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Step satisfied: Tap Type update, enter a private profile update, save it, and observe the updated Profile summary"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen profile-edit --platform ios",
+          "macos": "@Computer: npm run dev:macos:validation -- profileEdit; target the canonical app by full path; prove profile-edit/<flow>"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-edit --flow profile-update-text --result pass --method <tier-method> --evidence \"...\""
       }
     }
   ],
   "controls": {
-    "ios": [],
+    "ios": [
+      {
+        "id": "save",
+        "type": "button",
+        "label": "Back to profile",
+        "expected": "Return from the production ProfileEditView to Profile",
+        "result": "pass",
+        "evidence": "Computer-use validation-gurusharan profile-edit/save 2026-08-02: save",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-08-02",
+        "tested_source_hash": "fa26b75fcc9db9d8",
+        "last_test_method": "Computer-use"
+      },
+      {
+        "id": "profile-update-voice",
+        "type": "button",
+        "label": "Update with voice",
+        "expected": "Review or remove captured voice signals, persist through the profile API, prove the summary survives relaunch/refetch, and prove live-start failure is fail-closed",
+        "result": "pass",
+        "evidence": "screen-capture validation-gurusharan 2026-08-01 capture closeout: reproof after source hash change (profile-update-voice)",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "a7ece8a38dbbf557",
+        "last_test_method": "screen-capture"
+      },
+      {
+        "id": "profile-update-text",
+        "type": "button",
+        "label": "profile-update-text",
+        "expected": "Tap Type update, enter a private profile update, save it, and observe the updated Profile summary",
+        "result": "pass",
+        "evidence": "Computer-use validation-gurusharan profile-edit/profile-update-text 2026-08-02: profile-update-text",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-08-02",
+        "tested_source_hash": "fa26b75fcc9db9d8",
+        "last_test_method": "Computer-use"
+      }
+    ],
     "macos": [
       {
         "id": "comm-pills",
@@ -219,12 +417,12 @@
         "label": "Communication/Energy/Trust signal labels",
         "expected": "Read-only labels from profile.signals (communicationStyle, socialEnergy, trustPattern)",
         "result": "pass",
-        "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (comm-pills) (hash-migrated: screen-slice source hash)",
+        "evidence": "Canonical LikemindedMac Computer proof compared with mockups/macos/09-12-profile-soulmate-discover-detail.png: the Living profile renders read-only Communication, Energy, and Trust signal labels with Analytical, Medium, and Slow trust values.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "bfa0f05606daea73",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "798979fff17e2c10",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "trait-sliders",
@@ -232,12 +430,12 @@
         "label": "5 trait bars (Reserved/Outgoing, Analytical/Intuitive, Steady/Spontaneous, Guarded/Warm, Steady mood/Reactive)",
         "expected": "Read-only bars from profile.signals.bigFive; not editable",
         "result": "pass",
-        "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (trait-sliders) (hash-migrated: screen-slice source hash)",
+        "evidence": "Canonical LikemindedMac Computer proof compared with mockups/macos/09-12-profile-soulmate-discover-detail.png: exactly five read-only trait bars are exposed—Reserved/Outgoing, Analytical/Intuitive, Steady/Spontaneous, Guarded/Warm, and Steady mood/Reactive—with percentage details.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "bfa0f05606daea73",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "798979fff17e2c10",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "save",
@@ -245,12 +443,12 @@
         "label": "Back to profile",
         "expected": "Navigate → myProfile (no fake save of traits)",
         "result": "pass",
-        "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (save) (hash-migrated: screen-slice source hash)",
+        "evidence": "Canonical LikemindedMac Computer proof compared with mockups/macos/09-12-profile-soulmate-discover-detail.png: activating Back to profile returned to the redesigned Profile screen, with Profile still selected and the profile summary/signals rendered.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "bfa0f05606daea73",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "798979fff17e2c10",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       }
     ]
   }

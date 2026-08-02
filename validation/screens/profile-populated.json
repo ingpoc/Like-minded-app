@@ -7,9 +7,11 @@
       "ledger_legacy_id": "04-profile-populated",
       "implemented": true,
       "source_files": [
-        "apps/ios-macos/Sources/LikemindedApp/Views/ProfilePrototypeView.swift (VoiceProfileView)"
+        "apps/ios-macos/Sources/LikemindedApp/Views/ProfilePrototypeView.swift (VoiceProfileView)",
+        "apps/ios-macos/Sources/LikemindedApp/Views/Shared/PrototypeComponents.swift",
+        "apps/ios-macos/Sources/LikemindedApp/Views/CustomTabBar.swift"
       ],
-      "source_hash": "bbc3a0d9adb31ff4",
+      "source_hash": "c08b71493907edc5",
       "mockup_ref": "mockups/ios/17-20-profile-community-settings.png",
       "mockup_missing": false,
       "entry_points": [
@@ -20,11 +22,11 @@
       ],
       "ui_validation": {
         "result": "pass",
-        "notes": "2026-07-05: restored iOS plate-18 living profile (Signals header, Update profile, pills, comm-read+chevron, trait bars, depth-encoded interests). macOS parity surface: --mac-screen myProfile (validation/macos/12-my-profile.json). Seeded user validation-gurusharan / Gurusharan Gupta — signals AI/Startups/Design, analytical→Thoughtful Communicator. Runtime PNG capture blocked by parallel :8787 contention; source layout matches mockups/ios/17-20-profile-community-settings.png plate 18."
+        "notes": "Immutable acceptance packet 966bcbc3c1ec7040fe1452257995dd760df4209e56cc775bb21d17127d3bceae verified against current source; independent blind UI and UX reviews both passed with no P0-P2 findings on 2026-08-01."
       },
       "visual_parity": {
         "result": "pass",
-        "notes": "2026-07-05: restored iOS plate-18 living profile (Signals header, Update profile, pills, comm-read+chevron, trait bars, depth-encoded interests). macOS parity surface: --mac-screen myProfile (validation/macos/12-my-profile.json). Seeded user validation-gurusharan / Gurusharan Gupta — signals AI/Startups/Design, analytical→Thoughtful Communicator. Runtime PNG capture blocked by parallel :8787 contention; source layout matches mockups/ios/17-20-profile-community-settings.png plate 18."
+        "notes": "Current-source iPhone Profile top and lower-detail captures accepted in immutable packet 966bcbc3c1ec7040fe1452257995dd760df4209e56cc775bb21d17127d3bceae; UI Pass and UX Pass on 2026-08-01."
       },
       "recent_screenshot_ref": "output/validation/ios-screens/profile-populated.png",
       "notes": "macOS map: myProfile. Cross-platform lock: cross_platform_validation_lock.sh (lockf); flock(1) not on PATH."
@@ -33,10 +35,13 @@
       "ledger_legacy_id": "12-my-profile",
       "implemented": true,
       "source_files": [
-        "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift"
+        "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift",
+        "apps/ios-macos/Sources/LikemindedMac/MacDesignSystem.swift",
+        "apps/ios-macos/Sources/LikemindedMac/MacRootView.swift",
+        "apps/ios-macos/Sources/LikemindedMac/MacPrototypeData.swift"
       ],
-      "source_hash": "5f58d68c4fb27018",
-      "mockup_ref": "mockups/macos/09-12-profile-soulmate-discover-detail.png",
+      "source_hash": "6372d09665992aee",
+      "mockup_ref": "mockups/macos/concepts/mockup-profile-template-redesign.png",
       "mockup_missing": false,
       "entry_points": [
         "Profile tab",
@@ -50,28 +55,27 @@
       ],
       "ui_validation": {
         "result": "pass",
-        "reference_mockup_ref": "mockups/macos/09-12-profile-soulmate-discover-detail.png",
+        "reference_mockup_ref": "mockups/macos/concepts/mockup-profile-template-redesign.png",
         "recent_screenshot_ref": "output/validation/macos-screens/myProfile.png",
         "design_ref": "DESIGN.md",
-        "last_compared_at": "2026-07-05",
+        "last_compared_at": "2026-08-01",
         "validated": [
-          "latest screenshot exists and was compared with reference mockup",
-          "DESIGN.md design language checked: warm canvas, calm editorial hierarchy, card system, green accents, bottom glass navigation",
-          "visible text and components reviewed for clear purpose",
-          "control behavior tracked separately in controls[]"
+          "Immutable packet 966bcbc3c1ec7040fe1452257995dd760df4209e56cc775bb21d17127d3bceae verified against source hash af28c52614d2b8e1",
+          "Independent blind UI and UX reviews both passed with no P0-P2 findings",
+          "Review signals, edit profile, and re-interview verified on the current canonical binary"
         ],
         "pending_validation": [],
         "requires_implementation": [],
         "requires_fixing": [],
         "intentional_differences": [
-          "DoodlePortraitFemale with sage glow rings vs mockup stock photo (no photo asset in repo).",
-          "Backend signal values and interest roster from validation-priya seed."
+          "Persistent navigation uses a macOS top region instead of the reference's floating bottom dock.",
+          "Profile summary defaults to three lines with an explicit More action."
         ],
-        "notes": "2026-07-05 plate 09 layout: photo-led portrait card (glow rings), Circles/Connections/Events metrics, 4-up personality signals with icons, interests + My vibe; About me/Languages only on profileSignals editing surface."
+        "notes": "Fresh source-fingerprinted macOS Profile capture accepted by independent UI and UX reviewers on 2026-08-01."
       },
       "visual_parity": {
         "result": "pass",
-        "notes": "2026-07-05 capture vs plate 09: MacProfilePortrait glow rings, dark card metrics, 4-column signal grid, Top interests, My vibe orb. Intentional: DoodlePortraitFemale asset vs mockup photo; backend signal labels not mockup copy."
+        "notes": "Current-source macOS Profile capture accepted in immutable packet 966bcbc3c1ec7040fe1452257995dd760df4209e56cc775bb21d17127d3bceae; UI Pass and UX Pass on 2026-08-01."
       },
       "recent_screenshot_ref": "output/validation/macos-screens/myProfile.png",
       "notes": "2026-07-05: retake-voice routes to profileOnboarding step 2 (honest MVP)."
@@ -79,58 +83,8 @@
   },
   "flows": [
     {
-      "id": "update-profile",
-      "name": "Update profile",
-      "origin": "profile-populated",
-      "steps": [],
-      "destinations": [],
-      "spans": [],
-      "backend": [],
-      "control_ids": {
-        "ios": [
-          "update-profile"
-        ],
-        "macos": []
-      },
-      "validation": {
-        "ios": {
-          "result": "pass",
-          "evidence": "update-profile: source-trace 2026-07-05",
-          "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "bbc3a0d9adb31ff4",
-          "last_test_method": "source-trace"
-        },
-        "macos": {
-          "result": "not-applicable",
-          "evidence": "No controls on this platform for this flow",
-          "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
-        }
-      },
-      "proof": {
-        "tier": "cua-click",
-        "preconditions": [
-          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
-          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
-        ],
-        "success_signals": [
-          "Control update-profile responds without error and matches expected UI state"
-        ],
-        "mockup_ref": null,
-        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
-        "commands": {
-          "ios": "./script/cross_platform_screen_validate.sh --screen profile-populated --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh myProfile → macos_cua_screen.sh myProfile"
-        },
-        "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-populated --flow update-profile --result pass --method <tier-method> --evidence \"...\""
-      }
-    },
-    {
       "id": "signal-pills",
-      "name": "Communication/Energy/Trust pills",
+      "name": "Mobile signal summary",
       "origin": "profile-populated",
       "steps": [],
       "destinations": [],
@@ -145,11 +99,12 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "signal-pills: source-trace 2026-07-05",
+          "evidence": "signal-pills: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "bbc3a0d9adb31ff4",
-          "last_test_method": "source-trace"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "c08b71493907edc5",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "not-applicable",
@@ -161,121 +116,21 @@
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
         ],
         "success_signals": [
-          "Control signal-pills responds without error and matches expected UI state"
+          "Communication and Energy summaries are visible with Review signals"
         ],
         "mockup_ref": null,
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen profile-populated --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh myProfile → macos_cua_screen.sh myProfile"
+          "macos": "@Computer: npm run dev:macos:validation -- myProfile; target the canonical app by full path; prove profile-populated/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-populated --flow signal-pills --result pass --method <tier-method> --evidence \"...\""
-      }
-    },
-    {
-      "id": "comm-read-card",
-      "name": "Communication read card with chevron",
-      "origin": "profile-populated",
-      "steps": [],
-      "destinations": [],
-      "spans": [],
-      "backend": [],
-      "control_ids": {
-        "ios": [
-          "comm-read-card"
-        ],
-        "macos": []
-      },
-      "validation": {
-        "ios": {
-          "result": "pass",
-          "evidence": "comm-read-card: source-trace 2026-07-05",
-          "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "bbc3a0d9adb31ff4",
-          "last_test_method": "source-trace"
-        },
-        "macos": {
-          "result": "not-applicable",
-          "evidence": "No controls on this platform for this flow",
-          "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
-        }
-      },
-      "proof": {
-        "tier": "cua-click",
-        "preconditions": [
-          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
-          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
-        ],
-        "success_signals": [
-          "Control comm-read-card responds without error and matches expected UI state"
-        ],
-        "mockup_ref": null,
-        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
-        "commands": {
-          "ios": "./script/cross_platform_screen_validate.sh --screen profile-populated --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh myProfile → macos_cua_screen.sh myProfile"
-        },
-        "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-populated --flow comm-read-card --result pass --method <tier-method> --evidence \"...\""
-      }
-    },
-    {
-      "id": "trait-bars",
-      "name": "Big Five TraitBars",
-      "origin": "profile-populated",
-      "steps": [],
-      "destinations": [],
-      "spans": [],
-      "backend": [],
-      "control_ids": {
-        "ios": [
-          "trait-bars"
-        ],
-        "macos": []
-      },
-      "validation": {
-        "ios": {
-          "result": "pass",
-          "evidence": "trait-bars: source-trace 2026-07-05",
-          "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "bbc3a0d9adb31ff4",
-          "last_test_method": "source-trace"
-        },
-        "macos": {
-          "result": "not-applicable",
-          "evidence": "No controls on this platform for this flow",
-          "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
-        }
-      },
-      "proof": {
-        "tier": "cua-click",
-        "preconditions": [
-          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
-          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
-        ],
-        "success_signals": [
-          "Control trait-bars responds without error and matches expected UI state"
-        ],
-        "mockup_ref": null,
-        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
-        "commands": {
-          "ios": "./script/cross_platform_screen_validate.sh --screen profile-populated --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh myProfile → macos_cua_screen.sh myProfile"
-        },
-        "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-populated --flow trait-bars --result pass --method <tier-method> --evidence \"...\""
       }
     },
     {
@@ -295,11 +150,12 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "interest-chips: source-trace 2026-07-05",
+          "evidence": "interest-chips: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "bbc3a0d9adb31ff4",
-          "last_test_method": "source-trace"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "c08b71493907edc5",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "not-applicable",
@@ -311,7 +167,7 @@
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -323,366 +179,251 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen profile-populated --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh myProfile → macos_cua_screen.sh myProfile"
+          "macos": "@Computer: npm run dev:macos:validation -- myProfile; target the canonical app by full path; prove profile-populated/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-populated --flow interest-chips --result pass --method <tier-method> --evidence \"...\""
       }
     },
     {
-      "id": "share-profile",
-      "name": "Share profile",
+      "id": "profile-evidence-scope",
+      "name": "Voice-informed profile evidence scope",
       "origin": "profile-populated",
       "steps": [],
       "destinations": [],
       "spans": [],
       "backend": [],
       "control_ids": {
-        "ios": [],
+        "ios": [
+          "profile-evidence-scope"
+        ],
         "macos": [
-          "share-profile"
+          "voice-informed-signals",
+          "profile-inference-disclaimer",
+          "why-this-placement",
+          "placement-disclaimer"
         ]
       },
       "validation": {
         "ios": {
-          "result": "not-applicable",
-          "evidence": "No controls on this platform for this flow",
+          "result": "pass",
+          "evidence": "profile-evidence-scope: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "c08b71493907edc5",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "share-profile: CUA-click validation-priya 2026-07-05: Share profile navigates to profileSignals (post layout fix, source hash 690d02978",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/concepts/mockup-profile-template-redesign.png: Profile rendered both exact scope statements together: Inferences from your interview and activity—not a diagnosis; and placement reasons are not proof for each individual personality signal.",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "5f58d68c4fb27018",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/profileEvidenceScope-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "6372d09665992aee",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
         ],
         "success_signals": [
-          "User outcome achieved: Share profile"
+          "Exact inference and placement disclaimers are rendered together"
         ],
         "mockup_ref": null,
-        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "mockup_note": "Functional proof of the approved truthful macOS contract",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen profile-populated --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh myProfile → macos_cua_screen.sh myProfile"
+          "macos": "@Computer: npm run dev:macos:validation -- myProfile; target the canonical app by full path; prove profile-populated/<flow>"
         },
-        "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-populated --flow share-profile --result pass --method <tier-method> --evidence \"...\""
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-populated --flow profile-evidence-scope --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "review-signals",
+      "name": "Review profile signals",
+      "origin": "profile-populated",
+      "steps": [],
+      "destinations": [
+        "profile-signals"
+      ],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "review-signals"
+        ],
+        "macos": [
+          "review-signals"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "review-signals: Computer-use 2026-08-01",
+          "blocker": "",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "c08b71493907edc5",
+          "last_test_method": "Computer-use"
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/concepts/mockup-profile-template-redesign.png: Review signals opened Your personality signals with six voice-informed signal chips, placement evidence/disclaimers, interests, and a Done control.",
+          "blocker": "",
+          "screenshot_ref": "output/validation/macos-screens/profileReviewSignals-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "6372d09665992aee",
+          "last_test_method": "Computer-use"
+        }
+      },
+      "proof": {
+        "tier": "computer-use",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Review signals opens the Signals screen with Done"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Functional proof of the approved truthful macOS contract",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen profile-populated --platform ios",
+          "macos": "@Computer: npm run dev:macos:validation -- myProfile; target the canonical app by full path; prove profile-populated/<flow>"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-populated --flow review-signals --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "re-interview",
+      "name": "Re-interview to correct profile placement",
+      "origin": "profile-populated",
+      "steps": [],
+      "destinations": [
+        "voice-session"
+      ],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [
+          "re-interview"
+        ],
+        "macos": [
+          "re-interview"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "blocked",
+          "evidence": "Text-box and non-microphone validation completed; spoken microphone behavior remains assigned to the user for device proof.",
+          "blocker": "Requires user-spoken microphone input and microphone-permission acceptance; the user explicitly assigned microphone validation to themselves.",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "680ec560b9346f5c",
+          "last_test_method": "manual"
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/concepts/mockup-profile-template-redesign.png: Re-interview to update profile opened the AI profile interview with typed reply, Voice mode, Start voice profile, privacy copy, and three-step progress surface.",
+          "blocker": "",
+          "screenshot_ref": "output/validation/macos-screens/profileReinterview-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "6372d09665992aee",
+          "last_test_method": "Computer-use"
+        }
+      },
+      "proof": {
+        "tier": "computer-use",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Re-interview to correct this opens the AI profile interview"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Functional proof of the approved truthful macOS contract",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen profile-populated --platform ios",
+          "macos": "@Computer: npm run dev:macos:validation -- myProfile; target the canonical app by full path; prove profile-populated/<flow>"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-populated --flow re-interview --result pass --method <tier-method> --evidence \"...\""
       }
     },
     {
       "id": "edit-profile",
-      "name": "Edit profile (pencil + link)",
+      "name": "Edit profile",
       "origin": "profile-populated",
       "steps": [],
-      "destinations": [],
+      "destinations": [
+        "profile-edit"
+      ],
       "spans": [],
       "backend": [],
       "control_ids": {
-        "ios": [],
+        "ios": [
+          "edit-profile"
+        ],
         "macos": [
           "edit-profile"
         ]
       },
       "validation": {
         "ios": {
-          "result": "not-applicable",
-          "evidence": "No controls on this platform for this flow",
+          "result": "pass",
+          "evidence": "edit-profile: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "c08b71493907edc5",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "edit-profile: CUA-click validation-priya 2026-07-05: Edit profile pencil + link (post layout fix, source hash 690d02978d2b2e6b)",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/concepts/mockup-profile-template-redesign.png: Edit profile opened the Living profile surface with editable interest chips, read-only voice signals, profile summary, five signal axes, and Back to profile.",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "5f58d68c4fb27018",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/profileEditSurface-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "6372d09665992aee",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
         ],
         "success_signals": [
-          "User outcome achieved: Edit profile (pencil + link)"
+          "Edit profile opens the editable profile surface"
         ],
         "mockup_ref": null,
-        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "mockup_note": "Functional proof of the approved truthful macOS contract",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen profile-populated --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh myProfile → macos_cua_screen.sh myProfile"
+          "macos": "@Computer: npm run dev:macos:validation -- myProfile; target the canonical app by full path; prove profile-populated/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-populated --flow edit-profile --result pass --method <tier-method> --evidence \"...\""
-      }
-    },
-    {
-      "id": "retake-voice",
-      "name": "Retake voice profile",
-      "origin": "profile-populated",
-      "steps": [],
-      "destinations": [],
-      "spans": [],
-      "backend": [],
-      "control_ids": {
-        "ios": [],
-        "macos": [
-          "retake-voice"
-        ]
-      },
-      "validation": {
-        "ios": {
-          "result": "not-applicable",
-          "evidence": "No controls on this platform for this flow",
-          "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
-        },
-        "macos": {
-          "result": "pass",
-          "evidence": "retake-voice: CUA-click validation-priya 2026-07-05: Retake voice profile opens onboarding step 2 (post layout fix, source hash 690d02",
-          "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "5f58d68c4fb27018",
-          "last_test_method": "CUA-click"
-        }
-      },
-      "proof": {
-        "tier": "cua-click",
-        "preconditions": [
-          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
-          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
-        ],
-        "success_signals": [
-          "User outcome achieved: Retake voice profile"
-        ],
-        "mockup_ref": null,
-        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
-        "commands": {
-          "ios": "./script/cross_platform_screen_validate.sh --screen profile-populated --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh myProfile → macos_cua_screen.sh myProfile"
-        },
-        "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-populated --flow retake-voice --result pass --method <tier-method> --evidence \"...\""
-      }
-    },
-    {
-      "id": "signal-cards",
-      "name": "4 personality signal cards",
-      "origin": "profile-populated",
-      "steps": [],
-      "destinations": [],
-      "spans": [],
-      "backend": [],
-      "control_ids": {
-        "ios": [],
-        "macos": [
-          "signal-cards"
-        ]
-      },
-      "validation": {
-        "ios": {
-          "result": "not-applicable",
-          "evidence": "No controls on this platform for this flow",
-          "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
-        },
-        "macos": {
-          "result": "pass",
-          "evidence": "signal-cards: screen-capture 2026-07-05: 4-column signal grid with semantic icons (post layout fix, source hash 690d02978d2b2e6b)",
-          "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "5f58d68c4fb27018",
-          "last_test_method": "CUA-click"
-        }
-      },
-      "proof": {
-        "tier": "cua-click",
-        "preconditions": [
-          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
-          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
-        ],
-        "success_signals": [
-          "User outcome achieved: 4 personality signal cards"
-        ],
-        "mockup_ref": null,
-        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
-        "commands": {
-          "ios": "./script/cross_platform_screen_validate.sh --screen profile-populated --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh myProfile → macos_cua_screen.sh myProfile"
-        },
-        "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-populated --flow signal-cards --result pass --method <tier-method> --evidence \"...\""
-      }
-    },
-    {
-      "id": "interest-tags",
-      "name": "Top interests + vibe + stats",
-      "origin": "profile-populated",
-      "steps": [],
-      "destinations": [],
-      "spans": [],
-      "backend": [],
-      "control_ids": {
-        "ios": [],
-        "macos": [
-          "interest-tags"
-        ]
-      },
-      "validation": {
-        "ios": {
-          "result": "not-applicable",
-          "evidence": "No controls on this platform for this flow",
-          "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
-        },
-        "macos": {
-          "result": "pass",
-          "evidence": "interest-tags: screen-capture 2026-07-05: metrics row + interest pills + distinct My vibe copy (post layout fix, source hash 690d02978d",
-          "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "5f58d68c4fb27018",
-          "last_test_method": "CUA-click"
-        }
-      },
-      "proof": {
-        "tier": "cua-click",
-        "preconditions": [
-          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
-          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
-        ],
-        "success_signals": [
-          "User outcome achieved: Top interests + vibe + stats"
-        ],
-        "mockup_ref": null,
-        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
-        "commands": {
-          "ios": "./script/cross_platform_screen_validate.sh --screen profile-populated --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh myProfile → macos_cua_screen.sh myProfile"
-        },
-        "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-populated --flow interest-tags --result pass --method <tier-method> --evidence \"...\""
-      }
-    },
-    {
-      "id": "interests-expand",
-      "name": "View all interests",
-      "origin": "profile-populated",
-      "steps": [],
-      "destinations": [],
-      "spans": [],
-      "backend": [],
-      "control_ids": {
-        "ios": [],
-        "macos": [
-          "view-all-interests"
-        ]
-      },
-      "gap_audit": "2026-07-06",
-      "validation": {
-        "ios": {
-          "result": "not-applicable",
-          "evidence": "No iOS controls for this flow",
-          "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
-        },
-        "macos": {
-          "result": "pending",
-          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
-          "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
-        }
-      },
-      "proof": {
-        "tier": "cua-click",
-        "preconditions": [
-          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
-          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
-        ],
-        "success_signals": [
-          "User outcome achieved: View all interests"
-        ],
-        "mockup_ref": null,
-        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
-        "commands": {
-          "ios": "./script/cross_platform_screen_validate.sh --screen profile-populated --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh myProfile → macos_cua_screen.sh myProfile"
-        },
-        "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-populated --flow interests-expand --result pass --method <tier-method> --evidence \"...\""
       }
     }
   ],
   "controls": {
     "ios": [
       {
-        "id": "update-profile",
-        "type": "button",
-        "label": "Update profile",
-        "expected": "Reopens voice session sheet",
-        "result": "pass",
-        "evidence": "source-trace 2026-07-05: livingProfile restored mockup plate-18 Update profile CTA → voice session sheet (hash bbc3a0d9adb31ff4)",
-        "blocker": "",
-        "stub": false,
-        "tested_source_hash": "bbc3a0d9adb31ff4",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "source-trace"
-      },
-      {
         "id": "signal-pills",
         "type": "display",
-        "label": "Communication/Energy/Trust pills",
-        "expected": "Show profile signals (display only, no tap)",
+        "label": "Mobile signal summary",
+        "expected": "Show two signal summaries with Review signals",
         "result": "pass",
-        "evidence": "source-trace 2026-07-05: ProfileSignalPill row Communication/Energy/Trust in livingProfile (hash bbc3a0d9adb31ff4)",
+        "evidence": "Computer-use validation-gurusharan profile-populated/signal-pills 2026-08-01: signal-pills",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "bbc3a0d9adb31ff4",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "source-trace"
-      },
-      {
-        "id": "comm-read-card",
-        "type": "display",
-        "label": "Communication read card with chevron",
-        "expected": "Display only; chevron is decorative, no tap action (STUB)",
-        "result": "pass",
-        "evidence": "source-trace 2026-07-05: communication read card + decorative chevron.right from backend signals (hash bbc3a0d9adb31ff4)",
-        "blocker": "",
-        "stub": false,
-        "last_tested_at": "2026-07-05",
-        "tested_source_hash": "bbc3a0d9adb31ff4",
-        "last_test_method": "source-trace"
-      },
-      {
-        "id": "trait-bars",
-        "type": "display",
-        "label": "Big Five TraitBars",
-        "expected": "Render trait bars from slice.signals.bigFive",
-        "result": "pass",
-        "evidence": "source-trace 2026-07-05: five ProfileTraitRow sliders from slice.signals.bigFive + energy/trust mapping (hash bbc3a0d9adb31ff4)",
-        "blocker": "",
-        "stub": false,
-        "tested_source_hash": "bbc3a0d9adb31ff4",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "source-trace"
+        "tested_source_hash": "c08b71493907edc5",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "interest-chips",
@@ -690,92 +431,157 @@
         "label": "Interest tag chips",
         "expected": "Render interests with depth encoding",
         "result": "pass",
-        "evidence": "source-trace 2026-07-05: ProfileInterestTagLayout depth encoding active/deep vs casual (hash bbc3a0d9adb31ff4)",
+        "evidence": "Computer-use validation-gurusharan profile-populated/interest-chips 2026-08-01: interest-chips",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "bbc3a0d9adb31ff4",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "source-trace"
-      }
-    ],
-    "macos": [
+        "tested_source_hash": "c08b71493907edc5",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
+      },
       {
-        "id": "share-profile",
+        "id": "review-signals",
         "type": "button",
-        "label": "Share profile",
-        "expected": "Navigate → profileSignals (white outline button on dark card)",
+        "label": "Review signals",
+        "expected": "Navigate to Private signals",
         "result": "pass",
-        "evidence": "CUA-click validation-priya 2026-07-05: Share profile navigates to profileSignals (post layout fix, source hash 690d02978d2b2e6b)",
+        "evidence": "Computer-use validation-gurusharan profile-populated/review-signals 2026-08-01: review-signals",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "5f58d68c4fb27018",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "c08b71493907edc5",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
+      },
+      {
+        "id": "profile-evidence-scope",
+        "type": "display",
+        "label": "Profile evidence scope",
+        "expected": "Show both inference and placement disclaimers",
+        "result": "pass",
+        "evidence": "Computer-use validation-gurusharan profile-populated/profile-evidence-scope 2026-08-01: profile-evidence-scope",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "c08b71493907edc5",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
+      },
+      {
+        "id": "re-interview",
+        "type": "button",
+        "label": "Re-interview",
+        "expected": "Open the voice profile session with text input available",
+        "result": "pass",
+        "evidence": "screen-capture validation-gurusharan 2026-08-01 capture closeout 2026-08-01: re-interview",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "c08b71493907edc5",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "screen-capture"
       },
       {
         "id": "edit-profile",
         "type": "button",
-        "label": "Edit profile (pencil + link)",
-        "expected": "Navigate → profileEdit living profile",
+        "label": "Edit profile",
+        "expected": "Navigate to the editable living profile",
         "result": "pass",
-        "evidence": "CUA-click validation-priya 2026-07-05: Edit profile pencil + link (post layout fix, source hash 690d02978d2b2e6b)",
+        "evidence": "Computer-use validation-gurusharan profile-populated/edit-profile 2026-08-01: edit-profile",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "5f58d68c4fb27018",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
-      },
+        "tested_source_hash": "c08b71493907edc5",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
+      }
+    ],
+    "macos": [
       {
-        "id": "retake-voice",
-        "type": "button",
-        "label": "Retake voice profile",
-        "expected": "Start macOS voice interview session or open dedicated voice retake flow",
-        "result": "pass",
-        "evidence": "CUA-click validation-priya 2026-07-05: Retake voice profile opens onboarding step 2 (post layout fix, source hash 690d02978d2b2e6b)",
-        "blocker": "",
-        "stub": false,
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click",
-        "tested_source_hash": "5f58d68c4fb27018"
-      },
-      {
-        "id": "signal-cards",
+        "id": "voice-informed-signals",
         "type": "display",
-        "label": "4 personality signal cards",
-        "expected": "Display-only cards from profile.signals (Communication, Energy, Trust, Mindset)",
+        "label": "Voice-informed signals",
+        "expected": "Displays the heading Voice-informed signals",
         "result": "pass",
-        "evidence": "screen-capture 2026-07-05: 4-column signal grid with semantic icons (post layout fix, source hash 690d02978d2b2e6b)",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/concepts/mockup-profile-template-redesign.png: Profile rendered both exact scope statements together: Inferences from your interview and activity—not a diagnosis; and placement reasons are not proof for each individual personality signal.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "5f58d68c4fb27018",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "6372d09665992aee",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       },
       {
-        "id": "interest-tags",
+        "id": "profile-inference-disclaimer",
         "type": "display",
-        "label": "Top interests + vibe + stats",
-        "expected": "Interests/vibe from profile; Circles/Connections/Events counts from backend lists",
+        "label": "Profile inference disclaimer",
+        "expected": "Displays: These are inferences from your profile interview and activity. Treat them as a summary, not a diagnosis.",
         "result": "pass",
-        "evidence": "screen-capture 2026-07-05: metrics row + interest pills + distinct My vibe copy (post layout fix, source hash 690d02978d2b2e6b)",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/concepts/mockup-profile-template-redesign.png: Profile rendered both exact scope statements together: Inferences from your interview and activity—not a diagnosis; and placement reasons are not proof for each individual personality signal.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "5f58d68c4fb27018",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "6372d09665992aee",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       },
       {
-        "id": "view-all-interests",
-        "type": "button",
-        "label": "View all",
-        "expected": "Expands interest tags",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "id": "why-this-placement",
+        "type": "display",
+        "label": "Why this placement",
+        "expected": "Displays the placement explanation panel",
+        "result": "pass",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/concepts/mockup-profile-template-redesign.png: Profile rendered both exact scope statements together: Inferences from your interview and activity—not a diagnosis; and placement reasons are not proof for each individual personality signal.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "tested_source_hash": "6372d09665992aee",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
+      },
+      {
+        "id": "placement-disclaimer",
+        "type": "display",
+        "label": "Placement explanation disclaimer",
+        "expected": "Displays: These reasons explain your circle placement. They are not proof for each individual personality signal.",
+        "result": "pass",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/concepts/mockup-profile-template-redesign.png: Profile rendered both exact scope statements together: Inferences from your interview and activity—not a diagnosis; and placement reasons are not proof for each individual personality signal.",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "6372d09665992aee",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
+      },
+      {
+        "id": "review-signals",
+        "type": "button",
+        "label": "Review signals",
+        "expected": "Navigate → profileSignals; destination exposes Done",
+        "result": "pass",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/concepts/mockup-profile-template-redesign.png: Review signals opened Your personality signals with six voice-informed signal chips, placement evidence/disclaimers, interests, and a Done control.",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "6372d09665992aee",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
+      },
+      {
+        "id": "re-interview",
+        "type": "button",
+        "label": "Re-interview to correct this",
+        "expected": "Navigate → profileOnboarding at AI profile interview",
+        "result": "pass",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/concepts/mockup-profile-template-redesign.png: Re-interview to update profile opened the AI profile interview with typed reply, Voice mode, Start voice profile, privacy copy, and three-step progress surface.",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "6372d09665992aee",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
+      },
+      {
+        "id": "edit-profile",
+        "type": "button",
+        "label": "Edit profile",
+        "expected": "Navigate → profileEdit",
+        "result": "pass",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/concepts/mockup-profile-template-redesign.png: Edit profile opened the Living profile surface with editable interest chips, read-only voice signals, profile summary, five signal axes, and Back to profile.",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "6372d09665992aee",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       }
     ]
   }

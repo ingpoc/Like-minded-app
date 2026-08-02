@@ -1,91 +1,108 @@
-# Agent coordination (tester / fixer / coordinator)
+# Agent coordination (repo adapter)
 
-Lean handoffs — one command per turn, one issue per turn.
+Global modes/roles/capsules: `~/.agents/skills/testing-framework`. This file is **Like-minded dispatch only**.
 
-## Dual-lane coordinator (iOS ∥ macOS)
+## Mode choice (operator → mode)
 
+| Operator ask | Mode |
+| --- | --- |
+| keep proving, drain queue, multitask, close ledger | **B** sole-owner drain (**default**) |
+| novice test, find everything, batch issues before edits | **A** novice discover |
+| fix this flow / this screenshot | **C** single-flow |
+
+Never find-one → fix-one on the coordinator while a sole owner could hold the platform. Never `$session-orchestrate` hop per flow during a drain.
+
+## Runtime lanes
+
+```text
+Coordinator (preflight + verify/spawn on completion)
+ ├── macOS — one sole owner OR one novice; one bundled Computer session
+ ├── iOS   — one sole owner OR one novice; may run beside macOS
+ └── sidecar — read-only; no runtime/queue/ledger mutation
+Shared serial: reset:validation-data, xcodebuild, launch/capture → cross_platform_validation_lock.sh
 ```
-Coordinator (once/session: testing:ledger-session preflight)
- ├── macOS — exactly ONE CUA tester OR one fixer (never both; never two testers)
- └── iOS   — exactly ONE tester OR one fixer (parallel with macOS OK)
-Shared serial: reset:validation-data (once/session), xcodebuild → cross_platform_validation_lock.sh
+
+`testing:ledger-next` interleaves screens. Mode B first runs
+`testing:ledger-batch-plan` to select an 8–12 flow source-local band, then retains
+that batch id and resume cursor through discovery, clustering, fix, and retest.
+Hash restale after an in-band fix is normal only inside the affected dependency cone.
+
+### Mode B batch boundary
+
+- One explicit runtime tuple and one build/install per unchanged source hash.
+- Discover the bounded band before edits unless one failure blocks the remaining band.
+- Ledger first failures, then cluster by root cause and `fix_owner`; do not find-one → fix-one.
+- Retest fixed ids first, then affected journeys, then resume the saved cursor.
+- Do not pad a small coherent band with unrelated screens merely to reach eight.
+
+## Sole-owner drain — on every owner completion
+
+```text
+verify claimed flows (result=pass AND not stale vs current platform hash)
+  → if holder dead: release stale lock
+  → cull prove twins (keep lock-holder pid only)
+  → if lock free AND tip actionable: spawn ONE sole owner
+  → if contested / live holder: do nothing
 ```
 
-**macOS CUA rule:** at most **one** agent may hold `testing_ledger_runtime_lock.sh --platform macos`. That agent is the sole tester (prove path). Every other macOS agent is **fix-only** — no CUA, no prove scripts, no `macos_cua_screen.sh`.
+Verify with `ledger_screens` (`flowValidation` + `isFlowStale` + `hashPlatformSlice`). Spot-check claimed prove branches / AX (`rg` + `bash -n`).
 
-Never spawn two agents on the **same** platform. At most **two** runtime subagents total: one macOS + one iOS.
+### Actionable vs stop tips
 
-`testing:ledger-next` interleaves screens (round-robin within rank/tier) — coordinators should expect macOS targets to rotate across screens, not drain `auth` first.
+| Tip class | Action |
+| --- | --- |
+| `stale-pass` / `tier-gap` with working env | Spawn sole owner; prefer `testing:ledger-run` (no untargeted `--reprove`) |
+| Missing prove branch / AX / control | Owner fixes product or harness, then proves — not N/A |
+| Same blocker 3× unchanged | Checkpoint; continue other tips or stop slice |
+| Env wall (`real-auth` + `googleAuth:false`, …) | **Stop** — do not respawn |
+| Contested lock | Confirm holder; leave it |
 
-## Per-role load (hard caps)
+### Lean sole-owner packet
 
-| Role | Max commands | Max files | Entry |
-| --- | --- | --- | --- |
-| **Tester** | 3 | 0 | `testing:ledger-run` → `ledger:record-flow` or `testing:ledger-issue` |
-| **Fixer** | 2 | 1 (`fix_owner`) | `testing:ledger-fix-run` → edit owner → `mark-retest-ready` |
-| **Coordinator** | 2 | 1 (queue JSON) | `testing:ledger-session preflight` → spawn lanes |
+Include: platform, batch id, ordered source-local flows, resume cursor, runtime tuple, open issue ids, hash caveat if family restaled, “other platform owned — do not touch”, return schema (global Mode B capsule).
+Exclude: chat history, GOAL, sibling drain narratives, mockup walks.
 
-## Tester loop (3 lines)
+### Friction (session-proven)
 
-1. `npm run testing:ledger-run -- --platform macos|ios` — merged card + prove (lock acquired by prove script).
-2. Pass → `npm run ledger:record-flow -- …`; fail → `npm run testing:ledger-issue -- …`.
-3. Stop — never fix in the same turn.
+| Friction | Response |
+| --- | --- |
+| Product edit restales family | Re-drain; next packet names family + hash |
+| Coordinator re-implements after good drain | Verify stamps only, then spawn |
+| Second prove while lock held | Contested stop; cull twins only |
+| `:8787` wrong db | Restart `dev:api:validation`; require `validation-db` in `/health` |
+| iOS driver/Computer cannot drive control | Product accessibility (labels, identifiers, button wrappers) — do not loosen proof |
+| Concept UI missing ledger control | Restore control + prove branch |
+| Orphan app/sim, lock free | Kill orphan before next spawn |
 
-## Fixer loop (3 lines)
+## Single-flow (Mode C) — lean packet
 
-1. `npm run testing:ledger-fix-run -- --platform macos|ios` — claims queue issue + fix card (~12 lines).
-2. Acquire lock → read **one** `fix_owner` → smallest Swift diff → release lock.
-3. `npm run testing:ledger-fix-next -- --mark-retest-ready <id>` — one issue per turn.
+platform, exact `screen/flow`, first command, proof-log path, stop conditions, owned source slice. Optional `--reprove` only when operator asks for fresh comparison of a clean pass.
 
-## NEVER (all roles)
+Loop: `testing:ledger-run` → fail: issue + same-flow batch → release lock → claim/fix → `--mark-retest-ready` → full retest → record/checkpoint before switching flows.
 
-- `ledger:open` after `testing:ledger-run` / `testing:ledger-next` (queue is sole work picker)
-- `ledger:flow` when run card already printed PRE/PASS (merged into `testing:ledger-run`)
-- `ledger:brief` per turn (coordinator preflight only)
-- `GOAL.md`, full `PROGRESS.md`, `mockups/**` walks, full `@build-ios-app` / `@testing-ledger` skill re-read
-- `run_macos_manual_validation.sh` inside shell flows (resets DB) — use `macos_launch` without reset; seed once/session
+## Novice discover (Mode A)
 
-## NEVER (fix-only agents — not the platform CUA tester)
+Packets + return schema: [`novice-discover.md`](novice-discover.md). Capsule shape also in global `capsules.md` (Mode A).
 
-Fixers and parallel implement workers must **not** compete for runtime proof resources:
+## Sidecars
 
-- `npm run testing:ledger-run` / `testing:ledger-prove` / `testing:ledger-prove-ios`
-- `./script/macos_cua_screen.sh`, `macos_cua_*.sh`, `macos_validation_batch.sh`, `verify_macos_screens.sh`
-- `./script/testing_ledger_prove_flow.sh`, `./script/testing_ledger_prove_ios.sh`
-- `./script/cross_platform_screen_validate.sh` (iOS capture lane — tester only)
-- Acquiring `testing_ledger_runtime_lock.sh` for prove (fixer may acquire briefly for `fixer` role while editing, then **release** before `mark-retest-ready`)
+At most one by default. Question + narrow files only. Never prove/seed/build/queue mutate.
 
-Only the **designated platform tester** runs prove scripts. Coordinator spawns at most **one** macOS CUA tester per wave.
+## Never
 
-## Coordinator
+- `ledger:open` / `ledger:flow` as work queue after `testing:ledger-run`
+- Reload GOAL/PROGRESS/mockups for a bounded flow
+- Sidecar or discover-novice product edits in discover-only
+- Hold prove lock during non-in-band source edits
+- Treat a generic screenshot or accepted Computer dispatch as flow proof
+- Trust issue lists without opening cited log/PNG
+- Respawn discover without retesting fixed ids first
 
-- **Once/session**: `./script/testing_ledger_session.sh preflight` (`:8787` health + `ledger:brief` counts).
-- **Per-platform runtime lane**: one owner per platform (tester **XOR** fixer).
-- Resume tester only when queue issue has `retest_ready: true`.
-- Queue owner: `validation/testing-issue-queue.json` (handoff). Ledger JSON = status only.
+## Mutex map
 
-## Resource mutex
-
-| Lane | Lock | Competes with |
-| --- | --- | --- |
-| macOS runtime | `testing_ledger_runtime_lock.sh --platform macos` | other macOS agents only |
-| iOS runtime | `testing_ledger_runtime_lock.sh --platform ios` | other iOS agents only |
-| Shared | `cross_platform_validation_lock.sh` (seed, xcodebuild, simctl) | both platforms |
-
-Pipeline per platform: tester fail → `testing:ledger-issue` → **STOP** → fixer → `mark-retest-ready` → tester retest via `testing:ledger-run`.
-
-## iOS lane card (no full skill)
-
-- Build: `xcodebuild` via `cross_platform_validation_lock.sh`
-- Prove: `npm run testing:ledger-run -- --platform ios`
-- Capture owner: `cross_platform_screen_validate.sh`
-- Read `@build-ios-app` only when build/capture flags fail — not at turn start
-
-## Commands
-
-```bash
-npm run testing:ledger-run -- --platform macos
-npm run testing:ledger-fix-run -- --platform ios
-npm run testing:ledger-issue -- --screen auth --flow auth-privacy-link --platform macos --observed "..."
-./script/testing_ledger_session.sh preflight   # coordinator only
-```
+| Resource | Owner |
+| --- | --- |
+| Platform runtime | `testing_ledger_runtime_lock.sh` |
+| Seed/API/build/capture | `cross_platform_validation_lock.sh` |
+| Issue queue | Exact claim/update commands |
+| Proof decision | Main after verify + full retest (or clean A round) |

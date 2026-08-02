@@ -1,4 +1,5 @@
 const http = require("node:http");
+const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
 const {
@@ -33,6 +34,7 @@ const {
   upsertGoogleUser,
   upsertWalletUser,
   getUserById,
+  getAppleRefreshTokenCiphertext,
   saveProfilePlacement,
   getLatestProfile,
   getLatestPlacement,
@@ -60,12 +62,20 @@ const {
   saveMessage,
   getMessages,
   saveFeedback,
+  saveCommunityReport,
   deleteUserAccount,
   LOCAL_PATH: MVP_STORE_PATH
 } = require("./lib/mvp-store");
+const {
+  appleServerConfig,
+  exchangeAuthorizationCode,
+  revokeRefreshToken,
+  encryptRefreshToken,
+  decryptRefreshToken
+} = require("./lib/apple-token");
 const { generateParticipantToken } = require("./lib/livekit");
 const { buildMeetings, nextWeekendAt } = require("./lib/scheduling");
-const { modelBackedProfilePlacement, profilePlacementFromModelResult } = require("./lib/model-placement");
+const { modelBackedInterviewTurn, modelBackedProfilePlacement, profilePlacementFromModelResult } = require("./lib/model-placement");
 
 function loadLocalEnv() {
   const envPath = path.resolve(process.cwd(), ".env.local");
@@ -109,15 +119,6 @@ function readJsonBody(req) {
   });
 }
 
-function readRawBody(req) {
-  return new Promise((resolve, reject) => {
-    const chunks = [];
-    req.on("data", chunk => chunks.push(chunk));
-    req.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
-    req.on("error", reject);
-  });
-}
-
 function authResponse(user) {
   return { user, sessionToken: createSessionToken(user), expiresIn: 60 * 60 * 24 * 30 };
 }
@@ -129,6 +130,15 @@ function html(res, statusCode, body) {
     "content-length": Buffer.byteLength(payload)
   });
   res.end(payload);
+}
+
+function renderPrivacyPolicy() {
+  const policyPath = path.resolve(__dirname, "../../../docs/references/privacy-policy-testflight.md");
+  const policy = fs.readFileSync(policyPath, "utf8")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+  return `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Likeminded Privacy Policy</title><style>body{max-width:760px;margin:40px auto;padding:0 20px;font:16px/1.6 -apple-system,BlinkMacSystemFont,sans-serif;color:#1d2b25;background:#fffaf2}pre{white-space:pre-wrap;font:inherit}</style><main><pre>${policy}</pre></main></html>`;
 }
 
 function renderWalletSignPage({ wallet, challengeId }) {
@@ -173,10 +183,37 @@ function resultEnvelope(profile, placement, allCircleFits = null, synthesisMode 
   };
 }
 
+function validateBasicProfileUpdate(basicInfo, interests) {
+  if (!basicInfo || typeof basicInfo !== "object") return;
+  const name = typeof basicInfo.name === "string" ? basicInfo.name.trim() : "";
+  const city = typeof basicInfo.city === "string" ? basicInfo.city.trim() : "";
+  if (name.length < 2 || name.length > 80) throw new Error("Name must be between 2 and 80 characters.");
+  if (city.length < 2 || city.length > 80) throw new Error("City must be between 2 and 80 characters.");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(basicInfo.dateOfBirth || "")) throw new Error("Birthday must be a valid ISO date.");
+  const birthDate = new Date(`${basicInfo.dateOfBirth}T00:00:00Z`);
+  const today = new Date();
+  const oldest = new Date(Date.UTC(today.getUTCFullYear() - 100, today.getUTCMonth(), today.getUTCDate()));
+  const youngest = new Date(Date.UTC(today.getUTCFullYear() - 18, today.getUTCMonth(), today.getUTCDate()));
+  if (Number.isNaN(birthDate.getTime()) || birthDate < oldest || birthDate > youngest) {
+    throw new Error("You must be between 18 and 100 years old to use Likeminded.");
+  }
+  if (!Array.isArray(interests) || interests.length < 2 || interests.length > 20) {
+    throw new Error("Choose between 2 and 20 interests.");
+  }
+  const normalized = interests.map((interest) => typeof interest?.label === "string" ? interest.label.trim().toLocaleLowerCase() : "");
+  if (normalized.some((label) => label.length < 1 || label.length > 40) || new Set(normalized).size !== normalized.length) {
+    throw new Error("Interests must be unique and at most 40 characters each.");
+  }
+}
+
 function circleWithMemberCount(circle) {
   if (!circle || typeof circle !== "object") return circle;
-  const count = (circles.get(circle.id)?.members || circle.members || []).length;
-  return { ...circle, membersCount: count, membersOnline: count };
+  const roster = circles.get(circle.id)?.members || circle.members || [];
+  const count = roster.length;
+  // Placement circles are micro-rooms (archetype 4–6; concept UIs 12–18). A
+  // historically bloated members[] must not read as a mass community.
+  const roomDisplay = count > 18 ? 18 : count;
+  return { ...circle, membersCount: roomDisplay, membersOnline: roomDisplay };
 }
 
 function placementWithMemberCounts(placement) {
@@ -188,13 +225,20 @@ function placementWithMemberCounts(placement) {
   };
 }
 
-function rememberCircleMember(placement, profileId) {
-  const circleId = placement?.primaryCircle?.id;
-  if (!circleId || !profileId) return;
-  const circle = circles.get(circleId);
-  if (!circle) return;
-  circle.members = Array.from(new Set([...(circle.members || []), profileId]));
-  circles.set(circleId, circle);
+function syncPlacementCircleMembership(placement, profileId) {
+  if (!profileId) return;
+  const acceptedCircleIds = new Set();
+  if (placement?.userState === "accepted") {
+    if (placement.primaryCircle?.id) acceptedCircleIds.add(placement.primaryCircle.id);
+    if (placement.selectedSecondaryCircleId) acceptedCircleIds.add(placement.selectedSecondaryCircleId);
+  }
+
+  for (const [circleId, circle] of circles.entries()) {
+    const members = (circle.members || []).filter((memberId) => memberId !== profileId);
+    if (acceptedCircleIds.has(circleId)) members.push(profileId);
+    circle.members = members;
+    circles.set(circleId, circle);
+  }
 }
 
 function publicProfile(profile) {
@@ -204,13 +248,15 @@ function publicProfile(profile) {
 }
 
 function circleSummary(circle) {
+  const count = (circle.members || []).length;
+  const roomDisplay = count > 18 ? 18 : count;
   return {
     id: circle.id,
     name: circle.name,
     roomEnergy: circle.roomEnergy,
     themes: circle.themes || [],
-    membersCount: (circle.members || []).length,
-    membersOnline: (circle.members || []).length,
+    membersCount: roomDisplay,
+    membersOnline: roomDisplay,
     meetingFormat: circle.meetingFormat
   };
 }
@@ -345,6 +391,48 @@ async function runWeekendScheduling() {
   return created;
 }
 
+function buildRealtimeSessionConfig(reinterviewContext = "") {
+  const reinterviewInstructions = reinterviewContext
+    ? `\n\nThis is a placement correction re-interview. Use the existing state below as context, then ask only what is needed to refresh the profile and starter circle.\n${reinterviewContext}`
+    : "";
+  return {
+    type: "realtime",
+    model: REALTIME_MODEL,
+    output_modalities: ["audio"],
+    tools: [{
+      type: "function",
+      name: "submit_profile_placement",
+      description: "Create or update the user's private profile draft and best starter circle from the conversation so far.",
+      parameters: {
+        type: "object",
+        additionalProperties: false,
+        required: ["signals", "primaryCircleId", "fitReasons", "sourceReflectionSignals", "profileSummary", "interests", "hiddenSignals"],
+        properties: {
+          signals: { type: "object" },
+          primaryCircleId: { type: "string" },
+          secondaryCircleIds: { type: "array", items: { type: "string" } },
+          fitReasons: { type: "array", items: { type: "string" } },
+          sourceReflectionSignals: { type: "array", items: { type: "string" } },
+          confidenceLabel: { type: "string" },
+          profileSummary: { type: "string" },
+          interests: { type: "array", items: { type: "object", additionalProperties: false, required: ["area", "label", "depth"], properties: { area: { type: "string" }, label: { type: "string" }, depth: { type: "string", enum: ["casual", "active", "deep"] } } } },
+          hiddenSignals: { type: "object" }
+        }
+      }
+    }],
+    tool_choice: "auto",
+    audio: {
+      input: {
+        format: { type: "audio/pcm", rate: 24000 },
+        transcription: { model: process.env.OPENAI_REALTIME_TRANSCRIPTION_MODEL || "gpt-4o-mini-transcribe" },
+        turn_detection: { type: "server_vad", threshold: 0.5, prefix_padding_ms: 500, silence_duration_ms: 1500 }
+      },
+      output: { format: { type: "audio/pcm", rate: 24000 }, voice: REALTIME_VOICE }
+    },
+    instructions: "You are a warm, insightful interviewer conducting a personality discovery conversation for the Likeminded app. Start briefly and warmly. Ask open-ended questions one at a time. Listen carefully. Naturally discover interests across movies, music, books, food/cooking, outdoors, tech/building, and art/design; infer depth as casual, active, or deep from specificity and emotional engagement. Observe private placement signals from how the user speaks: shyness, language comfort, warmth, vulnerability openness, dominance tendency, and energy trajectory. After every meaningful user answer, call submit_profile_placement to save the current private profile draft, structured interests, hidden placement signals, and best starter circle from the conversation so far. If evidence is still early, set confidenceLabel to Draft profile and say what is provisional in fitReasons; once you have enough evidence, set confidenceLabel to Full profile. Choose from these circle ids only: reflective-builders, gentle-romantics, longform-thinkers, bold-explorers, grounded-nurturers. Do not choose by keyword; decide from pacing, trust, room energy, intent, and the whole conversation. IMPORTANT: Wait patiently for the user to finish speaking. Do not interrupt." + reinterviewInstructions
+  };
+}
+
 async function createRealtimeClientSecret(input = {}) {
   if (!process.env.OPENAI_API_KEY) {
     return { statusCode: 503, body: { error: "openai_api_key_missing", message: "Set OPENAI_API_KEY on the API server to create a realtime voice session." } };
@@ -356,7 +444,8 @@ async function createRealtimeClientSecret(input = {}) {
   const response = await fetch("https://api.openai.com/v1/realtime/client_secrets", {
     method: "POST",
     headers,
-    body: JSON.stringify({ session: { type: "realtime", model: REALTIME_MODEL, audio: { output: { voice: REALTIME_VOICE } } } })
+    body: JSON.stringify({ session: buildRealtimeSessionConfig(String(input.reinterviewContext || "").trim().slice(0, 1200)) }),
+    signal: AbortSignal.timeout(15_000)
   });
 
   const text = await response.text();
@@ -367,6 +456,11 @@ async function createRealtimeClientSecret(input = {}) {
 
 async function handleRequest(req, res) {
   const url = new URL(req.url, `http://${req.headers.host || `${HOST}:${PORT}`}`);
+
+  if (req.method === "GET" && url.pathname === "/privacy") {
+    html(res, 200, renderPrivacyPolicy());
+    return;
+  }
 
   if (req.method === "GET" && url.pathname === "/health") {
     const fs = require("node:fs");
@@ -391,10 +485,21 @@ async function handleRequest(req, res) {
         nonce: typeof body.nonce === "string" ? body.nonce : undefined,
         requireNonce: process.env.APPLE_REQUIRE_NONCE === "1"
       });
+      let appleRefreshTokenCiphertext = null;
+      if (process.env.APPLE_AUTH_BYPASS !== "1") {
+        const exchanged = await exchangeAuthorizationCode(body.authorizationCode, appleServerConfig());
+        const exchangedPayload = await verifyAppleIdentityToken(exchanged.identityToken, {
+          nonce: typeof body.nonce === "string" ? body.nonce : undefined,
+          requireNonce: process.env.APPLE_REQUIRE_NONCE === "1"
+        });
+        if (exchangedPayload.sub !== applePayload.sub) throw new Error("apple_authorization_code_subject_mismatch");
+        appleRefreshTokenCiphertext = encryptRefreshToken(exchanged.refreshToken, process.env.SESSION_SECRET);
+      }
       const user = await upsertAppleUser({
         appleSub: applePayload.sub,
         email: applePayload.email,
-        fullName: typeof body.fullName === "string" ? body.fullName.trim() : null
+        fullName: typeof body.fullName === "string" ? body.fullName.trim() : null,
+        appleRefreshTokenCiphertext
       });
       json(res, 200, authResponse(user));
     } catch (error) {
@@ -549,110 +654,18 @@ async function handleRequest(req, res) {
     const user = await requireUser(req, res);
     if (!user) return;
     try {
-      const body = await readJsonBody(req);
+      const body = {
+        safetyIdentifier: crypto.createHash("sha256").update(`likeminded:${user.id}`).digest("hex"),
+        reinterviewContext: req.headers["x-likeminded-reinterview-context"]
+      };
       const result = await createRealtimeClientSecret(body);
       json(res, result.statusCode, { transport: "webrtc", model: REALTIME_MODEL, voice: REALTIME_VOICE, toolPolicy: architecture.toolPolicy, clientSecret: result.body });
     } catch (error) {
-      json(res, 400, { error: "invalid_realtime_session_request", message: error.message });
-    }
-    return;
-  }
-
-  // POST /v1/realtime/calls — WebRTC SDP exchange (unified interface)
-  // Client sends SDP offer as text/plain, server forwards to OpenAI with session config
-  if (req.method === "POST" && url.pathname === "/v1/realtime/calls") {
-    const user = await requireUser(req, res);
-    if (!user) return;
-    try {
-      const sdp = await readRawBody(req);
-      if (!sdp.trim()) {
-        json(res, 400, { error: "invalid_sdp", message: "SDP offer body is required." });
-        return;
-      }
-
-      if (!process.env.OPENAI_API_KEY) {
-        json(res, 503, { error: "openai_api_key_missing", message: "Set OPENAI_API_KEY on the API server." });
-        return;
-      }
-
-      const reinterviewContext = String(req.headers["x-likeminded-reinterview-context"] || "").trim().slice(0, 1200);
-      const reinterviewInstructions = reinterviewContext
-        ? `\n\nThis is a placement correction re-interview. Use the existing state below as context, then ask only what is needed to refresh the profile and starter circle.\n${reinterviewContext}`
-        : "";
-      const sessionConfig = JSON.stringify({
-        type: "realtime",
-        model: REALTIME_MODEL,
-        output_modalities: ["audio"],
-        tools: [
-          {
-            type: "function",
-            name: "submit_profile_placement",
-            description: "Create or update the user's private profile draft and best starter circle from the conversation so far.",
-            parameters: {
-              type: "object",
-              additionalProperties: false,
-              required: ["signals", "primaryCircleId", "fitReasons", "sourceReflectionSignals", "profileSummary", "interests", "hiddenSignals"],
-              properties: {
-                signals: { type: "object" },
-                primaryCircleId: { type: "string" },
-                secondaryCircleIds: { type: "array", items: { type: "string" } },
-                fitReasons: { type: "array", items: { type: "string" } },
-                sourceReflectionSignals: { type: "array", items: { type: "string" } },
-                confidenceLabel: { type: "string" },
-                profileSummary: { type: "string" },
-                interests: {
-                  type: "array",
-                  items: {
-                    type: "object",
-                    additionalProperties: false,
-                    required: ["area", "label", "depth"],
-                    properties: {
-                      area: { type: "string" },
-                      label: { type: "string" },
-                      depth: { type: "string", enum: ["casual", "active", "deep"] }
-                    }
-                  }
-                },
-                hiddenSignals: { type: "object" }
-              }
-            }
-          }
-        ],
-        tool_choice: "auto",
-        audio: {
-          input: {
-            format: { type: "audio/pcm", rate: 24000 },
-            transcription: { model: process.env.OPENAI_REALTIME_TRANSCRIPTION_MODEL || "gpt-4o-mini-transcribe" },
-            turn_detection: { type: "server_vad", threshold: 0.5, prefix_padding_ms: 500, silence_duration_ms: 1500 }
-          },
-          output: {
-            format: { type: "audio/pcm", rate: 24000 },
-            voice: REALTIME_VOICE
-          }
-        },
-        instructions: "You are a warm, insightful interviewer conducting a personality discovery conversation for the Likeminded app. Start briefly and warmly. Ask open-ended questions one at a time. Listen carefully. Naturally discover interests across movies, music, books, food/cooking, outdoors, tech/building, and art/design; infer depth as casual, active, or deep from specificity and emotional engagement. Observe private placement signals from how the user speaks: shyness, language comfort, warmth, vulnerability openness, dominance tendency, and energy trajectory. After every meaningful user answer, call submit_profile_placement to save the current private profile draft, structured interests, hidden placement signals, and best starter circle from the conversation so far. If evidence is still early, set confidenceLabel to Draft profile and say what is provisional in fitReasons; once you have enough evidence, set confidenceLabel to Full profile. Choose from these circle ids only: reflective-builders, gentle-romantics, longform-thinkers, bold-explorers, grounded-nurturers. Do not choose by keyword; decide from pacing, trust, room energy, intent, and the whole conversation. IMPORTANT: Wait patiently for the user to finish speaking. Do not interrupt." + reinterviewInstructions
+      const timedOut = error?.name === "TimeoutError" || error?.message === "openai_realtime_timeout";
+      json(res, timedOut ? 504 : 502, {
+        error: timedOut ? "openai_realtime_timeout" : "openai_realtime_session_failed",
+        message: timedOut ? "OpenAI Realtime session creation timed out." : error.message
       });
-
-      const formData = new FormData();
-      formData.append("sdp", sdp);
-      formData.append("session", sessionConfig);
-
-      const realtimeResponse = await fetch("https://api.openai.com/v1/realtime/calls", {
-        method: "POST",
-        headers: { "Authorization": `Bearer ${process.env.OPENAI_API_KEY}` },
-        body: formData
-      });
-
-      const answerSdp = await realtimeResponse.text();
-      if (!realtimeResponse.ok) {
-        json(res, realtimeResponse.status, { error: "realtime_call_failed", message: answerSdp });
-        return;
-      }
-
-      res.writeHead(realtimeResponse.status, { "Content-Type": "application/sdp" });
-      res.end(answerSdp);
-    } catch (error) {
-      json(res, 500, { error: "realtime_call_error", message: error.message });
     }
     return;
   }
@@ -662,16 +675,18 @@ async function handleRequest(req, res) {
     if (!user) return;
     try {
       const body = await readJsonBody(req);
+      const idempotencyKey = typeof req.headers["idempotency-key"] === "string" ? req.headers["idempotency-key"].trim() : null;
       const { profile, placement } = profilePlacementFromModelResult({
         modelResult: body,
         interviewTranscript: body.interviewTranscript || "",
         reflectionAnswers: body.reflectionAnswers || []
       });
-      const placed = await saveProfilePlacement({ userId: user.id, profile, placement, transcript: body.interviewTranscript || "" });
-      const savedProfile = await getLatestProfile(user.id);
+      const placed = await saveProfilePlacement({ userId: user.id, profile, placement, transcript: body.interviewTranscript || "", idempotencyKey });
+      const savedProfile = placed.profile || await getLatestProfile(user.id);
+      const savedPlacement = placed.placement || placement;
       const profileId = savedProfile?.profileId || profile.profileId;
-      rememberCircleMember(placement, profileId);
-      json(res, 201, { ...resultEnvelope(savedProfile || profile, placement, null, "realtime_tool"), placementId: placed.placementId });
+      syncPlacementCircleMembership(savedPlacement, profileId);
+      json(res, 201, { ...resultEnvelope(savedProfile || profile, savedPlacement, null, placed.idempotentReplay ? "idempotent_replay" : "realtime_tool"), placementId: placed.placementId });
     } catch (error) {
       json(res, 400, { error: "invalid_realtime_profile_placement", message: error.message });
     }
@@ -703,23 +718,38 @@ async function handleRequest(req, res) {
   }
 
   // POST /v1/discover — AI interview → personality profile → circle placement
+  if (req.method === "POST" && url.pathname === "/v1/profile-interview/turn") {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    try {
+      const body = await readJsonBody(req);
+      const result = await modelBackedInterviewTurn({ messages: body?.messages || [] });
+      json(res, 200, result);
+    } catch (error) {
+      json(res, 502, { error: "profile_interview_failed", message: error.message });
+    }
+    return;
+  }
+
   if (req.method === "POST" && url.pathname === "/v1/discover") {
     const user = await requireUser(req, res);
     if (!user) return;
     try {
       const body = await readJsonBody(req);
       const { interviewTranscript, reflectionAnswers } = body || {};
+      const idempotencyKey = typeof req.headers["idempotency-key"] === "string" ? req.headers["idempotency-key"].trim() : null;
       const deviceId = req.headers["x-device-id"] || "";
       const result = await modelBackedProfilePlacement({ interviewTranscript: interviewTranscript || "", reflectionAnswers: reflectionAnswers || [] });
       const { profile, placement, allCircleFits, synthesisMode } = result;
       profile.deviceId = deviceId;
-      await saveProfilePlacement({ userId: user.id, profile, placement, transcript: interviewTranscript });
-      const savedProfile = await getLatestProfile(user.id);
+      const placed = await saveProfilePlacement({ userId: user.id, profile, placement, transcript: interviewTranscript, idempotencyKey });
+      const savedProfile = placed.profile || await getLatestProfile(user.id);
+      const savedPlacement = placed.placement || placement;
       const profileId = savedProfile?.profileId || profile.profileId;
       profiles.set(profileId, savedProfile || profile);
-      rememberCircleMember(placement, profileId);
+      syncPlacementCircleMembership(savedPlacement, profileId);
 
-      json(res, 200, resultEnvelope(savedProfile || profile, placement, allCircleFits, synthesisMode));
+      json(res, 200, resultEnvelope(savedProfile || profile, savedPlacement, placed.idempotentReplay ? null : allCircleFits, placed.idempotentReplay ? "idempotent_replay" : synthesisMode));
     } catch (error) {
       json(res, 400, { error: "invalid_json", message: error.message });
     }
@@ -743,11 +773,13 @@ async function handleRequest(req, res) {
     if (!user) return;
     try {
       const body = await readJsonBody(req);
+      validateBasicProfileUpdate(body.basicInfo, body.interests);
       const profile = await updateLatestProfile(user.id, {
         reflectionSummary: typeof body.reflectionSummary === "string" ? body.reflectionSummary.trim() : null,
         signals: body.signals && typeof body.signals === "object" ? body.signals : null,
         basicInfo: body.basicInfo && typeof body.basicInfo === "object" ? body.basicInfo : null,
-        interests: Array.isArray(body.interests) ? body.interests : null
+        interests: Array.isArray(body.interests) ? body.interests : null,
+        replaceInterests: Array.isArray(body.interests)
       });
       if (!profile) {
         json(res, 404, { error: "profile_not_found", message: "No profile has been created yet." });
@@ -789,6 +821,7 @@ async function handleRequest(req, res) {
         return;
       }
       const profile = await getLatestProfile(user.id);
+      syncPlacementCircleMembership(placed.placement, profile?.profileId);
       json(res, 200, { ...resultEnvelope(profile, placed.placement), placementId: placed.id });
     } catch (error) {
       json(res, 400, { error: "invalid_placement_action", message: error.message });
@@ -801,7 +834,7 @@ async function handleRequest(req, res) {
     if (!user) return;
     const profile = await getLatestProfile(user.id);
     const placed = await getLatestPlacement(user.id);
-    const placementCircles = placed?.placement
+    const placementCircles = placed?.placement?.userState === "accepted"
       ? (() => {
           const primary = placed.placement.primaryCircle;
           const secondaryId = placed.placement.selectedSecondaryCircleId;
@@ -920,6 +953,24 @@ async function handleRequest(req, res) {
     community.members = (community.members || []).filter((memberId) => memberId !== user.id);
     communities.set(communityId, community);
     json(res, 200, { status: "left" });
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname.match(/^\/v1\/communities\/[^/]+\/report$/)) {
+    const user = await requireUser(req, res);
+    if (!user) return;
+    const communityId = decodeURIComponent(url.pathname.split("/")[3]);
+    if (!communities.has(communityId)) {
+      json(res, 404, { error: "community_not_found", message: `No community found for id: ${communityId}` });
+      return;
+    }
+    try {
+      const body = await readJsonBody(req);
+      const report = await saveCommunityReport({ userId: user.id, communityId, reason: body.reason });
+      json(res, 201, { status: "reported", reportId: report.id });
+    } catch (error) {
+      json(res, 400, { error: "invalid_community_report", message: error.message });
+    }
     return;
   }
 
@@ -1303,8 +1354,28 @@ async function handleRequest(req, res) {
   if (req.method === "DELETE" && url.pathname === "/v1/me/account") {
     const user = await requireUser(req, res);
     if (!user) return;
-    await deleteUserAccount(user.id);
-    json(res, 200, { status: "deleted" });
+    try {
+      if (user.authProvider === "apple" && process.env.APPLE_AUTH_BYPASS !== "1") {
+        const ciphertext = await getAppleRefreshTokenCiphertext(user.id);
+        if (!ciphertext) {
+          json(res, 409, {
+            error: "apple_reauthorization_required",
+            message: "Sign in with Apple again before deleting this account."
+          });
+          return;
+        }
+        const refreshToken = decryptRefreshToken(ciphertext, process.env.SESSION_SECRET);
+        await revokeRefreshToken(refreshToken, appleServerConfig());
+      }
+      await deleteUserAccount(user.id);
+      json(res, 200, { status: "deleted" });
+    } catch (error) {
+      console.error(`account deletion failed: ${error.message}`);
+      json(res, 502, {
+        error: "account_deletion_failed",
+        message: "Account deletion could not be completed. Try signing in again, then retry."
+      });
+    }
     return;
   }
 

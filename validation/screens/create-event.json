@@ -12,7 +12,7 @@
         "apps/ios-macos/Sources/LikemindedApp/Data/PrototypeAppState.swift (createMeeting, dev tab routing)",
         "apps/ios-macos/Sources/LikemindedApp/Data/LikemindedAPIClient.swift (createMeeting)"
       ],
-      "source_hash": "7933a3cc883224d8",
+      "source_hash": "504883bb3eaa8fb9",
       "mockup_ref": "mockups/ios/17-20-profile-community-settings.png",
       "mockup_missing": false,
       "entry_points": [
@@ -47,7 +47,7 @@
         "result": "pass",
         "notes": "2026-07-05 output/validation/ios-screens/26-create-event.png vs macOS createEvent / mockups/macos/22-create-event.png: stacked mobile layout with Create event title, subtitle, icon type pills, jazz plate form, DoodleCover live preview, separate date/time rows, tag pills. Intentional: iOS uses FeatureCard sections + no bottom nav on validation deep link; iOS mockup plate 17-20 has no dedicated create-event panel (functional parity vs macOS 22-create-event)."
       },
-      "recent_screenshot_ref": "output/validation/ios-screens/26-create-event.png",
+      "recent_screenshot_ref": "output/validation/ios-screens/create-event.png",
       "notes": "Parity with validation/macos/10-create-event.json. Capture user validation-gurusharan / Gurusharan Gupta."
     },
     "macos": {
@@ -60,7 +60,7 @@
         "services/api/src/server.js (POST /v1/meetings)",
         "apps/ios-macos/Assets.xcassets/EventJazzListening.imageset"
       ],
-      "source_hash": "be16a539f86f43cb",
+      "source_hash": "8a02e1eed0ca1321",
       "mockup_ref": "mockups/macos/22-create-event.png",
       "mockup_missing": false,
       "entry_points": [
@@ -96,7 +96,7 @@
         "notes": "2026-07-05 capture output/validation/macos-screens/createEvent.png vs mockups/macos/22-create-event.png: Create event title, horizontal type pills, form fields, jazz doodle live preview with tags, Create event CTA. Intentional: bottom nav includes Soulmate tab (5 items) vs mockup 4-item plate."
       },
       "recent_screenshot_ref": "output/validation/macos-screens/createEvent.png",
-      "notes": "CUA 2026-07-05: type pills, fields, Add cover/tags, Create event on seeded jazz form at 1200x760."
+      "notes": "Computer 2026-07-05: type pills, fields, Add cover/tags, Create event on seeded jazz form at 1200x760."
     }
   },
   "flows": [
@@ -119,23 +119,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "event-type-meetup: screen-capture 2026-07-06",
+          "evidence": "event-type-meetup: Computer-use 2026-08-02",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "7933a3cc883224d8",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "504883bb3eaa8fb9",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "event-type-meetup: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-type-meetup) (hash-migrated: scr",
+          "evidence": "Bundled Computer selected Meetup, observed AX Selected and the Meetup live-preview label; compared with mockups/macos/22-create-event.png.",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "be16a539f86f43cb",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/create-event-current-source-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "8a02e1eed0ca1321",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -147,7 +149,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen create-event --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh createEvent → macos_cua_screen.sh createEvent"
+          "macos": "@Computer: npm run dev:macos:validation -- createEvent; target the canonical app by full path; prove create-event/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen create-event --flow event-type-meetup --result pass --method <tier-method> --evidence \"...\""
       }
@@ -171,23 +173,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "event-type-listening-session: screen-capture 2026-07-06",
+          "evidence": "event-type-listening-session: Computer-use 2026-08-02",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "7933a3cc883224d8",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "504883bb3eaa8fb9",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "event-type-listening-session: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-type-listening-session) (hash-mi",
+          "evidence": "Bundled Computer selected Listening Session, observed AX Selected and the Listening Session live-preview label; compared with mockups/macos/22-create-event.png.",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "be16a539f86f43cb",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/create-event-current-source-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "8a02e1eed0ca1321",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -199,7 +203,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen create-event --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh createEvent → macos_cua_screen.sh createEvent"
+          "macos": "@Computer: npm run dev:macos:validation -- createEvent; target the canonical app by full path; prove create-event/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen create-event --flow event-type-listening-session --result pass --method <tier-method> --evidence \"...\""
       }
@@ -223,23 +227,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "event-type-jam-session: screen-capture 2026-07-06",
+          "evidence": "event-type-jam-session: Computer-use 2026-08-02",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "7933a3cc883224d8",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "504883bb3eaa8fb9",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "event-type-jam-session: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-type-jam-session) (hash-migrated",
+          "evidence": "Bundled Computer selected Jam Session, observed AX Selected and the Jam Session live-preview label; compared with mockups/macos/22-create-event.png.",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "be16a539f86f43cb",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/create-event-current-source-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "8a02e1eed0ca1321",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -251,7 +257,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen create-event --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh createEvent → macos_cua_screen.sh createEvent"
+          "macos": "@Computer: npm run dev:macos:validation -- createEvent; target the canonical app by full path; prove create-event/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen create-event --flow event-type-jam-session --result pass --method <tier-method> --evidence \"...\""
       }
@@ -275,23 +281,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "event-fields: screen-capture 2026-07-06",
+          "evidence": "event-fields: Computer-use 2026-08-02",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "7933a3cc883224d8",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "504883bb3eaa8fb9",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "event-fields: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-fields) (hash-migrated: screen-s",
+          "evidence": "Bundled Computer edited event name, date, time, location, and details and observed every exact value in the live preview; compared with mockups/macos/22-create-event.png.",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "be16a539f86f43cb",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/create-event-current-source-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "8a02e1eed0ca1321",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -303,7 +311,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen create-event --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh createEvent → macos_cua_screen.sh createEvent"
+          "macos": "@Computer: npm run dev:macos:validation -- createEvent; target the canonical app by full path; prove create-event/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen create-event --flow event-fields --result pass --method <tier-method> --evidence \"...\""
       }
@@ -327,23 +335,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "add-cover: screen-capture 2026-07-06",
+          "evidence": "add-cover: Computer-use 2026-08-02",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "7933a3cc883224d8",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "504883bb3eaa8fb9",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "add-cover: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (add-cover) (hash-migrated: screen-slic",
+          "evidence": "Bundled Computer clicked Add cover and observed Cover added plus cover-added preview copy; compared with mockups/macos/22-create-event.png.",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "be16a539f86f43cb",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/create-event-current-source-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "8a02e1eed0ca1321",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -355,7 +365,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen create-event --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh createEvent → macos_cua_screen.sh createEvent"
+          "macos": "@Computer: npm run dev:macos:validation -- createEvent; target the canonical app by full path; prove create-event/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen create-event --flow add-cover --result pass --method <tier-method> --evidence \"...\""
       }
@@ -379,23 +389,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "add-tags: screen-capture 2026-07-06",
+          "evidence": "add-tags: Computer-use 2026-08-02",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "7933a3cc883224d8",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "504883bb3eaa8fb9",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "add-tags: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (add-tags) (hash-migrated: screen-slice",
+          "evidence": "Bundled Computer clicked Tags added and observed tags-added preview copy derived from event type; compared with mockups/macos/22-create-event.png.",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "be16a539f86f43cb",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/create-event-current-source-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "8a02e1eed0ca1321",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -407,7 +419,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen create-event --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh createEvent → macos_cua_screen.sh createEvent"
+          "macos": "@Computer: npm run dev:macos:validation -- createEvent; target the canonical app by full path; prove create-event/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen create-event --flow add-tags --result pass --method <tier-method> --evidence \"...\""
       }
@@ -431,23 +443,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "create-event: screen-capture 2026-07-06",
+          "evidence": "create-event: Computer-use 2026-08-02",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "7933a3cc883224d8",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "504883bb3eaa8fb9",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "create-event: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (create-event) (hash-migrated: screen-s",
+          "evidence": "Bundled Computer submitted Current Source Jazz Meetup and observed the exact created confirmation in the live preview; compared with mockups/macos/22-create-event.png.",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "be16a539f86f43cb",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/create-event-current-source-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "8a02e1eed0ca1321",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -459,7 +473,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen create-event --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh createEvent → macos_cua_screen.sh createEvent"
+          "macos": "@Computer: npm run dev:macos:validation -- createEvent; target the canonical app by full path; prove create-event/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen create-event --flow create-event --result pass --method <tier-method> --evidence \"...\""
       }
@@ -489,15 +503,16 @@
         },
         "macos": {
           "result": "pass",
-          "evidence": "bottom-nav: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (bottom-nav) (hash-migrated: screen-sli",
+          "evidence": "Bundled Computer selected Meet, Circles, Communities, Soulmate, and Profile in sequence; each exposed AX Selected and distinct truthful destination content, compared with mockups/macos/22-create-event.png.",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "be16a539f86f43cb",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/create-event-current-source-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "8a02e1eed0ca1321",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -509,7 +524,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen create-event --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh createEvent → macos_cua_screen.sh createEvent"
+          "macos": "@Computer: npm run dev:macos:validation -- createEvent; target the canonical app by full path; prove create-event/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen create-event --flow bottom-nav --result pass --method <tier-method> --evidence \"...\""
       }
@@ -539,15 +554,16 @@
         },
         "macos": {
           "result": "pass",
-          "evidence": "traffic-lights: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (traffic-lights) (hash-migrated: screen",
+          "evidence": "Bundled Computer exercised full screen and restored with Escape, minimized and raised the window, then invoked close and observed the fresh underlying app window; compared with mockups/macos/22-create-event.png.",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "be16a539f86f43cb",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/create-event-current-source-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "8a02e1eed0ca1321",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -559,7 +575,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen create-event --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh createEvent → macos_cua_screen.sh createEvent"
+          "macos": "@Computer: npm run dev:macos:validation -- createEvent; target the canonical app by full path; prove create-event/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen create-event --flow traffic-lights --result pass --method <tier-method> --evidence \"...\""
       }
@@ -581,12 +597,13 @@
       "gap_audit": "2026-07-06",
       "validation": {
         "ios": {
-          "result": "pending",
-          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "result": "pass",
+          "evidence": "create-event-cancel: Computer-use 2026-08-02",
           "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "504883bb3eaa8fb9",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "not-applicable",
@@ -598,7 +615,7 @@
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -610,7 +627,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen create-event --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh createEvent → macos_cua_screen.sh createEvent"
+          "macos": "@Computer: npm run dev:macos:validation -- createEvent; target the canonical app by full path; prove create-event/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen create-event --flow create-event-cancel --result pass --method <tier-method> --evidence \"...\""
       }
@@ -624,12 +641,12 @@
         "label": "Meetup",
         "expected": "Selects Meetup event type",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (event-type-meetup)",
+        "evidence": "Computer-use validation-gurusharan create-event/event-type-meetup 2026-08-02: event-type-meetup",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "screen-capture",
-        "tested_source_hash": "7933a3cc883224d8"
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use",
+        "tested_source_hash": "504883bb3eaa8fb9"
       },
       {
         "id": "event-type-listening-session",
@@ -637,12 +654,12 @@
         "label": "Listening Session",
         "expected": "Selects Listening Session event type",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (event-type-listening-session)",
+        "evidence": "Computer-use validation-gurusharan create-event/event-type-listening-session 2026-08-02: event-type-listening-session",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "screen-capture",
-        "tested_source_hash": "7933a3cc883224d8"
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use",
+        "tested_source_hash": "504883bb3eaa8fb9"
       },
       {
         "id": "event-type-jam-session",
@@ -650,12 +667,12 @@
         "label": "Jam Session",
         "expected": "Selects Jam Session event type",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (event-type-jam-session)",
+        "evidence": "Computer-use validation-gurusharan create-event/event-type-jam-session 2026-08-02: event-type-jam-session",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "screen-capture",
-        "tested_source_hash": "7933a3cc883224d8"
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use",
+        "tested_source_hash": "504883bb3eaa8fb9"
       },
       {
         "id": "event-fields",
@@ -663,12 +680,12 @@
         "label": "Event name, Date, Time, Location, Details",
         "expected": "Fields editable and drive preview/create payload",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (event-fields)",
+        "evidence": "Computer-use validation-gurusharan create-event/event-fields 2026-08-02: event-fields",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "screen-capture",
-        "tested_source_hash": "7933a3cc883224d8"
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use",
+        "tested_source_hash": "504883bb3eaa8fb9"
       },
       {
         "id": "add-cover",
@@ -676,12 +693,12 @@
         "label": "Add cover",
         "expected": "Adds cover state to preview",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (add-cover)",
+        "evidence": "Computer-use validation-gurusharan create-event/add-cover 2026-08-02: add-cover",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "screen-capture",
-        "tested_source_hash": "7933a3cc883224d8"
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use",
+        "tested_source_hash": "504883bb3eaa8fb9"
       },
       {
         "id": "add-tags",
@@ -689,12 +706,12 @@
         "label": "Add tags",
         "expected": "Adds tags to preview",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (add-tags)",
+        "evidence": "Computer-use validation-gurusharan create-event/add-tags 2026-08-02: add-tags",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "screen-capture",
-        "tested_source_hash": "7933a3cc883224d8"
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use",
+        "tested_source_hash": "504883bb3eaa8fb9"
       },
       {
         "id": "create-event",
@@ -702,25 +719,25 @@
         "label": "Create event",
         "expected": "POST /v1/meetings persists community event",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (create-event)",
+        "evidence": "Computer-use validation-gurusharan create-event/create-event 2026-08-02: create-event",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "screen-capture",
-        "tested_source_hash": "7933a3cc883224d8"
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use",
+        "tested_source_hash": "504883bb3eaa8fb9"
       },
       {
         "id": "create-event-cancel",
         "type": "button",
         "label": "Cancel / back",
         "expected": "Pops create event",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "Computer-use validation-gurusharan create-event/create-event-cancel 2026-08-02: create-event-cancel",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-02",
+        "tested_source_hash": "504883bb3eaa8fb9",
+        "last_test_method": "Computer-use"
       }
     ],
     "macos": [
@@ -730,12 +747,12 @@
         "label": "Meetup",
         "expected": "Selects Meetup and marks it selected in the accessibility tree",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-type-meetup) (hash-migrated: screen-slice source hash)",
+        "evidence": "Bundled Computer selected Meetup, observed AX Selected and the Meetup live-preview label; compared with mockups/macos/22-create-event.png.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "be16a539f86f43cb",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "8a02e1eed0ca1321",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "event-type-listening-session",
@@ -743,12 +760,12 @@
         "label": "Listening Session",
         "expected": "Selects Listening Session and updates selected state",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-type-listening-session) (hash-migrated: screen-slice source hash)",
+        "evidence": "Bundled Computer selected Listening Session, observed AX Selected and the Listening Session live-preview label; compared with mockups/macos/22-create-event.png.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "be16a539f86f43cb",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "8a02e1eed0ca1321",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "event-type-jam-session",
@@ -756,12 +773,12 @@
         "label": "Jam Session",
         "expected": "Selects Jam Session and updates selected state",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-type-jam-session) (hash-migrated: screen-slice source hash)",
+        "evidence": "Bundled Computer selected Jam Session, observed AX Selected and the Jam Session live-preview label; compared with mockups/macos/22-create-event.png.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "be16a539f86f43cb",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "8a02e1eed0ca1321",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "event-fields",
@@ -769,12 +786,12 @@
         "label": "Event name, Date, Time, Location, Details",
         "expected": "Fields are editable and drive preview/create payload",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (event-fields) (hash-migrated: screen-slice source hash)",
+        "evidence": "Bundled Computer edited event name, date, time, location, and details and observed every exact value in the live preview; compared with mockups/macos/22-create-event.png.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "be16a539f86f43cb",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "8a02e1eed0ca1321",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "add-cover",
@@ -782,12 +799,12 @@
         "label": "Add cover",
         "expected": "Adds a contextual doodle cover to the preview",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (add-cover) (hash-migrated: screen-slice source hash)",
+        "evidence": "Bundled Computer clicked Add cover and observed Cover added plus cover-added preview copy; compared with mockups/macos/22-create-event.png.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "be16a539f86f43cb",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "8a02e1eed0ca1321",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "add-tags",
@@ -795,12 +812,12 @@
         "label": "Add tags",
         "expected": "Adds visible event tags to preview",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (add-tags) (hash-migrated: screen-slice source hash)",
+        "evidence": "Bundled Computer clicked Tags added and observed tags-added preview copy derived from event type; compared with mockups/macos/22-create-event.png.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "be16a539f86f43cb",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "8a02e1eed0ca1321",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "create-event",
@@ -808,12 +825,12 @@
         "label": "Create event",
         "expected": "Creates a backend-persisted meeting and stays on the Create Event screen",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (create-event) (hash-migrated: screen-slice source hash)",
+        "evidence": "Bundled Computer submitted Current Source Jazz Meetup and observed the exact created confirmation in the live preview; compared with mockups/macos/22-create-event.png.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "be16a539f86f43cb",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "8a02e1eed0ca1321",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "bottom-nav",
@@ -821,12 +838,12 @@
         "label": "Meet, Circles, Communities, Profile, Soulmate",
         "expected": "Bottom nav remains visible and does not cover primary Create Event controls",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (bottom-nav) (hash-migrated: screen-slice source hash)",
+        "evidence": "Bundled Computer selected Meet, Circles, Communities, Soulmate, and Profile in sequence; each exposed AX Selected and distinct truthful destination content, compared with mockups/macos/22-create-event.png.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "be16a539f86f43cb",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "8a02e1eed0ca1321",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "traffic-lights",
@@ -834,12 +851,12 @@
         "label": "Close, minimize, full screen",
         "expected": "Native macOS traffic-light controls are visible",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (traffic-lights) (hash-migrated: screen-slice source hash)",
+        "evidence": "Bundled Computer exercised full screen and restored with Escape, minimized and raised the window, then invoked close and observed the fresh underlying app window; compared with mockups/macos/22-create-event.png.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "be16a539f86f43cb",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "8a02e1eed0ca1321",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       }
     ]
   }

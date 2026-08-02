@@ -75,14 +75,17 @@ function summarizePlatformFlows(platform) {
 
     if (!staleOnly) {
       const vp = slice.ui_validation?.result || slice.visual_parity?.result;
-      if (vp && /pending|fail|partial/i.test(String(vp))) {
+      if (!vp || /pending|fail|partial/i.test(String(vp))) {
         openFlows.push({
           id: "visual_parity",
           label: "visual parity",
-          result: String(vp),
+          result: vp ? String(vp) : "missing",
           expected: slice.mockup_ref || "",
           blocker: "",
-          evidence: slice.visual_parity?.notes || slice.ui_validation?.notes || ""
+          evidence:
+            slice.visual_parity?.notes ||
+            slice.ui_validation?.notes ||
+            "Missing platform ui_validation/visual_parity evidence"
         });
       }
     } else {
@@ -178,28 +181,27 @@ const platforms = onlyPlatform ? [onlyPlatform] : ["ios", "macos"];
 const report = platforms.map((p) => summarizePlatformFlows(p));
 
 if (asJson) {
-  console.log(JSON.stringify({ platforms: report }, null, 2));
-  process.exit(0);
-}
-
-for (const p of report) {
-  const label = staleOnly ? "stale-pass" : "open";
-  const mode = p.mode || "flows";
-  console.log(
-    `# ${p.platform} ${label}=${staleOnly ? p.totals.stale_pass : p.totals.actionable} pass=${p.totals.pass} stale_pass=${p.totals.stale_pass} mode=${mode}${p.totals.flows ? ` flows=${p.totals.flows}` : ""}`
-  );
-  for (const screen of p.screens) {
-    console.log(`\n${screen.file} | ${screen.screen} | source_hash=${screen.source_hash || "?"}`);
-    const items = screen.flows || screen.controls || [];
-    for (const item of items) {
-      const blocker = item.blocker ? ` | ${item.blocker}` : "";
-      const tested = item.last_tested_at ? ` tested=${item.last_tested_at}` : "";
-      console.log(`  - ${item.id} | ${item.result} | ${item.label}${blocker}${tested}`);
-      if (item.expected) console.log(`    expected: ${item.expected}`);
-      if (item.result === "stale-pass" && item.tested_source_hash) {
-        console.log(`    tested_source_hash=${item.tested_source_hash} (current=${item.source_hash})`);
+  process.stdout.write(`${JSON.stringify({ platforms: report }, null, 2)}\n`);
+} else {
+  for (const p of report) {
+    const label = staleOnly ? "stale-pass" : "open";
+    const mode = p.mode || "flows";
+    console.log(
+      `# ${p.platform} ${label}=${staleOnly ? p.totals.stale_pass : p.totals.actionable} pass=${p.totals.pass} stale_pass=${p.totals.stale_pass} mode=${mode}${p.totals.flows ? ` flows=${p.totals.flows}` : ""}`
+    );
+    for (const screen of p.screens) {
+      console.log(`\n${screen.file} | ${screen.screen} | source_hash=${screen.source_hash || "?"}`);
+      const items = screen.flows || screen.controls || [];
+      for (const item of items) {
+        const blocker = item.blocker ? ` | ${item.blocker}` : "";
+        const tested = item.last_tested_at ? ` tested=${item.last_tested_at}` : "";
+        console.log(`  - ${item.id} | ${item.result} | ${item.label}${blocker}${tested}`);
+        if (item.expected) console.log(`    expected: ${item.expected}`);
+        if (item.result === "stale-pass" && item.tested_source_hash) {
+          console.log(`    tested_source_hash=${item.tested_source_hash} (current=${item.source_hash})`);
+        }
       }
     }
+    if (p.screens.length === 0) console.log(`  (no ${label} ${mode === "flows" ? "flows" : "controls"})`);
   }
-  if (p.screens.length === 0) console.log(`  (no ${label} ${mode === "flows" ? "flows" : "controls"})`);
 }

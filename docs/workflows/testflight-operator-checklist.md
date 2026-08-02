@@ -1,5 +1,9 @@
 # TestFlight operator checklist (Phase 5)
 
+## Control Owner
+
+This workflow owns the repository checklist for TestFlight submission; App Store Connect state and signing credentials remain externally owned.
+
 Subscribe to [Apple Developer Program](https://developer.apple.com/programs/) only after Phases 0–4 pass locally and on Render.
 
 ## Apple Developer + App Store Connect
@@ -11,6 +15,7 @@ Subscribe to [Apple Developer Program](https://developer.apple.com/programs/) on
 - [x] Create App Store Connect universal app (`6792839764`) for iOS and macOS
 - [ ] Create TestFlight internal group
 - [ ] Upload privacy policy from [`docs/references/privacy-policy-testflight.md`](../references/privacy-policy-testflight.md)
+- [ ] Configure the Sign in with Apple key in Render and prove deletion-time token revocation
 
 ## Production hardening (Render)
 
@@ -28,7 +33,9 @@ WALLET_AUTH_BYPASS=0
 
 ```sh
 cd apps/ios-macos && xcodegen generate
-# Archive Likeminded (Release) → Distribute → App Store Connect
+# Archive and export iOS/macOS with App Store Connect distribution, then verify each exported app:
+npm run verify:release-candidate -- ios /path/to/Likeminded.app
+npm run verify:release-candidate -- macos /path/to/LikemindedMac.app
 ```
 
 Set `LIKEMINDED_API_BASE_URL` empty in Release (defaults to `https://likeminded-api.onrender.com`).

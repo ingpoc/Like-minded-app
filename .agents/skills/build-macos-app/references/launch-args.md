@@ -50,6 +50,7 @@ open -F -n .build/macos/Build/Products/Debug/LikemindedMac.app --args \
 
 | Screen | Notes |
 | --- | --- |
+| `voice-session` / `profileVoiceStepPanel` | `dev:macos:validation` aliases only; the launcher normalizes both to `profileOnboarding --likeminded-dev-profile-empty` and holds step 2 after seeded profile loading. |
 | `welcome` | Real Apple Sign-In blocked locally — layout capture + `blocked` control in ledger |
-| `settingsSoulmate` | Modals for sign-out/delete — CUA uses `--max 80` (see macos-cua skill) |
+| `settingsSoulmate` | Modals for sign-out/delete — use the testing-ledger flow card and bundled `@Computer` semantic labels |
 | `meetVideoCall` | LiveKit join; preview tiles when `POST /v1/meetings/:id/join` fails without `LIVEKIT_*`. CUA mute/leave need `--max 80` (`MACOS_CUA_MAX_MODAL`) — call controls sit past default AX budget. |

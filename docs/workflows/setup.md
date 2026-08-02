@@ -24,14 +24,16 @@ OPENAI_REALTIME_VOICE=marin
 SESSION_SECRET=replace-with-at-least-24-characters
 APPLE_BUNDLE_ID=com.gurusharan.likeminded
 APPLE_CLIENT_ID=com.gurusharan.likeminded
+APPLE_TEAM_ID=9UPQL479Z5
 APPLE_MAC_BUNDLE_ID=com.gurusharan.likeminded
 APPLE_CLIENT_IDS=com.gurusharan.likeminded
 APPLE_REQUIRE_NONCE=1
 APPLE_AUTH_BYPASS=0
 GOOGLE_CLIENT_ID_IOS=your-ios-client-id.apps.googleusercontent.com
 GOOGLE_CLIENT_ID_MAC=your-mac-client-id.apps.googleusercontent.com
-GOOGLE_REVERSED_CLIENT_ID=com.googleusercontent.apps.your-ios-client-id
-GOOGLE_CLIENT_IDS=your-ios-client-id.apps.googleusercontent.com
+GOOGLE_REVERSED_CLIENT_ID_IOS=com.googleusercontent.apps.your-ios-client-id
+GOOGLE_REVERSED_CLIENT_ID_MAC=com.googleusercontent.apps.your-mac-client-id
+GOOGLE_CLIENT_IDS=your-ios-client-id.apps.googleusercontent.com,your-mac-client-id.apps.googleusercontent.com
 GOOGLE_AUTH_BYPASS=0
 WALLETCONNECT_PROJECT_ID=your-walletconnect-cloud-project-id
 WALLET_AUTH_BYPASS=0
@@ -39,6 +41,8 @@ LIVEKIT_URL=wss://your-project.livekit.cloud
 LIVEKIT_API_KEY=your-livekit-api-key
 LIVEKIT_API_SECRET=your-livekit-api-secret
 ```
+
+Production Apple code exchange and account deletion also require `APPLE_KEY_ID` and `APPLE_PRIVATE_KEY`. Inject both through Render's secret manager from the Sign in with Apple key; do not place the `.p8` contents in `.env.local`, logs, or the repository.
 
 2. Source it before running the API server:
 ```sh
@@ -72,9 +76,10 @@ Set in `.env.local` (API) **and** pass into Xcode builds:
 
 ```
 GOOGLE_CLIENT_ID_IOS=your-client-id.apps.googleusercontent.com
-GOOGLE_CLIENT_ID_MAC=your-mac-client-id.apps.googleusercontent.com   # optional; falls back to iOS client
-GOOGLE_REVERSED_CLIENT_ID=com.googleusercontent.apps.your-client-id
-GOOGLE_CLIENT_IDS=your-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_ID_MAC=your-mac-client-id.apps.googleusercontent.com
+GOOGLE_REVERSED_CLIENT_ID_IOS=com.googleusercontent.apps.your-client-id
+GOOGLE_REVERSED_CLIENT_ID_MAC=com.googleusercontent.apps.your-mac-client-id
+GOOGLE_CLIENT_IDS=your-client-id.apps.googleusercontent.com,your-mac-client-id.apps.googleusercontent.com
 ```
 
 Native URL schemes and `GIDClientID` are in `Info/Likeminded-Info.plist` and `Info/LikemindedMac-Info.plist` (Google reversed client ID + bundle-id wallet callback). After editing `project.yml` or Info plists, run `cd apps/ios-macos && xcodegen generate`.
@@ -169,7 +174,7 @@ Placement loop: `POST /v1/auth/apple` (any body under bypass) → `sessionToken`
 
 ### Scripts to AVOID (macOS/Xcode-only — fail on Linux)
 
-`verify:simulator-local` · `verify:macos-screens` · `dev:macos:validation` · `audit:macos:*` · `./script/build_and_run.sh` · any `script/macos_*.sh` (all use `xcodebuild`/`simctl`/`xcodegen`/`osascript`).
+macOS native UI is unavailable in Linux. Do not attempt `dev:macos:validation`, Xcode builds, or bundled @Computer there; use a macOS host for exact testing-ledger proof. iOS simulator and native build scripts likewise require the macOS host.
 
 Notes: `run_api.sh`/`run_validation_api.sh` use `lsof` (present on VM). `OPENAI_API_KEY`/`LIVEKIT_*` are only needed for live voice/video; the placement loop works without them.
 

@@ -19,7 +19,7 @@ const CONTRACT_PATH = path.join(root, "validation", "production-contract.json");
 const TIER_RANK = {
   "blocked-infra": 0,
   capture: 1,
-  "cua-click": 2,
+  "computer-use": 2,
   "api-persist": 3,
   "real-auth": 4,
   "real-livekit": 4
@@ -31,10 +31,8 @@ const METHOD_RANK = {
   "screen-capture": 1,
   capture: 1,
   "synced-from-controls": 2,
-  cua: 2,
-  "cua-click": 2,
-  CUA: 2,
-  "CUA-click": 2,
+  "computer-use": 2,
+  "Computer-use": 2,
   reproof: 2,
   "api-persist": 3,
   smoke: 3,
@@ -56,13 +54,13 @@ function loadProductionContract(repoRoot = root) {
 }
 
 function tierRank(tier) {
-  return TIER_RANK[String(tier || "cua-click").toLowerCase()] ?? 2;
+  return TIER_RANK[String(tier || "computer-use").toLowerCase()] ?? 2;
 }
 
 function methodRank(method) {
   const key = String(method || "manual").toLowerCase();
   if (METHOD_RANK[method]) return METHOD_RANK[method];
-  if (/cua/i.test(key)) return 2;
+  if (/computer/i.test(key)) return 2;
   if (/capture|screen-capture/i.test(key)) return 1;
   if (/api|smoke|persist/i.test(key)) return 3;
   if (/livekit/i.test(key)) return 4;
@@ -90,7 +88,7 @@ function inferProofTier(flow) {
   if (/visual|parity|capture/.test(id)) {
     return "capture";
   }
-  return "cua-click";
+  return "computer-use";
 }
 
 function inferSuccessSignals(flow, platform) {
@@ -107,14 +105,8 @@ function defaultCommands(logicalId, platform, flowId) {
   if (platform === "ios") {
     return `./script/cross_platform_screen_validate.sh --screen ${logicalId} --platform ios`;
   }
-  if (flowId) {
-    return `./script/testing_ledger_prove_flow.sh --screen ${logicalId} --flow ${flowId}`;
-  }
   const mac = macScreenForLogical(logicalId);
-  if (mac) {
-    return `./script/macos_cua_preflight.sh && ./script/macos_audit_prepare.sh ${mac} && ./script/macos_cua_screen.sh ${mac}`;
-  }
-  return `npm run ledger:screen -- --platform macos --screen ${logicalId} --section flows`;
+  return `@Computer: npm run dev:macos:validation -- ${mac || logicalId}; target the canonical app by full path; prove ${logicalId}/${flowId || "<flow>"}`;
 }
 
 function resolveRunCommands(logicalId, platform, proof, flowId) {
@@ -125,7 +117,7 @@ function resolveRunCommands(logicalId, platform, proof, flowId) {
     platform === "macos" &&
     stored &&
     /ledger:screen/.test(stored) &&
-    /testing_ledger_prove_flow|macos_cua|macos_audit/.test(fresh)
+    /@Computer/.test(fresh)
   ) {
     return fresh;
   }
@@ -134,7 +126,7 @@ function resolveRunCommands(logicalId, platform, proof, flowId) {
 
 function defaultRecordPass(logicalId, platform, flowId, tier) {
   const method =
-    tier === "capture" ? "screen-capture" : tier === "cua-click" ? "CUA-click" : tier;
+    tier === "capture" ? "screen-capture" : tier === "computer-use" ? "Computer-use" : tier;
   return `npm run ledger:record-flow -- --platform ${platform} --screen ${logicalId} --flow ${flowId} --result pass --method ${method} --evidence "..."`;
 }
 

@@ -7,6 +7,7 @@ import AppKit
 /// Shader: `Sources/Shared/ConvergenceField.metal`
 struct ConvergenceFieldView: View {
     var background: Color
+    var speed: Double = 0.05
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     #if os(iOS)
@@ -26,7 +27,7 @@ struct ConvergenceFieldView: View {
     var body: some View {
         TimelineView(.animation(minimumInterval: 1.0 / 20.0, paused: reduceMotion)) { context in
             let elapsed = reduceMotion ? 0 : context.date.timeIntervalSince(startDate)
-            let fieldTime = 0.4 + elapsed * 0.05
+            let fieldTime = 0.4 + elapsed * speed
             Rectangle()
                 .fill(background)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)

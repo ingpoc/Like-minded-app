@@ -11,7 +11,7 @@
         "apps/ios-macos/Sources/LikemindedApp/Views/RootView.swift",
         "apps/ios-macos/Sources/LikemindedApp/Data/PrototypeAppState.swift"
       ],
-      "source_hash": "3c6b5ff3bf73815f",
+      "source_hash": "29cded50430b3562",
       "mockup_ref": "mockups/ios/13-16-soulmate-chat.png",
       "mockup_missing": false,
       "entry_points": [
@@ -30,7 +30,7 @@
         "result": "pass",
         "notes": "2026-07-05 capture output/validation/ios-screens/17-conversations.png vs mockups/ios/13-16-soulmate-chat.png: CHATS header, avatar initials, display name (Meera), last-message preview, today timestamp. Intentional: single live match for validation-gurusharan vs montage multi-row plate; macOS messages deep-link uses MacMessagesFixtures for plate 15."
       },
-      "recent_screenshot_ref": "output/validation/ios-screens/17-conversations.png",
+      "recent_screenshot_ref": "output/validation/ios-screens/conversations.png",
       "notes": "macOS cross-ref: validation/macos/18-messages.json (--mac-screen messages). Live API roster for validation-gurusharan: 1 mutual match (Priya Shah → Meera via ChatDisplayNames) with seeded jazz thread preview on both platforms."
     },
     "macos": {
@@ -40,7 +40,7 @@
         "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift",
         "apps/ios-macos/Sources/LikemindedMac/MacPrototypeData.swift"
       ],
-      "source_hash": "a5e374c8034f760b",
+      "source_hash": "79e75d064314e2b2",
       "mockup_ref": "mockups/macos/13-16-community-members-event-messages-activity.png",
       "mockup_missing": false,
       "entry_points": [
@@ -101,23 +101,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "conv-row: screen-capture 2026-07-06",
+          "evidence": "conv-row: Computer-use 2026-08-02",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "3c6b5ff3bf73815f",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "output/validation/ios-screens/conversations.png",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "29cded50430b3562",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "match-row: verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (match-row)",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/13-16-community-members-event-messages-activity.png: Open conversation with Arjun changed the active header and composer to Arjun; returning to Ananya restored the fixture thread and sent validation message.",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "a5e374c8034f760b",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/messagesComposeCurrent-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "79e75d064314e2b2",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -129,7 +131,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/13-16-soulmate-chat.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen conversations --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh messages → macos_cua_screen.sh messages"
+          "macos": "@Computer: npm run dev:macos:validation -- messages; target the canonical app by full path; prove conversations/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen conversations --flow open-conversation --result pass --method <tier-method> --evidence \"...\""
       }
@@ -162,15 +164,16 @@
         },
         "macos": {
           "result": "pass",
-          "evidence": "draft: verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (draft) | send: verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (send) | close: verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (close)",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/13-16-community-members-event-messages-activity.png: Search messages rendered the exact no-results copy for zzz-no-match and clearing restored the roster; entering Ledger proof 20260802 enabled Send, and the rebuilt fixture-safe composer appended that message visibly and cleared the input.",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "a5e374c8034f760b",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/messagesComposeCurrent-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "79e75d064314e2b2",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -182,7 +185,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/13-16-soulmate-chat.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen conversations --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh messages → macos_cua_screen.sh messages"
+          "macos": "@Computer: npm run dev:macos:validation -- messages; target the canonical app by full path; prove conversations/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen conversations --flow messages-compose --result pass --method <tier-method> --evidence \"...\""
       }
@@ -212,15 +215,16 @@
         },
         "macos": {
           "result": "pass",
-          "evidence": "voice-call-header: verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (voice-call-header)",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/13-16-community-members-event-messages-activity.png: Voice call opened Request a voice call with the correct displayed recipient Arjun and a non-live explanatory action sheet.",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "a5e374c8034f760b",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/messagesConversationInfo-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "79e75d064314e2b2",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -232,7 +236,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/13-16-soulmate-chat.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen conversations --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh messages → macos_cua_screen.sh messages"
+          "macos": "@Computer: npm run dev:macos:validation -- messages; target the canonical app by full path; prove conversations/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen conversations --flow voice-call-header --result pass --method <tier-method> --evidence \"...\""
       }
@@ -262,15 +266,16 @@
         },
         "macos": {
           "result": "pass",
-          "evidence": "video-call-header: verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (video-call-header)",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/13-16-community-members-event-messages-activity.png: Video call opened Request a video call with the correct displayed recipient Arjun and a non-live explanatory action sheet.",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "a5e374c8034f760b",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/messagesConversationInfo-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "79e75d064314e2b2",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -282,7 +287,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/13-16-soulmate-chat.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen conversations --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh messages → macos_cua_screen.sh messages"
+          "macos": "@Computer: npm run dev:macos:validation -- messages; target the canonical app by full path; prove conversations/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen conversations --flow video-call-header --result pass --method <tier-method> --evidence \"...\""
       }
@@ -312,15 +317,16 @@
         },
         "macos": {
           "result": "pass",
-          "evidence": "conversation-info-header: verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (conversation-info-header)",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/13-16-community-members-event-messages-activity.png: Conversation info opened a dismissible local sheet for Arjun with meeting context and backend-sync copy; Done returned to Messages.",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "a5e374c8034f760b",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/messagesCurrentInfo-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "79e75d064314e2b2",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -332,7 +338,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/13-16-soulmate-chat.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen conversations --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh messages → macos_cua_screen.sh messages"
+          "macos": "@Computer: npm run dev:macos:validation -- messages; target the canonical app by full path; prove conversations/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen conversations --flow conversation-info-header --result pass --method <tier-method> --evidence \"...\""
       }
@@ -364,16 +370,17 @@
           "last_test_method": ""
         },
         "macos": {
-          "result": "pending",
-          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "result": "pass",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/13-16-community-members-event-messages-activity.png: Unread, Groups, and All each exposed AX value Selected after click; Groups rendered the truthful ‘Group threads are not part of this MVP’ empty state.",
           "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
+          "screenshot_ref": "output/validation/macos-screens/messagesComposeCurrent-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "79e75d064314e2b2",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -385,7 +392,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/13-16-soulmate-chat.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen conversations --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh messages → macos_cua_screen.sh messages"
+          "macos": "@Computer: npm run dev:macos:validation -- messages; target the canonical app by full path; prove conversations/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen conversations --flow messages-filter-pills --result pass --method <tier-method> --evidence \"...\""
       }
@@ -417,16 +424,17 @@
           "last_test_method": ""
         },
         "macos": {
-          "result": "pending",
-          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "result": "pass",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/13-16-community-members-event-messages-activity.png: Find matches navigated from Messages to the Soulmate weekly introduction with Priya Shah and its truthful mutual-match context.",
           "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
+          "screenshot_ref": "output/validation/macos-screens/messagesFindMatches-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "79e75d064314e2b2",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -438,7 +446,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/13-16-soulmate-chat.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen conversations --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh messages → macos_cua_screen.sh messages"
+          "macos": "@Computer: npm run dev:macos:validation -- messages; target the canonical app by full path; prove conversations/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen conversations --flow messages-compose-discover --result pass --method <tier-method> --evidence \"...\""
       }
@@ -452,12 +460,12 @@
         "label": "Conversation row",
         "expected": "Pushes ChatView for that match",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (conv-row)",
+        "evidence": "Computer-use validation-gurusharan conversations/open-conversation 2026-08-02: conv-row",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "3c6b5ff3bf73815f",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "screen-capture"
+        "tested_source_hash": "29cded50430b3562",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       }
     ],
     "macos": [
@@ -467,12 +475,12 @@
         "label": "Match row",
         "expected": "Sets selectedChatMatchId",
         "result": "pass",
-        "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (match-row)",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/13-16-community-members-event-messages-activity.png: Open conversation with Arjun changed the active header and composer to Arjun; returning to Ananya restored the fixture thread and sent validation message.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "a5e374c8034f760b",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "79e75d064314e2b2",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "draft",
@@ -480,12 +488,12 @@
         "label": "Message input",
         "expected": "Editable draft",
         "result": "pass",
-        "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (draft)",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/13-16-community-members-event-messages-activity.png: Search messages rendered the exact no-results copy for zzz-no-match and clearing restored the roster; entering Ledger proof 20260802 enabled Send, and the rebuilt fixture-safe composer appended that message visibly and cleared the input.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "a5e374c8034f760b",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "79e75d064314e2b2",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "send",
@@ -493,25 +501,38 @@
         "label": "Send",
         "expected": "POST message + reload",
         "result": "pass",
-        "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (send)",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/13-16-community-members-event-messages-activity.png: Search messages rendered the exact no-results copy for zzz-no-match and clearing restored the roster; entering Ledger proof 20260802 enabled Send, and the rebuilt fixture-safe composer appended that message visibly and cleared the input.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "a5e374c8034f760b",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "79e75d064314e2b2",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "close",
         "type": "button",
         "label": "Close (title action)",
-        "expected": "Navigate → returnScreen ?? meetOverview",
+        "expected": "Navigate → returnScreen ?? soulmateDiscover",
         "result": "pass",
-        "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (close)",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/13-16-community-members-event-messages-activity.png: Search messages rendered the exact no-results copy for zzz-no-match and clearing restored the roster; entering Ledger proof 20260802 enabled Send, and the rebuilt fixture-safe composer appended that message visibly and cleared the input.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "a5e374c8034f760b",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "79e75d064314e2b2",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
+      },
+      {
+        "id": "search",
+        "type": "text",
+        "label": "Search messages",
+        "expected": "Filters conversation list; empty query shows No conversations match",
+        "result": "pass",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/13-16-community-members-event-messages-activity.png: Search messages rendered the exact no-results copy for zzz-no-match and clearing restored the roster; entering Ledger proof 20260802 enabled Send, and the rebuilt fixture-safe composer appended that message visibly and cleared the input.",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "79e75d064314e2b2",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "voice-call-header",
@@ -519,12 +540,12 @@
         "label": "Voice call (header)",
         "expected": "Start or schedule voice call for active match thread",
         "result": "pass",
-        "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (voice-call-header)",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/13-16-community-members-event-messages-activity.png: Voice call opened Request a voice call with the correct displayed recipient Arjun and a non-live explanatory action sheet.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click",
-        "tested_source_hash": "a5e374c8034f760b"
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use",
+        "tested_source_hash": "79e75d064314e2b2"
       },
       {
         "id": "video-call-header",
@@ -532,12 +553,12 @@
         "label": "Video call (header)",
         "expected": "Start or join video call for active match thread",
         "result": "pass",
-        "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (video-call-header)",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/13-16-community-members-event-messages-activity.png: Video call opened Request a video call with the correct displayed recipient Arjun and a non-live explanatory action sheet.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click",
-        "tested_source_hash": "a5e374c8034f760b"
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use",
+        "tested_source_hash": "79e75d064314e2b2"
       },
       {
         "id": "conversation-info-header",
@@ -545,64 +566,64 @@
         "label": "Conversation info (header)",
         "expected": "Open conversation / match info panel for active thread",
         "result": "pass",
-        "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (conversation-info-header)",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/13-16-community-members-event-messages-activity.png: Conversation info opened a dismissible local sheet for Arjun with meeting context and backend-sync copy; Done returned to Messages.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click",
-        "tested_source_hash": "a5e374c8034f760b"
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use",
+        "tested_source_hash": "79e75d064314e2b2"
       },
       {
         "id": "filter-all",
         "type": "button",
         "label": "All filter",
         "expected": "Shows all conversations",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/13-16-community-members-event-messages-activity.png: Unread, Groups, and All each exposed AX value Selected after click; Groups rendered the truthful ‘Group threads are not part of this MVP’ empty state.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-02",
+        "tested_source_hash": "79e75d064314e2b2",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "filter-unread",
         "type": "button",
         "label": "Unread filter",
         "expected": "Shows unread only",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/13-16-community-members-event-messages-activity.png: Unread, Groups, and All each exposed AX value Selected after click; Groups rendered the truthful ‘Group threads are not part of this MVP’ empty state.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-02",
+        "tested_source_hash": "79e75d064314e2b2",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "filter-groups",
         "type": "button",
         "label": "Groups filter",
         "expected": "Shows group threads",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/13-16-community-members-event-messages-activity.png: Unread, Groups, and All each exposed AX value Selected after click; Groups rendered the truthful ‘Group threads are not part of this MVP’ empty state.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-02",
+        "tested_source_hash": "79e75d064314e2b2",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "find-matches",
         "type": "button",
         "label": "Find matches",
         "expected": "Navigate to soulmateDiscover",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/13-16-community-members-event-messages-activity.png: Find matches navigated from Messages to the Soulmate weekly introduction with Priya Shah and its truthful mutual-match context.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-02",
+        "tested_source_hash": "79e75d064314e2b2",
+        "last_test_method": "Computer-use"
       }
     ]
   }

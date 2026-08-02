@@ -10,7 +10,7 @@
         "apps/ios-macos/Sources/LikemindedApp/Views/SoulmateView.swift (ChatView)",
         "apps/ios-macos/Sources/LikemindedApp/Views/RootView.swift"
       ],
-      "source_hash": "5199f1abff26babc",
+      "source_hash": "5b1cdd223e57e970",
       "mockup_ref": "mockups/ios/13-16-soulmate-chat.png",
       "mockup_missing": false,
       "entry_points": [
@@ -42,7 +42,7 @@
         "apps/ios-macos/Sources/LikemindedMac/MacRootView.swift",
         "script/seed_validation_data.js"
       ],
-      "source_hash": "9be0bcdc49eb425b",
+      "source_hash": "467bc19774930b17",
       "mockup_ref": "mockups/macos/05-08-chat-communities-detail-recap.png",
       "mockup_missing": false,
       "entry_points": [
@@ -107,23 +107,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "draft: screen-capture 2026-07-05 | send: screen-capture 2026-07-05 | message-list: screen-capture 2026-07-05",
+          "evidence": "draft: Computer-use 2026-08-01 | send: Computer-use 2026-08-01 | message-list: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "5199f1abff26babc",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "5b1cdd223e57e970",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "match-row: verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (match-row) | draft: verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (draft) | send: verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (send)",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/05-08-chat-communities-detail-recap.png: setting the draft to Chat fixture proof 20260802 changed Send to Ready; Send appended the message to the visible selected-thread list and cleared the composer, while real match IDs remain on the backend send path.",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "15b712c80a9b29d0",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/chatFixtureSend-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "467bc19774930b17",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -137,7 +139,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/13-16-soulmate-chat.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen chat --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh chat → macos_cua_screen.sh chat"
+          "macos": "@Computer: npm run dev:macos:validation -- soulmateDiscover; open the live Message Priya action; target the canonical app by full path; prove chat/send-message"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen chat --flow send-message --result pass --method <tier-method> --evidence \"...\""
       }
@@ -165,26 +167,27 @@
       },
       "validation": {
         "ios": {
-          "result": "pending",
-          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "result": "pass",
+          "evidence": "voice-call-header: Computer-use 2026-08-01 | video-call-header: Computer-use 2026-08-01 | conversation-info-header: Computer-use 2026-08-01 | call-sheet-done: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
+          "screenshot_ref": "output/validation/ios-screens/chat.png",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "5b1cdd223e57e970",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "CUA validation-gurusharan chat/chat-call-headers: voice/video call modals + conversation info OK (ok=3 miss=0)",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/05-08-chat-communities-detail-recap.png: Voice call showed Request a voice call with Meera; Video call showed Request a video call with Meera; Conversation info showed the local Meera match/thread explanation; Done returned to Chats.",
           "blocker": "",
-          "screenshot_ref": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "9be0bcdc49eb425b",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/chatCallHeaders-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "467bc19774930b17",
+          "last_test_method": "Computer-use"
         }
       },
       "gap_audit": "2026-07-06",
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -199,7 +202,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/13-16-soulmate-chat.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen chat --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh chat → macos_cua_screen.sh chat"
+          "macos": "@Computer: npm run dev:macos:validation -- chat; target the canonical app by full path; prove chat/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen chat --flow chat-call-headers --result pass --method <tier-method> --evidence \"...\""
       }
@@ -229,15 +232,16 @@
         },
         "macos": {
           "result": "pass",
-          "evidence": "search: verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (search)",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/05-08-chat-communities-detail-recap.png: entering Rohan in Search conversations filtered the five-person list to only Rohan and updated the selected header and message placeholder accordingly.",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "15b712c80a9b29d0",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/chatSearch-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "467bc19774930b17",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -249,7 +253,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/13-16-soulmate-chat.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen chat --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh chat → macos_cua_screen.sh chat"
+          "macos": "@Computer: npm run dev:macos:validation -- chat; target the canonical app by full path; prove chat/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen chat --flow search --result pass --method <tier-method> --evidence \"...\""
       }
@@ -263,12 +267,12 @@
         "label": "Message bubbles",
         "expected": "Green outgoing / warm incoming; polls every 3s",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (message-list)",
+        "evidence": "Computer-use validation-gurusharan chat/send-message 2026-08-01: message-list",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "5199f1abff26babc",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "screen-capture"
+        "tested_source_hash": "5b1cdd223e57e970",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "draft",
@@ -276,12 +280,12 @@
         "label": "Message input (vertical)",
         "expected": "Editable draft, lineLimit 1...4",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (draft)",
+        "evidence": "Computer-use validation-gurusharan chat/send-message 2026-08-01: draft",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "5199f1abff26babc",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "screen-capture"
+        "tested_source_hash": "5b1cdd223e57e970",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "send",
@@ -289,64 +293,64 @@
         "label": "Send (arrow.up.circle.fill)",
         "expected": "POST message; disabled when draft empty",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (send)",
+        "evidence": "Computer-use validation-gurusharan chat/send-message 2026-08-01: send",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "5199f1abff26babc",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "screen-capture"
+        "tested_source_hash": "5b1cdd223e57e970",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "voice-call-header",
         "type": "button",
         "label": "Voice call (toolbar)",
         "expected": "Opens voice call stub sheet",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "Computer-use validation-gurusharan chat/chat-call-headers 2026-08-01: voice-call-header",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "5b1cdd223e57e970",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "video-call-header",
         "type": "button",
         "label": "Video call (toolbar)",
         "expected": "Opens video call stub sheet",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "Computer-use validation-gurusharan chat/chat-call-headers 2026-08-01: video-call-header",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "5b1cdd223e57e970",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "conversation-info-header",
         "type": "button",
         "label": "Conversation info",
         "expected": "Opens thread info sheet",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "Computer-use validation-gurusharan chat/chat-call-headers 2026-08-01: conversation-info-header",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "5b1cdd223e57e970",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "call-sheet-done",
         "type": "button",
         "label": "Done (call/info sheet)",
         "expected": "Dismisses call or info sheet",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "Computer-use validation-gurusharan chat/chat-call-headers 2026-08-01: call-sheet-done",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "5b1cdd223e57e970",
+        "last_test_method": "Computer-use"
       }
     ],
     "macos": [
@@ -356,12 +360,12 @@
         "label": "Match row (left list)",
         "expected": "Sets selectedChatMatchId; loads messages; preview from backend last message",
         "result": "pass",
-        "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (match-row)",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/05-08-chat-communities-detail-recap.png: setting the draft to Chat fixture proof 20260802 changed Send to Ready; Send appended the message to the visible selected-thread list and cleared the composer, while real match IDs remain on the backend send path.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "15b712c80a9b29d0",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "467bc19774930b17",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "draft",
@@ -369,12 +373,12 @@
         "label": "Message input (MacChatComposer)",
         "expected": "Editable draft",
         "result": "pass",
-        "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (draft)",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/05-08-chat-communities-detail-recap.png: setting the draft to Chat fixture proof 20260802 changed Send to Ready; Send appended the message to the visible selected-thread list and cleared the composer, while real match IDs remain on the backend send path.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "15b712c80a9b29d0",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "467bc19774930b17",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "send",
@@ -382,12 +386,12 @@
         "label": "Send",
         "expected": "POST message + reload; disabled when empty",
         "result": "pass",
-        "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (send)",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/05-08-chat-communities-detail-recap.png: setting the draft to Chat fixture proof 20260802 changed Send to Ready; Send appended the message to the visible selected-thread list and cleared the composer, while real match IDs remain on the backend send path.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "15b712c80a9b29d0",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "467bc19774930b17",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "search",
@@ -395,12 +399,12 @@
         "label": "Search conversations",
         "expected": "Filters match list by name or preview text",
         "result": "pass",
-        "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (search)",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/05-08-chat-communities-detail-recap.png: entering Rohan in Search conversations filtered the five-person list to only Rohan and updated the selected header and message placeholder accordingly.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "15b712c80a9b29d0",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "467bc19774930b17",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "voice-call-header",
@@ -408,12 +412,12 @@
         "label": "Voice call (header)",
         "expected": "Start or schedule voice call for active match thread",
         "result": "pass",
-        "evidence": "CUA validation-gurusharan chat/chat-call-headers: voice/video call modals + conversation info OK (ok=3 miss=0)",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/05-08-chat-communities-detail-recap.png: Voice call showed Request a voice call with Meera; Video call showed Request a video call with Meera; Conversation info showed the local Meera match/thread explanation; Done returned to Chats.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click",
-        "tested_source_hash": "9be0bcdc49eb425b"
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use",
+        "tested_source_hash": "467bc19774930b17"
       },
       {
         "id": "video-call-header",
@@ -421,12 +425,12 @@
         "label": "Video call (header)",
         "expected": "Start or join video call for active match thread",
         "result": "pass",
-        "evidence": "CUA validation-gurusharan chat/chat-call-headers: voice/video call modals + conversation info OK (ok=3 miss=0)",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/05-08-chat-communities-detail-recap.png: Voice call showed Request a voice call with Meera; Video call showed Request a video call with Meera; Conversation info showed the local Meera match/thread explanation; Done returned to Chats.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click",
-        "tested_source_hash": "9be0bcdc49eb425b"
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use",
+        "tested_source_hash": "467bc19774930b17"
       },
       {
         "id": "conversation-info-header",
@@ -434,12 +438,12 @@
         "label": "Conversation info (header)",
         "expected": "Open conversation / match info panel for active thread",
         "result": "pass",
-        "evidence": "CUA validation-gurusharan chat/chat-call-headers: voice/video call modals + conversation info OK (ok=3 miss=0)",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/05-08-chat-communities-detail-recap.png: Voice call showed Request a voice call with Meera; Video call showed Request a video call with Meera; Conversation info showed the local Meera match/thread explanation; Done returned to Chats.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click",
-        "tested_source_hash": "9be0bcdc49eb425b"
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use",
+        "tested_source_hash": "467bc19774930b17"
       }
     ]
   }

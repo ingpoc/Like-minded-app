@@ -112,7 +112,7 @@ console.log("- xcodebuild -project apps/ios-macos/Likeminded.xcodeproj -scheme L
 console.log("- npm run smoke:mvp");
 console.log("- npm run verify:release-config");
 if (phase === "8") {
-  console.log("- npm run verify:macos-screens");
+  console.log("- npm run testing:ledger-batch-plan -- --platform macos --limit 10; prove sequentially with bundled @Computer");
 }
 console.log("- workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/docs lint");
 if (phase === "8") {

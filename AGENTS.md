@@ -10,7 +10,7 @@
 
 - Like-minded-app workspace: SwiftUI iOS/macOS, Node API, local JSON store, validation ledgers, TestFlight path.
 - `GOAL.md` — ultimate product goal (scope disputes only).
-- `PROGRESS.md` — roadmap checkboxes (active track section only during work).
+- `.voice/progress.md` — roadmap checkboxes (active track section only during work).
 - `goal.json` — per-session goal, graders, routing.
 - `session/work-bucket.json` — **continue previous session** (screen, ledger, mockups, `continue_command`); auto-stamp via hooks; optional `npm run session:stamp`.
 - `session/optimization-registry.json` — append-only optimization machine; agents use `npm run optimization:status` (compact), not raw file reads.
@@ -21,22 +21,22 @@
 
 Inherits global **Context doctrine** (`~/.codex/AGENTS.md`).
 
-**Control chain here:** `validation/screens/*.json` (status) → `PROGRESS.md` active track (roadmap) → code. No sibling `validation/**/*.md` ledgers or pass/fail tables.
+**Control chain here:** `validation/screens/*.json` (status) → `.voice/progress.md` active track (roadmap) → code. No sibling `validation/**/*.md` ledgers or pass/fail tables.
 
 ### First commands (stop when the question is answered)
 
 | Lane | Run | Do not preload |
 | ------ | ----- | ---------------- |
-| Any session | `npm run goal:next` | Full `PROGRESS.md`, `GOAL.md` |
+| Any session | `npm run goal:next` | Full `.voice/progress.md`, `GOAL.md` |
 | Native UI (one screen) | `npm run ledger:screen -- --platform ios\|macos --screen <id>` + `source_files` | All validation JSON, mockup dirs |
 | Gap / all open controls | `npm run ledger:open` (`ledger:stale` after source edits) | Source trees, mockup images |
 | Backend route | `services/api/src/server.js` family | Native UI docs |
 | Phase N | `npm run phase:preflight -- N` | Entire phase history |
 | Claim track/goal done | `npm run verify:ledger-progress` | — |
-| macOS CUA (one screen) | `macos_cua_preflight.sh` → `macos_audit_prepare.sh` → `macos_cua_screen.sh <screen>` |
+| macOS native proof (one screen) | `@testing-ledger` card → canonical app launch → semantic proof with bundled `@Computer` |
 | macOS ledger flow proof | `@testing-ledger` → `npm run testing:ledger-run -- --platform macos` → `ledger:record-flow` |
 | iOS ledger flow proof | `@testing-ledger` → `npm run testing:ledger-run -- --platform ios` → `ledger:record-flow` |
-| macOS post-parallel / stale | `npm run macos:validation-batch` (full) or `npm run macos:cua-reproof` when `ledger:stale` shows macOS `stale_pass` only |
+| macOS post-parallel / stale | `testing:ledger-batch-plan -- --platform macos --limit 10` → sequential bundled `@Computer` proof |
 
 `./script/project_context.sh query --task "…"`: **only** if `goal:next` is insufficient, `decision_count > 0`, or boundary/decision-graph work. **Skip when zero decisions.**
 
@@ -56,7 +56,7 @@ Next-goal: smallest full-session surface (one screen family, endpoint family, or
 - **Seeded native validation**: `npm run dev:api:validation` + `npm run reset:validation-data`; mockup paths from ledger JSON `mockup_ref`, not directory walks
 - **iOS UI**: `@build-ios-app` skill; `Sources/LikemindedApp`; mockups only for visual work
 - **macOS UI**: `@build-macos-app` skill; `Sources/LikemindedMac`; `script/macos_canonical_app.sh` for one binary path
-- **Ledger flow testing**: `@testing-ledger` skill; `npm run testing:ledger-run [-- --platform ios|macos]` (queue); do not use `ledger:open` as work queue
+- **Ledger flow testing**: `@testing-ledger` (repo adapter) + `~/.agents/skills/testing-framework` (modes A/B/C); `npm run testing:ledger-run [-- --platform ios|macos]`; do not use `ledger:open` as work queue
 - **Backend**: `services/api/src/server.js`; same `LIKEMINDED_API_BASE_URL` on both natives
 - **Boundary / stack change** (rare): `workflow summary project-spine` **or** `project_context query`, not both by default
 - **Decision graph** (rare): `workflow summary context-graph`
@@ -100,11 +100,11 @@ After `codex-review`: fix blocking P0/P1 yourself or report blockers; do not com
 | Build (Swift, API, UI) | Cursor Auto main | Auto |
 | Ledger flow proof (macOS) | `@testing-ledger` → `testing:ledger-run -- --platform macos` → `ledger:record-flow` | Auto |
 | Ledger flow proof (iOS) | `@testing-ledger` → `testing:ledger-run -- --platform ios` → `ledger:record-flow` | Auto |
-| **Wild tester** | `testing:ledger-run [--platform ios\|macos]` → fail → `testing:ledger-issue`; **exactly one macOS CUA owner**; iOS parallel OK; never two testers on same platform | Auto |
-| **Fix agent** | `testing:ledger-fix-run -- --platform ios\|macos` → one `fix_owner` → release lock → `--mark-retest-ready`; **fix-only — no CUA, no prove scripts, no macos_cua_screen.sh** | Auto |
-| **Test coordinator** | **One macOS CUA tester max** (+ optional one iOS tester); spawn fix-only workers for queue issues; never fix + tester on same platform; shared seed/build via `cross_platform_validation_lock.sh` | Auto |
-| Runtime proof | Cursor Auto + `macos_cua_screen.sh`, `npm run verify:*` | — |
-| **macOS multi-screen closeout** | Parallel **implement** workers per ledger JSON; **sequential** `./script/macos_validation_batch.sh` for capture+CUA | Auto |
+| **Ledger sole-owner drain** (queue closeout / multitask) | `@testing-ledger` Mode **B** (doctrine: `testing-framework`): one prove+fix owner/platform, band ~8–12; main verifies hash/stale → cull twins → respawn if lock free. Prefer over find-one/fix-one and per-flow `$session-orchestrate`. | Auto |
+| **Ledger flow owner** (single hot flow) | `@testing-ledger` Mode **C**: one `screen/flow` prove → fix → retest → record. | Auto |
+| **Validation sidecar** | Default to at most one unpinned, read-only audit with a distinct risk question and exact owner paths; no runtime, seed, build, queue mutation, or duplicate context load. A second sidecar requires an independent high-cost risk. iOS and macOS sole owners may run in parallel; shared work stays under `cross_platform_validation_lock.sh`. | Auto |
+| Runtime proof | Cursor Auto + bundled `@Computer`, `npm run testing:ledger-run`, `npm run verify:*` | — |
+| **macOS multi-screen closeout** | Parallel **implement** workers per ledger JSON; **sequential** source-local bands with bundled `@Computer` | Auto |
 | Operator UI audit | Cursor Auto + `requirements-gap-audit` | Auto |
 | Merge gate review | `codex-review` → Codex `scan_fast` then `verify_review` | mini → gpt-5.4 |
 | Architecture ambiguity in review | `codex-review` escalates to `deep_reason` / `gpt55_escalation` | per policy |
@@ -117,7 +117,7 @@ Use the **main thread** when **all** are true:
 
 - One localized bug (clip, padding, alignment, copy) with a clear screenshot or repro
 - Touch ≤1–2 files and ≲30 lines; no new controls or API contracts
-- Build compile check is enough; no ledger/CUA stamp required before shipping the fix
+- Build compile check is enough; no ledger interaction stamp required before shipping the fix
 
 Do **not** spawn a background worker for these. If a subagent stalls &gt;5 minutes on such a task, interrupt it and fix on the main thread.
 
@@ -130,11 +130,11 @@ Do **not** spawn a background worker for these. If a subagent stalls &gt;5 minut
 | UI implementation per screen | Yes — disjoint ledger JSON + platform source slices | Subagents or main thread |
 | `xcodebuild` (either platform) | **No** — one derived-data owner | `cross_platform_validation_lock.sh` |
 | iOS screenshot / `simctl launch` | **No** | `cross_platform_screen_validate.sh` |
-| macOS screenshot / CUA | **No** — one `LikemindedMac` instance | `verify_macos_screens.sh` or `macos_validation_batch.sh` |
+| macOS screenshot / Computer | **No** — one canonical `LikemindedMac` instance | exact testing-ledger card + bundled `@Computer` |
 | `reset:validation-data` | **No** — sole `:8787` owner | lock `seed` |
 | API contract after `server.js` edit | No | `npm run smoke:mvp` |
 
-Use `./script/cross_platform_validation_lock.sh` for all kills/launches/captures. After parallel UI workers finish: `npm run validate:screen -- --screen <id> --platform ios|both` per screen, `npm run verify:ios-screens -- --stale-only` for iOS stale-pass, or `npm run macos:cua-reproof` for macOS stale-pass.
+Use `./script/cross_platform_validation_lock.sh` for all kills/launches/captures. After parallel UI workers finish, run exact iOS proofs or a source-local macOS batch through bundled `@Computer`.
 
 Scripts own proof. Subagents own bounded sidecars. Main thread owns integration and final judgment.
 

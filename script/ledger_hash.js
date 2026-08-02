@@ -39,6 +39,26 @@ function sourceContent(entry, repoRoot = root) {
   const hint = parseSourceHint(entry);
   if (!hint) return text;
   const escaped = hint.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const typePrefix =
+    "(?:(?:@[A-Za-z_][\\w.]*(?:\\([^\\n]*\\))?)\\s+)*" +
+    "(?:(?:public|internal|private|fileprivate|open|final|indirect|nonisolated)\\s+)*";
+  const typeMatch = text.match(
+    new RegExp(
+      `^${typePrefix}(?:struct|class|enum|actor|extension)\\s+${escaped}\\b`,
+      "m"
+    )
+  );
+  if (typeMatch?.index != null) {
+    const start = typeMatch.index;
+    const rest = text.slice(start + typeMatch[0].length);
+    const next = rest.search(
+      new RegExp(
+        `^${typePrefix}(?:struct|class|enum|actor|extension)\\s+\\w+\\b`,
+        "m"
+      )
+    );
+    return text.slice(start, next < 0 ? undefined : start + typeMatch[0].length + next);
+  }
   let start = text.search(new RegExp(`\\n\\s*private\\s+(?:var|func)\\s+${escaped}\\b`));
   if (start >= 0) start += 1;
   if (start < 0) start = text.search(new RegExp(`\\b${escaped}\\b`));

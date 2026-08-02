@@ -24,6 +24,15 @@ private enum CommunityDetailTab: String, CaseIterable, Identifiable {
     case highlights = "Highlights"
 
     var id: String { rawValue }
+
+    var compactTitle: String {
+        switch self {
+        case .upcoming: return "Events"
+        case .members: return "Members"
+        case .resources: return "Guides"
+        case .highlights: return "Highlights"
+        }
+    }
 }
 
 private struct CommunityBrowsePlate {
@@ -118,6 +127,10 @@ struct CirclesPrototypeView: View {
                         )
                     }
                     .buttonStyle(.plain)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityIdentifier("hero-circle")
+                    .accessibilityLabel("Open your circle")
+                    .accessibilityAddTraits(.isButton)
                 }
 
                 if isCapturingConcern {
@@ -129,7 +142,10 @@ struct CirclesPrototypeView: View {
                         TextField("Too fast, too quiet, wrong energy...", text: $concernText, axis: .vertical)
                             .font(PrototypeTypography.caption)
                             .textFieldStyle(.roundedBorder)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
                             .lineLimit(2...4)
+                            .accessibilityIdentifier("concern-field")
 
                         Button {
                             Task {
@@ -143,6 +159,8 @@ struct CirclesPrototypeView: View {
                         }
                         .buttonStyle(.plain)
                         .disabled(isSendingConcern || concernText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                        .accessibilityIdentifier("concern-submit")
+                        .accessibilityLabel("Continue in Profile")
                     }
                     .padding(16)
                     .background(PrototypePalette.surface)
@@ -166,6 +184,8 @@ struct CirclesPrototypeView: View {
                         .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
                     }
                     .buttonStyle(.plain)
+                    .accessibilityIdentifier("concern-btn")
+                    .accessibilityLabel("This doesn't feel like my circle")
                 }
 
                 VStack(alignment: .leading, spacing: 12) {
@@ -180,46 +200,47 @@ struct CirclesPrototypeView: View {
                             .contentTransition(.numericText())
                     }
 
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 10) {
-                            ForEach(Array(availableCircles.enumerated()), id: \.element.id) { index, circle in
-                                Button {
-                                    selectedCircle = circle
-                                } label: {
-                                    CircleCard(
-                                        circle: circle,
-                                        tone: index + 1,
-                                        display: circleDisplay(circle, index: index + 1)
+                    if showCards {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 10) {
+                                ForEach(Array(availableCircles.enumerated()), id: \.element.id) { index, circle in
+                                    Button {
+                                        selectedCircle = circle
+                                    } label: {
+                                        CircleCard(
+                                            circle: circle,
+                                            tone: index + 1,
+                                            display: circleDisplay(circle, index: index + 1)
+                                        )
+                                    }
+                                    .buttonStyle(.plain)
+                                    .accessibilityLabel("Open \(circle.name) AI suggestion")
+                                    .accessibilityValue(
+                                        placement.selectedSecondaryCircleId == circle.id
+                                            ? "Your second circle"
+                                            : "AI suggested circle"
                                     )
-                                        .opacity(showCards ? 1 : 0)
-                                        .offset(y: showCards ? 0 : 20)
-                                        .animation(.interactive.delay(Double(index) * 0.06), value: showCards)
-                                }
-                                .buttonStyle(.plain)
-                                .scrollTransition(.interactive, axis: .horizontal) { content, phase in
-                                    content
-                                        .scaleEffect(phase.isIdentity ? 1 : 0.94)
-                                        .opacity(phase.isIdentity ? 1 : 0.72)
+                                    .accessibilityIdentifier("secondary-circle-card-\(circle.id)")
+                                    .scrollTransition(.interactive, axis: .horizontal) { content, phase in
+                                        content
+                                            .scaleEffect(phase.isIdentity ? 1 : 0.94)
+                                            .opacity(phase.isIdentity ? 1 : 0.72)
+                                    }
                                 }
                             }
                         }
+                        .contentMargins(.horizontal, 2, for: .scrollContent)
+                        .transition(.opacity.combined(with: .move(edge: .bottom)))
                     }
-                    .contentMargins(.horizontal, 2, for: .scrollContent)
                 }
             }
             .task(id: appState.isSignedIn) {
                 guard appState.isSignedIn else { return }
-                await appState.fetchCircles()
-                await appState.loadCurrentPlacement()
-                await appState.fetchMeetings()
                 withAnimation(.interactive) {
                     showCards = true
                 }
-                #if DEBUG
-                if ProcessInfo.processInfo.arguments.contains("--likeminded-start-circle-detail") {
-                    selectedCircle = appState.joinedCircles.first ?? placement.primaryCircle
-                }
-                #endif
+                await appState.fetchCircles()
+                await appState.loadCurrentPlacement()
             }
             .toolbar(.hidden, for: .navigationBar)
             .fullScreenCover(item: $selectedCircle) { circle in
@@ -312,10 +333,24 @@ struct CircleDetailView: View {
     let circle: PlacementCircle
     let reasons: [String]
     let namespace: Namespace.ID
+    let onBack: (() -> Void)?
     @State private var showLeaveConfirm = false
     @State private var showCircleOptions = false
     @State private var isLeavingCircle = false
+    @State private var isSelectingSecondary = false
     @State private var leaveStatus: String?
+
+    init(
+        circle: PlacementCircle,
+        reasons: [String],
+        namespace: Namespace.ID,
+        onBack: (() -> Void)? = nil
+    ) {
+        self.circle = circle
+        self.reasons = reasons
+        self.namespace = namespace
+        self.onBack = onBack
+    }
 
     private var nextMeetup: Meeting? {
         appState.upcomingMeetings.first { $0.targetId == circle.id }
@@ -407,8 +442,13 @@ struct CircleDetailView: View {
             .matchedGeometryEffect(id: circle.id, in: namespace)
 
             PrototypeBackButton(label: "Back to circles", style: .overlay) {
-                dismiss()
+                if let onBack {
+                    onBack()
+                } else {
+                    dismiss()
+                }
             }
+            .accessibilityIdentifier("circle-detail-back")
             .padding(16)
 
             Button {
@@ -424,6 +464,7 @@ struct CircleDetailView: View {
             .buttonStyle(.plain)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
             .padding(16)
+            .accessibilityIdentifier("circle-options")
             .accessibilityLabel("Circle options")
         }
     }
@@ -470,16 +511,23 @@ struct CircleDetailView: View {
             if canSelectAsSecondary {
                 Button {
                     Task {
-                        appState.selectSecondaryCircle(id: circle.id)
-                        leaveStatus = "This is now your second circle."
+                        isSelectingSecondary = true
+                        let saved = await appState.selectSecondaryCircle(id: circle.id)
+                        leaveStatus = saved
+                            ? "This is now your second circle."
+                            : appState.loadError ?? "That circle could not be saved. Please retry."
+                        isSelectingSecondary = false
                     }
                 } label: {
                     PrimaryActionButton(
-                        title: appState.currentPlacement.actions.secondaryAction,
+                        title: isSelectingSecondary
+                            ? "Saving second circle"
+                            : appState.currentPlacement.actions.secondaryAction,
                         systemImage: "checkmark.circle"
                     )
                 }
                 .buttonStyle(.plain)
+                .disabled(isSelectingSecondary)
                 .accessibilityIdentifier("make-secondary-circle")
             } else if isSelectedSecondary {
                 Label("Your second circle", systemImage: "checkmark.circle.fill")
@@ -540,12 +588,14 @@ struct CircleDetailView: View {
                 Button("Report placement concern") {
                     showCircleOptions = false
                 }
+                .accessibilityIdentifier("options-report-concern")
             }
             .navigationTitle("Circle options")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Done") { showCircleOptions = false }
+                        .accessibilityIdentifier("options-done")
                 }
             }
         }
@@ -589,6 +639,7 @@ struct CommunitiesPrototypeView: View {
         false
         #endif
     }()
+    @State private var appliedCommunityDetailDeepLink = false
     @State private var appliedCreateEventDeepLink = false
 
     private var filteredCommunities: [Community] {
@@ -623,7 +674,9 @@ struct CommunitiesPrototypeView: View {
             return filteredCommunities
         }
         let byId = Dictionary(uniqueKeysWithValues: appState.communities.map { ($0.id, $0) })
-        return communityBrowsePlate.compactMap { byId[$0.id] }
+        let plated = communityBrowsePlate.compactMap { byId[$0.id] }
+        // Plate IDs can drift from seed/API; never leave Browse empty when communities exist.
+        return plated.isEmpty ? filteredCommunities : plated
     }
 
     private func community(for id: String) -> Community? {
@@ -640,7 +693,9 @@ struct CommunitiesPrototypeView: View {
             || ProcessInfo.processInfo.arguments.contains("--likeminded-start-community-members") else {
             return nil
         }
-        if let plate = communityDetailPlates.first(where: { $0.id == id }) ?? communityDetailPlates.first {
+        // Match the requested id only — never fall back to an unrelated plate (that remapped
+        // ai-builders → jazz-music and 403'd the members API for the validation user).
+        if let plate = communityDetailPlates.first(where: { $0.id == id }) {
             return Community(
                 id: plate.id,
                 name: plate.name,
@@ -650,8 +705,27 @@ struct CommunitiesPrototypeView: View {
                 membersCount: plate.members
             )
         }
-        #endif
+        if let browse = communityBrowsePlate.first(where: { $0.id == id }) {
+            return Community(
+                id: browse.id,
+                name: browse.name,
+                summary: browse.summary,
+                themes: [],
+                meetingFormat: "community",
+                membersCount: browse.members
+            )
+        }
+        return Community(
+            id: id,
+            name: id,
+            summary: "",
+            themes: [],
+            meetingFormat: "community",
+            membersCount: 0
+        )
+        #else
         return nil
+        #endif
     }
 
     private func applyCreateEventDeepLinkIfNeeded() {
@@ -662,6 +736,8 @@ struct CommunitiesPrototypeView: View {
         let communityId = Self.launchArgumentValue(after: "--likeminded-community-id")
             ?? appState.joinedCommunities.first?.id
             ?? "jazz-music"
+        // Detail under create-event so Cancel lands on Community options.
+        navigationPath.append(communityId)
         navigationPath.append(CreateEventRoute(communityId: communityId))
         appliedCreateEventDeepLink = true
         #endif
@@ -678,6 +754,8 @@ struct CommunitiesPrototypeView: View {
         guard pendingCommunityMembersDeepLink, appState.isSignedIn else { return }
         pendingCommunityMembersDeepLink = false
         let communityId = Self.launchArgumentValue(after: "--likeminded-community-id") ?? "jazz-music"
+        // Detail under members so Back lands on Community options.
+        navigationPath.append(communityId)
         navigationPath.append(CommunityMembersRoute(communityId: communityId))
         #endif
     }
@@ -694,6 +772,7 @@ struct CommunitiesPrototypeView: View {
                             .foregroundStyle(PrototypePalette.ink)
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
+                            .accessibilityLabel("Search communities")
                     }
                     .padding(.horizontal, 14)
                     .frame(height: 46)
@@ -777,7 +856,9 @@ struct CommunitiesPrototypeView: View {
                                     .animation(.interactive.delay(Double(index) * 0.06), value: showCards)
                             }
                             .buttonStyle(.plain)
-                            .accessibilityLabel("Your communities card")
+                            .accessibilityElement(children: .ignore)
+                            .accessibilityLabel("Open \(display.name) community")
+                            .accessibilityAddTraits(.isButton)
                         }
                     }
                 }
@@ -847,6 +928,11 @@ struct CommunitiesPrototypeView: View {
                                 .animation(.interactive.delay(Double(index) * 0.06), value: showCards)
                         }
                         .buttonStyle(.plain)
+                        // Bound AX to the card — children.combine/default can inflate the
+                        // hit frame under the Create FAB and steal taps (y≈971 ghosts).
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel("Open \(display.name) community")
+                        .accessibilityAddTraits(.isButton)
                     }
                 }
             }
@@ -856,10 +942,12 @@ struct CommunitiesPrototypeView: View {
                     showCards = true
                 }
                 #if DEBUG
-                if ProcessInfo.processInfo.arguments.contains("--likeminded-start-community-detail") {
+                if !appliedCommunityDetailDeepLink,
+                   ProcessInfo.processInfo.arguments.contains("--likeminded-start-community-detail") {
                     let communityId = Self.launchArgumentValue(after: "--likeminded-community-id")
                         ?? "jazz-music"
                     navigationPath.append(communityId)
+                    appliedCommunityDetailDeepLink = true
                 }
                 performCommunityMembersDeepLinkIfNeeded()
                 if ProcessInfo.processInfo.arguments.contains("--likeminded-start-create-event") {
@@ -917,6 +1005,7 @@ private struct CreateCommunityView: View {
     @State private var name = ""
     @State private var summary = ""
     @State private var themesText = ""
+    @State private var showsOptionalThemes = false
     @State private var status: String?
     @State private var isCreating = false
 
@@ -926,6 +1015,22 @@ private struct CreateCommunityView: View {
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
         return themes.isEmpty ? ["Community", "Discussion"] : Array(themes.prefix(3))
+    }
+
+    private var canSubmit: Bool {
+        !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            && !summary.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private var completionGuidance: String? {
+        let needsName = name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        let needsSummary = summary.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        switch (needsName, needsSummary) {
+        case (true, true): return "Add a name and summary to continue."
+        case (true, false): return "Add a community name to continue."
+        case (false, true): return "Add a short summary to continue."
+        case (false, false): return nil
+        }
     }
 
     var body: some View {
@@ -953,14 +1058,18 @@ private struct CreateCommunityView: View {
                                     .accessibilityLabel("Community summary")
                             }
 
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Themes")
-                                    .font(PrototypeTypography.metadata.weight(.semibold))
-                                    .foregroundStyle(PrototypePalette.ink)
+                            DisclosureGroup(isExpanded: $showsOptionalThemes) {
                                 TextField("Books, Rituals, Reflection", text: $themesText)
                                     .textFieldStyle(.roundedBorder)
                                     .accessibilityLabel("Community themes")
+                                    .padding(.top, 8)
+                            } label: {
+                                Text("Add themes (optional)")
+                                    .font(PrototypeTypography.metadata.weight(.semibold))
+                                    .foregroundStyle(PrototypePalette.ink)
                             }
+                            .tint(PrototypePalette.accent)
+                            .accessibilityIdentifier("create-community-optional-themes")
 
                             Button {
                                 Task { await submit() }
@@ -971,8 +1080,15 @@ private struct CreateCommunityView: View {
                                 )
                             }
                             .buttonStyle(.plain)
-                            .disabled(isCreating || name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || summary.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                            .disabled(isCreating || !canSubmit)
                             .accessibilityLabel("Create community")
+
+                            if let completionGuidance {
+                                Label(completionGuidance, systemImage: "info.circle")
+                                    .font(PrototypeTypography.caption)
+                                    .foregroundStyle(PrototypePalette.subink)
+                                    .accessibilityIdentifier("create-community-requirements")
+                            }
 
                             if let status {
                                 Text(status)
@@ -982,12 +1098,14 @@ private struct CreateCommunityView: View {
                         }
                     }
 
-                    FeatureCard(title: "Preview", eyebrow: "Browse") {
-                        CreateCommunityPreview(
-                            name: name,
-                            summary: summary,
-                            themes: draftThemes
-                        )
+                    if canSubmit {
+                        FeatureCard(title: "Preview", eyebrow: "Browse") {
+                            CreateCommunityPreview(
+                                name: name,
+                                summary: summary,
+                                themes: draftThemes
+                            )
+                        }
                     }
                 }
                 .padding(20)
@@ -1026,8 +1144,10 @@ private struct CreateCommunityView: View {
 struct CommunityDetailView: View {
     @EnvironmentObject private var appState: PrototypeAppState
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let community: Community
     @State private var showCommunityOptions = false
+    @State private var showLeaveConfirmation = false
     @State private var communityOptionsStatus: String?
     @State private var detailTab: CommunityDetailTab = .upcoming
     @State private var communityResourceDetail: CommunityResourceDetail?
@@ -1045,7 +1165,9 @@ struct CommunityDetailView: View {
     }
 
     private var memberCount: Int {
-        let loaded = appState.communityMembers.count
+        let loaded = appState.communityMembersCommunityId == community.id
+            ? appState.communityMembers.count
+            : 0
         return loaded > 0 ? loaded : display.members
     }
 
@@ -1067,24 +1189,50 @@ struct CommunityDetailView: View {
             VStack(alignment: .leading, spacing: 20) {
                 heroHeader
                 statsRow
-                detailSection("About", display.summary)
-                fitInSection
+                if !isCurrentlyJoined {
+                    joinLeaveButton
+                }
                 detailTabPicker
                 detailTabContent
-                joinLeaveButton
+                if isCurrentlyJoined {
+                    joinLeaveButton
+                }
             }
+            // Keep tab CTAs / join above the floating custom tab bar (y≈770+).
+            .padding(.bottom, 120)
         }
         .background(PrototypePalette.background.ignoresSafeArea())
         .toolbar(.hidden, for: .navigationBar)
         .task {
             await appState.fetchMeetings()
-            await appState.fetchCommunityMembers(id: community.id)
+            if isCurrentlyJoined {
+                await appState.fetchCommunityMembers(id: community.id)
+            } else {
+                appState.clearCommunityMembers()
+            }
         }
         .sheet(isPresented: $showCommunityOptions) {
             communityOptionsSheet
         }
         .sheet(item: $communityResourceDetail) { detail in
             communityResourceSheet(detail: detail)
+        }
+        .confirmationDialog(
+            "Leave this community?",
+            isPresented: $showLeaveConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Leave", role: .destructive) {
+                Task {
+                    await appState.leaveCommunity(id: community.id)
+                    if appState.communityError == nil {
+                        appState.clearCommunityMembers()
+                    }
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("You can join (display.name) again later.")
         }
     }
 
@@ -1106,6 +1254,7 @@ struct CommunityDetailView: View {
                     showCommunityOptions = true
                 } label: {
                     Image(systemName: "ellipsis")
+                        .frame(width: 44, height: 44)
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Community options")
@@ -1114,86 +1263,118 @@ struct CommunityDetailView: View {
             .foregroundStyle(.white)
 
             Text(display.name)
-                .font(PrototypeTypography.hero)
+                .font(.system(.title, design: .serif).weight(.semibold))
                 .foregroundStyle(.white)
                 .fixedSize(horizontal: false, vertical: true)
 
             Text(display.summary)
-                .font(PrototypeTypography.body)
+                .font(.callout)
                 .foregroundStyle(.white.opacity(0.88))
 
-            HStack(spacing: 8) {
-                ForEach(community.themes.prefix(4), id: \.self) { tag in
-                    Text(tag)
-                        .font(PrototypeTypography.metadata)
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 7)
-                        .background(Color.white.opacity(0.10))
-                        .clipShape(Capsule(style: .continuous))
-                        .overlay(Capsule(style: .continuous).stroke(Color.white.opacity(0.35), lineWidth: 1))
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    Label(
+                        isCurrentlyJoined ? "Joined" : "Not joined",
+                        systemImage: isCurrentlyJoined ? "checkmark.circle.fill" : "circle"
+                    )
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 7)
+                    .background(Color.white.opacity(0.10))
+                    .clipShape(Capsule(style: .continuous))
+                    .overlay(Capsule(style: .continuous).stroke(Color.white.opacity(0.35), lineWidth: 1))
+                    ForEach(community.themes.prefix(4), id: \.self) { tag in
+                        Text(tag)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 7)
+                            .background(Color.white.opacity(0.10))
+                            .clipShape(Capsule(style: .continuous))
+                            .overlay(Capsule(style: .continuous).stroke(Color.white.opacity(0.35), lineWidth: 1))
+                    }
                 }
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(.white)
             }
         }
         .padding(.horizontal, 20)
-        .padding(.top, 18)
-        .padding(.bottom, 62)
+        .padding(.top, 12)
+        .padding(.bottom, 42)
         .background(PrototypePalette.roomGradient(0))
         .clipShape(RoundedRectangle(cornerRadius: 0, style: .continuous))
         .overlay(WaveLines().stroke(Color.white.opacity(0.16), lineWidth: 1).padding(8))
     }
 
     private var statsRow: some View {
-        HStack(spacing: 18) {
-            Label("\(memberCount) members", systemImage: "person.2")
-                .contentTransition(.numericText())
-            Divider()
-            Label(nextMeetupStatsLabel, systemImage: "calendar")
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 18) {
+                Label("\(memberCount) members", systemImage: "person.2")
+                    .contentTransition(.numericText())
+                Divider()
+                Label(nextMeetupStatsLabel, systemImage: "calendar")
+            }
+            VStack(alignment: .leading, spacing: 10) {
+                Label("\(memberCount) members", systemImage: "person.2")
+                    .contentTransition(.numericText())
+                Label(nextMeetupStatsLabel, systemImage: "calendar")
+            }
         }
-        .font(PrototypeTypography.metadata)
+        .font(.subheadline.weight(.medium))
         .foregroundStyle(PrototypePalette.ink)
         .padding(18)
         .background(PrototypePalette.surface)
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
         .padding(.horizontal, 20)
-        .offset(y: -58)
-        .padding(.bottom, -58)
+        .offset(y: -38)
+        .padding(.bottom, -38)
     }
 
     private var detailTabPicker: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 10) {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 6) {
                 ForEach(CommunityDetailTab.allCases) { tab in
-                    Button {
-                        withAnimation(.interactive) { detailTab = tab }
-                    } label: {
-                        Text(tab.rawValue)
-                            .font(PrototypeTypography.metadata)
-                            .foregroundStyle(detailTab == tab ? PrototypePalette.accent : PrototypePalette.subink)
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 9)
-                            .background(detailTab == tab ? PrototypePalette.accentSoft : PrototypePalette.surface)
-                            .clipShape(Capsule(style: .continuous))
-                            .overlay(Capsule(style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel(tab.rawValue)
-                    .accessibilityValue(detailTab == tab ? "Selected" : "Not selected")
+                    detailTabButton(tab)
                 }
             }
-            .padding(.horizontal, 20)
+
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
+                ForEach(CommunityDetailTab.allCases) { tab in
+                    detailTabButton(tab)
+                }
+            }
         }
+        .padding(.horizontal, 20)
+    }
+
+    private func detailTabButton(_ tab: CommunityDetailTab) -> some View {
+        Button {
+            if reduceMotion {
+                detailTab = tab
+            } else {
+                withAnimation(.interactive) { detailTab = tab }
+            }
+        } label: {
+            Text(tab.compactTitle)
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(detailTab == tab ? PrototypePalette.accent : PrototypePalette.subink)
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
+                .padding(.horizontal, 9)
+                .padding(.vertical, 10)
+                .frame(minHeight: 44)
+                .frame(maxWidth: .infinity)
+                .background(detailTab == tab ? PrototypePalette.accentSoft : PrototypePalette.surface)
+                .clipShape(Capsule(style: .continuous))
+                .overlay(Capsule(style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(tab.rawValue)
+        .accessibilityValue(detailTab == tab ? "Selected" : "Not selected")
+        .accessibilityIdentifier("detail-tab-\(tab.rawValue.lowercased())")
     }
 
     @ViewBuilder
     private var detailTabContent: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(detailTab.rawValue.uppercased())
-                .font(PrototypeTypography.eyebrow)
-                .foregroundStyle(PrototypePalette.accent)
-                .padding(.horizontal, 20)
-
             switch detailTab {
             case .upcoming:
                 upcomingTabContent
@@ -1212,30 +1393,6 @@ struct CommunityDetailView: View {
         return "Next meetup\n\(LikemindedDate.meetHeader(meeting.scheduledAt))"
     }
 
-    private var fitInSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("You'll fit in".uppercased())
-                .font(PrototypeTypography.eyebrow)
-                .foregroundStyle(PrototypePalette.accent)
-                .padding(.horizontal, 20)
-
-            VStack(alignment: .leading, spacing: 10) {
-                Label("Love thoughtful conversations", systemImage: "checkmark.circle.fill")
-                Label("Enjoy listening deeply", systemImage: "checkmark.circle.fill")
-                Label("Value different perspectives", systemImage: "checkmark.circle.fill")
-                Label("Share and support others", systemImage: "checkmark.circle.fill")
-            }
-            .font(PrototypeTypography.caption)
-            .foregroundStyle(PrototypePalette.accent)
-            .padding(16)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(PrototypePalette.surface)
-            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-            .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
-            .padding(.horizontal, 20)
-        }
-    }
-
     @ViewBuilder
     private var upcomingTabContent: some View {
         VStack(spacing: 12) {
@@ -1249,14 +1406,24 @@ struct CommunityDetailView: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Create community event")
+                .accessibilityValue("Community Meetup")
+                .accessibilityIdentifier("community-detail-plan-event")
             } else {
                 ForEach(Array(communityMeetings.enumerated()), id: \.element.id) { index, meeting in
-                    communityDetailRow(
-                        title: meeting.title,
-                        subtitle: "\(LikemindedDate.meetHeader(meeting.scheduledAt)) · Host \(meeting.hostName)",
-                        systemImage: "calendar",
-                        trailing: index == 0 ? meetupCountdown : nil
-                    )
+                    Button {
+                        appState.requestedTab = .meet
+                    } label: {
+                        communityDetailRow(
+                            title: meeting.title,
+                            subtitle: "\(LikemindedDate.meetHeader(meeting.scheduledAt)) · Host \(meeting.hostName)",
+                            systemImage: "calendar",
+                            trailing: index == 0 ? meetupCountdown : nil
+                        )
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(meeting.title)
+                    .accessibilityValue("Upcoming community event")
+                    .accessibilityIdentifier("community-detail-event-\(meeting.id)")
                 }
             }
         }
@@ -1264,12 +1431,24 @@ struct CommunityDetailView: View {
     }
 
     private var membersTabContent: some View {
-        NavigationLink(value: CommunityMembersRoute(communityId: community.id)) {
-            PrimaryActionButton(title: "View members", systemImage: "person.3.fill")
+        Group {
+            if isCurrentlyJoined {
+                NavigationLink(value: CommunityMembersRoute(communityId: community.id)) {
+                    PrimaryActionButton(title: "View members", systemImage: "person.3.fill")
+                }
+                .buttonStyle(.plain)
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("View members")
+                .accessibilityAddTraits(.isButton)
+                .accessibilityIdentifier("view-members")
+            } else {
+                Label("Join this community to view its members.", systemImage: "lock.fill")
+                    .font(.callout)
+                    .foregroundStyle(PrototypePalette.subink)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
         }
-        .buttonStyle(.plain)
         .padding(.horizontal, 20)
-        .accessibilityLabel("View members")
     }
 
     private var resourcesTabContent: some View {
@@ -1314,25 +1493,39 @@ struct CommunityDetailView: View {
         .padding(.horizontal, 20)
     }
 
+    @ViewBuilder
     private var joinLeaveButton: some View {
-        Button {
-            Task {
-                if isCurrentlyJoined {
-                    await appState.leaveCommunity(id: community.id)
-                } else {
-                    await appState.joinCommunity(id: community.id)
+        VStack(alignment: .leading, spacing: 10) {
+            if isCurrentlyJoined {
+                Button("Leave community", role: .destructive) {
+                    showLeaveConfirmation = true
                 }
+                .buttonStyle(.bordered)
+                .tint(.red)
+                .frame(minHeight: 44)
+                .accessibilityHint("Shows a confirmation before leaving.")
+            } else {
+                Button {
+                    Task {
+                        await appState.joinCommunity(id: community.id)
+                        if appState.communityError == nil {
+                            await appState.fetchCommunityMembers(id: community.id)
+                        }
+                    }
+                } label: {
+                    PrimaryActionButton(title: "Join community", systemImage: "person.badge.plus")
+                }
+                .buttonStyle(.plain)
             }
-        } label: {
-            PrimaryActionButton(
-                title: isCurrentlyJoined ? "Leave community" : "Join community",
-                systemImage: isCurrentlyJoined ? "rectangle.portrait.and.arrow.right" : "person.badge.plus"
-            )
+
+            if let communityError = appState.communityError {
+                Label(communityError, systemImage: "exclamationmark.circle")
+                    .font(.callout)
+                    .foregroundStyle(.red)
+            }
         }
-        .buttonStyle(.plain)
         .padding(.horizontal, 20)
-        .padding(.bottom, 110)
-        .accessibilityLabel(isCurrentlyJoined ? "Leave community" : "Join community")
+        .accessibilityElement(children: .contain)
     }
 
     private var communityOptionsSheet: some View {
@@ -1477,14 +1670,7 @@ struct CommunityMembersView: View {
 
     var body: some View {
         ScreenContainer(title: community.name, subtitle: "\(memberCount) member\(memberCount == 1 ? "" : "s") · Private") {
-            FeatureCard(title: "Members", eyebrow: "Community") {
-                Text("This screen lists members only. About, events, and settings open from community detail.")
-                    .font(PrototypeTypography.caption)
-                    .foregroundStyle(PrototypePalette.subink)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            FeatureCard(title: "Roster", eyebrow: "Search") {
+            FeatureCard(title: "Members", eyebrow: "Private roster") {
                 HStack(spacing: 10) {
                     HStack(spacing: 8) {
                         Image(systemName: "magnifyingglass")
@@ -1493,6 +1679,7 @@ struct CommunityMembersView: View {
                             .font(PrototypeTypography.metadata)
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
+                            .accessibilityIdentifier("search")
                             .accessibilityLabel("Search members")
                     }
                     .padding(.horizontal, 12)
@@ -1508,7 +1695,9 @@ struct CommunityMembersView: View {
                         .background(PrototypePalette.surface)
                         .clipShape(Capsule(style: .continuous))
                         .overlay(Capsule(style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+                        .accessibilityIdentifier("filter-pills")
                         .accessibilityLabel("All members")
+                        .accessibilityValue("\(memberCount) members")
                 }
 
                 if appState.isLoadingCommunityMembers {
@@ -1527,8 +1716,8 @@ struct CommunityMembersView: View {
                         .padding(.vertical, 8)
                 } else {
                     VStack(spacing: 10) {
-                        ForEach(Array(filteredMembers.enumerated()), id: \.element.userId) { index, member in
-                            memberRow(member, index: index)
+                        ForEach(filteredMembers) { member in
+                            memberRow(member)
                         }
                     }
                 }
@@ -1541,11 +1730,8 @@ struct CommunityMembersView: View {
         }
     }
 
-    private func memberRow(_ member: CommunityMember, index: Int) -> some View {
-        let roleLine = memberRoleLine(member)
-        let activity = memberActivityLabel(index: index)
-        let isOnline = index < 2
-        return HStack(spacing: 12) {
+    private func memberRow(_ member: CommunityMember) -> some View {
+        HStack(spacing: 12) {
             Circle()
                 .fill(PrototypePalette.accentSoft)
                 .frame(width: 36, height: 36)
@@ -1555,46 +1741,21 @@ struct CommunityMembersView: View {
                         .foregroundStyle(PrototypePalette.accent)
                 }
             VStack(alignment: .leading, spacing: 2) {
-                HStack(spacing: 6) {
-                    Text(member.name)
-                        .font(PrototypeTypography.bodyStrong)
-                        .foregroundStyle(PrototypePalette.ink)
-                    if isOnline {
-                        Circle()
-                            .fill(PrototypePalette.accent)
-                            .frame(width: 7, height: 7)
-                            .accessibilityHidden(true)
-                    }
-                }
-                Text(roleLine)
+                Text(member.name)
+                    .font(PrototypeTypography.bodyStrong)
+                    .foregroundStyle(PrototypePalette.ink)
+                Text("Community member")
                     .font(PrototypeTypography.metadata)
                     .foregroundStyle(PrototypePalette.subink)
             }
             Spacer()
-            Text(activity)
-                .font(PrototypeTypography.metadata)
-                .foregroundStyle(PrototypePalette.subink)
         }
         .padding(12)
         .background(PrototypePalette.surface)
         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(member.name), \(roleLine), \(activity)")
-    }
-
-    private func memberRoleLine(_ member: CommunityMember) -> String {
-        let theme = community.themes.first ?? "Member"
-        let gender = member.gender.map { $0.capitalized } ?? "Member"
-        return "\(theme) · \(gender)"
-    }
-
-    private func memberActivityLabel(index: Int) -> String {
-        switch index {
-        case 0, 1: return "Active now"
-        case 2: return "Active 1h ago"
-        default: return "Active \(index)h ago"
-        }
+        .accessibilityLabel("\(member.name), community member")
     }
 }
 
@@ -1726,6 +1887,7 @@ struct CreateEventView: View {
                 .buttonStyle(.plain)
                 .disabled(isCreating || eventName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 .accessibilityLabel("Create event")
+                .accessibilityIdentifier("create-event-submit")
 
                 if let status {
                     Text(status)
@@ -1733,12 +1895,14 @@ struct CreateEventView: View {
                         .foregroundStyle(PrototypePalette.subink)
                 }
             }
+            // Clear floating CustomTabBar so the CTA remains tappable.
             .padding(20)
+            .padding(.bottom, 96)
         }
         .background(PrototypePalette.background.ignoresSafeArea())
         .navigationTitle("Create event")
         .navigationBarTitleDisplayMode(.inline)
-        .prototypeBackNavigation(label: "Cancel")
+        .likemindedTabBarHidden()
     }
 
     private var eventPreviewCoverAsset: String {
@@ -1747,11 +1911,20 @@ struct CreateEventView: View {
     }
 
     private var eventTypePills: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 10) {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 8) {
                 compactEventTypePill("Meetup", icon: "person.3")
                 compactEventTypePill("Listening Session", icon: "waveform")
                 compactEventTypePill("Jam Session", icon: "music.note")
+            }
+
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
+                compactEventTypePill("Meetup", icon: "person.3")
+                    .frame(maxWidth: .infinity)
+                compactEventTypePill("Listening Session", icon: "waveform")
+                    .frame(maxWidth: .infinity)
+                compactEventTypePill("Jam Session", icon: "music.note")
+                    .frame(maxWidth: .infinity)
             }
         }
     }

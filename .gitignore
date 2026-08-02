@@ -5,8 +5,11 @@
 .build/
 dist/
 DerivedData/
+output/DerivedData-*/
 xcuserdata/
 .context-graph/
+.optimization/
+.tmp/
 /data/
 node_modules/
 __pycache__/
@@ -17,3 +20,6 @@ codex.js
 output/validation/
 output/doodle-art/
 release/testflight-evidence.json
+apps/product-site/
+pnpm-lock.yaml
+pnpm-workspace.yaml

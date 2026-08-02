@@ -7,47 +7,56 @@ extension Animation {
 }
 
 struct CustomTabBar: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let tabs: [AppTab]
     @Binding var selection: AppTab
 
     var body: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: 2) {
             ForEach(tabs) { tab in
-                Button {
-                    withAnimation(.snappy) {
-                        selection = tab
-                    }
-                } label: {
-                    tabLabel(tab)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel(tab.rawValue)
-                .accessibilityAddTraits(selection == tab ? .isSelected : [])
+                tabButton(tab)
             }
         }
-        .padding(8)
+        .padding(4)
         .background(.regularMaterial, in: Capsule())
         .overlay(Capsule().stroke(PrototypePalette.rule, lineWidth: 1))
         .shadow(color: PrototypePalette.ink.opacity(0.10), radius: 24, y: 10)
     }
 
+    private func tabButton(_ tab: AppTab) -> some View {
+        Button {
+            withAnimation(reduceMotion ? nil : .snappy) {
+                selection = tab
+            }
+        } label: {
+            tabLabel(tab)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(tab.rawValue)
+        .accessibilityValue(selection == tab ? "Selected" : "Not selected")
+        .accessibilityHint(selection == tab ? "" : "Switches to \(tab.rawValue)")
+        .accessibilityAddTraits(selection == tab ? .isSelected : [])
+    }
+
+    @ViewBuilder
     private func tabLabel(_ tab: AppTab) -> some View {
         let isSelected = selection == tab
 
-        return HStack(spacing: 6) {
+        VStack(spacing: 4) {
             Image(systemName: tab.systemImage)
                 .font(.system(size: 17, weight: .semibold))
                 .symbolVariant(isSelected ? .fill : .none)
-                .scaleEffect(isSelected ? 1.1 : 1.0)
 
-            if isSelected {
-                Text(tab.rawValue)
-                    .font(PrototypeTypography.metadata.weight(.semibold))
-                    .transition(.opacity.combined(with: .move(edge: .bottom)).combined(with: .scale))
-            }
+            Text(tab.rawValue)
+                .font(.system(size: 12, weight: isSelected ? .semibold : .medium, design: .rounded))
+                .fontWidth(tab == .communities ? .condensed : .standard)
+                .lineLimit(1)
+                .minimumScaleFactor(0.85)
+                .multilineTextAlignment(.center)
+                .allowsTightening(true)
         }
         .foregroundStyle(isSelected ? PrototypePalette.accent : PrototypePalette.subink)
-        .frame(maxWidth: isSelected ? 116 : 48, minHeight: 44)
+        .frame(maxWidth: .infinity, minHeight: 48)
         .background(isSelected ? PrototypePalette.accentSoft.opacity(0.70) : .clear, in: Capsule())
         .contentShape(Capsule())
     }

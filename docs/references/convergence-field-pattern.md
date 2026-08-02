@@ -226,8 +226,8 @@ shader/chrome edits: `macos_kill_all` → remove stale bundles → `macos_ensure
 3. **Measure CPU in release**; debug per-pixel math is 5–10× pessimistic.
 4. Ledger owner: `validation/screens/auth.json` (`mockup_ref`,
    `visual_parity` / `ui_validation`).
-5. Capture scripts: redirect to a log file; piping `verify_macos_screens.sh`
-   through `tail` hung on `macos-app` locks.
+5. Capture during the bounded Computer visit; retain one compact artifact per
+   semantic failure and release the platform lease after the band.
 
 ## 8. Pitfalls checklist
 

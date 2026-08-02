@@ -10,7 +10,7 @@
  * - empty control arrays / wiped ledger dirs
  * - historical phase checkboxes that still read as ledger-green
  * - goal.json status=completed while ownership is broken
- * - stale "GUI automation unavailable" evidence while macos_cua_screen.sh exists
+ * - stale "GUI automation unavailable" evidence while bundled Computer owns native proof
  * - README routing that lists Phase 9 external setup without goal:next / ledger deferral
  * - competing context surfaces (validation README status tables, PROGRESS phase graveyard, etc.)
  * - PROGRESS stale_pass checkboxes out of sync with ledger stale_pass counts
@@ -34,7 +34,7 @@ const TRACK_LABELS = {
 
 /** Blocked rows that are really "not exercised yet", not infra (LiveKit/Apple). */
 const STALE_AUTOMATION_RE =
-  /GUI automation unavailable|macOS GUI automation unavailable|Cannot interact:|CUA (typing |not |never )|automation unavailable/i;
+  /GUI automation unavailable|macOS GUI automation unavailable|Cannot interact:|automation unavailable/i;
 
 /** Checked PROGRESS lines that must be explicitly historical when present. */
 const HISTORICAL_OVERCLAIM = [
@@ -199,11 +199,10 @@ function historicalOverclaimErrors(progress) {
   return errors;
 }
 
-/** CUA exists — claiming GUI automation is unavailable is a stale lie. */
+/** Bundled Computer is the native owner — claiming GUI automation is unavailable is stale. */
 const FORBIDDEN_AUTOMATION_CLAIM = /GUI automation unavailable|macOS GUI automation unavailable/i;
 
 function forbiddenAutomationClaimErrors() {
-  if (!fs.existsSync(path.join(root, "script/macos_cua_screen.sh"))) return [];
   const hits = [];
   const scanDirs = [];
   const screensDir = path.join(root, "validation", "screens");
@@ -231,7 +230,7 @@ function forbiddenAutomationClaimErrors() {
     if (hits.length === 0) return [];
     const sample = hits.slice(0, 8).join(", ") + (hits.length > 8 ? "…" : "");
     return [
-      `stale "GUI automation unavailable" claim while script/macos_cua_screen.sh exists (${hits.length}): ${sample}. Use result=pending and point at ./script/macos_cua_screen.sh — do not mark infrastructure-blocked.`
+      `stale "GUI automation unavailable" claim while bundled @Computer owns native proof (${hits.length}): ${sample}. Use result=pending and route through testing:ledger-run — do not mark infrastructure-blocked.`
     ];
   }
   for (const platform of ["ios", "macos"]) {
@@ -251,7 +250,7 @@ function forbiddenAutomationClaimErrors() {
   if (hits.length === 0) return [];
   const sample = hits.slice(0, 8).join(", ") + (hits.length > 8 ? "…" : "");
   return [
-    `stale "GUI automation unavailable" claim while script/macos_cua_screen.sh exists (${hits.length}): ${sample}. Use result=pending and point at ./script/macos_cua_screen.sh — do not mark infrastructure-blocked.`
+    `stale "GUI automation unavailable" claim while bundled @Computer owns native proof (${hits.length}): ${sample}. Use result=pending and route through testing:ledger-run — do not mark infrastructure-blocked.`
   ];
 }
 

@@ -20,7 +20,7 @@ const child = spawn(process.execPath, ["services/api/src/server.js"], {
     SESSION_SECRET: "local-smoke-secret-minimum-24-chars",
     APPLE_AUTH_BYPASS: "1",
     OPENAI_API_KEY: "",
-    OPENAI_REALTIME_MODEL: "gpt-realtime-1.5",
+    OPENAI_REALTIME_MODEL: "gpt-realtime-mini",
     OPENAI_REALTIME_VOICE: "marin",
     LIVEKIT_API_KEY: "devkey",
     LIVEKIT_API_SECRET: "devsecretdevsecretdevsecret",
@@ -79,10 +79,15 @@ async function expectStatus(status, pathname, options) {
     const health = await waitForHealth();
     assert.equal(health.db, "local-json");
 
+    const privacy = await request("/privacy");
+    assert.equal(privacy.response.status, 200);
+    assert.match(privacy.response.headers.get("content-type") || "", /^text\/html/);
+    assert.match(privacy.body, /Retention And Deletion/);
+
     await expectStatus(401, "/v1/discover", { method: "POST", body: {} });
     await expectStatus(401, "/v1/realtime/session", { method: "POST", body: {} });
     await expectStatus(401, "/v1/realtime/profile-placement", { method: "POST", body: {} });
-    await expectStatus(401, "/v1/realtime/calls", {
+    await expectStatus(404, "/v1/realtime/calls", {
       method: "POST",
       headers: { "content-type": "application/sdp" },
       rawBody: "v=0"
@@ -97,6 +102,8 @@ async function expectStatus(status, pathname, options) {
     });
     assert.ok(auth.sessionToken, "auth must return a session token");
     assert.ok(auth.user.id, "auth must return a user id");
+    const initialPrimaryCircle = await expectStatus(200, "/v1/circles/reflective-builders", { method: "GET", token: auth.sessionToken });
+    const initialPrimaryCircleCount = initialPrimaryCircle.circle.membersCount;
 
     const coercedPlacement = await expectStatus(201, "/v1/realtime/profile-placement", {
       method: "POST",
@@ -112,14 +119,6 @@ async function expectStatus(status, pathname, options) {
     assert.deepEqual(coercedPlacement.placement.fitReasons, []);
     assert.deepEqual(coercedPlacement.placement.sourceReflectionSignals, ["kept"]);
 
-    const missingRealtimeKey = await expectStatus(503, "/v1/realtime/calls", {
-      method: "POST",
-      token: auth.sessionToken,
-      headers: { "content-type": "application/sdp" },
-      rawBody: "v=0"
-    });
-    assert.equal(missingRealtimeKey.error, "openai_api_key_missing");
-
     const transcript = "I like honest conversations, thoughtful friends, small warm circles, design, books, and steady trust.";
     const discovered = await expectStatus(200, "/v1/discover", {
       method: "POST",
@@ -129,29 +128,39 @@ async function expectStatus(status, pathname, options) {
     assert.ok(discovered.profileId, "discover must return profileId");
     assert.ok(discovered.placement?.primaryCircle?.id, "discover must return a primary circle");
 
+    const realtimePlacementBody = {
+      interviewTranscript: "User: I want small, thoughtful circles.\nAI: I will place you with a warm direct group.",
+      signals: {
+        bigFive: { openness: 0.75, conscientiousness: 0.7, extraversion: 0.35, agreeableness: 0.82, neuroticism: 0.32 },
+        attachment: "secure",
+        socialEnergy: "low-to-medium",
+        communicationStyle: { primary: "direct", pace: 0.42 },
+        trustPattern: "slow earned trust",
+        humorStyle: "dry",
+        conflictStyle: "clear and kind"
+      },
+      primaryCircleId: "reflective-builders",
+      secondaryCircleIds: ["longform-thinkers"],
+      fitReasons: ["Prefers small warm rooms.", "Names direct communication and steady trust."],
+      sourceReflectionSignals: ["Small thoughtful circles.", "Warm direct group."],
+      profileSummary: "Looks for warm, direct, low-pressure connection."
+    };
     const realtimePlaced = await expectStatus(201, "/v1/realtime/profile-placement", {
       method: "POST",
       token: auth.sessionToken,
-      body: {
-        interviewTranscript: "User: I want small, thoughtful circles.\nAI: I will place you with a warm direct group.",
-        signals: {
-          bigFive: { openness: 0.75, conscientiousness: 0.7, extraversion: 0.35, agreeableness: 0.82, neuroticism: 0.32 },
-          attachment: "secure",
-          socialEnergy: "low-to-medium",
-          communicationStyle: { primary: "direct", pace: 0.42 },
-          trustPattern: "slow earned trust",
-          humorStyle: "dry",
-          conflictStyle: "clear and kind"
-        },
-        primaryCircleId: "reflective-builders",
-        secondaryCircleIds: ["longform-thinkers"],
-        fitReasons: ["Prefers small warm rooms.", "Names direct communication and steady trust."],
-        sourceReflectionSignals: ["Small thoughtful circles.", "Warm direct group."],
-        profileSummary: "Looks for warm, direct, low-pressure connection."
-      }
+      headers: { "idempotency-key": "smoke-realtime-placement-1" },
+      body: realtimePlacementBody
     });
     assert.equal(realtimePlaced.synthesisMode, "realtime_tool");
     assert.ok(realtimePlaced.profileId, "Realtime placement must return profileId");
+    const realtimeReplay = await expectStatus(201, "/v1/realtime/profile-placement", {
+      method: "POST",
+      token: auth.sessionToken,
+      headers: { "idempotency-key": "smoke-realtime-placement-1" },
+      body: realtimePlacementBody
+    });
+    assert.equal(realtimeReplay.placementId, realtimePlaced.placementId, "idempotent retry must return the original placement");
+    assert.equal(realtimeReplay.synthesisMode, "idempotent_replay");
 
     const profile = await expectStatus(200, "/v1/me/profile", { method: "GET", token: auth.sessionToken });
     assert.equal(profile.profile.profileId, realtimePlaced.profileId);
@@ -166,14 +175,37 @@ async function expectStatus(status, pathname, options) {
     const resumedProfile = await expectStatus(200, "/v1/me/profile", { method: "GET", token: auth.sessionToken });
     assert.equal(resumedProfile.profile.reflection.summary, editedSummary);
 
+    await expectStatus(400, "/v1/me/profile", {
+      method: "PATCH",
+      token: auth.sessionToken,
+      body: {
+        basicInfo: { name: "A", city: "P", dateOfBirth: "2026-01-01" },
+        interests: []
+      }
+    });
+    const replacedBasics = await expectStatus(200, "/v1/me/profile", {
+      method: "PATCH",
+      token: auth.sessionToken,
+      body: {
+        basicInfo: { name: "Maya", city: "Pune", dateOfBirth: "1995-04-10" },
+        interests: [
+          { area: "general", label: "Design", depth: "active" },
+          { area: "general", label: "Urban gardening", depth: "active" }
+        ]
+      }
+    });
+    assert.deepEqual(replacedBasics.profile.interests.map((interest) => interest.label).sort(), ["Design", "Urban gardening"]);
+
     const placement = await expectStatus(200, "/v1/me/placement", { method: "GET", token: auth.sessionToken });
     assert.equal(placement.profileId, realtimePlaced.profileId);
     assert.ok(placement.placementId, "resume placement must include placementId");
 
     const myCircles = await expectStatus(200, "/v1/me/circles", { method: "GET", token: auth.sessionToken });
     assert.ok(Array.isArray(myCircles.circles), "user circles endpoint must return an array");
+    assert.equal(myCircles.circles.length, 0, "proposed placement must not join a circle before acceptance");
     const circleDetail = await expectStatus(200, "/v1/circles/reflective-builders", { method: "GET", token: auth.sessionToken });
     assert.equal(circleDetail.circle.id, "reflective-builders");
+    assert.equal(circleDetail.circle.membersCount, initialPrimaryCircleCount, "proposed placement must not change circle membership");
 
     for (const [action, expectedState] of [["defer", "deferred"], ["accept", "accepted"]]) {
       const updated = await expectStatus(200, "/v1/me/placement/actions", {
@@ -182,7 +214,16 @@ async function expectStatus(status, pathname, options) {
         body: { action }
       });
       assert.equal(updated.placement.userState, expectedState);
+      const circlesAfterAction = await expectStatus(200, "/v1/me/circles", { method: "GET", token: auth.sessionToken });
+      assert.equal(
+        circlesAfterAction.circles.some((circle) => circle.id === "reflective-builders"),
+        action === "accept",
+        `${action} must ${action === "accept" ? "add" : "not add"} primary-circle membership`
+      );
     }
+
+    const acceptedCircleDetail = await expectStatus(200, "/v1/circles/reflective-builders", { method: "GET", token: auth.sessionToken });
+    assert.equal(acceptedCircleDetail.circle.membersCount, initialPrimaryCircleCount + 1, "accept must add exactly one primary-circle member");
 
     const secondaryPick = await expectStatus(200, "/v1/me/placement/actions", {
       method: "POST",
@@ -224,6 +265,12 @@ async function expectStatus(status, pathname, options) {
     assert.equal(joined.status, "joined");
     const myCommunities = await expectStatus(200, "/v1/me/communities", { method: "GET", token: auth.sessionToken });
     assert.ok(myCommunities.communities.some((community) => community.id === communityId), "joined community must appear in user communities");
+    const communityReport = await expectStatus(201, `/v1/communities/${communityId}/report`, {
+      method: "POST",
+      token: auth.sessionToken,
+      body: { reason: "Smoke-test community report" }
+    });
+    assert.equal(communityReport.status, "reported");
 
     let scheduledParticipantToken = null;
     const scheduledUsers = [];

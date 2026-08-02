@@ -1,38 +1,49 @@
 # Context budget (testing-ledger)
 
-## Per-role retrieval
+Global capsule/coordinator rules: `~/.agents/skills/testing-framework`.
 
-| Role | Commands (max) | Files (max) |
-| --- | --- | --- |
-| Tester | `testing:ledger-run` → `ledger:record-flow` or `testing:ledger-issue` | 0 |
-| Fixer | `testing:ledger-fix-run` → `mark-retest-ready` | 1 (`fix_owner`) |
-| Coordinator | `testing:ledger-session preflight` | 0 (queue JSON only if spawning fixer) |
+## Flow owner (C)
 
-## NEVER preload
+Load until cause established:
 
-- `GOAL.md`, full `PROGRESS.md`, `validation/README.md`, `ledger:open` inventory
-- `ledger:flow` after `testing:ledger-run` (PRE/PASS already on run card)
-- `ledger:brief` every turn — coordinator preflight once/session only
-- `mockups/**` — use `mockup_ref` from run card only
-- All `validation/screens/*.json`
-- Full `@build-ios-app` / `@testing-ledger` skill — use iOS lane card in `agent-coordination.md`
-- `grep` / `explore` for button inventory
+1. `testing:ledger-run` card + retained log/screenshot/AX
+2. Flow route in platform prove script
+3. Ledger `fix_owner` + same-flow implicated sources
+4. Build skill only if build/capture path fails
 
-## On fix only
+Smallest coherent batch that prevents the next known journey fail — no one-file cap.
 
-- Read **one** `fix_owner` path from fix card
-- `npm run smoke:mvp` only if flow `backend[]` changed
+## Batch owner (B)
 
-## Session anti-redo
+Load the deterministic batch plan, one runtime tuple, shared source owners, and only
+the first-failure artifacts accumulated for that band. Keep full prove logs on disk.
+Do not load each flow's full ledger packet up front; open a targeted card only when
+that flow is reached or fails. Retain the batch id and resume cursor across fixes.
 
-- Seed DB once/session (`reset:validation-data` in coordinator preflight or first prove)
-- macOS shell flows: `macos_launch` without per-flow DB reset
-- Do not re-run `ledger:open` after each pass — `testing:ledger-run` picks next
+## Novice (A)
 
-## iOS lane card (5 lines)
+Lean packet + [`novice-discover.md`](novice-discover.md) only. No GOAL/PROGRESS/full ledger/mockups/sibling catalogs.
 
-1. Entry: `npm run testing:ledger-fix-run -- --platform ios` or `testing:ledger-run -- --platform ios`
-2. Build lock: `./script/cross_platform_validation_lock.sh`
-3. Capture: `cross_platform_screen_validate.sh --screen <id> --platform ios`
-4. Record: `ledger:record-flow --method screenshot`
-5. Load `@build-ios-app` only on build/capture failure
+## Sidecar
+
+One question, one evidence surface, bounded files. Returns findings; owner integrates.
+
+## Anti-redo
+
+- Preflight / `ledger:brief`: once per session
+- Seed reset: once per deterministic need, under shared lock
+- Full build: only when binary stale or build under test
+- Batch build/install: once per unchanged source hash and explicit runtime tuple; later iOS proofs may use `LIKEMINDED_REUSE_IOS_INSTALL=1` only after the proof script matches source-fresh built and installed executable hashes
+- Batch discovery: 8–12 source-local flows by default; stop at locality boundary
+- Quality evidence: co-capture in one visit, record functional/visual/AX/trust separately
+- Full-flow proof: after coherent fix batch
+- Failed full prove: one compact first-failure artifact + one discriminator before any replay
+- Runtime tuple: retain UDID/window/profile, app id, source hash, binary identity, fixture/user
+- Dependent steps: stop after failed prerequisite; do not retain cascading timeout noise
+- Structured evidence: read one stable snapshot; torn JSON means lock/writer diagnosis, not product analysis
+- Coordinator after return: hash/stale + lock — not full prove-log reload when stamps match
+- No respawn on env hard block or live lock holder
+
+## Parallelism
+
+One owner/novice per platform (iOS ∥ macOS OK); ≤1 read-only sidecar. Shared resources serialized.
