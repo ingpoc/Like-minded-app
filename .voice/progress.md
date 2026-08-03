@@ -24,13 +24,13 @@ Status: `validation/screens/*.json` (iOS `flows[].validation.ios`).
 
 Order of operations: close the native proof bands first; obtain Apple sign-in and LiveKit runtime proof next; then configure the production services and build the signed TestFlight candidate. Do not treat configuration or a successful build as customer acceptance.
 
-- [ ] Create Neon/Postgres database and set `DATABASE_URL`.
-- [ ] Create Render web service from `render.yaml`.
-- [ ] Set production env vars: `SESSION_SECRET`, `OPENAI_API_KEY`, `OPENAI_REALTIME_MODEL`, `OPENAI_REALTIME_VOICE`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`, `LIVEKIT_URL`, `APPLE_BUNDLE_ID`, `APPLE_CLIENT_ID`, `APPLE_AUTH_BYPASS=0`.
-- [ ] Provision LiveKit server (self-hosted or LiveKit Cloud). Set `LIVEKIT_URL` to the WebSocket endpoint.
+- [x] Create Neon/Postgres database and set `DATABASE_URL`.
+- [x] Create Render web service from `render.yaml`.
+- [x] Set production env vars: `SESSION_SECRET`, `OPENAI_API_KEY`, `OPENAI_REALTIME_MODEL`, `OPENAI_REALTIME_VOICE`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`, `LIVEKIT_URL`, `APPLE_BUNDLE_ID`, `APPLE_CLIENT_ID`, `APPLE_AUTH_BYPASS=0`.
+- [x] Provision LiveKit server (self-hosted or LiveKit Cloud). Set `LIVEKIT_URL` to the WebSocket endpoint.
 - [x] Configure universal Apple Developer bundle id `com.gurusharan.likeminded` for iOS and macOS.
 - [x] Enable Sign in with Apple capability for the primary app id.
 - [ ] Configure App Store Connect/TestFlight metadata and privacy policy.
 - [x] Add `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` to `Info.plist`.
 - [x] Add repo-side account deletion readiness (`DELETE /v1/me/account`, Settings entry, `npm run smoke:mvp` proof).
-- [ ] Build signed TestFlight candidate.
+- [x] Build signed TestFlight candidate.

@@ -12,7 +12,7 @@ a one-line remediation instead of emitting an incompatible-runtime traceback.
 - SwiftUI natives + Node HTTP API; production persistence Neon/Postgres via `DATABASE_URL`; local dev uses `data/` or `LIKEMINDED_DB_DIR`.
 - TestFlight path: authenticated `/v1/*` MVP routes — not legacy mock/profile routes.
 - Universal iOS/macOS bundle `com.gurusharan.likeminded`; Apple team `9UPQL479Z5`; App Store Connect Apple ID `6792839764`; shared `LIKEMINDED_API_BASE_URL`.
-- Exported TestFlight apps pass `npm run verify:release-candidate -- ios|macos <app>`; the platform-specific embedded profile and signed entitlements, exact per-platform OAuth callback, production URL, privacy manifest, and disabled `get-task-allow` (false on iOS, false or absent on macOS) are artifact truth.
+- Exported TestFlight apps pass `npm run verify:release-candidate -- ios|macos <app>`; the platform-specific embedded profile and signed entitlements, exact per-platform OAuth callback, production URL, privacy manifest, linked AppIcon resources, and disabled `get-task-allow` (false on iOS, false or absent on macOS) are artifact truth.
 - Auth: Apple + Google + wallet on both natives (`Sources/Shared/`); sessions via Keychain (`AuthSessionStore` / `MacAuthSessionStore`).
 - LiveKit group meets: `POST /v1/meetings/:id/join` + `Sources/Shared/LiveKitMeetSession.swift` on iOS and macOS.
 - iOS validation routing keeps logical screen IDs aligned with their deep-link launch arguments; route details live in `docs/workflows/validation.md`.

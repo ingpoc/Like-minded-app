@@ -540,7 +540,6 @@
 				CODE_SIGN_ENTITLEMENTS = Entitlements/LikemindedMac.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_ASSET_PATHS = "\"\"";
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				GOOGLE_CLIENT_ID_MAC = "";
@@ -569,7 +568,6 @@
 				CODE_SIGN_ENTITLEMENTS = Entitlements/Likeminded.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_ASSET_PATHS = "\"\"";
 				GENERATE_INFOPLIST_FILE = YES;
 				GOOGLE_CLIENT_ID_IOS = "";
 				GOOGLE_REVERSED_CLIENT_ID_IOS = "";
@@ -603,7 +601,6 @@
 				CODE_SIGN_ENTITLEMENTS = Entitlements/LikemindedMac.Debug.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_ASSET_PATHS = "\"\"";
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				GOOGLE_CLIENT_ID_MAC = "";
@@ -698,7 +695,6 @@
 				CODE_SIGN_ENTITLEMENTS = Entitlements/Likeminded.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_ASSET_PATHS = "\"\"";
 				GENERATE_INFOPLIST_FILE = YES;
 				GOOGLE_CLIENT_ID_IOS = "";
 				GOOGLE_REVERSED_CLIENT_ID_IOS = "";

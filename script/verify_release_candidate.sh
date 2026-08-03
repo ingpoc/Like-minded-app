@@ -70,6 +70,17 @@ require_value "$google_scheme" "com.googleusercontent.apps.${google_client_id%.a
 [[ -n "$(plist_value "$info_plist" NSMicrophoneUsageDescription)" ]] || fail "microphone usage description missing"
 [[ -n "$(plist_value "$info_plist" NSCameraUsageDescription)" ]] || fail "camera usage description missing"
 
+if [[ "$platform" == "ios" ]]; then
+  require_value "$(plist_value "$info_plist" CFBundleIcons:CFBundlePrimaryIcon:CFBundleIconName)" "AppIcon" "iOS app icon name"
+  [[ -f "$app_path/Assets.car" ]] || fail "iOS asset catalog missing"
+  [[ -f "$app_path/AppIcon60x60@2x.png" ]] || fail "120x120 iPhone app icon missing"
+  [[ -f "$app_path/AppIcon76x76@2x~ipad.png" ]] || fail "152x152 iPad app icon missing"
+else
+  require_value "$(plist_value "$info_plist" CFBundleIconName)" "AppIcon" "macOS app icon name"
+  [[ -f "$app_path/Contents/Resources/Assets.car" ]] || fail "macOS asset catalog missing"
+  [[ -f "$app_path/Contents/Resources/AppIcon.icns" ]] || fail "macOS app icon missing"
+fi
+
 if [[ "$platform" == "macos" ]]; then
   app_identifier_key="com.apple.application-identifier"
   get_task_allow_key="com.apple.security.get-task-allow"

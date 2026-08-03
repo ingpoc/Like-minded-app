@@ -56,7 +56,7 @@ export LIKEMINDED_VALIDATION_NAME="Gurusharan Gupta"
 | Syntax | `npm run check` |
 | API contract | `npm run smoke:mvp` |
 | Release static | `npm run verify:release-config` |
-| Exported release artifact | `npm run verify:release-candidate -- ios\|macos /path/to/App.app` (platform-specific Store-profile entitlements and exact Google callback are checked; macOS may omit false `com.apple.security.get-task-allow`) |
+| Exported release artifact | `npm run verify:release-candidate -- ios\|macos /path/to/App.app` (platform-specific Store-profile entitlements, exact Google callback, and linked AppIcon resources are checked; macOS may omit false `com.apple.security.get-task-allow`) |
 | Goal contract | `npm run verify:goal` |
 | macOS captures | Exact testing-ledger card plus bundled `@Computer` screenshot/state evidence |
 | macOS post-parallel batch | `npm run testing:ledger-batch-plan -- --platform macos --limit 10` → sequential bundled `@Computer` proof |

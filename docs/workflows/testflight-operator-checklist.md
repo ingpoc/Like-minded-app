@@ -11,7 +11,7 @@ Subscribe to [Apple Developer Program](https://developer.apple.com/programs/) on
 - [x] Enroll in Apple Developer Program ($99/yr)
 - [x] Register universal App ID `com.gurusharan.likeminded` — Sign in with Apple for iOS and macOS
 - [x] Configure macOS Release App Sandbox, outbound network, camera, audio input, and hardened runtime
-- [ ] Re-sign macOS Release builds in Xcode with healthy Apple account
+- [x] Re-sign macOS Release builds in Xcode with healthy Apple account
 - [x] Create App Store Connect universal app (`6792839764`) for iOS and macOS
 - [ ] Create TestFlight internal group
 - [ ] Upload privacy policy from [`docs/references/privacy-policy-testflight.md`](../references/privacy-policy-testflight.md)

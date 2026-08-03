@@ -74,7 +74,6 @@ targets:
         SUPPORTS_MACCATALYST: NO
         CODE_SIGN_STYLE: Automatic
         CODE_SIGN_ENTITLEMENTS: Entitlements/Likeminded.entitlements
-        DEVELOPMENT_ASSET_PATHS: "\"\""
         LIKEMINDED_API_BASE_URL: ""
         GOOGLE_CLIENT_ID_IOS: ""
         GOOGLE_REVERSED_CLIENT_ID_IOS: ""
@@ -119,7 +118,6 @@ targets:
         CODE_SIGN_STYLE: Automatic
         CODE_SIGN_ENTITLEMENTS: Entitlements/LikemindedMac.entitlements
         ENABLE_HARDENED_RUNTIME: YES
-        DEVELOPMENT_ASSET_PATHS: "\"\""
         LIKEMINDED_API_BASE_URL: ""
         GOOGLE_CLIENT_ID_MAC: ""
         GOOGLE_REVERSED_CLIENT_ID_MAC: ""
