@@ -2,6 +2,52 @@
 
 Global `AGENTS.md` owns instruction control. Commands and control owners only.
 
+## Harness routing
+
+Cursor Auto orchestrates. Classify internally; do not wait for the user to name a harness.
+
+### Decision order (first match wins)
+
+1. **Session boundary** — fresh turn, "what's next", gap → `npm run goal:next`; no LLM sidecar
+2. **Deterministic proof** — ledger/build/verify script exists → run it; no LLM sidecar
+3. **Build lane** — implement/fix/iterate → Cursor main thread
+4. **Merge gate** — signals below → `codex-review` before commit/PR/push; fix P0/P1
+5. **Parallel disjoint read** — large unrelated map while main has local work → `explore` only
+6. **Stale routing audit** — competing owners / goal-vs-dirty → `cost_scan` (read-only)
+
+### Merge-gate (`codex-review`)
+
+Invoke when implementation for this slice is done **and** any of: next action is commit/PR/push; non-trivial diff (3+ files, or auth/API/schema/validation JSON); ship/merge intent.
+
+Skip when still editing/failing; trivial typo/comment unless security/auth; already reviewed this diff since last source edit.
+
+### Trivial-fix (no subagent)
+
+Main thread when **all**: localized UI bug with screenshot/repro; at most 1-2 files and about 30 lines; compile check enough (no ledger stamp). Interrupt a stalled worker (over 5 min) and finish on main.
+
+### Repo-specific lanes
+
+| Lane | Harness |
+| --- | --- |
+| Ledger sole-owner drain | `@testing-ledger` Mode **B** (~8–12); main verifies hash/stale |
+| Ledger flow owner (one hot flow) | `@testing-ledger` Mode **C** |
+| macOS multi-screen closeout | Parallel implement; sequential bundled `@Computer` proof |
+
+### Native validation parallelism
+
+Two waves: parallel **code** per ledger JSON; **sequential proof** (seed → build → capture). Use `cross_platform_validation_lock.sh` for kills/launches/captures.
+
+| Phase | Parallel? | Tool |
+| --- | --- | --- |
+| UI per screen | Yes — disjoint ledger JSON + platform slices | Subagents or main |
+| `xcodebuild` (either) | **No** | `cross_platform_validation_lock.sh` |
+| iOS screenshot / `simctl` | **No** | `cross_platform_screen_validate.sh` |
+| macOS screenshot / Computer | **No** — one `LikemindedMac` | testing-ledger + `@Computer` |
+| `reset:validation-data` | **No** — sole `:8787` | lock `seed` |
+| API after `server.js` | No | `npm run smoke:mvp` |
+
+Scripts own proof. Subagents own bounded sidecars. Main thread owns integration.
+
 ## Lazy retrieval
 
 1. `npm run goal:next` — **work bucket first** (`session/work-bucket.json`), then `first_command`; it never preloads the optional decision graph
@@ -12,9 +58,9 @@ Python 3.12+ runtime deterministically (`uv` / `PROJECT_CONTEXT_PYTHON` / instal
 3.13 or 3.12 / Codex bundled Python) and fails concisely when none is available.
 2. **One screen:** `npm run ledger:screen -- --platform ios|macos --screen <id> --section ui|controls|all`
 3. **Gap audit only:** `npm run ledger:open` / `ledger:stale` — not for a single known screen
-4. Touch open ledger JSON + active `PROGRESS.md` track section only
+4. Touch open ledger JSON + active `.session/docs/PROGRESS.md` track section only
 
-Do not load `GOAL.md`, `DESIGN.md`, full `PROGRESS.md`, `validation/README.md` status (none), mockup dirs, or source trees for status questions.
+Do not load `.session/docs/GOAL.md`, `.session/docs/DESIGN.md`, full `.session/docs/PROGRESS.md`, `validation/README.md` status (none), mockup dirs, or source trees for status questions.
 
 ## Control Owner
 
@@ -23,14 +69,14 @@ Do not load `GOAL.md`, `DESIGN.md`, full `PROGRESS.md`, `validation/README.md` s
 | Logical screen + flow status (both platforms) | `validation/screens/*.json` |
 | Flow pass/fail per platform | `flows[].validation.{ios,macos}` |
 | Atomic UI controls (optional regression) | `controls.{ios,macos}[]` |
-| Roadmap checkbox | `PROGRESS.md` active track |
+| Roadmap checkbox | `.session/docs/PROGRESS.md` active track |
 | Link index (no status) | `node validation/_generate.js` → `validation/README.md` |
 | Legacy archive (read-only) | `validation/_legacy/{ios,macos}/` |
 | macOS proof routing | `docs/workflows/validation.md` § macOS proof |
 
 **Actionable** = open `flows[]` with `fail`, `pending`, `stale-pass`, or infra `blocked` on both platforms where applicable.
 
-`npm run verify:ledger-progress` — open flows need unchecked `PROGRESS.md` owners. Also fails on: sibling status tables, phase graveyard in PROGRESS, stale `route_contract` vs ledger, PROGRESS `stale_pass` checkboxes out of sync with JSON.
+`npm run verify:ledger-progress` — open flows need unchecked `.session/docs/PROGRESS.md` owners. Also fails on: sibling status tables, phase graveyard in PROGRESS, stale `route_contract` vs ledger, PROGRESS `stale_pass` checkboxes out of sync with JSON.
 
 `npm run verify:testing-ledger` is the complete testing-owner integrity boundary:
 active route/prose validation, ledger tests, migration integrity, and progress
@@ -58,6 +104,7 @@ export LIKEMINDED_VALIDATION_NAME="Gurusharan Gupta"
 | Release static | `npm run verify:release-config` |
 | Exported release artifact | `npm run verify:release-candidate -- ios\|macos /path/to/App.app` (platform-specific Store-profile entitlements, exact Google callback, and linked AppIcon resources are checked; macOS may omit false `com.apple.security.get-task-allow`) |
 | Goal contract | `npm run verify:goal` |
+| Product checklist | `npm run checklist:generate` then `npm run checklist:check` |
 | macOS captures | Exact testing-ledger card plus bundled `@Computer` screenshot/state evidence |
 | macOS post-parallel batch | `npm run testing:ledger-batch-plan -- --platform macos --limit 10` → sequential bundled `@Computer` proof |
 | macOS / iOS stale reproof | Platform batch plan → exact testing-ledger proof routes |
@@ -109,7 +156,7 @@ Contract: `validation/production-contract.json` — defines in-scope screens, ou
 
 ## Agent validation workflow (hardened)
 
-Phases follow workflow-hardening: **make it work → validate → simplify → optimize → automate**. Status lives in JSON only; agents must not re-discover controls from source when ledger already answers the question.
+Phases follow elon-algorithm: **make it work → validate → simplify → optimize → automate**. Status lives in JSON only; agents must not re-discover controls from source when ledger already answers the question.
 
 ### Session start (do not redo pass work)
 
@@ -327,7 +374,7 @@ When a visible no-op is deliberately removed, remove its control from the screen
 
 ## Session alignment
 
-Project hooks (`.cursor/hooks.json`): `sessionStart` injects compact `goal:next` output. Testing-owner gate: `npm run verify:testing-ledger`; its embedded progress check includes context-routing checks—no status tables in `validation/README.md`, no Phase 0–8 in `PROGRESS.md`.
+Project hooks (`.cursor/hooks.json`): `sessionStart` injects compact `goal:next` output. Testing-owner gate: `npm run verify:testing-ledger`; its embedded progress check includes context-routing checks—no status tables in `validation/README.md`, no Phase 0–8 in `.session/docs/PROGRESS.md`.
 
 ## macOS proof (pick one)
 
