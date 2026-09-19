@@ -12,18 +12,27 @@
       "mockup_missing": true,
       "entry_points": [],
       "backend_dependencies": [],
-      "ui_validation": null,
-      "visual_parity": null,
-      "recent_screenshot_ref": null,
-      "notes": "No dedicated iOS screen — feature may live under another logical screen"
+      "ui_validation": {
+        "result": "not-applicable",
+        "notes": "Soulmate Discover is a macOS-only information architecture surface. iOS owns the same customer outcomes in soulmate-overview, soulmate-match, soulmate-selection, and Settings discovery preferences."
+      },
+      "visual_parity": {
+        "result": "not-applicable",
+        "notes": "No dedicated iOS Discover screen exists by design; duplicating the iOS overview and Settings surfaces would violate one-owner navigation."
+      },
+      "recent_screenshot_ref": "output/validation/ios-screens/soulmate-discover.png",
+      "notes": "macOS-only screen family; iOS outcome ownership is declared in soulmate-overview and Settings."
     },
     "macos": {
       "ledger_legacy_id": "16-soulmate-discover",
       "implemented": true,
       "source_files": [
-        "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (soulmateDiscover)"
+        "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift",
+        "apps/ios-macos/Sources/LikemindedMac/MacDesignSystem.swift",
+        "apps/ios-macos/Sources/LikemindedMac/MacRootView.swift",
+        "apps/ios-macos/Sources/LikemindedMac/MacPrototypeData.swift"
       ],
-      "source_hash": "864acf00e87f3c2c",
+      "source_hash": "6372d09665992aee",
       "mockup_ref": "mockups/macos/09-12-profile-soulmate-discover-detail.png",
       "mockup_missing": false,
       "entry_points": [
@@ -39,22 +48,21 @@
         "reference_mockup_ref": "mockups/macos/09-12-profile-soulmate-discover-detail.png",
         "recent_screenshot_ref": "output/validation/macos-screens/soulmateDiscover.png",
         "design_ref": "DESIGN.md",
-        "last_compared_at": "2026-07-05",
+        "last_compared_at": "2026-08-01",
         "validated": [
-          "latest targeted screenshot exists and was compared with reference mockup",
-          "DESIGN.md design language checked: warm canvas, editorial hierarchy, card system, green accents, bottom glass navigation",
-          "visible text and components reviewed for clear purpose",
-          "control behavior tracked separately in controls[]"
+          "Immutable packet ce308fd1470238ba9c9cbdd8e86cfb3168d570ab0a4868b63bc5bf5eed3a272e verified against source hash b7f3b7d707e30889",
+          "Independent blind UI and UX reviews both passed with no P0-P2 findings",
+          "Keep for later and Show introduction recovery verified on the current canonical binary"
         ],
         "pending_validation": [],
         "requires_implementation": [],
         "requires_fixing": [],
         "intentional_differences": [],
-        "notes": "2026-07-05 targeted rebuild at 1120x901: Discover filters, three match cards, New matches, and bottom navigation align with mockup 11; local backend first match remains wired for navigation."
+        "notes": "Fresh source-fingerprinted macOS Soulmate capture accepted by independent UI and UX reviewers on 2026-08-01."
       },
       "visual_parity": {
         "result": "pass",
-        "notes": "2026-07-05 capture output/validation/macos-screens/soulmateDiscover.png vs mockups/macos/09-12-profile-soulmate-discover-detail.png and DESIGN.md: pass. Intentional: one seeded mutual match leaves open canvas; no fake distance/filter chrome."
+        "notes": "Current-source macOS Soulmate capture accepted in immutable packet ce308fd1470238ba9c9cbdd8e86cfb3168d570ab0a4868b63bc5bf5eed3a272e; UI Pass and UX Pass on 2026-08-01."
       },
       "recent_screenshot_ref": "output/validation/macos-screens/soulmateDiscover.png",
       "notes": ""
@@ -62,173 +70,26 @@
   },
   "flows": [
     {
-      "id": "distance-slider",
-      "name": "Age range slider",
+      "id": "soulmate-real-roster",
+      "name": "Open a real mutual match",
       "origin": "soulmate-discover",
       "steps": [],
-      "destinations": [],
+      "destinations": [
+        "soulmate-match"
+      ],
       "spans": [],
       "backend": [],
       "control_ids": {
         "ios": [],
         "macos": [
-          "distance-slider"
-        ]
-      },
-      "validation": {
-        "ios": {
-          "result": "not-applicable",
-          "evidence": "Platform screen not implemented",
-          "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
-        },
-        "macos": {
-          "result": "pass",
-          "evidence": "distance-slider: 2026-07-05 Computer Use + mockup compare at 1120x901: How matches work panel remains honest, tab order matches iOS/mocku",
-          "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "f2073b1305869391",
-          "last_test_method": "Computer Use"
-        }
-      },
-      "proof": {
-        "tier": "cua-click",
-        "preconditions": [
-          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
-          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
-        ],
-        "success_signals": [
-          "User outcome achieved: Age range slider"
-        ],
-        "mockup_ref": null,
-        "mockup_note": "No mockup — functional proof only",
-        "commands": {
-          "ios": "./script/cross_platform_screen_validate.sh --screen soulmate-discover --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh soulmateDiscover → macos_cua_screen.sh soulmateDiscover"
-        },
-        "record_pass": "npm run ledger:record-flow -- --platform ios --screen soulmate-discover --flow distance-slider --result pass --method <tier-method> --evidence \"...\""
-      }
-    },
-    {
-      "id": "filter-pills",
-      "name": "Interest and vibe filter pills",
-      "origin": "soulmate-discover",
-      "steps": [],
-      "destinations": [],
-      "spans": [],
-      "backend": [],
-      "control_ids": {
-        "ios": [],
-        "macos": [
-          "filter-pills"
-        ]
-      },
-      "validation": {
-        "ios": {
-          "result": "not-applicable",
-          "evidence": "Platform screen not implemented",
-          "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
-        },
-        "macos": {
-          "result": "pass",
-          "evidence": "filter-pills: 2026-07-05 Computer Use + mockup compare at 1120x901: How matches work panel remains honest, tab order matches iOS/mocku",
-          "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "f2073b1305869391",
-          "last_test_method": "Computer Use"
-        }
-      },
-      "proof": {
-        "tier": "cua-click",
-        "preconditions": [
-          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
-          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
-        ],
-        "success_signals": [
-          "User outcome achieved: Interest and vibe filter pills"
-        ],
-        "mockup_ref": null,
-        "mockup_note": "No mockup — functional proof only",
-        "commands": {
-          "ios": "./script/cross_platform_screen_validate.sh --screen soulmate-discover --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh soulmateDiscover → macos_cua_screen.sh soulmateDiscover"
-        },
-        "record_pass": "npm run ledger:record-flow -- --platform ios --screen soulmate-discover --flow filter-pills --result pass --method <tier-method> --evidence \"...\""
-      }
-    },
-    {
-      "id": "new-matches",
-      "name": "New matches",
-      "origin": "soulmate-discover",
-      "steps": [],
-      "destinations": [],
-      "spans": [],
-      "backend": [],
-      "control_ids": {
-        "ios": [],
-        "macos": [
-          "new-matches"
-        ]
-      },
-      "validation": {
-        "ios": {
-          "result": "not-applicable",
-          "evidence": "Platform screen not implemented",
-          "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
-        },
-        "macos": {
-          "result": "pass",
-          "evidence": "new-matches: Computer Use 2026-07-05 clicked New matches; screen stayed stable and controls remained accessible. (hash-migrated: scre",
-          "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "f2073b1305869391",
-          "last_test_method": "Computer Use"
-        }
-      },
-      "proof": {
-        "tier": "cua-click",
-        "preconditions": [
-          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
-          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
-        ],
-        "success_signals": [
-          "User outcome achieved: New matches"
-        ],
-        "mockup_ref": null,
-        "mockup_note": "No mockup — functional proof only",
-        "commands": {
-          "ios": "./script/cross_platform_screen_validate.sh --screen soulmate-discover --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh soulmateDiscover → macos_cua_screen.sh soulmateDiscover"
-        },
-        "record_pass": "npm run ledger:record-flow -- --platform ios --screen soulmate-discover --flow new-matches --result pass --method <tier-method> --evidence \"...\""
-      }
-    },
-    {
-      "id": "match-card",
-      "name": "Match cards",
-      "origin": "soulmate-discover",
-      "steps": [],
-      "destinations": [],
-      "spans": [],
-      "backend": [],
-      "control_ids": {
-        "ios": [],
-        "macos": [
+          "mutual-match-roster",
           "match-card"
         ]
       },
       "validation": {
         "ios": {
           "result": "not-applicable",
-          "evidence": "Platform screen not implemented",
+          "evidence": "No iOS controls for this macOS redesign flow",
           "blocker": "",
           "last_tested_at": "",
           "tested_source_hash": "",
@@ -236,34 +97,86 @@
         },
         "macos": {
           "result": "pass",
-          "evidence": "match-card: Computer Use 2026-07-05 clicked Open Arjun; navigated to Soulmate Detail. (hash-migrated: screen-slice source hash)",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/09-12-profile-soulmate-discover-detail.png: This week’s introduction showed backend mutual match Priya Shah only; Open introduction reached the exact Priya Shah mutual-match detail with Reflective Builders Aug 9 context, private mutual-choice explanation, shared Design interest, and Message Priya Shah.",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "f2073b1305869391",
-          "last_test_method": "Computer Use"
+          "screenshot_ref": "output/validation/macos-screens/soulmateRealRosterDetail-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "6372d09665992aee",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
         ],
         "success_signals": [
-          "User outcome achieved: Match cards"
+          "This week’s introduction shows a backend mutual match only",
+          "Open introduction reaches the exact selected mutual-match detail"
         ],
         "mockup_ref": null,
-        "mockup_note": "No mockup — functional proof only",
+        "mockup_note": "Functional proof of the approved truthful macOS contract",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen soulmate-discover --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh soulmateDiscover → macos_cua_screen.sh soulmateDiscover"
+          "macos": "@Computer: npm run dev:macos:validation -- soulmateDiscover; target the canonical app by full path; prove soulmate-discover/<flow>"
         },
-        "record_pass": "npm run ledger:record-flow -- --platform ios --screen soulmate-discover --flow match-card --result pass --method <tier-method> --evidence \"...\""
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen soulmate-discover --flow soulmate-real-roster --result pass --method <tier-method> --evidence \"...\""
       }
     },
     {
-      "id": "discover-filter-toggles",
-      "name": "Discover sidebar filter toggles",
+      "id": "manage-soulmate-settings",
+      "name": "Manage Soulmate settings",
+      "origin": "soulmate-discover",
+      "steps": [],
+      "destinations": [
+        "settings"
+      ],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [],
+        "macos": []
+      },
+      "validation": {
+        "ios": {
+          "result": "not-applicable",
+          "evidence": "No iOS controls for this macOS redesign flow",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        },
+        "macos": {
+          "result": "not-applicable",
+          "evidence": "Retired 2026-08-01: Settings is the sole owner of Soulmate management; Discover remains person-led.",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        }
+      },
+      "proof": {
+        "tier": "computer-use",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Manage Soulmate settings opens Soulmate settings"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Functional proof of the approved truthful macOS contract",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen soulmate-discover --platform ios",
+          "macos": "@Computer: npm run dev:macos:validation -- soulmateDiscover; target the canonical app by full path; prove soulmate-discover/<flow>"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen soulmate-discover --flow manage-soulmate-settings --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "soulmate-real-states",
+      "name": "Truthful no-match and pending-selection states",
       "origin": "soulmate-discover",
       "steps": [],
       "destinations": [],
@@ -272,16 +185,14 @@
       "control_ids": {
         "ios": [],
         "macos": [
-          "discover-unmet",
-          "discover-active-week",
-          "discover-add-interest"
+          "no-mutual-matches",
+          "pending-selection"
         ]
       },
-      "gap_audit": "2026-07-06",
       "validation": {
         "ios": {
           "result": "not-applicable",
-          "evidence": "No iOS controls for this flow",
+          "evidence": "No iOS controls for this macOS redesign flow",
           "blocker": "",
           "last_tested_at": "",
           "tested_source_hash": "",
@@ -289,30 +200,87 @@
         },
         "macos": {
           "result": "pass",
-          "evidence": "CUA validation-gurusharan: unmet-only hides Meera; active-week hides Rohan; unmet-off restores Meera",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof using seeded validation-aditya, compared with mockups/macos/09-12-profile-soulmate-discover-detail.png: backend no-match state rendered exact approved copy ‘No mutual matches yet. After a meetup, a connection appears here only when you both privately choose each other.’ together with exact pending copy ‘A post-meet choice is waiting. Selection is not available in the Mac app yet; nothing is shared unless both people choose each other.’",
           "blocker": "",
-          "screenshot_ref": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "864acf00e87f3c2c",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/soulmateNoMatchPending-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "6372d09665992aee",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
         ],
         "success_signals": [
-          "User outcome achieved: Discover sidebar filter toggles"
+          "Exact approved no-match and pending-selection copy is rendered from backend state"
         ],
         "mockup_ref": null,
-        "mockup_note": "No mockup — functional proof only",
+        "mockup_note": "Functional proof of the approved truthful macOS contract",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen soulmate-discover --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh soulmateDiscover → macos_cua_screen.sh soulmateDiscover"
+          "macos": "@Computer: npm run dev:macos:validation -- soulmateDiscover; target the canonical app by full path; prove soulmate-discover/<flow>"
         },
-        "record_pass": "npm run ledger:record-flow -- --platform ios --screen soulmate-discover --flow discover-filter-toggles --result pass --method <tier-method> --evidence \"...\""
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen soulmate-discover --flow soulmate-real-states --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "defer-introduction",
+      "name": "Defer and restore this week’s introduction",
+      "origin": "soulmate-discover",
+      "steps": [
+        "Select Keep for later and verify the introduction becomes Saved for later while the person remains named",
+        "Select Show introduction and verify the same weekly introduction returns"
+      ],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [],
+        "macos": [
+          "soulmate-defer-introduction"
+        ]
+      },
+      "gap_audit": "2026-08-01",
+      "validation": {
+        "ios": {
+          "result": "not-applicable",
+          "evidence": "",
+          "blocker": "",
+          "screenshot_ref": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/09-12-profile-soulmate-discover-detail.png: Keep for later replaced the weekly card with Saved for later while naming Priya Shah; Show introduction restored the same Priya Shah Reflective Builders Aug 9 mutual introduction.",
+          "blocker": "",
+          "screenshot_ref": "output/validation/macos-screens/soulmateDeferRestore-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "6372d09665992aee",
+          "last_test_method": "Computer-use"
+        }
+      },
+      "proof": {
+        "tier": "computer-use",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Step satisfied: Select Keep for later and verify the introduction becomes Saved for later while the person remains named",
+          "Step satisfied: Select Show introduction and verify the same weekly introduction returns"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.macos.mockup_ref: mockups/macos/09-12-profile-soulmate-discover-detail.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen soulmate-discover --platform ios",
+          "macos": "@Computer: npm run dev:macos:validation -- soulmateDiscover; target the canonical app by full path; prove soulmate-discover/<flow>"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform macos --screen soulmate-discover --flow defer-introduction --result pass --method <tier-method> --evidence \"...\""
       }
     }
   ],
@@ -320,95 +288,69 @@
     "ios": [],
     "macos": [
       {
-        "id": "distance-slider",
-        "type": "slider",
-        "label": "Age range slider",
-        "expected": "Displays age range filter matching mockup; visual-only local preference control",
+        "id": "mutual-match-roster",
+        "type": "display",
+        "label": "This week’s introduction",
+        "expected": "Shows only a real backend mutual match",
         "result": "pass",
-        "evidence": "2026-07-05 Computer Use + mockup compare at 1120x901: How matches work panel remains honest, tab order matches iOS/mockup, match card is larger and clearer without fake filters or fake extra matches. (distance-slider) (hash-migrated: screen-slice source hash)",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/09-12-profile-soulmate-discover-detail.png: This week’s introduction showed backend mutual match Priya Shah only; Open introduction reached the exact Priya Shah mutual-match detail with Reflective Builders Aug 9 context, private mutual-choice explanation, shared Design interest, and Message Priya Shah.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "f2073b1305869391",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "Computer Use"
-      },
-      {
-        "id": "filter-pills",
-        "type": "button/display",
-        "label": "Interest and vibe filter pills",
-        "expected": "Shows Jazz/Books/Design and vibe pills with clear filter purpose",
-        "result": "pass",
-        "evidence": "2026-07-05 Computer Use + mockup compare at 1120x901: How matches work panel remains honest, tab order matches iOS/mockup, match card is larger and clearer without fake filters or fake extra matches. (filter-pills) (hash-migrated: screen-slice source hash)",
-        "blocker": "",
-        "stub": false,
-        "tested_source_hash": "f2073b1305869391",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "Computer Use"
-      },
-      {
-        "id": "new-matches",
-        "type": "button",
-        "label": "New matches",
-        "expected": "Calls fetchSoulmateStatus without leaving Discover",
-        "result": "pass",
-        "evidence": "Computer Use 2026-07-05 clicked New matches; screen stayed stable and controls remained accessible. (hash-migrated: screen-slice source hash)",
-        "blocker": "",
-        "stub": false,
-        "tested_source_hash": "f2073b1305869391",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "Computer Use"
+        "tested_source_hash": "6372d09665992aee",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "match-card",
         "type": "button",
-        "label": "Match cards",
-        "expected": "Three mockup-matching cards; opens soulmateDetail using live local match route",
+        "label": "Open introduction",
+        "expected": "Opens the exact selected mutual-match detail with private-choice context",
         "result": "pass",
-        "evidence": "Computer Use 2026-07-05 clicked Open Arjun; navigated to Soulmate Detail. (hash-migrated: screen-slice source hash)",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/09-12-profile-soulmate-discover-detail.png: This week’s introduction showed backend mutual match Priya Shah only; Open introduction reached the exact Priya Shah mutual-match detail with Reflective Builders Aug 9 context, private mutual-choice explanation, shared Design interest, and Message Priya Shah.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "f2073b1305869391",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "Computer Use"
+        "tested_source_hash": "6372d09665992aee",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       },
       {
-        "id": "discover-unmet",
-        "type": "button",
-        "label": "People I haven't met yet",
-        "expected": "Filters discover roster",
+        "id": "no-mutual-matches",
+        "type": "display",
+        "label": "No mutual matches state",
+        "expected": "Displays: No mutual matches yet. After a meetup, a connection appears here only when you both privately choose each other.",
         "result": "pass",
-        "evidence": "CUA validation-gurusharan: unmet-only hides Meera; active-week hides Rohan; unmet-off restores Meera",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof using seeded validation-aditya, compared with mockups/macos/09-12-profile-soulmate-discover-detail.png: backend no-match state rendered exact approved copy ‘No mutual matches yet. After a meetup, a connection appears here only when you both privately choose each other.’ together with exact pending copy ‘A post-meet choice is waiting. Selection is not available in the Mac app yet; nothing is shared unless both people choose each other.’",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "864acf00e87f3c2c",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "6372d09665992aee",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       },
       {
-        "id": "discover-active-week",
-        "type": "button",
-        "label": "Active this week",
-        "expected": "Filters by activity",
+        "id": "pending-selection",
+        "type": "display",
+        "label": "Pending selection state",
+        "expected": "Displays: A post-meet choice is waiting. Selection is not available in the Mac app yet; nothing is shared unless both people choose each other.",
         "result": "pass",
-        "evidence": "CUA validation-gurusharan: unmet-only hides Meera; active-week hides Rohan; unmet-off restores Meera",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof using seeded validation-aditya, compared with mockups/macos/09-12-profile-soulmate-discover-detail.png: backend no-match state rendered exact approved copy ‘No mutual matches yet. After a meetup, a connection appears here only when you both privately choose each other.’ together with exact pending copy ‘A post-meet choice is waiting. Selection is not available in the Mac app yet; nothing is shared unless both people choose each other.’",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "864acf00e87f3c2c",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "6372d09665992aee",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       },
       {
-        "id": "discover-add-interest",
+        "id": "soulmate-defer-introduction",
         "type": "button",
-        "label": "Add interest (+)",
-        "expected": "Adds interest filter",
+        "label": "Keep for later",
+        "expected": "Shows Saved for later, keeps the person named and available, and restores the same introduction",
         "result": "pass",
-        "evidence": "CUA validation-gurusharan: unmet-only hides Meera; active-week hides Rohan; unmet-off restores Meera",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/09-12-profile-soulmate-discover-detail.png: Keep for later replaced the weekly card with Saved for later while naming Priya Shah; Show introduction restored the same Priya Shah Reflective Builders Aug 9 mutual introduction.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "864acf00e87f3c2c",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-02",
+        "tested_source_hash": "6372d09665992aee",
+        "last_test_method": "Computer-use"
       }
     ]
   }

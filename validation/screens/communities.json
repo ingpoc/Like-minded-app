@@ -9,7 +9,7 @@
       "source_files": [
         "apps/ios-macos/Sources/LikemindedApp/Views/CommunitiesPrototypeView.swift (CommunitiesPrototypeView)"
       ],
-      "source_hash": "4635d27247b35388",
+      "source_hash": "2e482345455012c8",
       "mockup_ref": "mockups/ios/05-08-circles-meet-communities.png",
       "mockup_missing": false,
       "entry_points": [
@@ -56,7 +56,7 @@
           "latest screenshot exists and was compared with reference mockup plate 06",
           "DESIGN.md design language checked: warm canvas, calm editorial hierarchy, card system, green accents, bottom glass navigation",
           "search bar, All/Trending/Nearby/New filter pills, create tile with green gradient hero, six community cards in mockup order with Join/Joined badges on cover art",
-          "control behavior tracked separately in controls[]; CUA-click stamped search, filter-pills, create-card, community-card"
+          "control behavior tracked separately in controls[]; Computer-use stamped search, filter-pills, create-card, community-card"
         ],
         "pending_validation": [],
         "requires_implementation": [],
@@ -66,7 +66,7 @@
           "Browse plate maps API community ids to mockup marketing names (e.g. design-craft → Design Circle) while navigation uses real ids",
           "Responsive grid column count vs mockup carousel arrow (no horizontal pager on Mac browse)"
         ],
-        "notes": "2026-07-05 plate-06 parity rebuild. 2026-07-05 evening: community card hero flush fix — MacPalette.surface only on text footer (not full card) + DoodleCover top-aligned fill; recapture via npm run macos:validation-batch when convenient."
+        "notes": "2026-07-05 plate-06 parity rebuild. 2026-07-05 evening: community card hero flush fix — MacPalette.surface only on text footer (not full card) + DoodleCover top-aligned fill; recapture during the next exact bundled @Computer ledger visit."
       },
       "visual_parity": {
         "result": "pass",
@@ -96,23 +96,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "search: capture-compare 2026-07-05",
+          "evidence": "search: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "4635d27247b35388",
-          "last_test_method": "capture-compare"
+          "screenshot_ref": "output/validation/ios-screens/communities.png",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "2e482345455012c8",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "search: CUA-click validation-priya 2026-07-05 reproof: search, filter-pills, create-card, community-card after plate-06 parity r",
+          "evidence": "search: Computer-use 2026-07-19",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-19",
           "tested_source_hash": "7837754558877f5f",
-          "last_test_method": "CUA-click"
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -124,7 +126,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/05-08-circles-meet-communities.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen communities --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communitiesBrowse → macos_cua_screen.sh communitiesBrowse"
+          "macos": "@Computer: npm run dev:macos:validation -- communitiesBrowse; target the canonical app by full path; prove communities/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen communities --flow search --result pass --method <tier-method> --evidence \"...\""
       }
@@ -148,23 +150,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "filter-pills: capture-compare 2026-07-05",
+          "evidence": "filter-pills: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "4635d27247b35388",
-          "last_test_method": "capture-compare"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "2e482345455012c8",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "filter-pills: CUA-click validation-priya 2026-07-05 reproof: search, filter-pills, create-card, community-card after plate-06 parity r",
+          "evidence": "filter-pills: Computer-use 2026-07-19",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-19",
           "tested_source_hash": "7837754558877f5f",
-          "last_test_method": "CUA-click"
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -176,7 +180,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/05-08-circles-meet-communities.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen communities --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communitiesBrowse → macos_cua_screen.sh communitiesBrowse"
+          "macos": "@Computer: npm run dev:macos:validation -- communitiesBrowse; target the canonical app by full path; prove communities/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen communities --flow filter-pills --result pass --method <tier-method> --evidence \"...\""
       }
@@ -200,23 +204,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "create-card: capture-compare 2026-07-05",
+          "evidence": "create-card: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "4635d27247b35388",
-          "last_test_method": "capture-compare"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "2e482345455012c8",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "create-card: CUA-click validation-priya 2026-07-05 reproof: search, filter-pills, create-card, community-card after plate-06 parity r",
+          "evidence": "create-card: Computer-use 2026-07-19",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-19",
           "tested_source_hash": "7837754558877f5f",
-          "last_test_method": "CUA-click"
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -228,7 +234,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/05-08-circles-meet-communities.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen communities --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communitiesBrowse → macos_cua_screen.sh communitiesBrowse"
+          "macos": "@Computer: npm run dev:macos:validation -- communitiesBrowse; target the canonical app by full path; prove communities/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen communities --flow create-card --result pass --method <tier-method> --evidence \"...\""
       }
@@ -250,11 +256,12 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "joined-card: capture-compare 2026-07-05",
+          "evidence": "joined-card: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "4635d27247b35388",
-          "last_test_method": "capture-compare"
+          "screenshot_ref": "output/validation/ios-screens/communities.png",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "2e482345455012c8",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "not-applicable",
@@ -266,7 +273,7 @@
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -278,7 +285,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/05-08-circles-meet-communities.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen communities --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communitiesBrowse → macos_cua_screen.sh communitiesBrowse"
+          "macos": "@Computer: npm run dev:macos:validation -- communitiesBrowse; target the canonical app by full path; prove communities/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen communities --flow joined-card --result pass --method <tier-method> --evidence \"...\""
       }
@@ -300,11 +307,12 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "browse-card: capture-compare 2026-07-05",
+          "evidence": "browse-card: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "4635d27247b35388",
-          "last_test_method": "capture-compare"
+          "screenshot_ref": "output/validation/ios-screens/communities.png",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "2e482345455012c8",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "not-applicable",
@@ -316,7 +324,7 @@
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -328,7 +336,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/05-08-circles-meet-communities.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen communities --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communitiesBrowse → macos_cua_screen.sh communitiesBrowse"
+          "macos": "@Computer: npm run dev:macos:validation -- communitiesBrowse; target the canonical app by full path; prove communities/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen communities --flow browse-card --result pass --method <tier-method> --evidence \"...\""
       }
@@ -358,15 +366,16 @@
         },
         "macos": {
           "result": "pass",
-          "evidence": "community-card: CUA-click validation-priya 2026-07-05 reproof: search, filter-pills, create-card, community-card after plate-06 parity r",
+          "evidence": "community-card: Computer-use 2026-07-19",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-19",
           "tested_source_hash": "7837754558877f5f",
-          "last_test_method": "CUA-click"
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -378,7 +387,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/05-08-circles-meet-communities.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen communities --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communitiesBrowse → macos_cua_screen.sh communitiesBrowse"
+          "macos": "@Computer: npm run dev:macos:validation -- communitiesBrowse; target the canonical app by full path; prove communities/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen communities --flow community-card --result pass --method <tier-method> --evidence \"...\""
       }
@@ -408,16 +417,17 @@
           "last_test_method": ""
         },
         "macos": {
-          "result": "pending",
-          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "result": "pass",
+          "evidence": "browse-join-leave: Computer-use 2026-07-19",
           "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
+          "screenshot_ref": "output/validation/macos-screens/communitiesBrowse.png",
+          "last_tested_at": "2026-07-19",
+          "tested_source_hash": "7837754558877f5f",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -429,7 +439,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/05-08-circles-meet-communities.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen communities --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communitiesBrowse → macos_cua_screen.sh communitiesBrowse"
+          "macos": "@Computer: npm run dev:macos:validation -- communitiesBrowse; target the canonical app by full path; prove communities/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen communities --flow community-join-browse-card --result pass --method <tier-method> --evidence \"...\""
       }
@@ -443,12 +453,12 @@
         "label": "Search communities",
         "expected": "Filters catalog by name/summary/themes",
         "result": "pass",
-        "evidence": "2026-07-05 capture validation-gurusharan: search bar + plate-name filter parity with macOS communitiesBrowse.",
+        "evidence": "Computer-use validation-gurusharan communities/search 2026-08-01: search",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "4635d27247b35388",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "capture-compare"
+        "tested_source_hash": "2e482345455012c8",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "filter-pills",
@@ -456,12 +466,12 @@
         "label": "All/Trending/Nearby/New pills",
         "expected": "Filters browse catalog like macOS communitiesBrowse",
         "result": "pass",
-        "evidence": "2026-07-05 capture: All/Trending/Nearby/New pills match macOS filter chips and logic.",
+        "evidence": "Computer-use validation-gurusharan communities/filter-pills 2026-08-01: filter-pills",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "4635d27247b35388",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "capture-compare"
+        "tested_source_hash": "2e482345455012c8",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "create-card",
@@ -469,12 +479,12 @@
         "label": "Create a community card",
         "expected": "Opens CreateCommunityView sheet",
         "result": "pass",
-        "evidence": "2026-07-05 capture: create-community row visible in browse section above plate-ordered grid.",
+        "evidence": "Computer-use validation-gurusharan communities/create-card 2026-08-01: create-card",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "4635d27247b35388",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "capture-compare"
+        "tested_source_hash": "2e482345455012c8",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "joined-card",
@@ -482,12 +492,12 @@
         "label": "Your communities card",
         "expected": "Pushes CommunityDetailView",
         "result": "pass",
-        "evidence": "2026-07-05 capture validation-gurusharan: Your communities shows plate names (AI Builders, Open Hearts, Design Circle) with Joined badges.",
+        "evidence": "Computer-use validation-gurusharan communities/joined-card 2026-08-01: joined-card",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "4635d27247b35388",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "capture-compare"
+        "tested_source_hash": "2e482345455012c8",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "browse-card",
@@ -495,12 +505,12 @@
         "label": "Browse community card",
         "expected": "Pushes CommunityDetailView",
         "result": "pass",
-        "evidence": "2026-07-05 capture: browse grid six plate communities (AI Builders, Design Circle, …) with Join/Joined badges matching macOS order.",
+        "evidence": "Computer-use validation-gurusharan communities/browse-card 2026-08-01: browse-card",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "4635d27247b35388",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "capture-compare"
+        "tested_source_hash": "2e482345455012c8",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       }
     ],
     "macos": [
@@ -510,12 +520,12 @@
         "label": "Search communities",
         "expected": "Filters catalog by name/summary/themes",
         "result": "pass",
-        "evidence": "CUA-click validation-priya 2026-07-05 reproof: search, filter-pills, create-card, community-card after plate-06 parity rebuild (search)",
+        "evidence": "Computer-use validation-gurusharan communities/search 2026-07-19: search",
         "blocker": "",
         "stub": false,
         "tested_source_hash": "7837754558877f5f",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-07-19",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "filter-pills",
@@ -523,12 +533,12 @@
         "label": "All/Trending/Nearby/New pills",
         "expected": "Filter communityFilter state",
         "result": "pass",
-        "evidence": "CUA-click validation-priya 2026-07-05 reproof: search, filter-pills, create-card, community-card after plate-06 parity rebuild (filter-pills)",
+        "evidence": "Computer-use validation-gurusharan communities/filter-pills 2026-07-19: filter-pills",
         "blocker": "",
         "stub": false,
         "tested_source_hash": "7837754558877f5f",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-07-19",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "create-card",
@@ -536,12 +546,12 @@
         "label": "Create a community card",
         "expected": "Navigate → createCommunity",
         "result": "pass",
-        "evidence": "CUA-click validation-priya 2026-07-05 reproof: search, filter-pills, create-card, community-card after plate-06 parity rebuild (create-card)",
+        "evidence": "Computer-use validation-gurusharan communities/create-card 2026-07-19: create-card",
         "blocker": "",
         "stub": false,
         "tested_source_hash": "7837754558877f5f",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-07-19",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "community-card",
@@ -549,25 +559,25 @@
         "label": "Community card",
         "expected": "Navigate → communityDetail",
         "result": "pass",
-        "evidence": "CUA-click validation-priya 2026-07-05 reproof: search, filter-pills, create-card, community-card after plate-06 parity rebuild (community-card)",
+        "evidence": "Computer-use validation-gurusharan communities/community-card 2026-07-19: community-card",
         "blocker": "",
         "stub": false,
         "tested_source_hash": "7837754558877f5f",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-07-19",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "browse-join-leave",
         "type": "button",
         "label": "Join/Joined overlay",
         "expected": "Toggles membership from browse card",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "Computer-use validation-gurusharan communities/community-join-browse-card 2026-07-19: browse-join-leave",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-07-19",
+        "tested_source_hash": "7837754558877f5f",
+        "last_test_method": "Computer-use"
       }
     ]
   }

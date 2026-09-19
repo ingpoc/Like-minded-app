@@ -21,11 +21,11 @@
       "label": "Soulmate status (when enabled)",
       "expected": "No Enable Soulmate toggle when already on; status points to Settings as the only toggle owner",
       "result": "pass",
-      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (enable-toggle)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-17 capture closeout: reproof after source hash change (enable-toggle)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "bb606f2c9ba7928e",
-      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "4e4f2a99af402882",
+      "last_tested_at": "2026-07-17",
       "last_test_method": "screen-capture"
     },
     {
@@ -34,11 +34,11 @@
       "label": "Post-meet selection (when pending)",
       "expected": "Opens SoulmateSelectionDialog",
       "result": "pass",
-      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (post-meet-select)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-17 capture closeout: reproof after source hash change (post-meet-select)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "bb606f2c9ba7928e",
-      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "4e4f2a99af402882",
+      "last_tested_at": "2026-07-17",
       "last_test_method": "screen-capture"
     },
     {
@@ -47,11 +47,11 @@
       "label": "Match row",
       "expected": "Pushes SoulmateMatchDetailView",
       "result": "pass",
-      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (match-row)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-17 capture closeout: reproof after source hash change (match-row)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "bb606f2c9ba7928e",
-      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "4e4f2a99af402882",
+      "last_tested_at": "2026-07-17",
       "last_test_method": "screen-capture"
     },
     {
@@ -60,11 +60,11 @@
       "label": "Conversations icon (bubble.right)",
       "expected": "Pushes ConversationListView",
       "result": "pass",
-      "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (conversations-icon)",
+      "evidence": "screen-capture validation-gurusharan 2026-07-17 capture closeout: reproof after source hash change (conversations-icon)",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "bb606f2c9ba7928e",
-      "last_tested_at": "2026-07-05",
+      "tested_source_hash": "4e4f2a99af402882",
+      "last_tested_at": "2026-07-17",
       "last_test_method": "screen-capture"
     }
   ],
@@ -73,5 +73,5 @@
     "notes": "2026-07-05 vs plate 13 (Soulmate matches): hero + YOUR MATCHES list, conversations icon, post-meet CTA when pending. Intentional: validation-gurusharan shows 1 API match (Priya) not mockup 4-name roster; enable toggle only when off + Settings when on; macOS Soulmate tab opens Discover while iOS tab is matches overview (maps to macOS soulmateOverview enable semantics + plate-13 list)."
   },
   "notes": "Cross-ref macOS validation/macos/15-soulmate-overview.json (soulmateOverview deep-link). Match data verified via GET /v1/me/soulmate/matches for validation-gurusharan.",
-  "source_hash": "bb606f2c9ba7928e"
+  "source_hash": "4e4f2a99af402882"
 }

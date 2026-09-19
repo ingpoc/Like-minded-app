@@ -3,11 +3,13 @@ name: build-macos-app
 description: >-
   Likeminded macOS build/run/validate for SwiftUI LikemindedMac (apps/ios-macos).
   Triggers: macOS build, xcodebuild LikemindedMac, --mac-screen validation,
-  mockup parity, macos:validation-batch, ledger screen proof. Skip for iOS
+  mockup parity, testing-ledger macOS proof. Skip for iOS
   (build-ios-app) or backend-only.
 ---
 
 # Build macOS App — Likeminded
+
+> **Self-validate after edits.** Run the project skill through the strict `create-skill` audit and `workflow lint`.
 
 `LikemindedMac` target — source `apps/ios-macos/Sources/LikemindedMac/`. Spec: `project.yml` (never hand-edit `.xcodeproj`).
 
@@ -26,16 +28,13 @@ description: >-
 
 ## Workflow lanes (pick one)
 
-Do **not** improvise capture/CUA. Run the script for the lane.
+Do **not** improvise capture or desktop automation. Use the ledger card and bundled `@Computer`.
 
 | Lane | When | Command |
 | --- | --- | --- |
 | **Dev build** | Compile / debug one screen | Preflight below → `xcodebuild` → `open --args` (see [`references/launch-args.md`](references/launch-args.md)) |
-| **One-screen proof** | Stamp controls after UI edit | `macos_cua_preflight.sh` → `macos_audit_prepare.sh <screen>` → `macos_cua_screen.sh <screen>` |
-| **Captures only** | PNG batch, no CUA | `npm run verify:macos-screens` |
-| **Post-parallel closeout** | After disjoint Swift edits | `npm run macos:validation-batch` (full) or `npm run macos:cua-reproof` (stale CUA only) |
-
-CUA harness + E2E: `~/.agents/skills/macos-cua/references/likeminded.md` (do not duplicate).
+| **One-flow proof** | Stamp one flow after UI edit | `npm run testing:ledger-run -- --platform macos --screen <id> --flow <flow> --card-only` → canonical launch from the card → bundled `@Computer` → `ledger:record-flow` |
+| **Post-parallel closeout** | After disjoint Swift edits | `npm run testing:ledger-batch-plan -- --platform macos --limit 10` → sequential, source-local bundled `@Computer` proof |
 
 ## Pass signals
 
@@ -43,10 +42,10 @@ CUA harness + E2E: `~/.agents/skills/macos-cua/references/likeminded.md` (do not
 | --- | --- |
 | API | `curl -fsS http://127.0.0.1:8787/health` |
 | Build | `xcodebuild … -scheme LikemindedMac -destination 'platform=macOS'` exit 0 |
-| Capture | PNG at `output/validation/macos-screens/<screen>.png`, window **1200×760** |
+| Capture | Fresh bundled `@Computer` capture at the ledger `recent_screenshot_ref` |
 | Control | Ledger `controls[].result=pass` + `tested_source_hash` = `source_hash` |
 | UI | `ui_validation.result=pass` vs ledger `mockup_ref` + `DESIGN.md` |
-| Batch | Closeout command exit 0; no actionable `fail`/`stale_pass` on touched screens |
+| Batch | `testing:ledger-batch-plan` is empty for the touched source-local band |
 
 Mockup compare **before** CUA: classify **match** / **intentional variation** / **gap**; record in `visual_parity.notes`.
 
@@ -60,9 +59,9 @@ run lane → collect pass/fail + timings → failure | inefficiency → root cau
 
 | Situation | Loop |
 | --- | --- |
-| One screen | `macos_cua_screen.sh` until controls pass; recompile if Swift changed |
-| Post-parallel | `macos:validation-batch` until ledger clean on edited screens |
-| Captures drift | `verify:macos-screens` → compare `mockup_ref` → fix or `intentional_differences` |
+| One screen | Repeat the ledger card → canonical launch → bundled `@Computer` → record loop; recompile if Swift changed |
+| Post-parallel | Drain one source-local `testing:ledger-batch-plan` sequentially until empty |
+| Captures drift | Recapture with bundled `@Computer` → compare `mockup_ref` → fix or document an intentional difference |
 
 **Stop when:** consecutive full runs pass **and** the last full iteration was **empty** (no failure, inefficiency, simplify, optimize, or automate debt — see workflow-hardening § Empty last iteration).
 
@@ -73,6 +72,7 @@ curl -fsS http://127.0.0.1:8787/health          # or: npm run dev:api:validation
 (cd apps/ios-macos && xcodegen generate)        # after project.yml edits
 
 xcodebuild \
+  -quiet \
   -project apps/ios-macos/Likeminded.xcodeproj \
   -scheme LikemindedMac \
   -destination 'platform=macOS' \
@@ -96,8 +96,9 @@ open -F -n .build/macos/Build/Products/Debug/LikemindedMac.app --args \
 1. Ledger JSON + `mockup_ref` + open `requires_fixing` / controls
 2. Swift in `MacScreens.swift` (or `MacDesignSystem`)
 3. `xcodebuild` compile
-4. Proof via **lane table** above (not ad-hoc `screencapture`)
-5. `ui_validation.result=pass` only when plate + `DESIGN.md` agree
+4. Proof via **lane table** above (not ad-hoc `screencapture` or legacy CUA)
+5. **Capture vs reference** — `output/validation/macos-screens/<screen>.png` compared to ledger/concept `mockup_ref` **before** claiming parity or done; fix gaps and recapture if mismatch
+6. `ui_validation.result=pass` only when plate + `DESIGN.md` agree
 
 ## Hard rules
 
@@ -107,6 +108,7 @@ open -F -n .build/macos/Build/Products/Debug/LikemindedMac.app --args \
 - **`LIKEMINDED_API_BASE_URL`** in Info.plist — never hardcode URLs in Swift.
 - **Native macOS** — not Catalyst; scheme `LikemindedMac`, `-destination 'platform=macOS'`.
 - **Validation data** — `npm run dev:api:validation` + `npm run reset:validation-data` → `data/validation-db`.
+- **Signing-log privacy** — use `xcodebuild -quiet` for routine builds. If verbose signing diagnostics are required, preserve `pipefail` and redact account emails, certificate hashes, and provisioning-profile UUIDs before output; never persist the raw log.
 
 ## Progressive disclosure
 
@@ -116,10 +118,10 @@ open -F -n .build/macos/Build/Products/Debug/LikemindedMac.app --args \
 | Fixture plates vs API | [`references/fixtures.md`](references/fixtures.md) |
 | Build failed / wrong window / capture | [`references/troubleshooting.md`](references/troubleshooting.md) |
 | Source tree / bundle / LiveKit | [`references/layout.md`](references/layout.md) |
-| CUA / multi-monitor / E2E | `~/.agents/skills/macos-cua/references/likeminded.md` |
+| Semantic proof / multi-monitor | Testing-ledger card + bundled `@Computer` |
 | All npm proof commands | `docs/workflows/validation.md` |
 
 ## Related
 
 - `build-ios-app` — iOS surface.
-- `AGENTS.md` trigger map — aliases `verify:macos-screens`, `macos:validation-batch`.
+- `AGENTS.md` trigger map — current testing-ledger and canonical-app routes.

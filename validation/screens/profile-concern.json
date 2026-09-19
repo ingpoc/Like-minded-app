@@ -9,7 +9,7 @@
       "source_files": [
         "apps/ios-macos/Sources/LikemindedApp/Views/ProfilePrototypeView.swift"
       ],
-      "source_hash": "b0f00ffafcb84710",
+      "source_hash": "ed7bace8be85b682",
       "mockup_ref": "mockups/ios/29-profile-concern.png",
       "mockup_missing": false,
       "entry_points": [
@@ -62,12 +62,13 @@
       },
       "validation": {
         "ios": {
-          "result": "pass",
-          "evidence": "start-reinterview: screen-capture 2026-07-06",
-          "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "b0f00ffafcb84710",
-          "last_test_method": "screen-capture"
+          "result": "blocked",
+          "evidence": "Text-box and non-microphone validation completed; spoken microphone behavior remains assigned to the user for device proof.",
+          "blocker": "Requires user-spoken microphone input and microphone-permission acceptance; the user explicitly assigned microphone validation to themselves.",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "ed7bace8be85b682",
+          "last_test_method": "manual"
         },
         "macos": {
           "result": "not-applicable",
@@ -79,7 +80,7 @@
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -91,7 +92,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/29-profile-concern.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen profile-concern --platform ios",
-          "macos": "npm run ledger:screen -- --platform macos --screen profile-concern --section flows"
+          "macos": "@Computer: npm run dev:macos:validation -- profile-concern; target the canonical app by full path; prove profile-concern/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-concern --flow start-reinterview --result pass --method <tier-method> --evidence \"...\""
       }
@@ -105,11 +106,11 @@
         "label": "Start re-interview",
         "expected": "Opens voice session sheet, calls startReinterview (appends signals)",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (start-reinterview)",
+        "evidence": "screen-capture validation-gurusharan 2026-08-01 capture closeout: reproof after source hash change (start-reinterview)",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "b0f00ffafcb84710",
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "ed7bace8be85b682",
         "last_test_method": "screen-capture"
       }
     ],

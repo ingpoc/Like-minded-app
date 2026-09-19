@@ -16,7 +16,22 @@
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>$(GOOGLE_REVERSED_CLIENT_ID_MAC)</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>GIDClientID</key>
+	<string>$(GOOGLE_CLIENT_ID_MAC)</string>
+	<key>LIKEMINDED_API_BASE_URL</key>
+	<string>$(LIKEMINDED_API_BASE_URL)</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.social-networking</string>
 </dict>
 </plist>

@@ -7,9 +7,16 @@
  *
  *   npm run testing:ledger-fix-next
  *   npm run testing:ledger-fix-next -- --claim
+ *   npm run testing:ledger-fix-next -- --issue-id <id> --claim
+ *   npm run testing:ledger-fix-next -- --mark-resolved <id> --resolution "obsolete flow removed"
  */
 const { listScreenFiles, loadScreenFile, flowValidation } = require("./ledger_screens");
-const { loadQueue, saveQueue, retestCommand } = require("./testing_ledger_issue_queue");
+const {
+  loadQueue,
+  saveQueue,
+  retestCommand,
+  selectOpenFixIssue
+} = require("./testing_ledger_issue_queue");
 
 function arg(name, fallback = null) {
   const i = process.argv.indexOf(name);
@@ -19,20 +26,11 @@ function arg(name, fallback = null) {
 const asJson = process.argv.includes("--json");
 const claim = process.argv.includes("--claim");
 const platformFilter = arg("--platform");
-
-function isOpenIssue(issue) {
-  if (!issue || issue.retest_ready === true) return false;
-  const status = String(issue.status || "open").toLowerCase();
-  return status === "open" || status === "fixing";
-}
+const issueIdFilter = arg("--issue-id");
 
 function pickFromQueue() {
   const queue = loadQueue();
-  const issues = queue.issues.filter(isOpenIssue);
-  if (platformFilter) {
-    return issues.find((i) => i.platform === platformFilter) || null;
-  }
-  return issues[0] || null;
+  return selectOpenFixIssue(queue, { platform: platformFilter, issueId: issueIdFilter });
 }
 
 function pickFromLedgerFails() {
@@ -89,7 +87,7 @@ function buildFixTarget(issue) {
       read_owner: issue.fix_owner ? `Read ${issue.fix_owner} only` : `npm run ledger:screen -- --platform ${issue.platform} --screen ${issue.screen} --section source_files`,
       retest: `npm run testing:ledger-run -- --platform ${issue.platform} --screen ${issue.screen} --flow ${issue.flow_id}`,
       mark_retest_ready: `npm run testing:ledger-fix-next -- --mark-retest-ready ${issue.id}`,
-      record_pass: `npm run ledger:record-flow -- --platform ${issue.platform} --screen ${issue.screen} --flow ${issue.flow_id} --result pass --method ${issue.platform === "ios" ? "screenshot" : "CUA-click"} --evidence "..."`
+      record_pass: `npm run ledger:record-flow -- --platform ${issue.platform} --screen ${issue.screen} --flow ${issue.flow_id} --result pass --method ${issue.platform === "ios" ? "screenshot" : "Computer-use"} --evidence "..."`
     }
   };
 }
@@ -110,7 +108,33 @@ if (markId) {
   process.exit(0);
 }
 
+const resolvedId = arg("--mark-resolved");
+if (resolvedId) {
+  const queue = loadQueue();
+  const issue = queue.issues.find((i) => i.id === resolvedId);
+  if (!issue) {
+    console.error(`issue not found: ${resolvedId}`);
+    process.exit(1);
+  }
+  const resolution = arg("--resolution");
+  if (!resolution) {
+    console.error("--mark-resolved requires --resolution");
+    process.exit(2);
+  }
+  issue.retest_ready = false;
+  issue.status = "resolved";
+  issue.resolved_at = new Date().toISOString();
+  issue.resolution = resolution;
+  saveQueue(queue);
+  console.log(`marked resolved: ${resolvedId}`);
+  process.exit(0);
+}
+
 let issue = pickFromQueue();
+if (issueIdFilter && !issue) {
+  console.error(`open issue not found for selector: ${issueIdFilter}`);
+  process.exit(1);
+}
 if (issue && claim) {
   const queue = loadQueue();
   const idx = queue.issues.findIndex((i) => i.id === issue.id);

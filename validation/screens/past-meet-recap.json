@@ -11,7 +11,7 @@
         "apps/ios-macos/Sources/LikemindedApp/Views/RootView.swift (validation past-meet-detail route)",
         "apps/ios-macos/Sources/LikemindedApp/Data/PrototypeAppState.swift (pendingPastMeetDetail)"
       ],
-      "source_hash": "726127fa7e06a191",
+      "source_hash": "d5e77ea5a8e4fd0b",
       "mockup_ref": "mockups/ios/09-12-meet-video-postmeet.png",
       "mockup_missing": false,
       "entry_points": [
@@ -31,7 +31,7 @@
         "result": "pass",
         "notes": "2026-07-05 capture output/validation/ios-screens/08-past-meet-detail.png vs mockups/ios/09-12-meet-video-postmeet.png: recap hero Great meeting, meeting insights grid, notes, connections — aligns with macOS meetRecap plate 08 data (Reflective Builders Jun 28, 8 attended). Intentional: iOS mockup montage plate 12 is soulmate selection sheet not full recap; mobile stacked layout vs macOS two-column."
       },
-      "recent_screenshot_ref": "output/validation/ios-screens/08-past-meet-detail.png",
+      "recent_screenshot_ref": "output/validation/ios-screens/past-meet-detail.png",
       "notes": "Cross-platform parity target: macOS --mac-screen meetRecap (validation/macos/11-meet-recap.json). Capture: SIMCTL_CHILD_LIKEMINDED_VALIDATION_SCREEN=past-meet-detail + --likeminded-start-past-meet-detail."
     },
     "macos": {
@@ -99,19 +99,21 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "reflection-note: screen-capture 2026-07-05 | save-note: screen-capture 2026-07-05",
+          "evidence": "reflection-note: api-persist 2026-08-01 | save-note: api-persist 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "726127fa7e06a191",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "d5e77ea5a8e4fd0b",
+          "last_test_method": "api-persist"
         },
         "macos": {
           "result": "pass",
-          "evidence": "recap-note: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (recap-note) (hash-migrated: screen-sli | save-note: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (save-note) (hash-migrated: screen-slic",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/05-08-chat-communities-detail-recap.png: entered exact private note ‘Recap note proof 2026-08-02: thoughtful group, follow up with Priya.’; Save note rendered Saved while retaining the text. Authenticated GET /v1/meetings/upcoming returned the exact recapNote on Reflective Builders.",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
+          "screenshot_ref": "output/validation/macos-screens/meetRecapNoteSaved-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
           "tested_source_hash": "fc7db61c9495d0c9",
-          "last_test_method": "CUA"
+          "last_test_method": "api-persist"
         }
       },
       "proof": {
@@ -128,7 +130,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/09-12-meet-video-postmeet.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen past-meet-recap --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh meetRecap → macos_cua_screen.sh meetRecap"
+          "macos": "@Computer: npm run dev:macos:validation -- meetRecap; target the canonical app by full path; prove past-meet-recap/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen past-meet-recap --flow recap-save-note --result pass --method <tier-method> --evidence \"...\""
       }
@@ -155,23 +157,24 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "select-connections: screen-capture 2026-07-05 | message-match: screen-capture 2026-07-05",
+          "evidence": "select-connections: Computer-use 2026-08-01 | message-match: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "726127fa7e06a191",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "d5e77ea5a8e4fd0b",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "message-match: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (message-match) (hash-migrated: screen-",
+          "evidence": "message-match: Computer validation-priya 2026-07-05 reproof launch: reproof after source hash change (message-match) (hash-migrated: screen-",
           "blocker": "",
           "last_tested_at": "2026-07-05",
           "tested_source_hash": "fc7db61c9495d0c9",
-          "last_test_method": "CUA"
+          "last_test_method": "Computer"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -184,7 +187,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/09-12-meet-video-postmeet.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen past-meet-recap --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh meetRecap → macos_cua_screen.sh meetRecap"
+          "macos": "@Computer: npm run dev:macos:validation -- meetRecap; target the canonical app by full path; prove past-meet-recap/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen past-meet-recap --flow recap-soulmate-select --result pass --method <tier-method> --evidence \"...\""
       }
@@ -206,12 +209,13 @@
       "gap_audit": "2026-07-06",
       "validation": {
         "ios": {
-          "result": "pending",
-          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "result": "pass",
+          "evidence": "recap-back: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
+          "screenshot_ref": "output/validation/ios-screens/past-meet-recap.png",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "d5e77ea5a8e4fd0b",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "not-applicable",
@@ -223,7 +227,7 @@
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -235,7 +239,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/09-12-meet-video-postmeet.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen past-meet-recap --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh meetRecap → macos_cua_screen.sh meetRecap"
+          "macos": "@Computer: npm run dev:macos:validation -- meetRecap; target the canonical app by full path; prove past-meet-recap/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen past-meet-recap --flow past-meet-back --result pass --method <tier-method> --evidence \"...\""
       }
@@ -249,12 +253,12 @@
         "label": "Reflection note field",
         "expected": "Editable text bound to reflectionNote",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (reflection-note)",
+        "evidence": "api-persist validation-gurusharan past-meet-recap/recap-save-note 2026-08-01: reflection-note",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-05",
-        "tested_source_hash": "726127fa7e06a191",
-        "last_test_method": "screen-capture"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "d5e77ea5a8e4fd0b",
+        "last_test_method": "api-persist"
       },
       {
         "id": "save-note",
@@ -262,12 +266,12 @@
         "label": "Save note",
         "expected": "Persists note via recap-note endpoint",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (save-note)",
+        "evidence": "api-persist validation-gurusharan past-meet-recap/recap-save-note 2026-08-01: save-note",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-05",
-        "tested_source_hash": "726127fa7e06a191",
-        "last_test_method": "screen-capture"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "d5e77ea5a8e4fd0b",
+        "last_test_method": "api-persist"
       },
       {
         "id": "message-match",
@@ -275,12 +279,12 @@
         "label": "Message (per connected match)",
         "expected": "Navigate to ChatView for mutual match",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (message-match)",
+        "evidence": "Computer-use validation-gurusharan past-meet-recap/recap-soulmate-select 2026-08-01: message-match",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-05",
-        "tested_source_hash": "726127fa7e06a191",
-        "last_test_method": "screen-capture"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "d5e77ea5a8e4fd0b",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "select-connections",
@@ -288,25 +292,25 @@
         "label": "Select connections (when soulmate enabled)",
         "expected": "Opens SoulmateSelectionDialog",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (select-connections)",
+        "evidence": "Computer-use validation-gurusharan past-meet-recap/recap-soulmate-select 2026-08-01: select-connections",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-05",
-        "tested_source_hash": "726127fa7e06a191",
-        "last_test_method": "screen-capture"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "d5e77ea5a8e4fd0b",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "recap-back",
         "type": "button",
         "label": "Back to meet",
         "expected": "Returns to Meet tab stack",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "Computer-use validation-gurusharan past-meet-recap/past-meet-back 2026-08-01: recap-back",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "d5e77ea5a8e4fd0b",
+        "last_test_method": "Computer-use"
       }
     ],
     "macos": [
@@ -316,12 +320,12 @@
         "label": "Add a private note",
         "expected": "Editable bound to recapNote",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (recap-note) (hash-migrated: screen-slice source hash)",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/05-08-chat-communities-detail-recap.png: entered exact private note ‘Recap note proof 2026-08-02: thoughtful group, follow up with Priya.’; Save note rendered Saved while retaining the text. Authenticated GET /v1/meetings/upcoming returned the exact recapNote on Reflective Builders.",
         "blocker": "",
         "stub": false,
         "tested_source_hash": "fc7db61c9495d0c9",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "CUA"
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "api-persist"
       },
       {
         "id": "save-note",
@@ -329,12 +333,12 @@
         "label": "Save note",
         "expected": "Persist via recap-note endpoint",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (save-note) (hash-migrated: screen-slice source hash)",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/05-08-chat-communities-detail-recap.png: entered exact private note ‘Recap note proof 2026-08-02: thoughtful group, follow up with Priya.’; Save note rendered Saved while retaining the text. Authenticated GET /v1/meetings/upcoming returned the exact recapNote on Reflective Builders.",
         "blocker": "",
         "stub": false,
         "tested_source_hash": "fc7db61c9495d0c9",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "CUA"
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "api-persist"
       },
       {
         "id": "message-match",
@@ -342,12 +346,12 @@
         "label": "Message (per connected match)",
         "expected": "Navigate → messages",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (message-match) (hash-migrated: screen-slice source hash)",
+        "evidence": "Computer validation-priya 2026-07-05 reproof launch: reproof after source hash change (message-match) (hash-migrated: screen-slice source hash)",
         "blocker": "",
         "stub": false,
         "tested_source_hash": "fc7db61c9495d0c9",
         "last_tested_at": "2026-07-05",
-        "last_test_method": "CUA"
+        "last_test_method": "Computer"
       }
     ]
   }

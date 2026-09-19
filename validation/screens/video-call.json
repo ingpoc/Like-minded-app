@@ -9,7 +9,7 @@
       "source_files": [
         "apps/ios-macos/Sources/LikemindedApp/Views/MeetView.swift (GroupVideoCallView)"
       ],
-      "source_hash": "5c216e590291a363",
+      "source_hash": "02a0e52569bd0523",
       "mockup_ref": "mockups/ios/09-12-meet-video-postmeet.png",
       "mockup_missing": false,
       "entry_points": [
@@ -52,7 +52,7 @@
         "result": "pass",
         "notes": "2026-07-05 source-trace vs mockups/ios/09-12-meet-video-postmeet.png: dark full-screen 2-col tile grid, Live badge, participant count, host pill, floating self-view, mute/leave/participants controls. macOS parity target: validation/macos/21-meet-video-call.json (meetVideoCall). Intentional: gradient initials not camera feeds until LiveKit Phase 10; iOS immersive mobile layout vs macOS sidebar/agenda panel."
       },
-      "recent_screenshot_ref": null,
+      "recent_screenshot_ref": "output/validation/ios-screens/group-video-call.png",
       "notes": "Prototype room auto-activates when POST /v1/meetings/:id/join fails (no LIVEKIT_* env). Deep link --likeminded-start-video-call + --likeminded-dev-meet-join for validation capture. LiveKit camera/mic wiring remains Phase 10 infra-blocked."
     },
     "macos": {
@@ -61,7 +61,7 @@
       "source_files": [
         "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift"
       ],
-      "source_hash": "5f58d68c4fb27018",
+      "source_hash": "710e284816d69b06",
       "mockup_ref": "mockups/macos/21-meet-video-call.png",
       "mockup_missing": false,
       "entry_points": [
@@ -122,23 +122,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "tiles: screen-capture 2026-07-05",
+          "evidence": "tiles: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "5c216e590291a363",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "02a0e52569bd0523",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "tiles: verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (tiles)",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/21-meet-video-call.png: preview mode displayed the participant video-tile grid for Priya Shah, Gurusharan Gupta, Arjun, and Meera with microphone state overlays.",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "5f58d68c4fb27018",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/videoCallTiles-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "710e284816d69b06",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -150,7 +152,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/09-12-meet-video-postmeet.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen video-call --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh meetVideoCall → macos_cua_screen.sh meetVideoCall"
+          "macos": "@Computer: npm run dev:macos:validation -- meetVideoCall; target the canonical app by full path; prove video-call/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen video-call --flow tiles --result pass --method <tier-method> --evidence \"...\""
       }
@@ -174,23 +176,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "mute: screen-capture 2026-07-05",
+          "evidence": "mute: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "5c216e590291a363",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "02a0e52569bd0523",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "mute: verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (mute)",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/21-meet-video-call.png: Mute microphone changed from Unmuted/mic.fill to Muted/Unmute microphone/mic.slash.fill, and a second activation restored Unmuted.",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "5f58d68c4fb27018",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/videoCallMuted-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "710e284816d69b06",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -202,7 +206,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/09-12-meet-video-postmeet.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen video-call --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh meetVideoCall → macos_cua_screen.sh meetVideoCall"
+          "macos": "@Computer: npm run dev:macos:validation -- meetVideoCall; target the canonical app by full path; prove video-call/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen video-call --flow mute --result pass --method <tier-method> --evidence \"...\""
       }
@@ -226,23 +230,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "leave: screen-capture 2026-07-05",
+          "evidence": "leave: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "5c216e590291a363",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "02a0e52569bd0523",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "leave: verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (leave)",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/21-meet-video-call.png: Leave meetup exited the call and restored Meet with its next meetup, RSVP, join-call, past-meet, and availability controls.",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "5f58d68c4fb27018",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/videoCallLeave-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "710e284816d69b06",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -254,7 +260,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/09-12-meet-video-postmeet.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen video-call --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh meetVideoCall → macos_cua_screen.sh meetVideoCall"
+          "macos": "@Computer: npm run dev:macos:validation -- meetVideoCall; target the canonical app by full path; prove video-call/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen video-call --flow leave --result pass --method <tier-method> --evidence \"...\""
       }
@@ -304,7 +310,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/09-12-meet-video-postmeet.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen video-call --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh meetVideoCall → macos_cua_screen.sh meetVideoCall"
+          "macos": "@Computer: npm run dev:macos:validation -- meetVideoCall; target the canonical app by full path; prove video-call/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen video-call --flow join-room --result pass --method <tier-method> --evidence \"...\""
       }
@@ -329,24 +335,26 @@
       "gap_audit": "2026-07-06",
       "validation": {
         "ios": {
-          "result": "pending",
-          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "result": "pass",
+          "evidence": "show-participants: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "02a0e52569bd0523",
+          "last_test_method": "Computer-use"
         },
         "macos": {
-          "result": "pending",
-          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "result": "pass",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/21-meet-video-call.png: Participants control kept Participants selected and exposed the named roster and microphone states for Priya Shah, Gurusharan Gupta, Arjun, Meera, Rohan, Karan, and Neha.",
           "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
+          "screenshot_ref": "output/validation/macos-screens/videoCallTiles-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "710e284816d69b06",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -358,7 +366,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/09-12-meet-video-postmeet.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen video-call --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh meetVideoCall → macos_cua_screen.sh meetVideoCall"
+          "macos": "@Computer: npm run dev:macos:validation -- meetVideoCall; target the canonical app by full path; prove video-call/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen video-call --flow video-call-participants --result pass --method <tier-method> --evidence \"...\""
       }
@@ -389,16 +397,17 @@
           "last_test_method": ""
         },
         "macos": {
-          "result": "pending",
-          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "result": "pass",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/21-meet-video-call.png: switched from Participants to Agenda and observed opening check-in, useful signal, follow-up, and safety guidance; switched back to Participants and restored the microphone-status roster.",
           "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
+          "screenshot_ref": "output/validation/macos-screens/videoCallSideTabs-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "710e284816d69b06",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -410,7 +419,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/09-12-meet-video-postmeet.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen video-call --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh meetVideoCall → macos_cua_screen.sh meetVideoCall"
+          "macos": "@Computer: npm run dev:macos:validation -- meetVideoCall; target the canonical app by full path; prove video-call/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen video-call --flow call-side-panel-tabs --result pass --method <tier-method> --evidence \"...\""
       }
@@ -442,16 +451,17 @@
           "last_test_method": ""
         },
         "macos": {
-          "result": "pending",
-          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "result": "pass",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/21-meet-video-call.png: Chat in the call bar opened the full Messages surface with Priya conversation history, search, filters, composer, and voice/video/info controls.",
           "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
+          "screenshot_ref": "output/validation/macos-screens/videoCallOpenChat-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "710e284816d69b06",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -463,7 +473,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/09-12-meet-video-postmeet.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen video-call --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh meetVideoCall → macos_cua_screen.sh meetVideoCall"
+          "macos": "@Computer: npm run dev:macos:validation -- meetVideoCall; target the canonical app by full path; prove video-call/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen video-call --flow call-open-chat --result pass --method <tier-method> --evidence \"...\""
       }
@@ -477,12 +487,12 @@
         "label": "Participant tiles grid",
         "expected": "LazyVGrid of Participant camera tiles",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (tiles)",
+        "evidence": "Computer-use validation-gurusharan video-call/tiles 2026-08-01: tiles",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "5c216e590291a363",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "screen-capture"
+        "tested_source_hash": "02a0e52569bd0523",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "mute",
@@ -490,12 +500,12 @@
         "label": "Mic mute toggle",
         "expected": "Toggles localParticipant microphone",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (mute)",
+        "evidence": "Computer-use validation-gurusharan video-call/mute 2026-08-01: mute",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "5c216e590291a363",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "screen-capture"
+        "tested_source_hash": "02a0e52569bd0523",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "leave",
@@ -503,25 +513,25 @@
         "label": "Leave (destructive)",
         "expected": "Disconnects room",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (leave)",
+        "evidence": "Computer-use validation-gurusharan video-call/leave 2026-08-01: leave",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "5c216e590291a363",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "screen-capture"
+        "tested_source_hash": "02a0e52569bd0523",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "show-participants",
         "type": "button",
         "label": "Show participants",
         "expected": "Opens participant list sheet",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "Computer-use validation-gurusharan video-call/video-call-participants 2026-08-01: show-participants",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "02a0e52569bd0523",
+        "last_test_method": "Computer-use"
       }
     ],
     "macos": [
@@ -541,12 +551,12 @@
         "label": "Participant tiles",
         "expected": "Camera tiles grid",
         "result": "pass",
-        "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (tiles)",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/21-meet-video-call.png: preview mode displayed the participant video-tile grid for Priya Shah, Gurusharan Gupta, Arjun, and Meera with microphone state overlays.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "5f58d68c4fb27018",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "710e284816d69b06",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "mute",
@@ -554,12 +564,12 @@
         "label": "Mute toggle",
         "expected": "Toggles local mic",
         "result": "pass",
-        "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (mute)",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/21-meet-video-call.png: Mute microphone changed from Unmuted/mic.fill to Muted/Unmute microphone/mic.slash.fill, and a second activation restored Unmuted.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "5f58d68c4fb27018",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "710e284816d69b06",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "leave",
@@ -567,77 +577,77 @@
         "label": "Leave",
         "expected": "Disconnects room",
         "result": "pass",
-        "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (leave)",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/21-meet-video-call.png: Leave meetup exited the call and restored Meet with its next meetup, RSVP, join-call, past-meet, and availability controls.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "5f58d68c4fb27018",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "710e284816d69b06",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "show-participants",
         "type": "button",
         "label": "Participants panel tab",
         "expected": "Shows participants side panel",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/21-meet-video-call.png: Participants control kept Participants selected and exposed the named roster and microphone states for Priya Shah, Gurusharan Gupta, Arjun, Meera, Rohan, Karan, and Neha.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-02",
+        "tested_source_hash": "710e284816d69b06",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "call-participants-bar",
         "type": "button",
         "label": "Participants (call bar)",
         "expected": "Focuses participants panel",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/21-meet-video-call.png: Participants control kept Participants selected and exposed the named roster and microphone states for Priya Shah, Gurusharan Gupta, Arjun, Meera, Rohan, Karan, and Neha.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-02",
+        "tested_source_hash": "710e284816d69b06",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "call-agenda-tab",
         "type": "button",
         "label": "Agenda tab",
         "expected": "Shows agenda side panel",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/21-meet-video-call.png: switched from Participants to Agenda and observed opening check-in, useful signal, follow-up, and safety guidance; switched back to Participants and restored the microphone-status roster.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-02",
+        "tested_source_hash": "710e284816d69b06",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "call-participants-tab",
         "type": "button",
         "label": "Participants tab",
         "expected": "Shows participants side panel",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/21-meet-video-call.png: switched from Participants to Agenda and observed opening check-in, useful signal, follow-up, and safety guidance; switched back to Participants and restored the microphone-status roster.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-02",
+        "tested_source_hash": "710e284816d69b06",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "call-chat-shortcut",
         "type": "button",
         "label": "Chat (in-call)",
         "expected": "Navigate to messages",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/21-meet-video-call.png: Chat in the call bar opened the full Messages surface with Priya conversation history, search, filters, composer, and voice/video/info controls.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-02",
+        "tested_source_hash": "710e284816d69b06",
+        "last_test_method": "Computer-use"
       }
     ]
   }

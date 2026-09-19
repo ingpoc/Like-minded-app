@@ -22,8 +22,8 @@ for (const file of listScreenFiles()) {
       success_signals: flow.proof?.success_signals || base.success_signals,
       mockup_ref: flow.proof?.mockup_ref ?? null,
       mockup_note: flow.proof?.mockup_note || base.mockup_note,
-      commands: flow.proof?.commands || base.commands,
-      record_pass: flow.proof?.record_pass || base.record_pass
+      commands: force ? base.commands : (flow.proof?.commands || base.commands),
+      record_pass: force ? base.record_pass : (flow.proof?.record_pass || base.record_pass)
     };
     touched = true;
   }

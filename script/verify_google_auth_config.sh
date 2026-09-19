@@ -24,7 +24,9 @@ need() {
 
 need "${GOOGLE_CLIENT_IDS:-}" "GOOGLE_CLIENT_IDS"
 need "${GOOGLE_CLIENT_ID_IOS:-}" "GOOGLE_CLIENT_ID_IOS"
-need "${GOOGLE_REVERSED_CLIENT_ID:-}" "GOOGLE_REVERSED_CLIENT_ID"
+need "${GOOGLE_CLIENT_ID_MAC:-}" "GOOGLE_CLIENT_ID_MAC"
+need "${GOOGLE_REVERSED_CLIENT_ID_IOS:-}" "GOOGLE_REVERSED_CLIENT_ID_IOS"
+need "${GOOGLE_REVERSED_CLIENT_ID_MAC:-}" "GOOGLE_REVERSED_CLIENT_ID_MAC"
 
 if rg -q "GIDClientID" apps/ios-macos/Info/Likeminded-Info.plist 2>/dev/null; then
   echo "OK: iOS Info plist has GIDClientID + URL schemes"

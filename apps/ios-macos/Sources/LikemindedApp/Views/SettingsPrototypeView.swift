@@ -6,25 +6,54 @@ struct SettingsPrototypeView: View {
     @State private var showingDeleteConfirm = false
     @State private var isDeletingAccount = false
     @State private var activeSheet: SettingsSheet?
+    /// Local mirror so the Toggle does not snap back while `setSoulmateEnabled` awaits the API.
+    @State private var soulmateToggleOn = false
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(alignment: .leading, spacing: 24) {
                 settingsSection("Soulmate") {
                     VStack(spacing: 0) {
-                        Toggle(isOn: soulmateToggleBinding) {
-                            VStack(alignment: .leading, spacing: 10) {
-                                Text("Enable Soulmate")
-                                    .font(PrototypeTypography.bodyStrong)
-                                    .foregroundStyle(PrototypePalette.ink)
-                                Text("Opt in to find connections after meetups.\nOnly visible when enabled.")
-                                    .font(PrototypeTypography.caption)
-                                    .foregroundStyle(PrototypePalette.subink)
+                        // Button drives the flip: SwiftUI Toggle/UISwitch ignores many
+                        // synthetic idb taps even when the AX CheckBox frame is correct.
+                        Button {
+                            soulmateToggleBinding.wrappedValue.toggle()
+                        } label: {
+                            HStack(alignment: .center, spacing: 12) {
+                                VStack(alignment: .leading, spacing: 10) {
+                                    Text("Enable Soulmate")
+                                        .font(PrototypeTypography.bodyStrong)
+                                        .foregroundStyle(PrototypePalette.ink)
+                                    Text("Opt in to find connections after meetups.\nOnly visible when enabled.")
+                                        .font(PrototypeTypography.caption)
+                                        .foregroundStyle(PrototypePalette.subink)
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+
+                                Toggle("", isOn: soulmateToggleBinding)
+                                    .labelsHidden()
+                                    .tint(PrototypePalette.accent)
+                                    .allowsHitTesting(false)
                             }
+                            .padding(.vertical, 8)
+                            .contentShape(Rectangle())
                         }
-                        .tint(PrototypePalette.accent)
-                        .padding(.vertical, 8)
+                        .buttonStyle(.plain)
+                        .accessibilityElement(children: .ignore)
                         .accessibilityLabel("Enable Soulmate")
+                        .accessibilityValue(soulmateToggleOn ? "On" : "Off")
+                        .accessibilityAddTraits(soulmateToggleOn ? [.isSelected] : [])
+                        .accessibilityIdentifier("settings-soulmate-toggle")
+                        .accessibilityAction(named: Text(soulmateToggleOn ? "Disable" : "Enable")) {
+                            soulmateToggleBinding.wrappedValue.toggle()
+                        }
+
+                        if let error = appState.soulmateError {
+                            Text(error)
+                                .font(PrototypeTypography.metadata)
+                                .foregroundStyle(PrototypePalette.amber)
+                                .padding(.bottom, 8)
+                        }
 
                         Divider().overlay(PrototypePalette.rule)
 
@@ -40,17 +69,22 @@ struct SettingsPrototypeView: View {
                             SettingsRowLabel(icon: "slider.horizontal.3", title: "Discovery preferences")
                         }
                         .buttonStyle(.plain)
+                        // Collapse NavigationLink + row label duplicates into one AX name.
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel("Discovery preferences")
                     }
                 }
 
                 settingsSection("Account") {
                     VStack(spacing: 0) {
-                        SettingsRow(title: "Sign out", role: .destructive) {
+                        SettingsRow(icon: "rectangle.portrait.and.arrow.right", title: "Sign out") {
                             showingSignOutConfirm = true
                         }
+                    }
+                }
 
-                        Divider().overlay(PrototypePalette.rule)
-
+                settingsSection("Danger zone") {
+                    VStack(spacing: 0) {
                         SettingsRow(title: isDeletingAccount ? "Deleting account" : "Delete account", role: .destructive) {
                             showingDeleteConfirm = true
                         }
@@ -98,9 +132,14 @@ struct SettingsPrototypeView: View {
         .background(PrototypePalette.background.ignoresSafeArea())
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
-        .prototypeBackNavigation()
+        // System nav already provides Back; prototype overlay was a second chevron
+        // over the SOULMATE header and is not needed here.
         .task {
             await appState.fetchSoulmateStatus()
+            soulmateToggleOn = appState.soulmateEnabled
+        }
+        .onChange(of: appState.soulmateEnabled) { _, enabled in
+            soulmateToggleOn = enabled
         }
         .onAppear {
             #if DEBUG
@@ -168,8 +207,9 @@ struct SettingsPrototypeView: View {
 
     private var soulmateToggleBinding: Binding<Bool> {
         Binding(
-            get: { appState.soulmateEnabled },
+            get: { soulmateToggleOn },
             set: { newValue in
+                soulmateToggleOn = newValue
                 Task { await appState.setSoulmateEnabled(newValue) }
             }
         )
@@ -682,6 +722,7 @@ private struct SettingsRowLabel: View {
         }
         .padding(.vertical, 14)
         .contentShape(Rectangle())
+        .accessibilityElement(children: .ignore)
         .accessibilityLabel(title)
     }
 }

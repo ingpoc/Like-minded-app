@@ -12,7 +12,7 @@
         "apps/ios-macos/Sources/LikemindedApp/Views/ProfilePrototypeView.swift",
         "apps/ios-macos/Sources/LikemindedApp/Views/RootView.swift"
       ],
-      "source_hash": "e493cc1ddb6d616b",
+      "source_hash": "7377befeabadcb49",
       "mockup_ref": "mockups/ios/17-20-profile-community-settings.png",
       "mockup_missing": false,
       "entry_points": [
@@ -33,7 +33,7 @@
         "result": "pass",
         "notes": "2026-07-05 capture vs mockups/ios/17-20-profile-community-settings.png plate 20: inline Settings nav title, Soulmate toggle + How it works, Account/About/Support sections match montage. Intentional: Discovery preferences row + Delete account for macOS settingsSoulmate backend parity; discovery detail uses dual-handle age slider + two visibility radio cards aligned with macOS."
       },
-      "recent_screenshot_ref": "output/validation/ios-screens/20-settings.png",
+      "recent_screenshot_ref": "output/validation/ios-screens/settings.png",
       "notes": "Mapped to macOS settingsSoulmate; discovery prefs on pushed SoulmateDiscoveryPreferencesView.\nmacOS equivalent: validation/macos/20-settings-soulmate.json help-support pane (inline Help & FAQ + contact form). Deep-link: --likeminded-start-settings-support (iOS), --mac-screen settingsSoulmate --mac-settings-pane helpSupport (macOS)."
     },
     "macos": {
@@ -44,46 +44,41 @@
         "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (soulmateSettingsPanel)",
         "apps/ios-macos/Sources/LikemindedMac/MacDesignSystem.swift (MacAgeRangeSlider)"
       ],
-      "source_hash": "f20a736df43bcfaa",
+      "source_hash": "5359e5422104937f",
       "mockup_ref": "mockups/macos/17-20-profile-onboarding-detail-settings.png",
       "mockup_missing": false,
       "entry_points": [
         "myProfile gearshape title action"
       ],
       "backend_dependencies": [
+        "GET /v1/me/soulmate/status",
         "POST /v1/me/soulmate/enable",
-        "DELETE /v1/me/account",
-        "appState.signOut()"
+        "POST /v1/me/soulmate/preferences",
+        "DELETE /v1/me/account"
       ],
       "ui_validation": {
-        "result": "pass",
+        "result": "pending",
         "reference_mockup_ref": "mockups/macos/17-20-profile-onboarding-detail-settings.png",
         "recent_screenshot_ref": "output/validation/macos-screens/settingsSoulmate.png",
         "design_ref": "DESIGN.md",
-        "last_compared_at": "2026-07-05",
-        "validated": [
-          "latest screenshot exists and was compared with reference mockup plate 20",
-          "DESIGN.md design language checked: warm canvas, calm editorial hierarchy, card system, green accents, bottom glass navigation",
-          "Soulmate hero with MacOrb heart field, enable toggle, three feature cards, discovery dropdown, age-range slider, visibility radio cards",
-          "settings sidebar with Account/Privacy/Notifications/Soulmate panels and Save preferences CTA",
-          "control behavior tracked separately in controls[]"
+        "last_compared_at": "",
+        "validated": [],
+        "pending_validation": [
+          "Saved-but-not-enforced disclaimer",
+          "Three visibility values, 18–80 age bounds, and API readback",
+          "Surviving account/settings navigation after redesign"
         ],
-        "pending_validation": [],
         "requires_implementation": [],
         "requires_fixing": [],
-        "intentional_differences": [
-          "Delete account row in sidebar (macOS honest MVP) vs mockup plate without delete",
-          "Voice profile row removed from sidebar per product decision",
-          "Backend-seeded age range 22–35 vs mockup sample 24–34"
-        ],
-        "notes": "2026-07-05 capture output/validation/macos-screens/settingsSoulmate.png vs mockup plate 20: Soulmate settings hero, heart orb, feature cards, discovery preferences, age slider, and visibility radios match montage layout."
+        "intentional_differences": [],
+        "notes": "Redesigned contract has no carried-forward macOS proof."
       },
       "visual_parity": {
-        "result": "pass",
-        "notes": "2026-07-05 capture vs plate 20: Soulmate hero with heart orb, enable toggle, feature cards, discovery dropdown, dual-handle age slider, visibility radio cards. Intentional: Delete account sidebar row; no Voice profile row."
+        "result": "pending",
+        "notes": "Awaiting live capture comparison at the responsive validation matrix."
       },
       "recent_screenshot_ref": "output/validation/macos-screens/settingsSoulmate.png",
-      "notes": "Settings sidebar selects inline panels; View profile and Voice profile rows removed."
+      "notes": "Settings sidebar omits View profile and Voice profile; Profile owns those actions."
     }
   },
   "flows": [
@@ -106,23 +101,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "soulmate-toggle: screen-capture 2026-07-06",
+          "evidence": "soulmate-toggle: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "e493cc1ddb6d616b",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "7377befeabadcb49",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "soulmate-toggle: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (soulmate-toggle) ( CUA-click validatio",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: Enable Soulmate toggled from On to Off, authenticated status read back enabled=false, then toggled back On and read back enabled=true; the setting remains owned only by Settings.",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "f20a736df43bcfaa",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/settingsSoulmateToggleOn-20260802.jpeg",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "5359e5422104937f",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -134,7 +131,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen settings --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh settingsSoulmate → macos_cua_screen.sh settingsSoulmate"
+          "macos": "@Computer: npm run dev:macos:validation -- settingsSoulmate; target the canonical app by full path; prove settings/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen settings --flow settings-soulmate-toggle --result pass --method <tier-method> --evidence \"...\""
       }
@@ -158,23 +155,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "sign-out: screen-capture 2026-07-06",
+          "evidence": "sign-out: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "e493cc1ddb6d616b",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "7377befeabadcb49",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "log-out: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (log-out) ( CUA-click validation-priya ",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: Log out opened the explicit confirmation; Sign out cleared the local session and rendered the welcome/auth screen while preserving backend tester data.",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "f20a736df43bcfaa",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/settingsSignOutWelcome-20260802.jpeg",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "5359e5422104937f",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -186,7 +185,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen settings --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh settingsSoulmate → macos_cua_screen.sh settingsSoulmate"
+          "macos": "@Computer: npm run dev:macos:validation -- settingsSoulmate; target the canonical app by full path; prove settings/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen settings --flow settings-sign-out --result pass --method <tier-method> --evidence \"...\""
       }
@@ -212,19 +211,21 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "delete-account: screen-capture 2026-07-06",
+          "evidence": "delete-account: api-persist 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "e493cc1ddb6d616b",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "7377befeabadcb49",
+          "last_test_method": "api-persist"
         },
         "macos": {
           "result": "pass",
-          "evidence": "delete-account: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (delete-account) ( CUA-click validation",
+          "evidence": "Canonical LikemindedMac Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: Delete account showed the explicit destructive confirmation; confirming removed validation tester data, cleared the local session, and rendered the welcome/auth screen. The pre-delete bearer token then returned HTTP 401.",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "f20a736df43bcfaa",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/settingsDeleteAccountWelcome-20260802.jpeg",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "5359e5422104937f",
+          "last_test_method": "api-persist"
         }
       },
       "proof": {
@@ -240,7 +241,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen settings --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh settingsSoulmate → macos_cua_screen.sh settingsSoulmate"
+          "macos": "@Computer: npm run dev:macos:validation -- settingsSoulmate; target the canonical app by full path; prove settings/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen settings --flow settings-delete-account --result pass --method <tier-method> --evidence \"...\""
       }
@@ -265,23 +266,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "privacy: screen-capture 2026-07-06 | done: CUA 2026-07-06",
+          "evidence": "privacy: Computer-use 2026-08-01 | done: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "e493cc1ddb6d616b",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "7377befeabadcb49",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "privacy-safety: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (privacy-safety) ( CUA-click validation",
+          "evidence": "Canonical LikemindedMac Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: Privacy & safety rendered the TestFlight Privacy Policy with collected-data, usage, controls, no-sale statement, and contact copy.",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "f20a736df43bcfaa",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/settingsPrivacy-20260802.jpeg",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "5359e5422104937f",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -294,7 +297,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen settings --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh settingsSoulmate → macos_cua_screen.sh settingsSoulmate"
+          "macos": "@Computer: npm run dev:macos:validation -- settingsSoulmate; target the canonical app by full path; prove settings/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen settings --flow settings-privacy --result pass --method <tier-method> --evidence \"...\""
       }
@@ -314,30 +317,31 @@
           "done"
         ],
         "macos": [
-          "help-support",
-          "how-it-works"
+          "help-support"
         ]
       },
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "how-it-works: screen-capture 2026-07-06 | help: screen-capture 2026-07-06 | done: CUA 2026-07-06",
+          "evidence": "how-it-works: Computer-use 2026-08-01 | help: Computer-use 2026-08-01 | done: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "e493cc1ddb6d616b",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "7377befeabadcb49",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "help-support: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (help-support) ( CUA-click validation-p",
+          "evidence": "Canonical LikemindedMac Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: Help & support rendered Voice profile, Meetups, Troubleshooting, and authenticated tester-support guidance with an empty disabled send action.",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "f20a736df43bcfaa",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/settingsHelp-20260802.jpeg",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "5359e5422104937f",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -351,7 +355,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen settings --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh settingsSoulmate → macos_cua_screen.sh settingsSoulmate"
+          "macos": "@Computer: npm run dev:macos:validation -- settingsSoulmate; target the canonical app by full path; prove settings/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen settings --flow settings-help --result pass --method <tier-method> --evidence \"...\""
       }
@@ -377,23 +381,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "support: screen-capture 2026-07-06 | message: CUA 2026-07-06 | send: CUA 2026-07-06",
+          "evidence": "support: Computer-use 2026-08-01 | message: Computer-use 2026-08-01 | send: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "e493cc1ddb6d616b",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "7377befeabadcb49",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "help-support: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (help-support) ( CUA-click validation-p",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: Help & support rendered its truthful guidance; setting the message to macOS settings support validation 2026-08-02 enabled Send support note, sending cleared the field and rendered Support note saved.",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "f20a736df43bcfaa",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/settingsSupportSaved-20260802.jpeg",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "5359e5422104937f",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -407,7 +413,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen settings --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh settingsSoulmate → macos_cua_screen.sh settingsSoulmate"
+          "macos": "@Computer: npm run dev:macos:validation -- settingsSoulmate; target the canonical app by full path; prove settings/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen settings --flow settings-support --result pass --method <tier-method> --evidence \"...\""
       }
@@ -424,32 +430,29 @@
         "ios": [
           "discovery-preferences"
         ],
-        "macos": [
-          "discovery-preference",
-          "age-range",
-          "visibility"
-        ]
+        "macos": []
       },
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "discovery-preferences: screen-capture 2026-07-06",
+          "evidence": "discovery-preferences: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "e493cc1ddb6d616b",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "7377befeabadcb49",
+          "last_test_method": "Computer-use"
         },
         "macos": {
-          "result": "pass",
-          "evidence": "discovery-preference: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (discovery-preference) ( CUA-click vali | age-range: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (age-range) ( CUA-click validation-priy | visibility: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (visibility) ( CUA-click validation-pri",
+          "result": "not-applicable",
+          "evidence": "macOS discovery behavior is owned by settings-discovery-details",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "f20a736df43bcfaa",
-          "last_test_method": "CUA-click"
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -461,7 +464,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen settings --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh settingsSoulmate → macos_cua_screen.sh settingsSoulmate"
+          "macos": "@Computer: npm run dev:macos:validation -- settingsSoulmate; target the canonical app by full path; prove settings/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen settings --flow settings-discovery --result pass --method <tier-method> --evidence \"...\""
       }
@@ -491,15 +494,16 @@
         },
         "macos": {
           "result": "pass",
-          "evidence": "sidebar-honesty: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (sidebar-honesty) ( CUA-click validatio",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: The sidebar exposes Account, Privacy & safety, Notifications, Soulmate with honest Enabled status, Connected apps, Appearance, Language, Help & support, Log out, and Delete account without fake selection styling.",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "f20a736df43bcfaa",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/settingsSoulmateToggleOn-20260802.jpeg",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "5359e5422104937f",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -511,7 +515,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen settings --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh settingsSoulmate → macos_cua_screen.sh settingsSoulmate"
+          "macos": "@Computer: npm run dev:macos:validation -- settingsSoulmate; target the canonical app by full path; prove settings/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen settings --flow sidebar-honesty --result pass --method <tier-method> --evidence \"...\""
       }
@@ -541,15 +545,16 @@
         },
         "macos": {
           "result": "pass",
-          "evidence": "account-settings: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (account-settings) ( CUA-click validati",
+          "evidence": "Canonical LikemindedMac Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: Account pane rendered Gurusharan Gupta, Bangalore, Male, plus the explicit Profile → Edit profile ownership note.",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "f20a736df43bcfaa",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/settingsAccount-20260802.jpeg",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "5359e5422104937f",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -561,7 +566,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen settings --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh settingsSoulmate → macos_cua_screen.sh settingsSoulmate"
+          "macos": "@Computer: npm run dev:macos:validation -- settingsSoulmate; target the canonical app by full path; prove settings/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen settings --flow account-settings --result pass --method <tier-method> --evidence \"...\""
       }
@@ -591,15 +596,16 @@
         },
         "macos": {
           "result": "pass",
-          "evidence": "notifications-settings: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (notifications-settings) ( CUA-click va",
+          "evidence": "Canonical LikemindedMac Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: Notifications rendered Meet reminders, New match messages, and Community activity switches plus honest TestFlight push-delivery status.",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "f20a736df43bcfaa",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/settingsNotifications-20260802.jpeg",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "5359e5422104937f",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -611,7 +617,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen settings --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh settingsSoulmate → macos_cua_screen.sh settingsSoulmate"
+          "macos": "@Computer: npm run dev:macos:validation -- settingsSoulmate; target the canonical app by full path; prove settings/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen settings --flow notifications-settings --result pass --method <tier-method> --evidence \"...\""
       }
@@ -641,15 +647,16 @@
         },
         "macos": {
           "result": "pass",
-          "evidence": "connected-apps: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (connected-apps) ( CUA-click validation",
+          "evidence": "Canonical LikemindedMac Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: Connected apps rendered no integrations connected yet, Sign in with Apple, and LiveKit group meets status without fabricated connections.",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "f20a736df43bcfaa",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/settingsConnectedApps-20260802.jpeg",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "5359e5422104937f",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -661,7 +668,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen settings --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh settingsSoulmate → macos_cua_screen.sh settingsSoulmate"
+          "macos": "@Computer: npm run dev:macos:validation -- settingsSoulmate; target the canonical app by full path; prove settings/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen settings --flow connected-apps --result pass --method <tier-method> --evidence \"...\""
       }
@@ -691,15 +698,16 @@
         },
         "macos": {
           "result": "pass",
-          "evidence": "appearance: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (appearance) ( CUA-click validation-pri",
+          "evidence": "Canonical LikemindedMac Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: Appearance rendered native Match system, Light, and Dark radio options with Match system selected and honest later-shipping theme note.",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "f20a736df43bcfaa",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/settingsAppearance-20260802.jpeg",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "5359e5422104937f",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -711,7 +719,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen settings --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh settingsSoulmate → macos_cua_screen.sh settingsSoulmate"
+          "macos": "@Computer: npm run dev:macos:validation -- settingsSoulmate; target the canonical app by full path; prove settings/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen settings --flow appearance --result pass --method <tier-method> --evidence \"...\""
       }
@@ -741,15 +749,16 @@
         },
         "macos": {
           "result": "pass",
-          "evidence": "language: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (language) ( CUA-click validation-priya",
+          "evidence": "Canonical LikemindedMac Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: Language rendered an App language selector set to English and the honest additional-locales-after-TestFlight note.",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "f20a736df43bcfaa",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/settingsLanguage-20260802.jpeg",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "5359e5422104937f",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -761,120 +770,26 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen settings --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh settingsSoulmate → macos_cua_screen.sh settingsSoulmate"
+          "macos": "@Computer: npm run dev:macos:validation -- settingsSoulmate; target the canonical app by full path; prove settings/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen settings --flow language --result pass --method <tier-method> --evidence \"...\""
       }
     },
     {
-      "id": "view-profile",
-      "name": "View profile",
-      "origin": "settings",
-      "steps": [],
-      "destinations": [],
-      "spans": [],
-      "backend": [],
-      "control_ids": {
-        "ios": [],
-        "macos": [
-          "view-profile"
-        ]
-      },
-      "validation": {
-        "ios": {
-          "result": "not-applicable",
-          "evidence": "No controls on this platform for this flow",
-          "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
-        },
-        "macos": {
-          "result": "pass",
-          "evidence": "view-profile: 2026-07-05: View profile row removed from settings sidebar. ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
-          "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "f20a736df43bcfaa",
-          "last_test_method": "CUA-click"
-        }
-      },
-      "proof": {
-        "tier": "cua-click",
-        "preconditions": [
-          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
-          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
-        ],
-        "success_signals": [
-          "User outcome achieved: View profile"
-        ],
-        "mockup_ref": null,
-        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
-        "commands": {
-          "ios": "./script/cross_platform_screen_validate.sh --screen settings --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh settingsSoulmate → macos_cua_screen.sh settingsSoulmate"
-        },
-        "record_pass": "npm run ledger:record-flow -- --platform ios --screen settings --flow view-profile --result pass --method <tier-method> --evidence \"...\""
-      }
-    },
-    {
-      "id": "voice-profile",
-      "name": "Voice profile",
-      "origin": "settings",
-      "steps": [],
-      "destinations": [],
-      "spans": [],
-      "backend": [],
-      "control_ids": {
-        "ios": [],
-        "macos": [
-          "voice-profile"
-        ]
-      },
-      "validation": {
-        "ios": {
-          "result": "not-applicable",
-          "evidence": "No controls on this platform for this flow",
-          "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
-        },
-        "macos": {
-          "result": "pass",
-          "evidence": "voice-profile: 2026-07-05: Voice profile row removed; Retake voice profile remains on Profile tab. ( CUA-click validation-priya mockup-",
-          "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "f20a736df43bcfaa",
-          "last_test_method": "CUA-click"
-        }
-      },
-      "proof": {
-        "tier": "cua-click",
-        "preconditions": [
-          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
-          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
-        ],
-        "success_signals": [
-          "User outcome achieved: Voice profile"
-        ],
-        "mockup_ref": null,
-        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
-        "commands": {
-          "ios": "./script/cross_platform_screen_validate.sh --screen settings --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh settingsSoulmate → macos_cua_screen.sh settingsSoulmate"
-        },
-        "record_pass": "npm run ledger:record-flow -- --platform ios --screen settings --flow voice-profile --result pass --method <tier-method> --evidence \"...\""
-      }
-    },
-    {
       "id": "settings-discovery-details",
-      "name": "Edit and save Soulmate discovery preferences",
+      "name": "Save exact Soulmate discovery preferences",
       "origin": "settings",
-      "steps": [],
+      "steps": [
+        "Select Circles only, Circles and communities, and Mutual matches only",
+        "Set age range to the supported 18–80 bounds",
+        "Save preferences",
+        "Read the authenticated API response and compare exact values"
+      ],
       "destinations": [],
       "spans": [],
       "backend": [
-        "POST /v1/me/soulmate/preferences"
+        "POST /v1/me/soulmate/preferences",
+        "GET /v1/me/soulmate/status"
       ],
       "control_ids": {
         "ios": [
@@ -887,26 +802,29 @@
           "discovery-who",
           "discovery-age-range",
           "discovery-visibility",
-          "discovery-save"
+          "discovery-save",
+          "preferences-enforcement-disclaimer"
         ]
       },
       "gap_audit": "2026-07-06",
       "validation": {
         "ios": {
-          "result": "pending",
-          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "result": "pass",
+          "evidence": "discovery-who: api-persist 2026-08-01 | discovery-age-range: api-persist 2026-08-01 | discovery-visibility: api-persist 2026-08-01 | discovery-save: api-persist 2026-08-01",
           "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "7377befeabadcb49",
+          "last_test_method": "api-persist"
         },
         "macos": {
-          "result": "pending",
-          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "result": "pass",
+          "evidence": "Canonical LikemindedMac Computer proof and screenshot compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: disclaimer visible; selected circles-only, circles-and-communities, and mutual-matches-only; final UI showed People in my communities, exact 18-80 bounds, mutual matches only, and Preferences saved. Authenticated GET /v1/me/soulmate/status exactly returned discovery=communities, ageMin=18, ageMax=80, visibility=matches_only.",
           "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
+          "screenshot_ref": "output/validation/macos-screens/settingsDiscoveryDetails-20260802.jpeg",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "5359e5422104937f",
+          "last_test_method": "api-persist"
         }
       },
       "proof": {
@@ -916,16 +834,16 @@
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
         ],
         "success_signals": [
-          "Control discovery-who responds without error and matches expected UI state",
-          "Control discovery-age-range responds without error and matches expected UI state",
-          "Control discovery-visibility responds without error and matches expected UI state",
-          "Control discovery-save responds without error and matches expected UI state"
+          "Saved-but-not-enforced disclaimer is visible",
+          "All three visibility values are selectable",
+          "Age bounds are exactly 18–80",
+          "API readback exactly matches the final saved values"
         ],
         "mockup_ref": null,
-        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
+        "mockup_note": "Functional proof of the approved truthful macOS contract",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen settings --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh settingsSoulmate → macos_cua_screen.sh settingsSoulmate"
+          "macos": "@Computer: npm run dev:macos:validation -- settingsSoulmate; target the canonical app by full path; prove settings/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen settings --flow settings-discovery-details --result pass --method <tier-method> --evidence \"...\""
       }
@@ -949,24 +867,26 @@
       "gap_audit": "2026-07-06",
       "validation": {
         "ios": {
-          "result": "pending",
-          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "result": "pass",
+          "evidence": "sign-out-cancel: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "7377befeabadcb49",
+          "last_test_method": "Computer-use"
         },
         "macos": {
-          "result": "pending",
-          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "result": "pass",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: Log out opened the explicit Sign out of Likeminded confirmation; Cancel dismissed it and preserved the authenticated Help & support screen.",
           "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
+          "screenshot_ref": "output/validation/macos-screens/settingsSupportSaved-20260802.jpeg",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "5359e5422104937f",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -978,7 +898,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen settings --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh settingsSoulmate → macos_cua_screen.sh settingsSoulmate"
+          "macos": "@Computer: npm run dev:macos:validation -- settingsSoulmate; target the canonical app by full path; prove settings/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen settings --flow settings-sign-out-cancel --result pass --method <tier-method> --evidence \"...\""
       }
@@ -1002,24 +922,26 @@
       "gap_audit": "2026-07-06",
       "validation": {
         "ios": {
-          "result": "pending",
-          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "result": "pass",
+          "evidence": "delete-cancel: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "7377befeabadcb49",
+          "last_test_method": "Computer-use"
         },
         "macos": {
-          "result": "pending",
-          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "result": "pass",
+          "evidence": "Canonical LikemindedMac Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: Delete account opened a destructive sheet stating backend tester data and local session would be removed; Cancel dismissed it and returned to the unchanged Soulmate settings state with saved preferences intact.",
           "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
+          "screenshot_ref": "output/validation/macos-screens/settingsDiscoveryDetails-20260802.jpeg",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "5359e5422104937f",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -1031,7 +953,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen settings --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh settingsSoulmate → macos_cua_screen.sh settingsSoulmate"
+          "macos": "@Computer: npm run dev:macos:validation -- settingsSoulmate; target the canonical app by full path; prove settings/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen settings --flow settings-delete-cancel --result pass --method <tier-method> --evidence \"...\""
       }
@@ -1053,12 +975,13 @@
       "gap_audit": "2026-07-06",
       "validation": {
         "ios": {
-          "result": "pending",
-          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "result": "pass",
+          "evidence": "support-done: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "7377befeabadcb49",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "not-applicable",
@@ -1070,7 +993,7 @@
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -1082,7 +1005,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen settings --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh settingsSoulmate → macos_cua_screen.sh settingsSoulmate"
+          "macos": "@Computer: npm run dev:macos:validation -- settingsSoulmate; target the canonical app by full path; prove settings/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen settings --flow settings-support-done --result pass --method <tier-method> --evidence \"...\""
       }
@@ -1096,12 +1019,12 @@
         "label": "Enable Soulmate",
         "expected": "Toggles soulmate tab visibility",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (soulmate-toggle)",
+        "evidence": "Computer-use validation-gurusharan settings/settings-soulmate-toggle 2026-08-01: soulmate-toggle",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "e493cc1ddb6d616b",
-        "last_test_method": "screen-capture"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "7377befeabadcb49",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "how-it-works",
@@ -1109,12 +1032,12 @@
         "label": "How it works",
         "expected": "Opens SettingsInfoSheet",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (how-it-works)",
+        "evidence": "Computer-use validation-gurusharan settings/settings-help 2026-08-01: how-it-works",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "e493cc1ddb6d616b",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "screen-capture"
+        "tested_source_hash": "7377befeabadcb49",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "discovery-preferences",
@@ -1122,12 +1045,12 @@
         "label": "Discovery preferences",
         "expected": "Opens SoulmateDiscoveryPreferencesView with macOS-parity controls",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (discovery-preferences)",
+        "evidence": "Computer-use validation-gurusharan settings/settings-discovery 2026-08-01: discovery-preferences",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "e493cc1ddb6d616b",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "screen-capture"
+        "tested_source_hash": "7377befeabadcb49",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "sign-out",
@@ -1135,12 +1058,12 @@
         "label": "Sign out (destructive)",
         "expected": "Shows confirmation; on confirm calls signOut",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (sign-out)",
+        "evidence": "Computer-use validation-gurusharan settings/settings-sign-out 2026-08-01: sign-out",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "e493cc1ddb6d616b",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "screen-capture"
+        "tested_source_hash": "7377befeabadcb49",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "delete-account",
@@ -1148,12 +1071,12 @@
         "label": "Delete account (destructive)",
         "expected": "Shows confirmation; on confirm calls DELETE /v1/me/account and clears local session",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (delete-account)",
+        "evidence": "api-persist validation-gurusharan settings/settings-delete-account 2026-08-01: delete-account",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "e493cc1ddb6d616b",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "screen-capture"
+        "tested_source_hash": "7377befeabadcb49",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "api-persist"
       },
       {
         "id": "privacy",
@@ -1161,12 +1084,12 @@
         "label": "Privacy policy",
         "expected": "Opens PrivacyPolicySheet",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (privacy)",
+        "evidence": "Computer-use validation-gurusharan settings/settings-privacy 2026-08-01: privacy",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "e493cc1ddb6d616b",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "screen-capture"
+        "tested_source_hash": "7377befeabadcb49",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "help",
@@ -1174,12 +1097,12 @@
         "label": "Help & FAQ",
         "expected": "Opens SettingsInfoSheet",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (help)",
+        "evidence": "Computer-use validation-gurusharan settings/settings-help 2026-08-01: help",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "e493cc1ddb6d616b",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "screen-capture"
+        "tested_source_hash": "7377befeabadcb49",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "support",
@@ -1187,12 +1110,12 @@
         "label": "Contact support",
         "expected": "Opens ContactSupportSheet",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (support)",
+        "evidence": "Computer-use validation-gurusharan settings/settings-support 2026-08-01: support",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "e493cc1ddb6d616b",
-        "last_test_method": "screen-capture"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "7377befeabadcb49",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "done",
@@ -1200,12 +1123,12 @@
         "label": "Done",
         "expected": "Dismisses sheet",
         "result": "pass",
-        "evidence": "CUA 2026-07-06: reproof after source hash change (done)",
+        "evidence": "Computer-use validation-gurusharan settings/settings-help 2026-08-01: done",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "e493cc1ddb6d616b",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA"
+        "tested_source_hash": "7377befeabadcb49",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "message",
@@ -1213,12 +1136,12 @@
         "label": "What needs help? field",
         "expected": "Editable support message",
         "result": "pass",
-        "evidence": "CUA 2026-07-06: reproof after source hash change (message)",
+        "evidence": "Computer-use validation-gurusharan settings/settings-support 2026-08-01: message",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "e493cc1ddb6d616b",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA"
+        "tested_source_hash": "7377befeabadcb49",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "send",
@@ -1226,103 +1149,103 @@
         "label": "Send support note",
         "expected": "POST feedback; disabled when empty",
         "result": "pass",
-        "evidence": "CUA 2026-07-06: reproof after source hash change (send)",
+        "evidence": "Computer-use validation-gurusharan settings/settings-support 2026-08-01: send",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "e493cc1ddb6d616b",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA"
+        "tested_source_hash": "7377befeabadcb49",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "discovery-who",
         "type": "button",
         "label": "Who can discover you",
         "expected": "Picker updates discovery scope",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "api-persist validation-gurusharan settings/settings-discovery-details 2026-08-01: discovery-who",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "7377befeabadcb49",
+        "last_test_method": "api-persist"
       },
       {
         "id": "discovery-age-range",
         "type": "button",
         "label": "Age range slider",
         "expected": "Updates age range preference",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "api-persist validation-gurusharan settings/settings-discovery-details 2026-08-01: discovery-age-range",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "7377befeabadcb49",
+        "last_test_method": "api-persist"
       },
       {
         "id": "discovery-visibility",
         "type": "button",
         "label": "Visibility radios",
         "expected": "Selects visibility mode",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "api-persist validation-gurusharan settings/settings-discovery-details 2026-08-01: discovery-visibility",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "7377befeabadcb49",
+        "last_test_method": "api-persist"
       },
       {
         "id": "discovery-save",
         "type": "button",
         "label": "Save preferences",
         "expected": "POST soulmate preferences",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "api-persist validation-gurusharan settings/settings-discovery-details 2026-08-01: discovery-save",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "7377befeabadcb49",
+        "last_test_method": "api-persist"
       },
       {
         "id": "sign-out-cancel",
         "type": "button",
         "label": "Cancel (sign out)",
         "expected": "Dismisses sign-out dialog without signing out",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "Computer-use validation-gurusharan settings/settings-sign-out-cancel 2026-08-01: sign-out-cancel",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "7377befeabadcb49",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "delete-cancel",
         "type": "button",
         "label": "Cancel (delete account)",
         "expected": "Dismisses delete dialog",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "Computer-use validation-gurusharan settings/settings-delete-cancel 2026-08-01: delete-cancel",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "7377befeabadcb49",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "support-done",
         "type": "button",
         "label": "Done (support sheet)",
         "expected": "Dismisses ContactSupportSheet",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "Computer-use validation-gurusharan settings/settings-support-done 2026-08-01: support-done",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "7377befeabadcb49",
+        "last_test_method": "Computer-use"
       }
     ],
     "macos": [
@@ -1332,12 +1255,12 @@
         "label": "Settings sidebar (honest static styling)",
         "expected": "Unshipped rows use muted Planned/detail labels; no fake selectable chrome",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (sidebar-honesty) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: The sidebar exposes Account, Privacy & safety, Notifications, Soulmate with honest Enabled status, Connected apps, Appearance, Language, Help & support, Log out, and Delete account without fake selection styling.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "f20a736df43bcfaa",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "5359e5422104937f",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "account-settings",
@@ -1345,12 +1268,12 @@
         "label": "Account",
         "expected": "Select inline panel: account settings screen (session, profile basics, data)",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (account-settings) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
+        "evidence": "Canonical LikemindedMac Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: Account pane rendered Gurusharan Gupta, Bangalore, Male, plus the explicit Profile → Edit profile ownership note.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-05",
-        "tested_source_hash": "f20a736df43bcfaa",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "5359e5422104937f",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "privacy-safety",
@@ -1358,12 +1281,12 @@
         "label": "Privacy & safety",
         "expected": "Select inline panel: privacy & safety settings screen",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (privacy-safety) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
+        "evidence": "Canonical LikemindedMac Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: Privacy & safety rendered the TestFlight Privacy Policy with collected-data, usage, controls, no-sale statement, and contact copy.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-05",
-        "tested_source_hash": "f20a736df43bcfaa",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "5359e5422104937f",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "notifications-settings",
@@ -1371,12 +1294,12 @@
         "label": "Notifications",
         "expected": "Select inline panel: notification preferences screen",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (notifications-settings) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
+        "evidence": "Canonical LikemindedMac Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: Notifications rendered Meet reminders, New match messages, and Community activity switches plus honest TestFlight push-delivery status.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-05",
-        "tested_source_hash": "f20a736df43bcfaa",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "5359e5422104937f",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "connected-apps",
@@ -1384,12 +1307,12 @@
         "label": "Connected apps",
         "expected": "Select inline panel: connected apps / integrations screen",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (connected-apps) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
+        "evidence": "Canonical LikemindedMac Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: Connected apps rendered no integrations connected yet, Sign in with Apple, and LiveKit group meets status without fabricated connections.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-05",
-        "tested_source_hash": "f20a736df43bcfaa",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "5359e5422104937f",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "appearance",
@@ -1397,12 +1320,12 @@
         "label": "Appearance",
         "expected": "Select inline panel: appearance / theme settings screen",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (appearance) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
+        "evidence": "Canonical LikemindedMac Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: Appearance rendered native Match system, Light, and Dark radio options with Match system selected and honest later-shipping theme note.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-05",
-        "tested_source_hash": "f20a736df43bcfaa",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "5359e5422104937f",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "language",
@@ -1410,12 +1333,12 @@
         "label": "Language",
         "expected": "Select inline panel: language / locale settings screen",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (language) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
+        "evidence": "Canonical LikemindedMac Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: Language rendered an App language selector set to English and the honest additional-locales-after-TestFlight note.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-05",
-        "tested_source_hash": "f20a736df43bcfaa",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "5359e5422104937f",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "help-support",
@@ -1423,12 +1346,12 @@
         "label": "Help & support",
         "expected": "Select inline panel: help / FAQ / contact support screen (macOS-native)",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (help-support) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: Help & support rendered its truthful guidance; setting the message to macOS settings support validation 2026-08-02 enabled Send support note, sending cleared the field and rendered Support note saved.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-05",
-        "tested_source_hash": "f20a736df43bcfaa",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "5359e5422104937f",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "log-out",
@@ -1436,12 +1359,12 @@
         "label": "Log out",
         "expected": "Opens confirmation; Sign out → appState.signOut()",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (log-out) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: Log out opened the explicit confirmation; Sign out cleared the local session and rendered the welcome/auth screen while preserving backend tester data.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "f20a736df43bcfaa",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "5359e5422104937f",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "delete-account",
@@ -1449,12 +1372,12 @@
         "label": "Delete account",
         "expected": "Opens confirmation; Delete account → DELETE /v1/me/account and clears local session",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (delete-account) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
+        "evidence": "Canonical LikemindedMac Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: Delete account showed the explicit destructive confirmation; confirming removed validation tester data, cleared the local session, and rendered the welcome/auth screen. The pre-delete bearer token then returned HTTP 401.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "f20a736df43bcfaa",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "5359e5422104937f",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "api-persist"
       },
       {
         "id": "soulmate-toggle",
@@ -1462,155 +1385,103 @@
         "label": "Enable Soulmate",
         "expected": "Toggles soulmate via backend",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (soulmate-toggle) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: Enable Soulmate toggled from On to Off, authenticated status read back enabled=false, then toggled back On and read back enabled=true; the setting remains owned only by Settings.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "f20a736df43bcfaa",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "CUA-click"
-      },
-      {
-        "id": "view-profile",
-        "type": "button",
-        "label": "View profile",
-        "expected": "Removed — Profile tab owns profile view",
-        "result": "pass",
-        "evidence": "2026-07-05: View profile row removed from settings sidebar. ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
-        "blocker": "",
-        "stub": false,
-        "tested_source_hash": "f20a736df43bcfaa",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "CUA-click"
-      },
-      {
-        "id": "voice-profile",
-        "type": "button",
-        "label": "Voice profile",
-        "expected": "Removed — voice profile accessed from Profile tab",
-        "result": "pass",
-        "evidence": "2026-07-05: Voice profile row removed; Retake voice profile remains on Profile tab. ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
-        "blocker": "",
-        "stub": false,
-        "tested_source_hash": "f20a736df43bcfaa",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "CUA-click"
-      },
-      {
-        "id": "discovery-preference",
-        "type": "display",
-        "label": "Who can discover you",
-        "expected": "Editable discovery preference persisted to backend (not static formLine)",
-        "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (discovery-preference) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
-        "blocker": "",
-        "stub": false,
-        "last_tested_at": "2026-07-05",
-        "tested_source_hash": "f20a736df43bcfaa",
-        "last_test_method": "CUA-click"
-      },
-      {
-        "id": "age-range",
-        "type": "display",
-        "label": "Age range",
-        "expected": "Editable age-range preference persisted to backend (slider or picker)",
-        "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (age-range) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
-        "blocker": "",
-        "stub": false,
-        "last_tested_at": "2026-07-05",
-        "tested_source_hash": "f20a736df43bcfaa",
-        "last_test_method": "CUA-click"
-      },
-      {
-        "id": "visibility",
-        "type": "display",
-        "label": "Visibility",
-        "expected": "Editable visibility preference persisted to backend (e.g. Circles only / broader)",
-        "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (visibility) ( CUA-click validation-priya mockup-20 plate 2026-07-05.",
-        "blocker": "",
-        "stub": false,
-        "last_tested_at": "2026-07-05",
-        "tested_source_hash": "f20a736df43bcfaa",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "5359e5422104937f",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "discovery-who",
         "type": "button",
         "label": "Who can discover you",
-        "expected": "Picker updates discovery scope",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
-        "blocker": "",
+        "expected": "Existing discovery scope remains API-persisted",
+        "result": "pass",
+        "evidence": "Canonical LikemindedMac Computer proof and screenshot compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: disclaimer visible; selected circles-only, circles-and-communities, and mutual-matches-only; final UI showed People in my communities, exact 18-80 bounds, mutual matches only, and Preferences saved. Authenticated GET /v1/me/soulmate/status exactly returned discovery=communities, ageMin=18, ageMax=80, visibility=matches_only.",
+        "blocker": "Awaiting first proof of redesigned macOS contract",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "5359e5422104937f",
+        "last_test_method": "api-persist"
       },
       {
         "id": "discovery-age-range",
         "type": "button",
         "label": "Age range",
-        "expected": "Updates age range preference",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "expected": "Supports and persists the exact inclusive range 18–80",
+        "result": "pass",
+        "evidence": "Canonical LikemindedMac Computer proof and screenshot compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: disclaimer visible; selected circles-only, circles-and-communities, and mutual-matches-only; final UI showed People in my communities, exact 18-80 bounds, mutual matches only, and Preferences saved. Authenticated GET /v1/me/soulmate/status exactly returned discovery=communities, ageMin=18, ageMax=80, visibility=matches_only.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "5359e5422104937f",
+        "last_test_method": "api-persist"
       },
       {
         "id": "discovery-visibility",
         "type": "button",
         "label": "Visibility radios",
-        "expected": "Selects visibility mode",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "expected": "Selects Circles only, Circles and communities, or Mutual matches only",
+        "result": "pass",
+        "evidence": "Canonical LikemindedMac Computer proof and screenshot compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: disclaimer visible; selected circles-only, circles-and-communities, and mutual-matches-only; final UI showed People in my communities, exact 18-80 bounds, mutual matches only, and Preferences saved. Authenticated GET /v1/me/soulmate/status exactly returned discovery=communities, ageMin=18, ageMax=80, visibility=matches_only.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "5359e5422104937f",
+        "last_test_method": "api-persist"
       },
       {
         "id": "discovery-save",
         "type": "button",
         "label": "Save preferences",
-        "expected": "POST soulmate preferences",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "expected": "POST preferences, show the saved-but-not-enforced disclaimer/status, and match authenticated API readback",
+        "result": "pass",
+        "evidence": "Canonical LikemindedMac Computer proof and screenshot compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: disclaimer visible; selected circles-only, circles-and-communities, and mutual-matches-only; final UI showed People in my communities, exact 18-80 bounds, mutual matches only, and Preferences saved. Authenticated GET /v1/me/soulmate/status exactly returned discovery=communities, ageMin=18, ageMax=80, visibility=matches_only.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "5359e5422104937f",
+        "last_test_method": "api-persist"
       },
       {
         "id": "sign-out-cancel",
         "type": "button",
         "label": "Cancel (sign out)",
         "expected": "Dismisses sign-out dialog",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: Log out opened the explicit Sign out of Likeminded confirmation; Cancel dismissed it and preserved the authenticated Help & support screen.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "5359e5422104937f",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "delete-cancel",
         "type": "button",
         "label": "Cancel (delete account)",
         "expected": "Dismisses delete dialog",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "Canonical LikemindedMac Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: Delete account opened a destructive sheet stating backend tester data and local session would be removed; Cancel dismissed it and returned to the unchanged Soulmate settings state with saved preferences intact.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "5359e5422104937f",
+        "last_test_method": "Computer-use"
+      },
+      {
+        "id": "preferences-enforcement-disclaimer",
+        "type": "display",
+        "label": "Preference enforcement disclaimer",
+        "expected": "Displays: These preferences are saved to your account. The current MVP does not yet use them to filter a browsing feed; matches still come from mutual choices after a meetup.",
+        "result": "pass",
+        "evidence": "Canonical LikemindedMac Computer proof and screenshot compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: disclaimer visible; selected circles-only, circles-and-communities, and mutual-matches-only; final UI showed People in my communities, exact 18-80 bounds, mutual matches only, and Preferences saved. Authenticated GET /v1/me/soulmate/status exactly returned discovery=communities, ageMin=18, ageMax=80, visibility=matches_only.",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "5359e5422104937f",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "api-persist"
       }
     ]
   }

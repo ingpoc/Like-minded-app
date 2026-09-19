@@ -7,10 +7,14 @@ IOS_DIR="$ROOT_DIR/apps/ios-macos"
 PROJECT_FILE="$IOS_DIR/Likeminded.xcodeproj"
 SCHEME="Likeminded"
 APP_NAME="Likeminded"
-BUNDLE_ID="${BUNDLE_ID:-com.likeminded.app}"
+BUNDLE_ID="${BUNDLE_ID:-com.gurusharan.likeminded}"
 DERIVED_DATA="$ROOT_DIR/.build/ios-simulator"
 
 resolve_simulator() {
+  if [[ -n "${SIMULATOR_ID:-}" ]]; then
+    echo "$SIMULATOR_ID"
+    return 0
+  fi
   local preferred="${SIMULATOR_NAME:-iPhone 17}"
   local id
   id=$(xcrun simctl list devices available 2>/dev/null | grep -F "$preferred " | head -1 | grep -oE '\([A-F0-9-]+\)' | tr -d '()')
@@ -32,7 +36,7 @@ generate_project() {
 
 boot_simulator() {
   if ! xcrun simctl list devices available | grep -F "$SIMULATOR_ID" >/dev/null 2>&1; then
-    echo "Simulator '$SIMULATOR_NAME' is not available." >&2
+    echo "Simulator '${SIMULATOR_NAME:-$SIMULATOR_ID}' is not available." >&2
     exit 1
   fi
 

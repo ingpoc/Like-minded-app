@@ -7,11 +7,15 @@
       "ledger_legacy_id": "06-voice-session-sheet",
       "implemented": true,
       "source_files": [
-        "apps/ios-macos/Sources/LikemindedApp/Views/ProfilePrototypeView.swift (VoiceProfileSessionSheet)",
+        "apps/ios-macos/Sources/LikemindedApp/Views/ProfilePrototypeView.swift",
         "apps/ios-macos/Sources/LikemindedApp/Data/PrototypeAppState.swift (seedVoiceSessionPreviewIfNeeded)",
+        "apps/ios-macos/Sources/LikemindedApp/Data/PrototypeAppState.swift (completeVoiceSession)",
+        "apps/ios-macos/Sources/LikemindedApp/Data/RealtimeVoiceClient.swift",
+        "apps/ios-macos/Sources/LikemindedApp/Data/LikemindedAPIClient.swift (createRealtimeSession)",
+        "services/api/src/server.js (createRealtimeClientSecret)",
         "apps/ios-macos/Sources/LikemindedApp/Views/RootView.swift (--likeminded-start-voice-session)"
       ],
-      "source_hash": "523b44d805d35adc",
+      "source_hash": "497c272191f085d8",
       "mockup_ref": "mockups/ios/01-04-onboarding-voice-meet-soulmate.png",
       "mockup_missing": false,
       "entry_points": [
@@ -24,28 +28,49 @@
       ],
       "ui_validation": {
         "result": "pass",
-        "notes": "2026-07-05 capture output/validation/ios-screens/06-voice-session-sheet.png: dark VoiceProfileSessionSheet, pulsing orb + waveform, I am listening for fit copy, captured-signals list, Stop and extract signals. Center luminance 26.8. Intentional: sheet modal vs montage frame; macOS uses profileOnboarding step-2 text reflection instead of realtime sheet."
+        "notes": "2026-07-10 preview capture output/validation/ios-screens/voice-session-sheet.png: dark VoiceProfileSessionSheet, waveform, captured-signals list, Stop and Done states, and AI-primary-placement privacy copy. Preview capture proves layout only; behavioral flows remain pending interaction and backend-state proof."
       },
       "visual_parity": {
         "result": "pass",
-        "notes": "2026-07-05 capture output/validation/ios-screens/06-voice-session-sheet.png: dark VoiceProfileSessionSheet, pulsing orb + waveform, I am listening for fit copy, captured-signals list, Stop and extract signals. Center luminance 26.8. Intentional: sheet modal vs montage frame; macOS uses profileOnboarding step-2 text reflection instead of realtime sheet."
+        "notes": "2026-07-10 preview capture output/validation/ios-screens/voice-session-sheet.png matches the dark voice-profile composition and short signal summary. Intentional: sheet modal vs montage frame; macOS uses profileOnboarding step-2 text reflection. Interaction and persistence are not claimed by this preview."
       },
-      "recent_screenshot_ref": "output/validation/ios-screens/06-voice-session-sheet.png",
+      "recent_screenshot_ref": "output/validation/ios-screens/voice-session-sheet.png",
       "notes": "macOS map: --mac-screen profileOnboarding step 2 (validation/macos/13-profile-onboarding.json voice-profile-step). Validation capture: output/validation/ios-screens/06-voice-session-sheet.png (2026-07-05, center luminance 26.8). Launch: --likeminded-start-voice-session --likeminded-dev-voice-preview with validation-gurusharan; RootView routes voice-session to Profile tab."
     },
     "macos": {
-      "ledger_legacy_id": null,
-      "implemented": false,
-      "source_files": [],
-      "source_hash": null,
-      "mockup_ref": null,
-      "mockup_missing": true,
-      "entry_points": [],
-      "backend_dependencies": [],
-      "ui_validation": null,
-      "visual_parity": null,
-      "recent_screenshot_ref": null,
-      "notes": "No dedicated macOS screen — feature may live under another logical screen"
+      "ledger_legacy_id": "13-profile-onboarding",
+      "implemented": true,
+      "source_files": [
+        "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (profileVoiceStepPanel)",
+        "apps/ios-macos/Sources/LikemindedMac/MacAppState.swift (startVoiceProfile, continueProfileInterview)",
+        "apps/ios-macos/Sources/LikemindedApp/Data/RealtimeVoiceClient.swift",
+        "services/api/src/server.js (/v1/profile-interview/turn, /v1/discover, /v1/realtime/session)"
+      ],
+      "source_hash": "b37c8eeca066523c",
+      "mockup_ref": "mockups/macos/concepts/mockup-profile-ai-interview.png",
+      "mockup_missing": false,
+      "entry_points": [
+        "Profile → onboarding → Voice profile"
+      ],
+      "backend_dependencies": [
+        "POST /v1/profile-interview/turn",
+        "POST /v1/discover",
+        "POST /v1/realtime/session",
+        "POST /v1/realtime/profile-placement",
+        "GET /v1/me/profile",
+        "GET /v1/me/placement",
+        "GET /v1/me/circles"
+      ],
+      "ui_validation": {
+        "result": "pending",
+        "notes": "2026-07-12 Computer proved typed AI interview, profile completion, persisted AI placement, and Circles rendering. Realtime voice connected and stopped honestly with insufficient-conversation state; human microphone speech and amplitude remain unproven."
+      },
+      "visual_parity": {
+        "result": "pass",
+        "notes": "Computer 2026-07-12 compared the concept with the rebuilt live app. The meaningless right-side orb and explanatory column are removed; their space now gives the central interview and composer the intended prominence. The screen retains the editorial rail, dominant forest voice card, multi-turn conversation, functional voice-or-type composer, and a single contextual convergence field inside the voice card. Two live captures during a typed AI turn show the contours deforming between frames; Realtime output uses the same active phase, settles on response.done, and freezes for Reduce Motion."
+      },
+      "recent_screenshot_ref": "output/validation/macos-screens/profile-ai-interview-default.jpg",
+      "notes": "Implemented inside profileOnboarding step 2 with voice and typed AI interview sharing the same model-backed placement contract."
     }
   },
   "flows": [
@@ -65,12 +90,13 @@
       },
       "validation": {
         "ios": {
-          "result": "pass",
-          "evidence": "voice-orb: screen-capture 2026-07-05",
-          "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "523b44d805d35adc",
-          "last_test_method": "screen-capture"
+          "result": "blocked",
+          "evidence": "Text-box and non-microphone validation completed; spoken microphone behavior remains assigned to the user for device proof.",
+          "blocker": "Requires user-spoken microphone input and microphone-permission acceptance; the user explicitly assigned microphone validation to themselves.",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "c8fe27f759e1ffb0",
+          "last_test_method": "manual"
         },
         "macos": {
           "result": "not-applicable",
@@ -82,7 +108,7 @@
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -94,14 +120,14 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/01-04-onboarding-voice-meet-soulmate.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen voice-session --platform ios",
-          "macos": "npm run ledger:screen -- --platform macos --screen voice-session --section flows"
+          "macos": "@Computer: npm run dev:macos:validation -- voice-session; target the canonical app by full path; prove voice-session/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen voice-session --flow voice-orb --result pass --method <tier-method> --evidence \"...\""
       }
     },
     {
       "id": "stop",
-      "name": "Stop",
+      "name": "Stop listening safely",
       "origin": "voice-session",
       "steps": [],
       "destinations": [],
@@ -115,12 +141,13 @@
       },
       "validation": {
         "ios": {
-          "result": "pass",
-          "evidence": "stop: screen-capture 2026-07-05",
-          "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "523b44d805d35adc",
-          "last_test_method": "screen-capture"
+          "result": "blocked",
+          "evidence": "Text-box and non-microphone validation completed; spoken microphone behavior remains assigned to the user for device proof.",
+          "blocker": "Requires user-spoken microphone input and microphone-permission acceptance; the user explicitly assigned microphone validation to themselves.",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "c8fe27f759e1ffb0",
+          "last_test_method": "manual"
         },
         "macos": {
           "result": "not-applicable",
@@ -132,7 +159,7 @@
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -144,7 +171,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/01-04-onboarding-voice-meet-soulmate.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen voice-session --platform ios",
-          "macos": "npm run ledger:screen -- --platform macos --screen voice-session --section flows"
+          "macos": "@Computer: npm run dev:macos:validation -- voice-session; target the canonical app by full path; prove voice-session/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen voice-session --flow stop --result pass --method <tier-method> --evidence \"...\""
       }
@@ -165,12 +192,13 @@
       },
       "validation": {
         "ios": {
-          "result": "pass",
-          "evidence": "done: screen-capture 2026-07-05",
-          "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "523b44d805d35adc",
-          "last_test_method": "screen-capture"
+          "result": "blocked",
+          "evidence": "Text-box and non-microphone validation completed; spoken microphone behavior remains assigned to the user for device proof.",
+          "blocker": "Requires user-spoken microphone input and microphone-permission acceptance; the user explicitly assigned microphone validation to themselves.",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "c8fe27f759e1ffb0",
+          "last_test_method": "manual"
         },
         "macos": {
           "result": "not-applicable",
@@ -182,7 +210,7 @@
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -194,9 +222,307 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/01-04-onboarding-voice-meet-soulmate.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen voice-session --platform ios",
-          "macos": "npm run ledger:screen -- --platform macos --screen voice-session --section flows"
+          "macos": "@Computer: npm run dev:macos:validation -- voice-session; target the canonical app by full path; prove voice-session/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen voice-session --flow done --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "typed-ai-interview-macos",
+      "name": "Typed multi-turn AI profile interview",
+      "origin": "voice-session",
+      "steps": [
+        "Open Profile onboarding step 2",
+        "Type and send contextual answers",
+        "Continue until AI offers completion"
+      ],
+      "destinations": [
+        "profileOnboarding step 3"
+      ],
+      "spans": [
+        "macos",
+        "api"
+      ],
+      "backend": [
+        "POST /v1/profile-interview/turn",
+        "POST /v1/discover"
+      ],
+      "control_ids": {
+        "ios": [],
+        "macos": [
+          "typed-reply",
+          "complete-profile"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "not-applicable",
+          "evidence": "macOS typed fallback flow",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "Bundled Computer typed four private multi-turn answers and observed contextual follow-ups about setting, topics, feedback, and shared activity; the AI displayed I have enough to build your private profile; Complete profile synthesized placement and advanced to step 3 with Reflective Builders, compared with mockups/macos/concepts/mockup-profile-ai-interview.png.",
+          "blocker": "",
+          "screenshot_ref": "output/validation/macos-screens/voice-profile-complete-current-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "b37c8eeca066523c",
+          "last_test_method": "Computer-use"
+        }
+      },
+      "proof": {
+        "tier": "computer-use",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Typed answers receive contextual AI follow-up turns",
+          "AI offers profile completion after the multi-turn interview",
+          "Complete profile advances to profileOnboarding step 3"
+        ],
+        "mockup_ref": "mockups/macos/concepts/mockup-profile-ai-interview.png",
+        "mockup_note": "Baseline: output/validation/macos-screens/profile-ai-interview-parity.jpg",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen voice-session --platform ios",
+          "macos": "@Computer: npm run dev:macos:validation -- voice-session; target the canonical app by full path; prove voice-session/<flow>"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen voice-session --flow typed-ai-interview-macos --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "profile-placement-reload-macos",
+      "name": "Persist profile and AI placement through Circles",
+      "origin": "voice-session",
+      "steps": [
+        "Complete interview",
+        "Reload profile and placement",
+        "Open Circles"
+      ],
+      "destinations": [
+        "circle-detail"
+      ],
+      "spans": [
+        "macos",
+        "api",
+        "store"
+      ],
+      "backend": [
+        "GET /v1/me/profile",
+        "GET /v1/me/placement",
+        "GET /v1/me/circles"
+      ],
+      "control_ids": {
+        "ios": [],
+        "macos": [
+          "complete-profile"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "not-applicable",
+          "evidence": "macOS closed-loop flow",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "Bundled Computer completed the interview, relaunched the canonical signed-in app without reseeding, reloaded Your circle is ready with Reflective Builders, then Open your assigned circle navigated to populated Circles with Reflective Builders as PRIMARY CIRCLE; compared with mockups/macos/concepts/mockup-profile-ai-interview.png.",
+          "blocker": "",
+          "screenshot_ref": "output/validation/macos-screens/profile-placement-reload-current-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "b37c8eeca066523c",
+          "last_test_method": "Computer-use"
+        }
+      },
+      "proof": {
+        "tier": "computer-use",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Step satisfied: Complete interview",
+          "Step satisfied: Reload profile and placement",
+          "Step satisfied: Open Circles"
+        ],
+        "mockup_ref": "mockups/macos/concepts/mockup-profile-ai-interview.png",
+        "mockup_note": "Baseline: output/validation/macos-screens/profile-ai-interview-default.jpg",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen voice-session --platform ios",
+          "macos": "@Computer: npm run dev:macos:validation -- voice-session; target the canonical app by full path; prove voice-session/<flow>"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen voice-session --flow profile-placement-reload-macos --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "voice-start-macos",
+      "name": "Start macOS voice interview",
+      "origin": "voice-session",
+      "steps": [
+        "Start microphone capture and enter the active interview state"
+      ],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [],
+        "macos": [
+          "start-voice"
+        ]
+      },
+      "gap_audit": "2026-07-22",
+      "validation": {
+        "ios": {
+          "result": "not-applicable",
+          "evidence": "",
+          "blocker": "",
+          "screenshot_ref": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        },
+        "macos": {
+          "result": "blocked",
+          "evidence": "Assistant completed text-box coverage only on 2026-08-01; user reserved microphone testing.",
+          "blocker": "Requires user-spoken microphone input and microphone-permission acceptance; the user explicitly assigned microphone validation to themselves.",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "ebd6d00b42c5dcd0",
+          "last_test_method": "Computer-use"
+        }
+      },
+      "proof": {
+        "tier": "computer-use",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Step satisfied: Start microphone capture and enter the active interview state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.macos.mockup_ref: mockups/macos/concepts/mockup-profile-ai-interview.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen voice-session --platform ios",
+          "macos": "@Computer: npm run dev:macos:validation -- voice-session; target the canonical app by full path; prove voice-session/<flow>"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen voice-session --flow voice-start-macos --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "voice-amplitude-macos",
+      "name": "macOS voice activity feedback",
+      "origin": "voice-session",
+      "steps": [
+        "Speak during the interview and observe live microphone activity feedback"
+      ],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [],
+        "macos": [
+          "voice-amplitude"
+        ]
+      },
+      "gap_audit": "2026-07-22",
+      "validation": {
+        "ios": {
+          "result": "not-applicable",
+          "evidence": "",
+          "blocker": "",
+          "screenshot_ref": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        },
+        "macos": {
+          "result": "blocked",
+          "evidence": "Assistant completed text-box coverage only on 2026-08-01; user reserved microphone testing.",
+          "blocker": "Requires user-spoken microphone input and microphone-permission acceptance; the user explicitly assigned microphone validation to themselves.",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "ebd6d00b42c5dcd0",
+          "last_test_method": "Computer-use"
+        }
+      },
+      "proof": {
+        "tier": "computer-use",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Step satisfied: Speak during the interview and observe live microphone activity feedback"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.macos.mockup_ref: mockups/macos/concepts/mockup-profile-ai-interview.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen voice-session --platform ios",
+          "macos": "@Computer: npm run dev:macos:validation -- voice-session; target the canonical app by full path; prove voice-session/<flow>"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen voice-session --flow voice-amplitude-macos --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "voice-stop-macos",
+      "name": "Stop macOS voice interview",
+      "origin": "voice-session",
+      "steps": [
+        "Stop microphone capture and leave the active interview state"
+      ],
+      "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [],
+        "macos": [
+          "stop-voice"
+        ]
+      },
+      "gap_audit": "2026-07-22",
+      "validation": {
+        "ios": {
+          "result": "not-applicable",
+          "evidence": "",
+          "blocker": "",
+          "screenshot_ref": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        },
+        "macos": {
+          "result": "blocked",
+          "evidence": "Assistant completed text-box coverage only on 2026-08-01; user reserved microphone testing.",
+          "blocker": "Requires user-spoken microphone input and microphone-permission acceptance; the user explicitly assigned microphone validation to themselves.",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "ebd6d00b42c5dcd0",
+          "last_test_method": "Computer-use"
+        }
+      },
+      "proof": {
+        "tier": "computer-use",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Step satisfied: Stop microphone capture and leave the active interview state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.macos.mockup_ref: mockups/macos/concepts/mockup-profile-ai-interview.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen voice-session --platform ios",
+          "macos": "@Computer: npm run dev:macos:validation -- voice-session; target the canonical app by full path; prove voice-session/<flow>"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen voice-session --flow voice-stop-macos --result pass --method <tier-method> --evidence \"...\""
       }
     }
   ],
@@ -208,24 +534,24 @@
         "label": "Voice orb (idle/listening/processing/captured)",
         "expected": "Animates with audio amplitude",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (voice-orb)",
+        "evidence": "screen-capture validation-gurusharan 2026-08-01 capture closeout: reproof after source hash change (voice-orb)",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "523b44d805d35adc",
-        "last_tested_at": "2026-07-05",
+        "tested_source_hash": "c8fe27f759e1ffb0",
+        "last_tested_at": "2026-08-01",
         "last_test_method": "screen-capture"
       },
       {
         "id": "stop",
         "type": "button",
-        "label": "Stop",
-        "expected": "Calls stopVoiceSession; persists profile",
+        "label": "Stop listening",
+        "expected": "Remains available while connecting or listening, ends microphone use, and never claims persistence without confirmation",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (stop)",
+        "evidence": "screen-capture validation-gurusharan 2026-08-01 capture closeout: reproof after source hash change (stop)",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "523b44d805d35adc",
-        "last_tested_at": "2026-07-05",
+        "tested_source_hash": "c8fe27f759e1ffb0",
+        "last_tested_at": "2026-08-01",
         "last_test_method": "screen-capture"
       },
       {
@@ -234,14 +560,80 @@
         "label": "Done",
         "expected": "Dismisses sheet",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (done)",
+        "evidence": "screen-capture validation-gurusharan 2026-08-01 capture closeout: reproof after source hash change (done)",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "523b44d805d35adc",
-        "last_tested_at": "2026-07-05",
+        "tested_source_hash": "c8fe27f759e1ffb0",
+        "last_tested_at": "2026-08-01",
         "last_test_method": "screen-capture"
       }
     ],
-    "macos": []
+    "macos": [
+      {
+        "id": "typed-reply",
+        "type": "text-field",
+        "label": "Reply to the AI",
+        "expected": "Sends user turn and renders contextual model follow-up",
+        "result": "pass",
+        "evidence": "Bundled Computer typed four private multi-turn answers and observed contextual follow-ups about setting, topics, feedback, and shared activity; the AI displayed I have enough to build your private profile; Complete profile synthesized placement and advanced to step 3 with Reflective Builders, compared with mockups/macos/concepts/mockup-profile-ai-interview.png.",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "b37c8eeca066523c",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
+      },
+      {
+        "id": "complete-profile",
+        "type": "button",
+        "label": "Complete profile",
+        "expected": "Persists profile and AI placement, then shows assigned-circle step",
+        "result": "pass",
+        "evidence": "Bundled Computer completed the interview, relaunched the canonical signed-in app without reseeding, reloaded Your circle is ready with Reflective Builders, then Open your assigned circle navigated to populated Circles with Reflective Builders as PRIMARY CIRCLE; compared with mockups/macos/concepts/mockup-profile-ai-interview.png.",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "b37c8eeca066523c",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
+      },
+      {
+        "id": "start-voice",
+        "type": "button",
+        "label": "Start voice profile",
+        "expected": "Connects authenticated Realtime WebRTC session",
+        "result": "pass",
+        "evidence": "Computer 2026-07-12 showed Voice is listening / Stop and save voice profile",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "47483b21d4aacc91",
+        "last_tested_at": "2026-07-12",
+        "last_test_method": "Computer"
+      },
+      {
+        "id": "voice-amplitude",
+        "type": "display",
+        "label": "Voice input activity",
+        "expected": "Shows live microphone activity and transcript-backed profile progress",
+        "result": "blocked",
+        "evidence": "Computer 2026-07-12 current build: AVCaptureDevice reported no microphone; app showed Voice needs attention and No microphone is available, preserved typed fallback, and allowed retry. Requires a connected human microphone for amplitude proof.",
+        "blocker": "Requires human microphone speech",
+        "stub": false,
+        "tested_source_hash": "de137b03bbab8f5d",
+        "last_tested_at": "2026-07-12",
+        "last_test_method": "Computer"
+      },
+      {
+        "id": "stop-voice",
+        "type": "button",
+        "label": "Stop and save voice profile",
+        "expected": "Stops safely and never claims persistence without enough conversation",
+        "result": "pass",
+        "evidence": "Computer 2026-07-12 returned honest insufficient-conversation state",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "47483b21d4aacc91",
+        "last_tested_at": "2026-07-12",
+        "last_test_method": "Computer"
+      }
+    ]
   }
 }

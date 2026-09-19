@@ -17,6 +17,8 @@ struct WaveLines: Shape {
 }
 
 struct ScreenContainer<Content: View, TrailingHeader: View>: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     let title: String
     let subtitle: String
     var caption: String?
@@ -47,10 +49,13 @@ struct ScreenContainer<Content: View, TrailingHeader: View>: View {
                             .foregroundStyle(PrototypePalette.accent)
 
                         Text(subtitle)
-                            .font(PrototypeTypography.display)
+                            .font(PrototypeTypography.pageTitle)
                             .foregroundStyle(PrototypePalette.ink)
-                            .frame(maxWidth: 320, alignment: .leading)
-                            .lineLimit(3)
+                            .frame(
+                                maxWidth: dynamicTypeSize.isAccessibilitySize ? .infinity : 320,
+                                alignment: .leading
+                            )
+                            .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
                             .fixedSize(horizontal: false, vertical: true)
                             .accessibilityAddTraits(.isHeader)
 
@@ -66,6 +71,7 @@ struct ScreenContainer<Content: View, TrailingHeader: View>: View {
                     Spacer(minLength: 0)
 
                     trailingHeader
+                        .dynamicTypeSize(.large)
                 }
 
                 content
@@ -161,6 +167,8 @@ struct SecondaryActionButton: View {
     var body: some View {
         Label(title, systemImage: systemImage)
             .font(PrototypeTypography.button)
+            .lineLimit(1)
+            .minimumScaleFactor(0.8)
             .foregroundStyle(PrototypePalette.ink)
             .padding(.horizontal, 18)
             .padding(.vertical, 16)
@@ -384,18 +392,49 @@ struct FlexibleTagLayout: View {
     let items: [String]
 
     var body: some View {
-        ViewThatFits(in: .vertical) {
-            HStack(spacing: 8) {
-                ForEach(items, id: \.self) { item in
-                    TagView(title: item)
-                }
+        FlowLayout(spacing: 8) {
+            ForEach(items, id: \.self) { item in
+                TagView(title: item)
             }
+        }
+    }
+}
 
-            VStack(alignment: .leading, spacing: 8) {
-                ForEach(items, id: \.self) { item in
-                    TagView(title: item)
-                }
+struct FlowLayout: Layout {
+    var spacing: CGFloat = 8
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let width = proposal.width ?? 0
+        var x: CGFloat = 0
+        var y: CGFloat = 0
+        var rowHeight: CGFloat = 0
+        for subview in subviews {
+            let size = subview.sizeThatFits(.unspecified)
+            if x + size.width > width, x > 0 {
+                x = 0
+                y += rowHeight + spacing
+                rowHeight = 0
             }
+            rowHeight = max(rowHeight, size.height)
+            x += size.width + spacing
+        }
+        return CGSize(width: width, height: y + rowHeight)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        var x = bounds.minX
+        var y = bounds.minY
+        var rowHeight: CGFloat = 0
+        for subview in subviews {
+            let size = subview.sizeThatFits(.unspecified)
+            if x + size.width > bounds.maxX, x > bounds.minX {
+                x = bounds.minX
+                y += rowHeight + spacing
+                rowHeight = 0
+            }
+            subview.place(at: CGPoint(x: x, y: y), proposal: ProposedViewSize(size))
+            rowHeight = max(rowHeight, size.height)
+            x += size.width + spacing
         }
     }
 }
@@ -406,6 +445,7 @@ struct TagView: View {
     var body: some View {
         Text(title)
             .font(PrototypeTypography.metadata)
+            .fixedSize(horizontal: true, vertical: false)
             .foregroundStyle(PrototypePalette.ink)
             .padding(.horizontal, 11)
             .padding(.vertical, 8)
@@ -460,11 +500,12 @@ extension View {
         )
     }
 
-    func prototypeBackNavigation(label: String = "Back") -> some View {
-        overlay(alignment: .topLeading) {
-            PrototypeBackButton(label: label)
+    func prototypeBackNavigation(label: String = "Back", action: (() -> Void)? = nil) -> some View {
+        safeAreaInset(edge: .top, alignment: .leading, spacing: 0) {
+            PrototypeBackButton(label: label, action: action)
                 .padding(.leading, 20)
                 .padding(.top, 12)
+                .padding(.bottom, 4)
         }
     }
 }
@@ -543,6 +584,8 @@ struct PrototypeAgeRangeSlider: View {
                 Text("\(minAge) – \(maxAge)")
                     .font(PrototypeTypography.button)
                     .foregroundStyle(PrototypePalette.ink)
+                    .accessibilityLabel("Age range")
+                    .accessibilityValue("\(minAge) to \(maxAge)")
                 Spacer()
                 Text("\(bounds.upperBound)")
                     .font(PrototypeTypography.metadata)
@@ -571,30 +614,69 @@ struct PrototypeAgeRangeSlider: View {
                 }
             }
             .frame(height: 14)
-            Slider(
-                value: Binding(
-                    get: { Double(minAge) },
-                    set: { minAge = min(Int($0.rounded()), maxAge) }
-                ),
-                in: Double(bounds.lowerBound)...Double(maxAge),
-                step: 1
+            // idb cannot reliably drive UISlider thumbs; expose ± buttons instead.
+            ageStepperRow(
+                title: "Minimum age",
+                value: minAge,
+                decreaseLabel: "Decrease minimum age",
+                increaseLabel: "Increase minimum age",
+                canDecrease: minAge > bounds.lowerBound,
+                canIncrease: minAge < maxAge,
+                onDecrease: { minAge = max(bounds.lowerBound, minAge - 1) },
+                onIncrease: { minAge = min(maxAge, minAge + 1) }
             )
-            .tint(PrototypePalette.accent)
-            .accessibilityLabel("Minimum age")
-            Slider(
-                value: Binding(
-                    get: { Double(maxAge) },
-                    set: { maxAge = max(Int($0.rounded()), minAge) }
-                ),
-                in: Double(minAge)...Double(bounds.upperBound),
-                step: 1
+            ageStepperRow(
+                title: "Maximum age",
+                value: maxAge,
+                decreaseLabel: "Decrease maximum age",
+                increaseLabel: "Increase maximum age",
+                canDecrease: maxAge > minAge,
+                canIncrease: maxAge < bounds.upperBound,
+                onDecrease: { maxAge = max(minAge, maxAge - 1) },
+                onIncrease: { maxAge = min(bounds.upperBound, maxAge + 1) }
             )
-            .tint(PrototypePalette.accent)
-            .accessibilityLabel("Maximum age")
         }
-        .accessibilityElement(children: .contain)
-        .accessibilityLabel("Age range")
-        .accessibilityValue("\(minAge) to \(maxAge)")
+    }
+
+    private func ageStepperRow(
+        title: String,
+        value: Int,
+        decreaseLabel: String,
+        increaseLabel: String,
+        canDecrease: Bool,
+        canIncrease: Bool,
+        onDecrease: @escaping () -> Void,
+        onIncrease: @escaping () -> Void
+    ) -> some View {
+        HStack(spacing: 12) {
+            Text(title)
+                .font(PrototypeTypography.metadata)
+                .foregroundStyle(PrototypePalette.subink)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            Button(action: onDecrease) {
+                Image(systemName: "minus.circle.fill")
+                    .font(.system(size: 22))
+                    .foregroundStyle(canDecrease ? PrototypePalette.accent : PrototypePalette.rule)
+            }
+            .buttonStyle(.plain)
+            .disabled(!canDecrease)
+            .accessibilityLabel(decreaseLabel)
+            Text("\(value)")
+                .font(PrototypeTypography.button)
+                .foregroundStyle(PrototypePalette.ink)
+                .frame(minWidth: 28)
+                .accessibilityLabel(title)
+                .accessibilityValue("\(value)")
+            Button(action: onIncrease) {
+                Image(systemName: "plus.circle.fill")
+                    .font(.system(size: 22))
+                    .foregroundStyle(canIncrease ? PrototypePalette.accent : PrototypePalette.rule)
+            }
+            .buttonStyle(.plain)
+            .disabled(!canIncrease)
+            .accessibilityLabel(increaseLabel)
+        }
+        .padding(.vertical, 2)
     }
 }
 
@@ -646,20 +728,21 @@ struct PrototypeRadioCard: View {
 }
 
 enum PrototypeTypography {
-    static let eyebrow = Font.system(size: 11, weight: .semibold)
-        .smallCaps()
-    static let display = Font.system(size: 26, weight: .medium, design: .serif)
-    static let hero = Font.system(size: 42, weight: .medium, design: .serif)
-    static let cardTitle = Font.system(size: 24, weight: .medium, design: .serif)
-    static let heroBody = Font.system(size: 16, weight: .regular)
-    static let sectionTitle = Font.system(size: 17, weight: .semibold)
-    static let quote = Font.system(size: 20, weight: .semibold)
-    static let metric = Font.system(size: 17, weight: .semibold)
-    static let body = Font.system(size: 15, weight: .regular)
-    static let bodyStrong = Font.system(size: 15, weight: .semibold)
-    static let button = Font.system(size: 15, weight: .semibold)
-    static let metadata = Font.system(size: 13, weight: .medium)
-    static let caption = Font.system(size: 14, weight: .regular)
+    static let eyebrow = Font.caption.weight(.semibold).smallCaps()
+    static let display = Font.system(.largeTitle, design: .serif, weight: .semibold)
+    static let pageTitle = Font.system(.title, design: .serif, weight: .semibold)
+    static let hero = Font.system(.largeTitle, design: .serif, weight: .semibold)
+    static let cardTitle = Font.system(.title, design: .serif, weight: .semibold)
+    static let heroBody = Font.body
+    static let sectionTitle = Font.title2.weight(.semibold)
+    static let quote = Font.title3.weight(.semibold)
+    static let metric = Font.headline
+    static let body = Font.body
+    static let bodyStrong = Font.body.weight(.semibold)
+    static let button = Font.body.weight(.semibold)
+    static let metadata = Font.subheadline.weight(.medium)
+    // Existing call sites use `caption` for supporting copy, not tertiary timestamps.
+    static let caption = Font.callout
 }
 
 enum PrototypePalette {

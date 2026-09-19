@@ -4,8 +4,8 @@ enum MacTab: String, CaseIterable, Identifiable {
     case meet = "Meet"
     case circles = "Circles"
     case communities = "Communities"
-    case profile = "Profile"
     case soulmate = "Soulmate"
+    case profile = "Profile"
 
     var id: String { rawValue }
 
@@ -31,10 +31,9 @@ enum MacTab: String, CaseIterable, Identifiable {
 
     static func visible(soulmateEnabled: Bool) -> [MacTab] {
         if soulmateEnabled {
-            return allCases
-        } else {
-            return allCases.filter { $0 != .soulmate }
+            return [.meet, .circles, .communities, .soulmate, .profile]
         }
+        return [.meet, .circles, .communities, .profile]
     }
 }
 
@@ -86,7 +85,8 @@ enum MacPrototypeScreen: String, CaseIterable, Identifiable {
         case .circlesRoom, .circleDetail: .circles
         case .communitiesBrowse, .communityDetail, .communityMembers, .createEvent, .createCommunity: .communities
         case .profileEdit, .myProfile, .profileOnboarding, .profileSignals, .settingsSoulmate: .profile
-        case .chat, .soulmateOverview, .soulmateDiscover, .soulmateDetail, .messages: .soulmate
+        case .chat, .soulmateOverview, .soulmateDiscover, .soulmateDetail: .soulmate
+        case .messages: .soulmate
         }
     }
 
@@ -101,10 +101,9 @@ enum MacPrototypeScreen: String, CaseIterable, Identifiable {
         case .communityDetail, .circleDetail: "Jazz & Music Community"
         case .meetRecap: "Great meeting!"
         case .meetVideoCall: "Meet"
-        case .myProfile: "Your profile"
-        case .soulmateOverview: "Meaningful connections, made with intention."
-        case .soulmateDiscover: "Discover"
-        case .soulmateDetail: "Meera, 27"
+        case .myProfile: "Your profile, in context."
+        case .soulmateOverview, .soulmateDiscover: "This week’s introduction."
+        case .soulmateDetail: "Your match"
         case .communityMembers: "Jazz & Music Community"
         case .createEvent: "Create event"
         case .createCommunity: "Create a community"
@@ -112,7 +111,7 @@ enum MacPrototypeScreen: String, CaseIterable, Identifiable {
         case .notifications: "Notifications"
         case .profileOnboarding: "Let's get to know you better"
         case .profileSignals: "Your personality signals"
-        case .settingsSoulmate: "Settings"
+        case .settingsSoulmate: "Soulmate settings"
         }
     }
 
@@ -137,19 +136,29 @@ enum MacPrototypeScreen: String, CaseIterable, Identifiable {
         case .communityDetail: "Listen, share, explore."
         case .meetRecap: "You attended Jazz & Music Community on Sat, Jul 5."
         case .meetVideoCall: "Today - 7:00 PM - 8:00 PM"
-        case .myProfile: "Profile and placement from your voice interview."
-        case .soulmateOverview: "Our AI helps discover people who resonate with your vibe."
-        case .soulmateDiscover: "Curated for you."
-        case .soulmateDetail: "Writer - Bangalore - 5 km away."
+        case .myProfile: "What we understand about you—and how it shapes your placement."
+        case .soulmateOverview, .soulmateDiscover: "A slower way to meet someone, shaped by how you connect."
+        case .soulmateDetail: "A private mutual choice created this connection."
         case .communityMembers: "18 members - private."
         case .createEvent: "Bring people together around what you love."
         case .createCommunity: "Start a focused room for people who share your interests."
         case .messages: "Your conversations and community threads."
         case .notifications: "Activity from circles, communities, and matches."
         case .profileOnboarding: "A few thoughtful details help us understand your vibe and find your people."
-        case .profileSignals: "From your voice, activity, and choices."
+        case .profileSignals: "Voice-informed inferences you can review and correct."
         case .circleDetail: "Analytical - Calm - Curious."
-        case .settingsSoulmate: "Manage your experience and preferences."
+        case .settingsSoulmate: "Configure Soulmate from your Profile settings."
+        }
+    }
+
+    var fallbackParent: MacPrototypeScreen? {
+        switch self {
+        case .soulmateDetail, .chat, .messages:
+            return .soulmateDiscover
+        case .profileSignals, .profileEdit, .profileOnboarding, .settingsSoulmate:
+            return .myProfile
+        default:
+            return nil
         }
     }
 
@@ -169,6 +178,8 @@ enum MacPrototypeScreen: String, CaseIterable, Identifiable {
         case .myProfile:
             return destination == .profileEdit || destination == .profileSignals
                 || destination == .profileOnboarding || destination == .settingsSoulmate
+        case .profileOnboarding:
+            return destination == .circlesRoom
         default:
             return false
         }

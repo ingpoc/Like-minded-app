@@ -106,8 +106,8 @@ const lines = [
   `retest: ${retest}`,
   `retest_ready: ${packet.retest_ready}`,
   `fix_run: npm run testing:ledger-fix-run -- --platform ${platform}`,
-  `record_pass: npm run ledger:record-flow -- --platform ${platform} --screen ${logicalId} --flow ${flowId} --result pass --method CUA-click --evidence "..."`,
-  `record_fail: npm run ledger:record-flow -- --platform ${platform} --screen ${logicalId} --flow ${flowId} --result fail --method CUA-click --evidence "${observed}"`
+  `record_pass: npm run ledger:record-flow -- --platform ${platform} --screen ${logicalId} --flow ${flowId} --result pass --method Computer-use --evidence "..."`,
+  `record_fail: npm run ledger:record-flow -- --platform ${platform} --screen ${logicalId} --flow ${flowId} --result fail --method Computer-use --evidence "${observed}"`
 ];
 
 console.log(lines.join("\n"));

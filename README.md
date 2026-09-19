@@ -2,7 +2,12 @@
 
 ## Control Owner
 
-Global `/Users/gurusharan/.codex/AGENTS.md` owns instruction control. This README describes repo state and runnable surfaces only.
+| Surface | Owner |
+| --- | --- |
+| Global instruction control | `/Users/gurusharan/.codex/AGENTS.md` |
+| ChatGPT voice conversations only | [`voice.md`](voice.md) — not project, team, service, or contributor policy |
+
+This README describes repo state and runnable surfaces only.
 
 Likeminded is an AI-native iOS/macOS app for AI-guided self-discovery, meaningful community placement, and deep compatibility matching.
 
@@ -42,7 +47,7 @@ curl http://127.0.0.1:8787/health
 curl http://127.0.0.1:8787/v1/system/architecture
 ```
 
-The default native run path generates the Xcode project, builds the `Likeminded` iOS app, boots an available `iPhone 17` simulator, installs the app, and launches bundle id `com.likeminded.app`.
+The default native run path generates the Xcode project, builds the `Likeminded` iOS app, boots an available `iPhone 17` simulator, installs the app, and launches bundle id `com.gurusharan.likeminded`.
 
 Run validation (narrow route first):
 
@@ -53,10 +58,9 @@ npm run smoke:mvp
 npm run verify:release-config
 npm run verify:goal
 npm run verify:ledger-progress
-# macOS ledger/CUA when on that track:
-#   ./script/macos_audit_prepare.sh
-#   ./script/macos_cua_screen.sh <screen>
-npm run verify:macos-screens
+# macOS native proof when on that track:
+#   npm run testing:ledger-run -- --platform macos --screen <id> --card-only
+#   npm run dev:macos:validation -- <mac-screen>, then use bundled @Computer
 npm run verify:simulator-local
 ```
 

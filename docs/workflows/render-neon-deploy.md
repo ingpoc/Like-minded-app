@@ -1,5 +1,9 @@
 # Render free tier + Neon deploy (Phase 3)
 
+## Control Owner
+
+This workflow owns the repository deployment steps for Render and Neon; provider resources and credentials remain externally owned.
+
 ## Neon (free tier)
 
 1. Create a project at [Neon](https://neon.tech).
@@ -26,6 +30,7 @@ npm run migrate:api
 | `DATABASE_URL` | Neon connection string |
 | `SESSION_SECRET` | ≥24 chars, unique |
 | `OPENAI_API_KEY` | Required for voice |
+| `APPLE_KEY_ID`, `APPLE_PRIVATE_KEY` | Sign in with Apple code exchange and deletion-time token revocation |
 | `GOOGLE_CLIENT_IDS` | After Phase 2 |
 | `LIVEKIT_*` | After Phase 4 (optional) |
 | `WALLETCONNECT_PROJECT_ID` | Optional |

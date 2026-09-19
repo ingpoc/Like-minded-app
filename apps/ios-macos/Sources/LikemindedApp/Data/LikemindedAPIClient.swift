@@ -126,35 +126,22 @@ struct LikemindedAPIClient {
         return try JSONDecoder().decode(AppleAuthResponse.self, from: data)
     }
 
-    func createRealtimeSession(safetyIdentifier: String) async throws -> RealtimeSessionEnvelope {
+    func createRealtimeSession(reinterviewContext: String?) async throws -> RealtimeSessionEnvelope {
         let url = baseURL.appendingPathComponent("/v1/realtime/session")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         applyCommonHeaders(&request)
-        request.httpBody = try JSONEncoder().encode(
-            RealtimeSessionRequest(safetyIdentifier: safetyIdentifier)
-        )
+        if let reinterviewContext, !reinterviewContext.isEmpty {
+            request.setValue(
+                reinterviewContext
+                    .replacingOccurrences(of: "\r", with: " ")
+                    .replacingOccurrences(of: "\n", with: " | "),
+                forHTTPHeaderField: "X-Likeminded-Reinterview-Context"
+            )
+        }
 
         let (data, _) = try await URLSession.shared.data(for: request)
         return try JSONDecoder().decode(RealtimeSessionEnvelope.self, from: data)
-    }
-
-    /// WebRTC SDP exchange — sends local SDP offer, receives remote SDP answer
-    func exchangeSDP(_ sdpOffer: String) async throws -> String {
-        let url = baseURL.appendingPathComponent("/v1/realtime/calls")
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/sdp", forHTTPHeaderField: "content-type")
-        applyCommonHeaders(&request, isJSON: false)
-        request.httpBody = sdpOffer.data(using: .utf8)
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
-            let errorText = String(data: data, encoding: .utf8) ?? "Unknown error"
-            throw URLError(.badServerResponse, userInfo: [NSLocalizedDescriptionKey: errorText])
-        }
-
-        return String(data: data, encoding: .utf8) ?? ""
     }
 
     func fetchReflectPlaceConnect(reflectionAnswers: [String]) async throws -> ReflectPlaceConnectSlice {
@@ -227,12 +214,12 @@ struct LikemindedAPIClient {
         return try JSONDecoder().decode(UserProfileResponse.self, from: data).profile
     }
 
-    func updatePlacement(action: String) async throws -> ProfileCircleMatchResult {
+    func updatePlacement(action: String, circleId: String? = nil) async throws -> ProfileCircleMatchResult {
         let url = baseURL.appendingPathComponent("/v1/me/placement/actions")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         applyCommonHeaders(&request)
-        request.httpBody = try JSONEncoder().encode(PlacementActionRequest(action: action))
+        request.httpBody = try JSONEncoder().encode(PlacementActionRequest(action: action, circleId: circleId))
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
             throw URLError(.badServerResponse)

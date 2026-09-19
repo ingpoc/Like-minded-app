@@ -18,10 +18,12 @@ function assertNotIncludes(file, content, rejected) {
 }
 
 const project = read("apps/ios-macos/project.yml");
-assertIncludes("apps/ios-macos/project.yml", project, "PRODUCT_BUNDLE_IDENTIFIER: com.likeminded.app");
+assertIncludes("apps/ios-macos/project.yml", project, "PRODUCT_BUNDLE_IDENTIFIER: com.gurusharan.likeminded");
+assertIncludes("apps/ios-macos/project.yml", project, "DEVELOPMENT_TEAM: 9UPQL479Z5");
 assertIncludes("apps/ios-macos/project.yml", project, "CODE_SIGN_ENTITLEMENTS: Entitlements/Likeminded.entitlements");
 assertIncludes("apps/ios-macos/project.yml", project, "INFOPLIST_KEY_NSMicrophoneUsageDescription");
 assertIncludes("apps/ios-macos/project.yml", project, "INFOPLIST_KEY_NSCameraUsageDescription");
+assertIncludes("apps/ios-macos/project.yml", project, '"UISupportedInterfaceOrientations~ipad"');
 assertIncludes("apps/ios-macos/project.yml", project, "INFOPLIST_KEY_LIKEMINDED_API_BASE_URL");
 assertNotIncludes("apps/ios-macos/project.yml", project, "com.likeminded.prototype");
 
@@ -31,14 +33,38 @@ assertIncludes("apps/ios-macos/Entitlements/Likeminded.entitlements", entitlemen
 
 const macEntitlements = read("apps/ios-macos/Entitlements/LikemindedMac.entitlements");
 assertIncludes("apps/ios-macos/Entitlements/LikemindedMac.entitlements", macEntitlements, "com.apple.developer.applesignin");
+assertIncludes("apps/ios-macos/Entitlements/LikemindedMac.entitlements", macEntitlements, "com.apple.security.app-sandbox");
+assertIncludes("apps/ios-macos/Entitlements/LikemindedMac.entitlements", macEntitlements, "com.apple.security.network.client");
+assertIncludes("apps/ios-macos/Entitlements/LikemindedMac.entitlements", macEntitlements, "com.apple.security.device.camera");
+assertIncludes("apps/ios-macos/Entitlements/LikemindedMac.entitlements", macEntitlements, "com.apple.security.device.audio-input");
 assertIncludes("apps/ios-macos/project.yml", project, "CODE_SIGN_ENTITLEMENTS: Entitlements/LikemindedMac.entitlements");
 assertIncludes("apps/ios-macos/project.yml", project, "CODE_SIGN_ENTITLEMENTS: Entitlements/LikemindedMac.Debug.entitlements");
+assertIncludes("apps/ios-macos/project.yml", project, "ENABLE_HARDENED_RUNTIME: YES");
+assertIncludes("apps/ios-macos/project.yml", project, "LSApplicationCategoryType: public.app-category.social-networking");
 
 const macDebugEntitlements = read("apps/ios-macos/Entitlements/LikemindedMac.Debug.entitlements");
 assertNotIncludes("apps/ios-macos/Entitlements/LikemindedMac.Debug.entitlements", macDebugEntitlements, "com.apple.developer.applesignin");
 
+const macAppState = read("apps/ios-macos/Sources/LikemindedMac/MacAppState.swift");
+assert.match(
+  macAppState,
+  /func deleteAccount\(\) async -> Bool \{[\s\S]*?let userId = authSession\?\.userId[\s\S]*?try await client\.deleteAccount\(\)[\s\S]*?UserDefaults\.standard\.removeObject\(forKey: "likeminded\.profile-interview\.\\\(userId\)"\)[\s\S]*?signOut\(\)/,
+  "MacAppState.deleteAccount must capture the user id, delete remotely, clear the local interview, then sign out"
+);
+
+const macAPIClient = read("apps/ios-macos/Sources/LikemindedMac/LikemindedAPIClient.swift");
+assertNotIncludes("LikemindedAPIClient.swift", macAPIClient, "likeminded.profile-interview");
+
 assertIncludes("apps/ios-macos/Info/Likeminded-Info.plist", read("apps/ios-macos/Info/Likeminded-Info.plist"), "GIDClientID");
-assertIncludes("apps/ios-macos/Info/LikemindedMac-Info.plist", read("apps/ios-macos/Info/LikemindedMac-Info.plist"), "com.likeminded.mac");
+assertIncludes("apps/ios-macos/Info/Likeminded-Info.plist", read("apps/ios-macos/Info/Likeminded-Info.plist"), "LIKEMINDED_API_BASE_URL");
+assertIncludes("apps/ios-macos/Info/Likeminded-Info.plist", read("apps/ios-macos/Info/Likeminded-Info.plist"), "$(GOOGLE_REVERSED_CLIENT_ID_IOS)");
+assertIncludes("apps/ios-macos/Info/LikemindedMac-Info.plist", read("apps/ios-macos/Info/LikemindedMac-Info.plist"), "$(GOOGLE_CLIENT_ID_MAC)");
+assertIncludes("apps/ios-macos/Info/LikemindedMac-Info.plist", read("apps/ios-macos/Info/LikemindedMac-Info.plist"), "LIKEMINDED_API_BASE_URL");
+assertIncludes("apps/ios-macos/Info/LikemindedMac-Info.plist", read("apps/ios-macos/Info/LikemindedMac-Info.plist"), "$(GOOGLE_REVERSED_CLIENT_ID_MAC)");
+const privacyManifest = read("apps/ios-macos/Sources/Shared/PrivacyInfo.xcprivacy");
+assertIncludes("PrivacyInfo.xcprivacy", privacyManifest, "NSPrivacyTracking");
+assertIncludes("PrivacyInfo.xcprivacy", privacyManifest, "NSPrivacyCollectedDataTypes");
+assertIncludes("PrivacyInfo.xcprivacy", privacyManifest, "NSPrivacyAccessedAPICategoryUserDefaults");
 
 const apiClient = read("apps/ios-macos/Sources/LikemindedApp/Data/LikemindedAPIClient.swift");
 assertIncludes("LikemindedAPIClient.swift", apiClient, "https://likeminded-api.onrender.com");
@@ -60,6 +86,9 @@ for (const key of [
   "LIVEKIT_URL",
   "APPLE_BUNDLE_ID",
   "APPLE_CLIENT_ID",
+  "APPLE_TEAM_ID",
+  "APPLE_KEY_ID",
+  "APPLE_PRIVATE_KEY",
   "APPLE_MAC_BUNDLE_ID",
   "APPLE_CLIENT_IDS",
   "APPLE_REQUIRE_NONCE",
@@ -77,15 +106,19 @@ for (const key of [
   "LIVEKIT_API_KEY=",
   "LIVEKIT_API_SECRET=",
   "LIVEKIT_URL=",
-  "APPLE_BUNDLE_ID=com.likeminded.app",
-  "APPLE_CLIENT_ID=com.likeminded.app",
-  "APPLE_MAC_BUNDLE_ID=com.likeminded.mac",
-  "APPLE_CLIENT_IDS=com.likeminded.app,com.likeminded.mac",
+  "APPLE_BUNDLE_ID=com.gurusharan.likeminded",
+  "APPLE_CLIENT_ID=com.gurusharan.likeminded",
+  "APPLE_TEAM_ID=9UPQL479Z5",
+  "APPLE_KEY_ID=",
+  "APPLE_PRIVATE_KEY=",
+  "APPLE_MAC_BUNDLE_ID=com.gurusharan.likeminded",
+  "APPLE_CLIENT_IDS=com.gurusharan.likeminded",
   "APPLE_REQUIRE_NONCE=1",
   "APPLE_AUTH_BYPASS=0",
   "GOOGLE_CLIENT_ID_IOS=",
   "GOOGLE_CLIENT_ID_MAC=",
-  "GOOGLE_REVERSED_CLIENT_ID=",
+  "GOOGLE_REVERSED_CLIENT_ID_IOS=",
+  "GOOGLE_REVERSED_CLIENT_ID_MAC=",
   "GOOGLE_CLIENT_IDS=",
   "WALLETCONNECT_PROJECT_ID="
 ]) {
@@ -93,21 +126,23 @@ for (const key of [
 }
 
 const privacy = read("docs/references/privacy-policy-testflight.md");
-for (const phrase of ["Voice interview transcript", "AI Processing", "Retention And Deletion"]) {
+for (const phrase of ["Voice interview transcript", "LiveKit", "Account Deletion", "Retention And Deletion"]) {
   assertIncludes("privacy-policy-testflight.md", privacy, phrase);
 }
 
 const buildScript = read("script/build_and_run.sh");
-assertIncludes("script/build_and_run.sh", buildScript, "com.likeminded.app");
+assertIncludes("script/build_and_run.sh", buildScript, "com.gurusharan.likeminded");
 assertNotIncludes("script/build_and_run.sh", buildScript, "com.likeminded.prototype");
 
 const packageJson = read("package.json");
 assertIncludes("package.json", packageJson, "verify:simulator-local");
 assertIncludes("package.json", packageJson, "verify:external-preflight");
+assertIncludes("package.json", packageJson, "verify:release-candidate");
 
 const setupDoc = read("docs/workflows/setup.md");
 assertIncludes("docs/workflows/setup.md", setupDoc, "LiveKitMeetSession");
-assertIncludes("docs/workflows/setup.md", setupDoc, "GOOGLE_REVERSED_CLIENT_ID");
+assertIncludes("docs/workflows/setup.md", setupDoc, "GOOGLE_REVERSED_CLIENT_ID_IOS");
+assertIncludes("docs/workflows/setup.md", setupDoc, "GOOGLE_REVERSED_CLIENT_ID_MAC");
 
 const validation = read("docs/workflows/validation.md");
 assertIncludes("docs/workflows/validation.md", validation, "npm run verify:simulator-local");

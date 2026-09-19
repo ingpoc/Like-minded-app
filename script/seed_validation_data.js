@@ -19,7 +19,8 @@ const baseURL = process.env.LIKEMINDED_API_BASE_URL || "http://127.0.0.1:8787";
 // ---------------------------------------------------------------------------
 const PEOPLE = [
   // gurusharan = primary validation user (reflective-builders circle)
-  ["gurusharan", "Gurusharan Gupta", "male", "reflective-builders", ["AI","Startups","Design"], "Systems thinker who builds deliberately — high openness, analytical depth, warm underneath. Prefers small rooms with honest feedback over performative networking.", { o:.85,c:.80,e:.48,a:.72,n:.30, att:"secure",     se:"medium",     cs:"analytical", tp:"slowTrust",  hs:"observational", cf:"analytical" }],
+  // >5 interests so macOS/iOS profile "View all" expand control is present in validation.
+  ["gurusharan", "Gurusharan Gupta", "male", "reflective-builders", ["AI","Startups","Design","Systems thinking","Jazz","Writing","Hosting"], "Systems thinker who builds deliberately — high openness, analytical depth, warm underneath. Prefers small rooms with honest feedback over performative networking.", { o:.85,c:.80,e:.48,a:.72,n:.30, att:"secure",     se:"medium",     cs:"analytical", tp:"slowTrust",  hs:"observational", cf:"analytical" }],
   // reflective-builders — 7 more (3M/4F), forms 1 circle group
   ["priya",    "Priya Shah",      "female", "reflective-builders", ["Design","Cooking","Tech"],     "Reflective host energy, warm direct speech, steady trust.",          { o:.78,c:.74,e:.44,a:.83,n:.28, att:"secure",     se:"medium",     cs:"warm",       tp:"fastTrust",  hs:"observational", cf:"analytical" }],
   ["rohan",    "Rohan Mehta",     "male",   "reflective-builders", ["Startups","Tech","Books"],     "Energetic builder, curious, comfortable with momentum.",             { o:.82,c:.80,e:.58,a:.65,n:.30, att:"secure",     se:"medium",     cs:"direct",     tp:"fastTrust",  hs:"witty",          cf:"engaging"    }],
@@ -152,7 +153,7 @@ const CHAT_THREADS = [
 
 function userIdForSeed(seedId) {
   const appleSub = `dev-${crypto.createHash("sha256").update(`validation-${seedId}`).digest("hex").slice(0, 16)}`;
-  return `usr_${crypto.createHash("sha256").update(appleSub).digest("hex").slice(0, 24)}`;
+  return `usr_${crypto.createHash("sha256").update(`apple:${appleSub}`).digest("hex").slice(0, 24)}`;
 }
 
 function seededUserIds() {
@@ -216,7 +217,11 @@ function removeLocalValidationData() {
   if (architecture) {
     for (const collection of ["circles", "communities"]) {
       for (const item of Object.values(architecture[collection] || {})) {
+        // Drop seed users; also drop historical bloat so micro-circles stay room-scale.
         item.members = (item.members || []).filter((id) => !ids.has(id));
+        if (collection === "circles" && (item.members || []).length > 18) {
+          item.members = item.members.slice(0, 12);
+        }
       }
     }
     architecture.profiles = Object.fromEntries(Object.entries(architecture.profiles || {}).filter(([, row]) => !ids.has(row.userId)));
@@ -348,7 +353,7 @@ async function seedValidationData() {
   await request("/health");
   const userMap = {};
 
-  // Create users, profiles, placements
+  // Create users and proposed placements, then explicitly accept the seeded room.
   for (const person of PEOPLE) {
     const auth = await request("/v1/auth/apple", {
       method: "POST",
@@ -358,6 +363,11 @@ async function seedValidationData() {
       method: "POST",
       token: auth.sessionToken,
       body: profileFor(person)
+    });
+    await request("/v1/me/placement/actions", {
+      method: "POST",
+      token: auth.sessionToken,
+      body: { action: "accept" }
     });
     userMap[person[0]] = { id: auth.user.id, name: person[1], sessionToken: auth.sessionToken };
   }

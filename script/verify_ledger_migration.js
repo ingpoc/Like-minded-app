@@ -52,6 +52,12 @@ function controlKey(c) {
 function main() {
   const errors = [];
   const warnings = [];
+  const gapRegistryPath = path.join(root, "validation", "gap-flows-registry.json");
+  const gapReg = fs.existsSync(gapRegistryPath)
+    ? JSON.parse(fs.readFileSync(gapRegistryPath, "utf8"))
+    : {};
+  const retiredLegacyControls = new Set(gapReg.retired_legacy_controls || []);
+  let retiredCount = 0;
 
   const legacyIos = loadLegacyControls("ios");
   const legacyMac = loadLegacyControls("macos");
@@ -69,22 +75,26 @@ function main() {
     }
     const logical = SCREEN_REGISTRY.find((r) => r.ios === c.file)?.id || c.file;
     const found = migIos.find((m) => m.id === c.id && m.file === logical);
-    if (!found) errors.push(`Missing iOS control after migration: ${c.file}#${c.id}`);
+    if (!found) {
+      const retirementKey = `ios:${c.file}#${c.id}`;
+      if (retiredLegacyControls.has(retirementKey)) retiredCount += 1;
+      else errors.push(`Missing iOS control after migration: ${c.file}#${c.id}`);
+    }
   }
 
   for (const c of legacyMac.controls) {
     const logical = SCREEN_REGISTRY.find((r) => r.macos === c.file)?.id || c.file;
     const found = migMac.find((m) => m.id === c.id && m.file === logical);
-    if (!found) errors.push(`Missing macOS control after migration: ${c.file}#${c.id}`);
+    if (!found) {
+      const retirementKey = `macos:${c.file}#${c.id}`;
+      if (retiredLegacyControls.has(retirementKey)) retiredCount += 1;
+      else errors.push(`Missing macOS control after migration: ${c.file}#${c.id}`);
+    }
   }
 
   // Count parity
-  const gapRegistryPath = path.join(root, "validation", "gap-flows-registry.json");
   let extraScreens = 0;
-  if (fs.existsSync(gapRegistryPath)) {
-    const gapReg = JSON.parse(fs.readFileSync(gapRegistryPath, "utf8"));
-    extraScreens = Object.keys(gapReg.new_screens || {}).length;
-  }
+  extraScreens = Object.keys(gapReg.new_screens || {}).length;
   const expectedScreens = SCREEN_REGISTRY.length + extraScreens;
   const screenCount = listScreenFiles().length;
   if (screenCount !== expectedScreens) {
@@ -134,6 +144,7 @@ function main() {
   console.log(`iOS results migrated:`, countResults(migIos));
   console.log(`macOS results legacy:`, countResults(legacyMac.controls));
   console.log(`macOS results migrated:`, countResults(migMac));
+  console.log(`Explicitly retired legacy controls: ${retiredCount}`);
 
   if (parityGaps.length) {
     console.log(`\n## Parity notes (${parityGaps.length} platform-specific flows — expected for some screens)`);
