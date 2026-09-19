@@ -103,7 +103,7 @@ struct CirclesPrototypeView: View {
 
     var body: some View {
         NavigationStack {
-            ScreenContainer(title: "Circles", subtitle: "Your room.", caption: "A space of people who get you.") {
+            ScreenContainer(title: "Circles", subtitle: "Your circle.", caption: "Placed from your interview.") {
                 VStack(alignment: .leading, spacing: 14) {
                     Text("Your circle".uppercased())
                         .font(PrototypeTypography.eyebrow)
@@ -170,7 +170,7 @@ struct CirclesPrototypeView: View {
 
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
-                        Text("Browse circles".uppercased())
+                        Text("Suggested for your second circle".uppercased())
                             .font(PrototypeTypography.eyebrow)
                             .foregroundStyle(PrototypePalette.accent)
                         Spacer()
@@ -231,9 +231,7 @@ struct CirclesPrototypeView: View {
     }
 
     private var availableCircles: [PlacementCircle] {
-        let catalog = appState.circles.isEmpty ? placement.secondaryCircles : appState.circles
-        let primaryId = placement.primaryCircle.id
-        return catalog.filter { $0.id != primaryId }
+        placement.secondaryCircles
     }
 
     private func displayMemberCount(for circle: PlacementCircle) -> Int {
@@ -325,6 +323,17 @@ struct CircleDetailView: View {
 
     private var traitLine: String {
         circle.themes.prefix(3).joined(separator: " • ")
+    }
+
+    private var isSelectedSecondary: Bool {
+        appState.currentPlacement.selectedSecondaryCircleId == circle.id
+    }
+
+    private var canSelectAsSecondary: Bool {
+        let placement = appState.currentPlacement
+        guard circle.id != placement.primaryCircle.id else { return false }
+        guard !isSelectedSecondary else { return false }
+        return placement.secondaryCircles.contains(where: { $0.id == circle.id })
     }
 
     var body: some View {
@@ -457,6 +466,27 @@ struct CircleDetailView: View {
             }
             .buttonStyle(.plain)
             .disabled(isLeavingCircle)
+
+            if canSelectAsSecondary {
+                Button {
+                    Task {
+                        appState.selectSecondaryCircle(id: circle.id)
+                        leaveStatus = "This is now your second circle."
+                    }
+                } label: {
+                    PrimaryActionButton(
+                        title: appState.currentPlacement.actions.secondaryAction,
+                        systemImage: "checkmark.circle"
+                    )
+                }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("make-secondary-circle")
+            } else if isSelectedSecondary {
+                Label("Your second circle", systemImage: "checkmark.circle.fill")
+                    .font(PrototypeTypography.bodyStrong)
+                    .foregroundStyle(PrototypePalette.accent)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
 
             if let leaveStatus {
                 Text(leaveStatus)

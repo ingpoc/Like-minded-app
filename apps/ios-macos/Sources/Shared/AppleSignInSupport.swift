@@ -15,6 +15,14 @@ struct AppleSignInCredentialPayload {
     let rawNonce: String
 }
 
+enum AppleCredentialStateResult: Equatable {
+    case authorized
+    case revoked
+    case notFound
+    case transferred
+    case unavailable
+}
+
 enum AppleSignInSupport {
     static func randomNonce(length: Int = 32) -> String {
         precondition(length > 0)
@@ -81,20 +89,24 @@ enum AppleSignInSupport {
         return error.localizedDescription
     }
 
-    static func validateCredentialState(for userIdentifier: String) async -> Bool {
+    static func credentialState(for userIdentifier: String) async -> AppleCredentialStateResult {
         let provider = ASAuthorizationAppleIDProvider()
         do {
             let state = try await provider.credentialState(forUserID: userIdentifier)
             switch state {
             case .authorized:
-                return true
-            case .revoked, .notFound, .transferred:
-                return false
+                return .authorized
+            case .revoked:
+                return .revoked
+            case .notFound:
+                return .notFound
+            case .transferred:
+                return .transferred
             @unknown default:
-                return false
+                return .unavailable
             }
         } catch {
-            return false
+            return .unavailable
         }
     }
 }
@@ -118,10 +130,10 @@ final class AppleSignInController: NSObject, ASAuthorizationControllerDelegate, 
     private var rawNonce = ""
     private var continuation: CheckedContinuation<Result<AppleSignInCredentialPayload, Error>, Never>?
 
-    func signIn() async -> Result<AppleSignInCredentialPayload, Error> {
+    func signIn(requestedScopes: [ASAuthorization.Scope] = [.fullName, .email]) async -> Result<AppleSignInCredentialPayload, Error> {
         rawNonce = AppleSignInSupport.randomNonce()
         let request = ASAuthorizationAppleIDProvider().createRequest()
-        request.requestedScopes = [.fullName, .email]
+        request.requestedScopes = requestedScopes
         request.nonce = AppleSignInSupport.sha256(rawNonce)
 
         let controller = ASAuthorizationController(authorizationRequests: [request])

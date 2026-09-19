@@ -28,13 +28,19 @@ services:
       - key: LIVEKIT_URL
         sync: false
       - key: APPLE_BUNDLE_ID
-        value: com.likeminded.app
+        value: com.gurusharan.likeminded
       - key: APPLE_CLIENT_ID
-        value: com.likeminded.app
+        value: com.gurusharan.likeminded
       - key: APPLE_MAC_BUNDLE_ID
-        value: com.likeminded.mac
+        value: com.gurusharan.likeminded
       - key: APPLE_CLIENT_IDS
-        value: com.likeminded.app,com.likeminded.mac
+        value: com.gurusharan.likeminded
+      - key: APPLE_TEAM_ID
+        value: 9UPQL479Z5
+      - key: APPLE_KEY_ID
+        sync: false
+      - key: APPLE_PRIVATE_KEY
+        sync: false
       - key: APPLE_REQUIRE_NONCE
         value: "1"
       - key: APPLE_AUTH_BYPASS

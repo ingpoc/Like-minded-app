@@ -193,8 +193,8 @@ enum PrototypeData {
             ],
             userState: .proposed,
             actions: PlacementActionGroup(
-                primaryAction: "Accept this room",
-                swapAction: "Try another room",
+                primaryAction: "Accept this circle",
+                secondaryAction: "Make this my second circle",
                 deferAction: "Defer for now"
             )
         ),

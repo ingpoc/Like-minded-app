@@ -1,34 +1,37 @@
-# Likeminded TestFlight Privacy Policy Draft
+# Likeminded TestFlight Privacy Policy
 
-Likeminded uses voice conversation to build private profile signals and suggest a starter circle placement.
+Effective date: July 21, 2026
+
+Likeminded is a voice-first social app for private profile creation, AI-assisted circle placement, communities, scheduled group meets, recaps, and one-to-one matching. This policy covers the iOS and macOS TestFlight MVP.
 
 ## Data Collected
 
 - Sign in with Apple identifier, and email/name only when Apple provides them.
-- Voice interview transcript generated during onboarding.
-- Profile signals inferred from onboarding, such as communication style, social energy, trust pattern, and personality traits.
-- Circle placement, placement actions, and tester feedback.
-- Basic technical metadata needed to run the service, such as app version and request timing.
+- An app-generated device identifier used to operate and secure the service.
+- Profile information, manually entered city, interests, private profile signals, voice interview transcripts, and circle placement.
+- Community memberships, events, meetup RSVPs and recaps, match selections, chat messages, reports, and tester feedback.
+- Voice audio sent during the AI interview and audio/video streamed while a tester joins a LiveKit group meet. Likeminded does not record LiveKit video in this MVP.
+- Basic technical metadata required to operate and secure the service, such as app version and request timing.
 
 ## How Data Is Used
 
-- To create and restore the tester's private profile.
-- To suggest and explain a circle placement.
-- To improve the MVP placement loop using tester feedback.
-- To protect the backend and operate OpenAI Realtime voice sessions.
+- To authenticate testers and restore their account on iOS and macOS.
+- To create private profiles, personalize and explain circle placement, and operate communities, meets, recaps, and matching.
+- To deliver AI voice interviews, LiveKit rooms, chat, safety reporting, and tester support.
+- To protect the backend and improve the TestFlight MVP using submitted feedback.
 
-## AI Processing
+## AI And Media Processing
 
-Voice sessions and transcripts may be processed by OpenAI services to support realtime conversation and profile extraction. The API keeps the OpenAI API key server-side; the app does not store it.
+Voice audio and transcripts may be processed by OpenAI to support realtime conversation and profile extraction. LiveKit processes audio, video, and room metadata for scheduled group meets. Google processes authentication data only if a tester chooses Google Sign-In. Provider credentials remain server-side or in the platform SDK and are not committed to the app repository.
 
-## Sharing
+## Sharing And Tracking
 
-The MVP does not include public profiles, chat, meetings, or broad community browsing. Profile and placement data is not shown to other testers in this build.
+Likeminded does not sell personal data and does not use it for advertising or cross-app tracking. Private profile signals and placement reasoning are not shown to other testers. Community, meetup, recap, and chat content is shared only with the participants who need it for that feature. Service providers receive data only to operate the functions described above.
 
 ## Retention And Deletion
 
-TestFlight data is retained while the MVP is being tested. To request deletion, contact the app operator with the Apple account used for TestFlight sign-in. Account deletion should remove the tester's user record, profiles, placements, transcripts, and feedback before a wider beta.
+TestFlight data is retained while the MVP is being tested or until the tester deletes the account. Settings includes an in-app Delete Account action. Deletion removes the account, profiles, placements, transcripts, feedback, memberships, RSVP and recap data, matches, and chat data associated with the tester. For Sign in with Apple accounts, the app requires fresh Apple authentication and revokes the Apple token before completing deletion.
 
 ## Contact
 
-Use the TestFlight feedback channel or the operator contact provided in App Store Connect for privacy or deletion requests.
+Use TestFlight feedback or the operator contact listed in App Store Connect for privacy questions. TestFlight screenshot feedback and crash reports may also be sent to Apple under Apple's own privacy terms.

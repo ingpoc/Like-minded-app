@@ -174,8 +174,16 @@ final class MacAppState: ObservableObject {
     func validateStoredAppleCredentialIfNeeded() async {
         guard authSession?.authProvider == "apple" else { return }
         guard let appleUserIdentifier = authSession?.appleUserIdentifier else { return }
-        let isAuthorized = await AppleSignInSupport.validateCredentialState(for: appleUserIdentifier)
-        guard !isAuthorized else { return }
+        switch await AppleSignInSupport.credentialState(for: appleUserIdentifier) {
+        case .authorized, .unavailable:
+            return
+        case .revoked, .notFound, .transferred:
+            handleAppleCredentialRevoked()
+        }
+    }
+
+    func handleAppleCredentialRevoked() {
+        guard authSession?.authProvider == "apple" else { return }
         signOut()
         authError = "Your Apple sign-in is no longer valid. Please sign in again."
     }
@@ -230,13 +238,31 @@ final class MacAppState: ObservableObject {
         placementConcern = ""
     }
 
-    func deleteAccount() async -> Bool {
+    func deleteAccount(using controller: AppleSignInController) async -> Bool {
+        var appleAuthorization: AppleAccountDeletionProof?
+        if authSession?.authProvider == "apple" {
+            switch await controller.signIn(requestedScopes: []) {
+            case .success(let payload):
+                guard let authorizationCode = payload.authorizationCode else {
+                    authError = "Apple did not provide the authorization needed to delete this account."
+                    return false
+                }
+                appleAuthorization = AppleAccountDeletionProof(
+                    identityToken: payload.identityToken,
+                    authorizationCode: authorizationCode,
+                    nonce: payload.rawNonce
+                )
+            case .failure(let error):
+                authError = AppleSignInSupport.userFacingMessage(for: error)
+                return false
+            }
+        }
         do {
-            try await client.deleteAccount()
+            try await client.deleteAccount(appleAuthorization: appleAuthorization)
             signOut()
             return true
         } catch {
-            authError = "Account could not be deleted. Please try again or contact support."
+            authError = "Account could not be deleted or Apple access could not be revoked. Please try again."
             return false
         }
     }
@@ -334,14 +360,15 @@ final class MacAppState: ObservableObject {
         isLoading = false
     }
 
-    func swapPrimaryCircle() async {
+    func selectSecondaryCircle(id: String) async {
         guard isSignedIn else { return }
         isLoading = true
         do {
-            placement = try await client.updatePlacement(action: "swap")
+            placement = try await client.updatePlacement(action: "select_secondary", circleId: id)
+            await fetchCircles()
             loadError = nil
         } catch {
-            loadError = "Placement update failed. Please retry."
+            loadError = "Secondary circle could not be saved. Please retry."
         }
         isLoading = false
     }
@@ -673,7 +700,7 @@ struct MacAuthSession: Codable, Equatable {
 }
 
 enum MacAuthSessionStore {
-    private static let service = "com.likeminded.mac.auth"
+    private static let service = "com.gurusharan.likeminded.auth.macos"
     private static let account = "session"
 
     static func load() -> MacAuthSession? {

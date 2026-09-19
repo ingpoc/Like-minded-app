@@ -22,6 +22,7 @@ settings:
     SWIFT_VERSION: 5.0
     CURRENT_PROJECT_VERSION: 1
     MARKETING_VERSION: 0.1.0
+    DEVELOPMENT_TEAM: 9UPQL479Z5
 
 targets:
   Likeminded:
@@ -33,6 +34,8 @@ targets:
       - path: Sources/Shared
       - path: Sources/DoodleArt
       - path: Assets.xcassets
+      - path: Resources/PrivacyInfo.xcprivacy
+        buildPhase: resources
     dependencies:
       - package: LiveKit
       - package: LiveKitWebRTC
@@ -40,9 +43,19 @@ targets:
         product: GoogleSignIn
     info:
       path: Info/Likeminded-Info.plist
+      properties:
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        GIDClientID: "$(GOOGLE_CLIENT_ID_IOS)"
+        LIKEMINDED_API_BASE_URL: "$(LIKEMINDED_API_BASE_URL)"
+        CFBundleURLTypes:
+          - CFBundleTypeRole: Editor
+            CFBundleURLSchemes:
+              - "$(GOOGLE_REVERSED_CLIENT_ID_IOS)"
+              - "$(PRODUCT_BUNDLE_IDENTIFIER)"
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.likeminded.app
+        PRODUCT_BUNDLE_IDENTIFIER: com.gurusharan.likeminded
         PRODUCT_NAME: Likeminded
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: Likeminded
@@ -52,6 +65,7 @@ targets:
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_NSCameraUsageDescription: "Likeminded uses your camera for scheduled group video meets."
         INFOPLIST_KEY_NSMicrophoneUsageDescription: "Likeminded uses your voice to build private profile signals and suggest a starter circle."
+        INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO
         INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsLocalNetworking: YES
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         TARGETED_DEVICE_FAMILY: "1,2"
@@ -60,8 +74,11 @@ targets:
         CODE_SIGN_ENTITLEMENTS: Entitlements/Likeminded.entitlements
         DEVELOPMENT_ASSET_PATHS: "\"\""
         LIKEMINDED_API_BASE_URL: ""
-        GOOGLE_CLIENT_ID_IOS: ""
-        GOOGLE_REVERSED_CLIENT_ID: ""
+        GOOGLE_CLIENT_ID_IOS: "783810031677-afiec2d9r2og5hg3hru9n59fjregn7nk.apps.googleusercontent.com"
+        GOOGLE_REVERSED_CLIENT_ID_IOS: "com.googleusercontent.apps.783810031677-afiec2d9r2og5hg3hru9n59fjregn7nk"
+      configs:
+        Release:
+          LIKEMINDED_API_BASE_URL: "https://likeminded-api.onrender.com"
     scheme:
       gatherCoverageData: false
       testTargets: []
@@ -72,9 +89,12 @@ targets:
     deploymentTarget: "15.0"
     sources:
       - path: Sources/LikemindedMac
+      - path: Sources/LikemindedApp/Data/RealtimeVoiceClient.swift
       - path: Sources/Shared
       - path: Sources/DoodleArt
       - path: Assets.xcassets
+      - path: Resources/PrivacyInfo.xcprivacy
+        buildPhase: resources
     dependencies:
       - package: LiveKit
       - package: LiveKitWebRTC
@@ -82,27 +102,40 @@ targets:
         product: GoogleSignIn
     info:
       path: Info/LikemindedMac-Info.plist
+      properties:
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        GIDClientID: "$(GOOGLE_CLIENT_ID_MAC)"
+        LIKEMINDED_API_BASE_URL: "$(LIKEMINDED_API_BASE_URL)"
+        CFBundleURLTypes:
+          - CFBundleTypeRole: Editor
+            CFBundleURLSchemes:
+              - "$(GOOGLE_REVERSED_CLIENT_ID_MAC)"
+              - "$(PRODUCT_BUNDLE_IDENTIFIER)"
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.likeminded.mac
+        PRODUCT_BUNDLE_IDENTIFIER: com.gurusharan.likeminded
         PRODUCT_NAME: LikemindedMac
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: Likeminded
         INFOPLIST_KEY_LIKEMINDED_API_BASE_URL: "$(LIKEMINDED_API_BASE_URL)"
         INFOPLIST_KEY_NSCameraUsageDescription: "Likeminded uses your camera for scheduled group video meets."
         INFOPLIST_KEY_NSMicrophoneUsageDescription: "Likeminded uses your voice to build private profile signals and suggest a starter circle."
+        INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         CODE_SIGN_STYLE: Automatic
         CODE_SIGN_ENTITLEMENTS: Entitlements/LikemindedMac.entitlements
+        ENABLE_HARDENED_RUNTIME: YES
         DEVELOPMENT_ASSET_PATHS: "\"\""
         LIKEMINDED_API_BASE_URL: ""
-        GOOGLE_CLIENT_ID_IOS: ""
-        GOOGLE_REVERSED_CLIENT_ID: ""
+        GOOGLE_CLIENT_ID_MAC: "783810031677-acl8e4radj0ud4pqflbo5c3f23e5cqid.apps.googleusercontent.com"
+        GOOGLE_REVERSED_CLIENT_ID_MAC: "com.googleusercontent.apps.783810031677-acl8e4radj0ud4pqflbo5c3f23e5cqid"
       configs:
         Debug:
           CODE_SIGN_ENTITLEMENTS: Entitlements/LikemindedMac.Debug.entitlements
         Release:
           CODE_SIGN_ENTITLEMENTS: Entitlements/LikemindedMac.entitlements
+          LIKEMINDED_API_BASE_URL: "https://likeminded-api.onrender.com"
     scheme:
       gatherCoverageData: false
       testTargets: []

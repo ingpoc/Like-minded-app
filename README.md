@@ -8,17 +8,13 @@ Likeminded is an AI-native iOS/macOS app for AI-guided self-discovery, meaningfu
 
 This repository is moving from prototype to a TestFlight MVP for the placement loop: Sign in with Apple → voice profile → persisted profile and circle placement → profile review → placement action → tester feedback.
 
-## Active route
-
-Do not start from this README alone. Always run:
+## Session entry
 
 ```sh
 npm run goal:next
 ```
 
-Follow `first_command` / `after_dirty_resolved`, `open_tracks`, and `ledger_progress_ok`. While macOS or iOS ledger tracks are open or dirty, do **not** start Phase 9 external setup (Neon, Render, Apple Developer, TestFlight evidence).
-
-Owner docs: `PROGRESS.md` (active track only), `docs/workflows/validation.md`. Control status: `validation/screens/*.json` — one screen: `npm run ledger:screen`; gap audit: `npm run ledger:open`; session brief: `npm run ledger:brief`.
+Run `first_command` from that output. Routing owner: `AGENTS.md`. Commands: `docs/workflows/validation.md`.
 
 ## Structure
 
@@ -46,7 +42,7 @@ curl http://127.0.0.1:8787/health
 curl http://127.0.0.1:8787/v1/system/architecture
 ```
 
-The default native run path generates the Xcode project, builds the `Likeminded` iOS app, boots an available `iPhone 17` simulator, installs the app, and launches bundle id `com.likeminded.app`.
+The default native run path generates the Xcode project, builds the `Likeminded` iOS app, boots an available `iPhone 17` simulator, installs the app, and launches bundle id `com.gurusharan.likeminded`.
 
 Run validation (narrow route first):
 
@@ -73,12 +69,3 @@ Full contract: `docs/workflows/validation.md`.
 - Realtime, discovery, placement actions, and feedback require an app session token.
 - The SwiftUI app is launch-verified on the iOS simulator through `XcodeGen`, but the long-term native project strategy is still open.
 - Shared profile and Reflect -> Place -> Connect data start as JSON Schema so clients, backend, and AI orchestration can converge on one contract before code generation is introduced.
-
-## Later (Phase 9 — only after ledger tracks are clean)
-
-Do not start these while `npm run goal:next` reports open macOS/iOS ledger tracks or dirty macOS owners:
-
-- Create Render service and Neon database, then set production env vars.
-- Configure Apple Developer/App Store Connect for bundle id `com.likeminded.app` and Sign in with Apple.
-- Copy `release/testflight-evidence.template.json` to `release/testflight-evidence.json` and fill it as external proof is completed.
-- Run real spoken voice-loop proof on a signed-in simulator or physical device before wider TestFlight invites.

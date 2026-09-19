@@ -5,47 +5,50 @@ struct AuthGateView: View {
     @State private var appleSignInController = AppleSignInController()
 
     var body: some View {
-        ZStack {
-            PrototypePalette.background.ignoresSafeArea()
-
-            LinenShape()
-                .fill(Color.white.opacity(0.34))
+        ZStack(alignment: .topLeading) {
+            ConvergenceFieldView(background: PrototypePalette.background)
                 .ignoresSafeArea()
 
-            VStack(alignment: .leading, spacing: 30) {
+            VStack(alignment: .leading, spacing: 28) {
                 VStack(alignment: .leading, spacing: 10) {
                     Text("Likeminded")
-                        .font(PrototypeTypography.hero)
-                        .foregroundStyle(PrototypePalette.ink)
+                        .font(.system(size: 25, weight: .semibold, design: .serif))
+                        .foregroundStyle(PrototypePalette.accent)
 
-                    Text("Meet the right people.\nIn the right room.")
-                        .font(PrototypeTypography.heroBody)
+                    Text("When you meet,\nit matters.")
+                        .font(.system(size: 34, weight: .semibold, design: .serif))
+                        .lineSpacing(1)
                         .foregroundStyle(PrototypePalette.ink)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    Text("AI helps you meet the right people in the right rooms.")
+                        .font(PrototypeTypography.body)
+                        .foregroundStyle(PrototypePalette.muted)
                         .fixedSize(horizontal: false, vertical: true)
                 }
 
-                VStack(alignment: .leading, spacing: 24) {
+                VStack(alignment: .leading, spacing: 20) {
                     AuthPromiseRow(
                         icon: "waveform",
                         title: "Voice profile",
-                        detail: "AI voice interview that understands you deeply.",
+                        detail: "Speak naturally. We understand you.",
                         accessibilityLabel: "Voice profile"
                     )
                     AuthPromiseRow(
-                        icon: "lock.fill",
+                        icon: "shield.lefthalf.filled",
                         title: "Private by design",
-                        detail: "Your profile is private and under your control.",
+                        detail: "Your data is yours. Always.",
                         accessibilityLabel: "Private by design"
                     )
                     AuthPromiseRow(
                         icon: "person.3",
                         title: "Circle placement",
-                        detail: "We place you in the right circle and communities.",
+                        detail: "We place you where you'll belong.",
                         accessibilityLabel: "Circle placement"
                     )
                 }
 
-                Spacer(minLength: 90)
+                Spacer(minLength: 48)
 
                 AuthAppleSignInButton(
                     style: .accentGreen,
@@ -64,7 +67,10 @@ struct AuthGateView: View {
                     onSolflareSignIn: { Task { await appState.signInWithWallet(.solflare, controller: WalletSignInController()) } }
                 )
 
-                AuthPrivacyFooter(muted: PrototypePalette.subink)
+                AuthTermsFooter(
+                    accent: PrototypePalette.accent,
+                    muted: PrototypePalette.subink
+                )
 
                 if appState.isAuthenticating {
                     ProgressView("Signing in")
@@ -80,7 +86,7 @@ struct AuthGateView: View {
                 }
             }
             .padding(24)
-            .frame(maxWidth: 520, alignment: .leading)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 
@@ -105,13 +111,13 @@ private struct AuthPromiseRow: View {
     var body: some View {
         HStack(alignment: .top, spacing: 16) {
             Image(systemName: icon)
-                .font(.system(size: 23, weight: .regular))
+                .font(.system(size: 22, weight: .regular))
                 .foregroundStyle(PrototypePalette.ink)
-                .frame(width: 58, height: 58)
+                .frame(width: 52, height: 52)
                 .background(Color(red: 0.938, green: 0.890, blue: 0.780))
                 .clipShape(Circle())
 
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(PrototypeTypography.bodyStrong)
                     .foregroundStyle(PrototypePalette.ink)
@@ -123,25 +129,5 @@ private struct AuthPromiseRow: View {
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel(accessibilityLabel)
-    }
-}
-
-private struct LinenShape: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        path.move(to: CGPoint(x: rect.maxX * 0.42, y: rect.minY))
-        path.addCurve(
-            to: CGPoint(x: rect.maxX, y: rect.maxY * 0.62),
-            control1: CGPoint(x: rect.maxX * 0.86, y: rect.maxY * 0.05),
-            control2: CGPoint(x: rect.maxX * 0.66, y: rect.maxY * 0.42)
-        )
-        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
-        path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
-        path.addCurve(
-            to: CGPoint(x: rect.maxX * 0.42, y: rect.minY),
-            control1: CGPoint(x: rect.maxX * 0.24, y: rect.maxY * 0.70),
-            control2: CGPoint(x: rect.maxX * 0.16, y: rect.maxY * 0.18)
-        )
-        return path
     }
 }

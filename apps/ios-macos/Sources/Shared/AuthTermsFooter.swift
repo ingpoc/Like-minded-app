@@ -68,6 +68,9 @@ struct AuthPrivacyPolicySheet: View {
                     .font(.body)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.top, 4)
+
+                Link("Open public privacy policy", destination: LikemindedPrivacyPolicy.publicURL)
+                    .font(.body.weight(.semibold))
             }
             .padding(24)
         }

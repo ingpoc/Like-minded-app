@@ -379,7 +379,7 @@ function contextRoutingErrors() {
   if (fs.existsSync(rulesDir)) {
     for (const name of fs.readdirSync(rulesDir).filter((f) => f.endsWith(".mdc"))) {
       const body = fs.readFileSync(path.join(rulesDir, name), "utf8");
-      if (/Harness routing|harness-autopilot/i.test(body) && name !== "context-alignment.mdc") {
+      if (/Harness routing|harness-autopilot/i.test(body)) {
         errors.push(
           `.cursor/rules/${name} duplicates AGENTS.md harness routing — delete or fold into AGENTS.md`
         );

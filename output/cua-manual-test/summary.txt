@@ -1,1 +1,0 @@
-pass=28 fail=0 token=cua-manual-1783371002 shots=/Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/output/cua-manual-test/screenshots capture=failures

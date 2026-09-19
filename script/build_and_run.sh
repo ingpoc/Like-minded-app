@@ -7,7 +7,7 @@ IOS_DIR="$ROOT_DIR/apps/ios-macos"
 PROJECT_FILE="$IOS_DIR/Likeminded.xcodeproj"
 SCHEME="Likeminded"
 APP_NAME="Likeminded"
-BUNDLE_ID="${BUNDLE_ID:-com.likeminded.app}"
+BUNDLE_ID="${BUNDLE_ID:-com.gurusharan.likeminded}"
 DERIVED_DATA="$ROOT_DIR/.build/ios-simulator"
 
 resolve_simulator() {

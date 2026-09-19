@@ -1,1 +1,0 @@
-pass=31 fail=0 token=flow-onboard-1783337720 shots=/Users/gurusharan/Documents/remote-claude/active/apps/Like-minded-app/output/onboarding-flow-test-1783337720/screenshots capture=all

@@ -147,9 +147,9 @@ final class PrototypeAppState: ObservableObject {
         case .accepted:
             return "Your circle is live with member and meetup details."
         case .swapped:
-            return "Room swapped. Let the new fit settle."
+            return "Your secondary circle is set."
         case .proposed:
-            return "Accept or swap a room before full browsing."
+            return "Open a suggested circle to make it your second circle."
         case .deferred:
             return "Connections paused until placement resumes."
         }
@@ -275,8 +275,16 @@ final class PrototypeAppState: ObservableObject {
     func validateStoredAppleCredentialIfNeeded() async {
         guard authSession?.authProvider == "apple" else { return }
         guard let appleUserIdentifier = authSession?.appleUserIdentifier else { return }
-        let isAuthorized = await AppleSignInSupport.validateCredentialState(for: appleUserIdentifier)
-        guard !isAuthorized else { return }
+        switch await AppleSignInSupport.credentialState(for: appleUserIdentifier) {
+        case .authorized, .unavailable:
+            return
+        case .revoked, .notFound, .transferred:
+            handleAppleCredentialRevoked()
+        }
+    }
+
+    func handleAppleCredentialRevoked() {
+        guard authSession?.authProvider == "apple" else { return }
         signOut()
         authError = "Your Apple sign-in is no longer valid. Please sign in again."
     }
@@ -311,13 +319,31 @@ final class PrototypeAppState: ObservableObject {
         voiceClient.disconnect()
     }
 
-    func deleteAccount() async -> Bool {
+    func deleteAccount(using controller: AppleSignInController) async -> Bool {
+        var appleAuthorization: AppleAccountDeletionProof?
+        if authSession?.authProvider == "apple" {
+            switch await controller.signIn(requestedScopes: []) {
+            case .success(let payload):
+                guard let authorizationCode = payload.authorizationCode else {
+                    authError = "Apple did not provide the authorization needed to delete this account."
+                    return false
+                }
+                appleAuthorization = AppleAccountDeletionProof(
+                    identityToken: payload.identityToken,
+                    authorizationCode: authorizationCode,
+                    nonce: payload.rawNonce
+                )
+            case .failure(let error):
+                authError = AppleSignInSupport.userFacingMessage(for: error)
+                return false
+            }
+        }
         do {
-            try await client.deleteAccount()
+            try await client.deleteAccount(appleAuthorization: appleAuthorization)
             signOut()
             return true
         } catch {
-            authError = "Account could not be deleted. Please try again or contact support."
+            authError = "Account could not be deleted or Apple access could not be revoked. Please try again."
             return false
         }
     }
@@ -460,8 +486,8 @@ final class PrototypeAppState: ObservableObject {
         Task { await updatePlacementAction("defer") }
     }
 
-    func swapPrimaryCircle() {
-        Task { await updatePlacementAction("swap") }
+    func selectSecondaryCircle(id: String) {
+        Task { await updatePlacementAction("select_secondary", circleId: id) }
     }
 
     func confirmConnection() {
@@ -836,11 +862,11 @@ final class PrototypeAppState: ObservableObject {
         ].joined(separator: "\n")
     }
 
-    private func updatePlacementAction(_ action: String) async {
+    private func updatePlacementAction(_ action: String, circleId: String? = nil) async {
         do {
-            let result = try await client.updatePlacement(action: action)
+            let result = try await client.updatePlacement(action: action, circleId: circleId)
             applyProfileResult(result, source: "Placement updated")
-            if action != "accept" {
+            if action != "accept" && action != "select_secondary" {
                 hasConfirmedConnection = false
             }
             loadError = nil

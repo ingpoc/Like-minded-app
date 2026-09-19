@@ -538,10 +538,11 @@ function buildPlacement(profile) {
     sourceReflectionSignals: Object.entries(profile.signals.bigFive).map(([dim, val]) => `${dim}: ${val > 0.6 ? "high" : val < 0.4 ? "low" : "balanced"}`),
     primaryCircle,
     secondaryCircles,
+    selectedSecondaryCircleId: null,
     userState: "proposed",
     actions: {
       primaryAction: "Accept this circle",
-      swapAction: "Try another circle",
+      secondaryAction: "Make this my second circle",
       deferAction: "Defer for now"
     },
     isNewCircle: createNew

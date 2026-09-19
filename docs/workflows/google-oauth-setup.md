@@ -7,8 +7,8 @@ Complete before disabling `APPLE_AUTH_BYPASS` for real auth testing.
 1. Create a project at [Google Cloud Console](https://console.cloud.google.com/).
 2. Enable **Google Sign-In API** / configure OAuth consent screen (External, test users).
 3. Create OAuth client IDs:
-   - **iOS** — bundle id `com.likeminded.app`
-   - **macOS** — bundle id `com.likeminded.mac` (or reuse iOS client if single-app)
+   - **iOS** — bundle id `com.gurusharan.likeminded`
+   - **macOS** — bundle id `com.gurusharan.likeminded` (shared universal app record)
 
 ## 2. Repo configuration
 
@@ -17,13 +17,14 @@ Add to `.env.local`:
 ```sh
 GOOGLE_CLIENT_ID_IOS=your-id.apps.googleusercontent.com
 GOOGLE_CLIENT_ID_MAC=your-mac-id.apps.googleusercontent.com
-GOOGLE_REVERSED_CLIENT_ID=com.googleusercontent.apps.your-id
-GOOGLE_CLIENT_IDS=your-id.apps.googleusercontent.com
+GOOGLE_REVERSED_CLIENT_ID_IOS=com.googleusercontent.apps.your-ios-id
+GOOGLE_REVERSED_CLIENT_ID_MAC=com.googleusercontent.apps.your-mac-id
+GOOGLE_CLIENT_IDS=your-ios-id.apps.googleusercontent.com,your-mac-id.apps.googleusercontent.com
 GOOGLE_AUTH_BYPASS=0
 APPLE_AUTH_BYPASS=0
 ```
 
-Set the same `GOOGLE_CLIENT_ID_IOS` and `GOOGLE_REVERSED_CLIENT_ID` in `apps/ios-macos/project.yml`, then:
+Set each target's client ID and reversed client ID in `apps/ios-macos/project.yml`, then:
 
 ```sh
 cd apps/ios-macos && xcodegen generate
