@@ -13,7 +13,7 @@ Use this when stale or contradictory repo context is more dangerous than missing
 ## Operating contract
 
 | Field | Decision |
-|---|---|
+| --- | --- |
 | Primary archetype | agent orchestration |
 | Secondary archetypes | deterministic script workflow |
 | Operator trigger | "stale context", "context efficient", "agents wasting tokens", "incorrect prose/docs/context graph/routing/trigger", "know exactly what to retrieve", "create a skill for similar issues" |
@@ -115,7 +115,7 @@ Also treat these as first-class (observed in live sessions):
 - [scripts/stale-context-grep.sh](scripts/stale-context-grep.sh) — stale strings, ledger desync, dirty-vs-goal hints
 - [scripts/validate.sh](scripts/validate.sh) — skill self-validate (grep + `verify:ledger-progress` + `goal:next`)
 - Repo gates: `npm run verify:ledger-progress`, `npm run verify:goal`, `npm run goal:next`
-- Related skills: `save-session`, `resume-session`, `session-introspection`, `create-skill`, `requirements-gap-audit`
+- Related skills: `session-introspection`, `create-skill`, `requirements-gap-audit`
 
 ## Why this skill exists
 

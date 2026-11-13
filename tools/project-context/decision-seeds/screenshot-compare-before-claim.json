@@ -1,0 +1,22 @@
+{
+  "decision_key": "screenshot-compare-before-claim",
+  "decision_type": "precedent",
+  "category": "validation.native",
+  "scope_key": "visual-parity-proof",
+  "owner_surface": "docs/workflows/validation.md",
+  "title": "Compare capture to reference before claiming visual parity",
+  "summary": "Before claiming a screen is done, fixed, or at parity with a concept/mockup plate, capture the current app screenshot and compare it to the reference image the operator assigned. Build/compile success alone is not visual proof.",
+  "rationale": "Operator repeatedly caught agents declaring Meet/auth parity while convergence pattern and layout still diverged from concept plates.",
+  "task": "Prevent false visual parity claims",
+  "situation": "Agents marked screens pass without side-by-side reference comparison.",
+  "inputs_considered": [
+    "validation/screens/*.json mockup_ref",
+    "Cursor prompt 2026-07-09",
+    "build-macos-app skill capture flow"
+  ],
+  "evidence": [
+    "Cursor prompt 2026-07-09: check screenshot vs concept before claiming done",
+    "validation.md capture + compare workflow"
+  ],
+  "confidence": 1.0
+}

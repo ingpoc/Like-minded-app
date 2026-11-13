@@ -15,7 +15,7 @@ function sessionBrief(compact) {
 
 function hookPayload() {
   const brief = sessionBrief(true);
-  const context = `Run first_command end-to-end before other retrieval.\n${brief}`;
+  const context = `Work bucket first. Run first_command end-to-end; forbidden_until_continue applies until continue_command completes.\n${brief}`;
   return { additional_context: context, additionalContext: context };
 }
 

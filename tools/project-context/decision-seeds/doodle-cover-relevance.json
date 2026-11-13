@@ -1,0 +1,21 @@
+{
+  "decision_key": "doodle-cover-relevance",
+  "decision_type": "precedent",
+  "category": "product",
+  "scope_key": "ui-covers",
+  "owner_surface": "apps/ios-macos/Sources/DoodleArt",
+  "title": "Doodle covers must match entity and keep text readable",
+  "summary": "Circle/community/event card covers (DoodleArt) must be semantically relevant to the entity — not generic decoration. Typography on cards must remain readable; if doodle art obscures text, fix cover crop/contrast or layout.",
+  "rationale": "Operator compared cards to mockups and rejected covers where font clarity suffered and art was not relevant to the community/circle/event.",
+  "task": "Fix community/circle card visual parity",
+  "situation": "Generated doodle covers were generic and reduced text legibility vs mockups.",
+  "inputs_considered": [
+    "DoodleArt.swift",
+    "MacScreens.swift community cards",
+    "Cursor prompt 2026-07-04"
+  ],
+  "evidence": [
+    "Cursor prompt 2026-07-04: cover has to be relevant; font not clear to read"
+  ],
+  "confidence": 1.0
+}

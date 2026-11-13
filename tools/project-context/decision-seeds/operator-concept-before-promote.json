@@ -1,0 +1,23 @@
+{
+  "decision_key": "operator-concept-before-promote",
+  "decision_type": "precedent",
+  "category": "validation.native",
+  "scope_key": "ui-migration",
+  "owner_surface": "validation/screens/*.json",
+  "title": "Build concept screen first; operator promotes to production",
+  "summary": "When migrating a screen toward a concept/reference plate, add a separate *ConceptView (or concept launch arg) first. Do not replace the production screen until the operator compares capture vs reference and explicitly approves promotion.",
+  "rationale": "Operator rejected direct production edits during Meet/Circles migration (Jul 9). Agents claimed parity without operator sign-off. Concept-first keeps production stable and makes approval explicit.",
+  "task": "Migrate native screens toward concept mockups",
+  "situation": "Agents replaced production views directly and declared done before operator review.",
+  "inputs_considered": [
+    "Cursor session 2026-07-09 (Meet tab migration prompts)",
+    ".agents/skills/build-macos-app/references/layout.md",
+    "MacMeetOverviewConceptView.swift",
+    "MacCirclesRoomView.swift"
+  ],
+  "evidence": [
+    "Cursor prompt 2026-07-09: separate screen until operator confirms",
+    "build-macos-app concept preview lane"
+  ],
+  "confidence": 1.0
+}

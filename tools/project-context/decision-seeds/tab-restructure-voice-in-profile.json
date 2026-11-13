@@ -1,0 +1,23 @@
+{
+  "decision_key": "tab-restructure-voice-in-profile",
+  "decision_type": "precedent",
+  "category": "architecture",
+  "scope_key": "ui-navigation",
+  "owner_surface": "apps/ios-macos/Sources/LikemindedApp",
+  "title": "Tabs: Meet, Circles, Communities, Soulmate (opt-in), Profile last",
+  "summary": "Voice interview lives in Profile (not Talk). Talk tab is replaced by Meet (RSVP + scheduling). Tab order: Meet, Circles, Communities, Soulmate (only when enabled in Settings), Profile always last. When Soulmate is enabled, show Soulmate tab directly on Discover — no intermediate enable screen and no duplicate Soulmate toggle in Settings.",
+  "rationale": "Operator moved voice to Profile, replaced Talk with Meet, and specified Soulmate between Communities and Profile with Profile last. Duplicate Soulmate toggles were rejected.",
+  "task": "Restructure product navigation tabs",
+  "situation": "Stale tab shell and wrong Soulmate placement/duplicate toggles.",
+  "inputs_considered": [
+    "PrototypeModels.AppTab",
+    "RootView.swift",
+    "MacRootView.swift",
+    "Cursor prompts 2026-07-04"
+  ],
+  "evidence": [
+    "Cursor prompt 2026-07-04: Soulmate between Communities and Profile; Profile last",
+    "Cursor prompt 2026-07-04: no duplicate soulmate enable toggle when already enabled"
+  ],
+  "confidence": 1.0
+}

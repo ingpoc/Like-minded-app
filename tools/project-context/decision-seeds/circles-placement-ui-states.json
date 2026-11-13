@@ -1,0 +1,22 @@
+{
+  "decision_key": "circles-placement-ui-states",
+  "decision_type": "precedent",
+  "category": "product",
+  "scope_key": "placement-ux",
+  "owner_surface": "apps/ios-macos/Sources/LikemindedMac/MacCirclesRoomView.swift",
+  "title": "Circles tab has two placement states with distinct layouts",
+  "summary": "Unplaced: left column shows editorial promise prose + Start interview CTA; right shows ghosted circle-type preview. Placed: left shows primary circle (no educational prose); right shows AI secondary suggestions and read-only circle types. Copy uses 'Your circle.' not 'Your room.'",
+  "rationale": "Operator said left prose should disappear after profiling because the user already understands purpose. Primary belongs left; secondary suggestions belong right without browse/pick UX.",
+  "task": "Redesign Circles tab for AI placement",
+  "situation": "Production Circles still used photo-browse layout and 'Your room' copy.",
+  "inputs_considered": [
+    "MacCirclesRoomView.swift",
+    "Cursor session 2026-07-09 circles placement prompts",
+    "ai-chooses-circles-no-user-pick"
+  ],
+  "evidence": [
+    "Cursor prompt 2026-07-09: left prose only before profiling; primary left after placement",
+    "MacCirclesRoomView.swift"
+  ],
+  "confidence": 1.0
+}

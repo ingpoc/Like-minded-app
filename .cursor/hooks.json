@@ -6,6 +6,18 @@
         "command": ".cursor/hooks/session_start.sh",
         "timeout": 12
       }
+    ],
+    "preCompact": [
+      {
+        "command": ".cursor/hooks/session_stamp.sh",
+        "timeout": 15
+      }
+    ],
+    "sessionEnd": [
+      {
+        "command": ".cursor/hooks/session_stamp.sh",
+        "timeout": 15
+      }
     ]
   }
 }

@@ -33,26 +33,12 @@ Gurusharan is the first operator and tester. The current MVP target is up to 50 
 - **AI:** OpenAI Realtime API (gpt-realtime-2) via WebRTC
 - **Production target:** Render web service + Neon/Postgres
 - **Design:** Warm cream canvas, deep green accents, SF native typography
-- **Repo:** https://github.com/ingpoc/Like-minded-app
+- **Repo:** <https://github.com/ingpoc/Like-minded-app>
 
-## Current State
-As of 2026-07-03:
-- Local MVP backend contract passes through `npm run smoke:mvp`, seeded validation data, and native screen validators
-- Server has authenticated Apple-session MVP routes for discovery, profile resume/update, placement resume/actions, feedback, account deletion, Realtime broker calls, notifications, communities, meetings, recap notes, and Soulmate chat
-- iOS app is auth-gated and uses product tabs: Meet, Circles, Communities, Profile, plus Soulmate when enabled
-- macOS has native screens for the same product areas, with remaining parity gaps tracked in `PROGRESS.md`
-- Local development persistence uses JSON files and validation DB data; production persistence target is Neon/Postgres through `DATABASE_URL`
-- Device UUID remains local continuity metadata; Sign in with Apple is the primary TestFlight identity path
-- Not yet production-ready: external Render/Neon/LiveKit setup, signed TestFlight proof, macOS video-call parity, push notifications, subscriptions, full community engine, and advanced moderation
+## Roadmap And Live Status
 
-## What Needs to Happen
-
-See **PROGRESS.md** for the full roadmap with checkboxes. Summary:
-
-1. **Phase 0 — Session control:** `goal.template.json`, `goal.json`, deterministic graders, validation routing
-2. **Phases 1-8 — Local product loop and native parity:** auth, voice profile, Meet, Circles, Communities, Profile, Soulmate, seeded backend data, and runtime-tapped iOS/macOS screens
-3. **Phase 9 — External TestFlight readiness:** Render, Neon, LiveKit, Apple Developer, App Store Connect, privacy metadata, account deletion readiness, signed candidate
-4. **Phase 10 — Simulator/device proof:** real sign-in, voice, placement, group video, chat, privacy isolation, and native parity proof
+- Roadmap checkboxes: `PROGRESS.md`
+- Live work order and control status: `npm run goal:next`
 
 ## Open Questions
 

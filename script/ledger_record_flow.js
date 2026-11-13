@@ -6,13 +6,16 @@
  *     --result pass --evidence "CUA validation-gurusharan: RSVP toggles" --method CUA-click \
  *     --screenshot-ref output/validation/macos-screens/meetOverview.png
  */
+const fs = require("node:fs");
+const path = require("node:path");
 const {
   findLedgerByScreenArg,
   loadScreenLedger,
   recordFlowLedger,
-  flowSuccessCriteria
+  flowSuccessCriteria,
+  root
 } = require("./ledger_hash");
-const { validatePassTier } = require("./ledger_proof");
+const { validatePassTier, resolveMockupRef } = require("./ledger_proof");
 
 function arg(name) {
   const i = process.argv.indexOf(name);
@@ -54,6 +57,34 @@ if (!tierCheck.ok && !forceTier && result === "pass") {
   console.error(`tier check failed: ${tierCheck.message}`);
   console.error(`required tier: ${tierCheck.tier}; use --force-tier to override`);
   process.exit(1);
+}
+
+const screenData = unified;
+const mockupRef = resolveMockupRef(flow, screenData, platform);
+if (String(result).toLowerCase() === "pass" && mockupRef && !forceTier) {
+  if (!screenshotRef) {
+    console.error(`pass requires --screenshot-ref when mockup_ref is set (${mockupRef})`);
+    process.exit(1);
+  }
+  const shotAbs = path.isAbsolute(screenshotRef)
+    ? screenshotRef
+    : path.join(root, screenshotRef);
+  if (!fs.existsSync(shotAbs)) {
+    console.error(`screenshot not found: ${screenshotRef}`);
+    process.exit(1);
+  }
+  const evidenceText = String(evidence || "");
+  const mockupBase = path.basename(mockupRef);
+  const compared =
+    evidenceText.includes(mockupRef) ||
+    evidenceText.includes(mockupBase) ||
+    /compare|vs mockup|visual parity|concept mockup/i.test(evidenceText);
+  if (!compared) {
+    console.error(
+      `pass evidence must reference mockup ${mockupRef} or describe screenshot compare (screenshot-compare-before-claim)`
+    );
+    process.exit(1);
+  }
 }
 
 const recorded = recordFlowLedger(ledger, platform, flowId, {

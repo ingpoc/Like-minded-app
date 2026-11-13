@@ -1,0 +1,22 @@
+{
+  "decision_key": "settings-sidebar-profile-cleanup",
+  "decision_type": "precedent",
+  "category": "product",
+  "scope_key": "settings-ux",
+  "owner_surface": "validation/screens/settings.json",
+  "title": "Settings sidebar excludes profile and voice-profile rows",
+  "summary": "Voice profile is part of Profile tab (own screen), not a Settings sidebar row. View profile row is removed from Settings — Profile tab is the profile. Settings rows must not open full pages; page-level destinations belong outside the settings sidebar.",
+  "rationale": "Operator rejected settings-as-navigation for profile surfaces. Profile and voice profiling are first-class Profile-tab flows, not settings drill-ins.",
+  "task": "Fix macOS settings sidebar vs mockup",
+  "situation": "Settings sidebar duplicated Profile navigation and opened page-level destinations inline.",
+  "inputs_considered": [
+    "validation/screens/settings.json",
+    "MacScreens.swift settings",
+    "Cursor prompt 2026-07-05 with screenshots"
+  ],
+  "evidence": [
+    "validation/screens/settings.json: Voice profile row removed per product decision",
+    "Cursor prompt 2026-07-05: voice profile part of profile; settings should not open pages"
+  ],
+  "confidence": 1.0
+}

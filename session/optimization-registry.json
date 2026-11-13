@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "owner": "Append-only machine: one active row max; archive+collapse on after-validate; never delete. Agents use npm run optimization:status (compact), not raw JSON.",
+  "optimizations": [
+    {
+      "id": "agent-routing-work-bucket-2026-07-09",
+      "recorded_at": "2026-07-09T20:15:00.000Z",
+      "anchor_commit": "43d4ed54",
+      "claims": [
+        "Session entry shows work bucket first — agents continue previous screen without re-mining transcripts",
+        "forbidden_until_continue stops GOAL.md / PROGRESS / Phase 9 preload before continue_command",
+        "auto-stamp on preCompact/sessionEnd removes need to remember session:stamp",
+        "ledger:record-flow pass requires screenshot-ref + mockup compare evidence when mockup_ref exists",
+        "Duplicate routing surfaces pruned — goal:next is sole session router"
+      ],
+      "changes": [
+        "session/work-bucket.json",
+        "script/session_work_bucket.js",
+        "script/goal_next.js",
+        "script/session_route.js",
+        ".cursor/hooks.json",
+        "script/ledger_record_flow.js",
+        "forbidden_until_continue"
+      ],
+      "failure_signals": [
+        "we just completed",
+        "check what implementation",
+        "are you duplicating surfaces",
+        "still nowhere near",
+        "not yet migrated",
+        "placing into a circle is not",
+        "Phase 9"
+      ],
+      "success_signals": [
+        "continue_command",
+        "forbidden_until_continue",
+        "work_surface",
+        "ledger:screen",
+        "proof_command"
+      ],
+      "validated_at": null,
+      "validation_verdict": null,
+      "archived": false,
+      "baseline_validation": {
+        "verdict": "baseline_confirmed",
+        "confidence": "medium",
+        "reason": "pre-fix failure signals present",
+        "sessions_analyzed": 10,
+        "total_user_prompts": 125,
+        "baseline_fail_rate": 0.5,
+        "top_failures": "we just completed:1, check what implementation:1, placing into a circle is not:1",
+        "top_success": "",
+        "behavioral": {
+          "early_forbidden_reads": 0,
+          "ran_ledger_screen": 4,
+          "ran_goal_next": 6,
+          "mockup_directory_walk": 5
+        },
+        "validated_at": "2026-07-10T02:16:28.735Z"
+      },
+      "last_validation_attempt": {
+        "verdict": "no_data",
+        "confidence": "none",
+        "sessions_analyzed": 0,
+        "top_failures": "",
+        "top_success": "",
+        "validated_at": "2026-07-09T20:29:10.448Z"
+      }
+    }
+  ]
+}

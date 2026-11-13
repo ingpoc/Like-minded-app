@@ -1,0 +1,23 @@
+{
+  "decision_key": "secondary-circle-detail-only",
+  "decision_type": "precedent",
+  "category": "product",
+  "scope_key": "placement-ux",
+  "owner_surface": "services/api/src/lib/mvp-store.js",
+  "title": "Secondary circle selection happens inside circle detail only",
+  "summary": "AI assigns the primary circle. User may pick one secondary circle from AI suggestions. List cards have no Choose/Join CTA — tap opens detail. Inside detail, show 'Make this my second circle'. API action: select_secondary with circleId.",
+  "rationale": "Operator rejected browse-to-join circles UX. Secondary choice must feel deliberate and happen after reading the circle, not from a list button.",
+  "task": "Implement primary + secondary circle placement UX",
+  "situation": "Agents added choose buttons on list cards and swap semantics that implied browsing.",
+  "inputs_considered": [
+    "services/api/src/server.js",
+    "services/api/src/lib/mvp-store.js",
+    "MacScreens.swift circleDetail",
+    "Cursor prompt 2026-07-09"
+  ],
+  "evidence": [
+    "Cursor prompt 2026-07-09: dont show choose circle on cards; make secondary inside detail",
+    "mvp-store.js select_secondary action"
+  ],
+  "confidence": 1.0
+}

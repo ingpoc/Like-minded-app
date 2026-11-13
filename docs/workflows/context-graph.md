@@ -5,18 +5,21 @@ Workflow for the repo-local durable decision graph.
 ## Control Owner
 
 Owner for:
+
 - accepted decision storage, retrieval, trace/history, supersession, and structural health
 - save-time decision capture policy
 
 Should not contain:
+
 - global Codex routing doctrine owned by `/Users/gurusharan/.codex/AGENTS.md`
-- reusable `save-session` or `resume-session` skill behavior
+- session checkpoint files or resume routing outside `npm run goal:next`
 - beta tracking policy owned by the global beta registry
 - generated viewer, export, or reporting artifacts
 
 ## Minimum System
 
 Keep:
+
 - `./script/project_context.sh` as the only repo entrypoint
 - `tools/project-context/` as the CLI implementation
 - `.context-graph/graph.db` as the only canonical database
@@ -26,10 +29,12 @@ Keep:
 
 Do not add required HTML viewers, exports, project-specific miner agents, raw session imports, local beta wrappers, or duplicate DB files.
 
+Committed decision seeds (portable): `tools/project-context/decision-seeds/*.json`. Replay with `./script/bootstrap_context_graph_decisions.sh` after clone.
+
 ## Decision
 
 | Situation | Action |
-|---|---|
+| --- | --- |
 | Normal repo lane | **Skip** — `goal:next` + lane workflow suffice |
 | Precedent for current task | `./script/project_context.sh query --task "…"` only if `decision_count > 0` |
 | Full audit (rare) | `./script/project_context.sh active` |
@@ -54,11 +59,12 @@ The graph does not store rules ("what should happen in general"). It stores deci
 3. Would a future agent making a different decision benefit from knowing this precedent? → If yes, store it. If no → reject.
 4. Is this stitched to evidence from the current session or live repo files? → Accepted entries must trace back to evidence.
 
-Reference: https://foundationcapital.com/ideas/context-graphs-ais-trillion-dollar-opportunity
+Reference: <https://foundationcapital.com/ideas/context-graphs-ais-trillion-dollar-opportunity>
 
 ## Decision Admission Gate
 
 Save a decision only when it is a durable trace with a future routing effect. It must include:
+
 - a stable `decision_key`
 - category and scope
 - owner surface
@@ -69,6 +75,7 @@ Save a decision only when it is a durable trace with a future routing effect. It
 - supersede target, when replacing a prior decision
 
 Eligible decisions:
+
 - product, architecture, validation, privacy, release, or workflow precedent that changes future behavior
 - owner-boundary decisions that prevent duplicate docs, scripts, workflows, agents, or hooks
 - validation boundaries that say what proof is complete, what artifacts prove it, and when to rerun it
@@ -76,6 +83,7 @@ Eligible decisions:
 - external blockers with exact evidence required before the next agent can complete the lane
 
 Reject:
+
 - raw progress notes, command logs, or "I ran X"
 - temporary implementation details without future routing value
 - duplicate doctrine already owned by AGENTS.md, workflow docs, reference docs, skills, hooks, or `goal.template.json`
@@ -86,6 +94,7 @@ Reject:
 ## Add Or Supersede
 
 Before recording a decision:
+
 1. Query by task and category: `./script/project_context.sh query --task "<decision topic>"`.
 2. Search likely keys and terms: `./script/project_context.sh search "<owner or topic>"`.
 3. If a matching active decision exists with the same owner, category, and scope, supersede it only when the new evidence changes the decision, narrows it, or corrects it.
@@ -112,6 +121,7 @@ PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python3 -m pytest tools/project-context/tests -
 ## Output Contract
 
 Report:
+
 - active decision count
 - available categories
 - task query and relevant active decisions returned
