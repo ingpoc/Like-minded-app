@@ -6,7 +6,6 @@ struct MacCirclesRoomView: View {
     @ObservedObject var appState: MacAppState
     var navigate: ((MacPrototypeScreen) -> Void)?
 
-    @State private var showAllCircleTypes = false
     @State private var circleConcernStatus: String?
 
     private let promiseRows: [(icon: String, title: String, detail: String)] = [
@@ -120,7 +119,7 @@ struct MacCirclesRoomView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
 
-            circleTypesSection(readOnly: true, muted: true)
+            circleTypesSection(muted: true)
         }
     }
 
@@ -141,7 +140,7 @@ struct MacCirclesRoomView: View {
 
                 VStack(alignment: .leading, spacing: 18) {
                     secondarySuggestionsSection(placement)
-                    circleTypesSection(readOnly: true, muted: false)
+                    circleTypesSection(muted: false)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -172,7 +171,7 @@ struct MacCirclesRoomView: View {
 
                     tagPills(for: circle)
 
-                    Button("Open your circle") {
+                    Button("Enter \(circle.name)") {
                         openCircleDetail(circle)
                     }
                     .font(MacType.button)
@@ -181,7 +180,7 @@ struct MacCirclesRoomView: View {
                     .padding(.vertical, 10)
                     .background(Color.black, in: Capsule())
                     .buttonStyle(.plain)
-                    .accessibilityLabel("Open your circle")
+                    .accessibilityLabel("Enter \(circle.name)")
                     .accessibilityIdentifier("hero-circle-macos")
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -209,12 +208,14 @@ struct MacCirclesRoomView: View {
                     .font(MacType.small)
                     .foregroundStyle(MacPalette.muted)
                     .lineLimit(2)
+                    .accessibilityLabel(circleConcernStatus ?? "Ask for a placement refresh when the circle feels off.")
             }
             Spacer(minLength: 8)
             Button("Request refresh") {
                 circleConcernStatus = "Requesting a placement refresh..."
                 Task {
-                    await appState.reportCircleConcern("macOS circle concern")
+                    // Persist customer-facing copy — never harness labels (they surface on Profile).
+                    _ = await appState.reportCircleConcern(MacAppState.defaultPlacementConcernCopy)
                     circleConcernStatus = appState.loadError ?? "Placement refresh requested."
                 }
             }
@@ -241,9 +242,10 @@ struct MacCirclesRoomView: View {
                 Text("Suggested for your second circle")
                     .font(MacType.section)
                     .foregroundStyle(MacPalette.ink)
-                Text("From your interview — open one to explore.")
+                Text("Preview fit only — opening a suggestion does not change your placement until you choose it.")
                     .font(MacType.small)
                     .foregroundStyle(MacPalette.muted)
+                    .fixedSize(horizontal: false, vertical: true)
             }
 
             let suggestions = placement.secondaryCircles
@@ -288,6 +290,10 @@ struct MacCirclesRoomView: View {
                         Label("Your second circle", systemImage: "checkmark.circle.fill")
                             .font(MacType.small.weight(.semibold))
                             .foregroundStyle(MacPalette.accent)
+                    } else {
+                        Text("See why we matched")
+                            .font(MacType.small.weight(.semibold))
+                            .foregroundStyle(MacPalette.accent)
                     }
                     Spacer()
                     Image(systemName: "arrow.right")
@@ -310,38 +316,24 @@ struct MacCirclesRoomView: View {
         .accessibilityIdentifier("circle-card")
     }
 
-    private func circleTypesSection(readOnly: Bool, muted: Bool) -> some View {
+    private func circleTypesSection(muted: Bool) -> some View {
         let primaryId = placement?.primaryCircle.id
         let suggestionIds = Set((placement?.secondaryCircles ?? []).map(\.id))
         let types = appState.circles.filter { circle in
             circle.id != primaryId && !suggestionIds.contains(circle.id)
         }
-        let visible = showAllCircleTypes ? types : Array(types.prefix(3))
 
         return VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Circle types")
-                        .font(MacType.section)
-                        .foregroundStyle(muted ? MacPalette.muted : MacPalette.ink)
-                    Text("Personality-matched archetypes. Placement only — not browsing.")
-                        .font(MacType.small)
-                        .foregroundStyle(MacPalette.muted)
-                }
-                Spacer()
-                if types.count > 3 {
-                    Button(showAllCircleTypes ? "Show fewer" : "See all types") {
-                        showAllCircleTypes.toggle()
-                    }
-                    .font(MacType.small.weight(.semibold))
-                    .foregroundStyle(MacPalette.accent)
-                    .buttonStyle(.plain)
-                    .accessibilityLabel(showAllCircleTypes ? "Show fewer circle types" : "See all circle types")
-                    .accessibilityIdentifier(showAllCircleTypes ? "show-less" : "browse-all")
-                }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Circle types")
+                    .font(MacType.section)
+                    .foregroundStyle(muted ? MacPalette.muted : MacPalette.ink)
+                Text("Personality-matched archetypes. Placement only — not browsing.")
+                    .font(MacType.small)
+                    .foregroundStyle(MacPalette.muted)
             }
 
-            if visible.isEmpty {
+            if types.isEmpty {
                 HStack(spacing: 14) {
                     ForEach(0..<3, id: \.self) { index in
                         placeholderTypeCard(index: index, muted: muted)
@@ -349,7 +341,7 @@ struct MacCirclesRoomView: View {
                 }
             } else {
                 HStack(alignment: .top, spacing: 14) {
-                    ForEach(visible) { circle in
+                    ForEach(types) { circle in
                         circleTypeCard(circle, muted: muted)
                     }
                 }
@@ -454,7 +446,11 @@ struct MacCirclesRoomView: View {
     }
 
     private func memberCount(_ circle: PlacementCircle) -> Int {
-        max(circle.membersOnline, 12)
+        // Circles are micro-rooms (archetype 4–6; concept mockups 12–18). Historical
+        // store bloat must not surface as “1,676 members” next to “small circle” copy.
+        let raw = max(circle.membersOnline, 0)
+        if raw <= 0 { return 12 }
+        return min(raw, 18)
     }
 
     private func openCircleDetail(_ circle: PlacementCircle) {

@@ -18,15 +18,14 @@ test.afterEach(() => {
 });
 
 test("appleAudiences merges bundle, client, and comma-separated ids", () => {
-  process.env.APPLE_BUNDLE_ID = "com.likeminded.app";
-  process.env.APPLE_CLIENT_ID = "com.likeminded.app";
-  process.env.APPLE_MAC_BUNDLE_ID = "com.likeminded.mac";
-  process.env.APPLE_CLIENT_IDS = "com.likeminded.app,com.likeminded.mac";
+  process.env.APPLE_BUNDLE_ID = "com.gurusharan.likeminded";
+  process.env.APPLE_CLIENT_ID = "com.gurusharan.likeminded";
+  process.env.APPLE_MAC_BUNDLE_ID = "com.gurusharan.likeminded";
+  process.env.APPLE_CLIENT_IDS = "com.gurusharan.likeminded";
 
   const audiences = appleAudiences();
-  assert.equal(audiences.size, 2);
-  assert.ok(audiences.has("com.likeminded.app"));
-  assert.ok(audiences.has("com.likeminded.mac"));
+  assert.equal(audiences.size, 1);
+  assert.ok(audiences.has("com.gurusharan.likeminded"));
 });
 
 test("verifyNonce accepts matching sha256 hex nonce", () => {

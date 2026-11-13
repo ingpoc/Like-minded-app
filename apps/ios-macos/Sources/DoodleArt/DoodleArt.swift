@@ -174,3 +174,19 @@ struct DoodlePortrait: View {
             .overlay(Circle().stroke(Color.white.opacity(0.85), lineWidth: 1))
     }
 }
+
+/// Circular crop of the same circle cover art used in circle detail (`DoodleCover`).
+struct DoodleCircleMark: View {
+    let circleId: String
+    var size: CGFloat = 64
+
+    var body: some View {
+        Image(DoodleArt.circle(circleId))
+            .resizable()
+            .scaledToFill()
+            .frame(width: size, height: size)
+            .clipShape(Circle())
+            .overlay(Circle().stroke(Color.black.opacity(0.08), lineWidth: 1))
+            .accessibilityHidden(true)
+    }
+}

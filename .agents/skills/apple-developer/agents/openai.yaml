@@ -1,0 +1,4 @@
+interface:
+  display_name: "Apple Developer"
+  short_description: "Manage Like-minded Apple release setup"
+  default_prompt: "Use $apple-developer to manage the Like-minded Apple Developer, signing, and TestFlight workflow."

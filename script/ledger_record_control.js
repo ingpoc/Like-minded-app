@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 /**
- * Record runtime test result on one ledger control (after CUA/manual proof).
+ * Record runtime test result on one ledger control after native/manual proof.
  *
  *   node script/ledger_record_control.js \
  *     --platform macos --screen meetOverview \
  *     --control join-meetup --result pass \
- *     --evidence "2026-07-04 CUA validation-gurusharan: Join clicked" \
- *     --method CUA
+ *     --evidence "<dated semantic observation>" \
+ *     --method Computer-use
  */
 const {
   findLedgerByScreenArg,
@@ -32,7 +32,7 @@ const method = arg("--method") || "manual";
 
 if (!platform || !controlId || !result) {
   console.error(
-    "Usage: ledger_record_control.js --platform ios|macos (--file NN-name.json | --screen meetOverview) --control ID --result pass|fail|pending|blocked [--evidence TEXT] [--method CUA]"
+    "Usage: ledger_record_control.js --platform ios|macos (--file NN-name.json | --screen meetOverview) --control ID --result pass|fail|pending|blocked [--evidence TEXT] [--method Computer-use]"
   );
   process.exit(2);
 }

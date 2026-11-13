@@ -1,1 +1,0 @@
-pass=7 fail=2 token=cua-manual-1783332816 shots=output/cua-workflow-test-1783332816/screenshots capture=failures

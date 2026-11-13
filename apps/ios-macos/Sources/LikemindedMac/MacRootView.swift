@@ -19,23 +19,16 @@ struct MacRootView: View {
         Self.resolvedMacScreenDeepLink()
     }
 
-    private var macScreenDeepLinkLocked: Bool {
-        macScreenDeepLink != nil
+    private var displayedScreen: MacPrototypeScreen {
+        return selectedScreen
     }
 
-    private var displayedScreen: MacPrototypeScreen {
-        #if DEBUG
-        if let macScreenDeepLink {
-            if selectedScreen.tab != macScreenDeepLink.tab {
-                return selectedScreen
-            }
-            if macScreenDeepLink.allowsValidationDrillDown(to: selectedScreen) {
-                return selectedScreen
-            }
-            return macScreenDeepLink
-        }
-        #endif
-        return selectedScreen
+    private var backDestination: MacPrototypeScreen? {
+        returnScreen ?? displayedScreen.fallbackParent
+    }
+
+    private var shouldShowSoulmateTab: Bool {
+        appState.soulmateEnabled || displayedScreen.tab == .soulmate
     }
 
     private static func resolvedMacScreenDeepLink() -> MacPrototypeScreen? {
@@ -52,19 +45,7 @@ struct MacRootView: View {
         return nil
     }
 
-    private func applyMacScreenDeepLinkIfNeeded() {
-        guard let macScreenDeepLink else { return }
-        if macScreenDeepLink.allowsValidationDrillDown(to: selectedScreen) {
-            return
-        }
-        selectedScreen = macScreenDeepLink
-    }
-
     private func navigateToScreen(_ destination: MacPrototypeScreen) {
-        if macScreenDeepLinkLocked {
-            guard let entry = macScreenDeepLink,
-                  entry.allowsValidationDrillDown(to: destination) else { return }
-        }
         guard destination != selectedScreen else { return }
         returnScreen = selectedScreen
         selectedScreen = destination
@@ -99,10 +80,10 @@ struct MacRootView: View {
                                 VStack(spacing: 18) {
                                     screenContent
                                 }
-                                .frame(maxWidth: .infinity, minHeight: max(0, proxy.size.height - (appState.isSignedIn ? 170 : 72)), alignment: .top)
+                                .frame(maxWidth: .infinity, minHeight: max(0, proxy.size.height - 72), alignment: .top)
                                 .padding(.horizontal, 28)
-                                .padding(.top, 54)
-                                .padding(.bottom, appState.isSignedIn ? 116 : 18)
+                                .padding(.top, 18)
+                                .padding(.bottom, 18)
                             }
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                         }
@@ -111,19 +92,24 @@ struct MacRootView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .overlay(alignment: .bottom) {
-                if appState.isSignedIn, displayedScreen != .welcome {
-                    MacBottomNav(selectedTab: activeTab, soulmateEnabled: appState.soulmateEnabled) { tab in
+            .safeAreaInset(edge: .top, spacing: 0) {
+                if appState.isSignedIn,
+                   displayedScreen != .welcome,
+                   displayedScreen != .notifications {
+                    MacTopNavigation(selectedTab: activeTab, soulmateEnabled: shouldShowSoulmateTab) { tab in
                         returnScreen = nil
                         selectedScreen = tab.primaryScreen
                     }
-                    .padding(.bottom, 18)
+                    .padding(.horizontal, 88)
+                    .padding(.vertical, 8)
+                    .frame(maxWidth: .infinity)
+                    .background(.ultraThinMaterial)
                 }
             }
             .overlay(alignment: .topLeading) {
                 if appState.isSignedIn,
                    displayedScreen != .welcome,
-                   returnScreen != nil {
+                   backDestination != nil {
                     MacBackButton {
                         navigateBack()
                     }
@@ -136,6 +122,8 @@ struct MacRootView: View {
                     Button {
                         performTitleAction()
                     } label: {
+                        // Single circular control — labeled pills stacked with AX text look like
+                        // duplicate "Notifications" chrome. Keep CUA via accessibilityLabel.
                         Image(systemName: titleActionIcon)
                             .font(MacType.button)
                             .foregroundStyle(MacPalette.ink)
@@ -144,8 +132,14 @@ struct MacRootView: View {
                             .overlay(Circle().stroke(MacPalette.line, lineWidth: 1))
                     }
                     .buttonStyle(.plain)
-                    .focusable(false)
+                    .accessibilityElement(children: .combine)
                     .accessibilityLabel(titleActionAccessibilityLabel)
+                    .accessibilityAddTraits(.isButton)
+                    .accessibilityIdentifier(
+                        selectedScreen == .meetOverview || selectedScreen == .meetRecap
+                            ? "meet-bell"
+                            : "title-action"
+                    )
                     .padding(.top, 18)
                     .padding(.trailing, 28)
                 }
@@ -160,13 +154,11 @@ struct MacRootView: View {
             minHeight: MacWindowMetrics.minHeight
         )
         .task {
-            applyMacScreenDeepLinkIfNeeded()
             if macScreenDeepLink == nil, ProcessInfo.processInfo.arguments.contains("--likeminded-validation-welcome") {
                 selectedScreen = .welcome
             }
             await appState.signInForLocalValidationIfNeeded()
             await appState.validateStoredAppleCredentialIfNeeded()
-            applyMacScreenDeepLinkIfNeeded()
             if macScreenDeepLink == nil, ProcessInfo.processInfo.arguments.contains("--likeminded-validation-welcome") {
                 selectedScreen = .welcome
             }
@@ -176,7 +168,6 @@ struct MacRootView: View {
                 await appState.fetchCommunities()
                 await appState.fetchSoulmateStatus()
                 await appState.fetchNotifications()
-                applyMacScreenDeepLinkIfNeeded()
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .macPrototypeSelectMeet)) { _ in
@@ -196,19 +187,11 @@ struct MacRootView: View {
         }
         .onAppear {
             NSApplication.shared.activate(ignoringOtherApps: true)
-            applyMacScreenDeepLinkIfNeeded()
         }
         .onChange(of: appState.isSignedIn) { _, isSignedIn in
             if !isSignedIn {
-                guard !macScreenDeepLinkLocked else { return }
                 selectedScreen = .welcome
                 returnScreen = nil
-                return
-            }
-            if let macScreenDeepLink {
-                if !macScreenDeepLink.allowsValidationDrillDown(to: selectedScreen) {
-                    selectedScreen = macScreenDeepLink
-                }
                 return
             }
             if selectedScreen == .welcome {
@@ -218,53 +201,66 @@ struct MacRootView: View {
                 selectedScreen = .meetOverview
             }
         }
-        .onChange(of: appState.soulmateEnabled) { _, enabled in
-            if !enabled, selectedScreen.tab == .soulmate {
-                if let macScreenDeepLink, macScreenDeepLink.tab == .soulmate {
-                    return
-                }
-                guard !macScreenDeepLinkLocked else { return }
-                selectedScreen = .myProfile
-            }
-        }
     }
 
     private var activeTab: MacTab {
-        if displayedScreen == .messages, let returnScreen {
-            return returnScreen.tab
-        }
-        return displayedScreen.tab
+        // Contextual screens inherit their owning destination for stable dock selection.
+        displayedScreen.tab
     }
 
     private var titleActionIcon: String {
-        if selectedScreen == .settingsSoulmate || selectedScreen == .messages {
+        switch selectedScreen {
+        case .settingsSoulmate, .messages, .notifications:
             return "xmark"
+        case .myProfile:
+            return "gearshape"
+        case .meetOverview, .meetRecap:
+            return "bell"
+        default:
+            return "bubble.left.and.bubble.right"
         }
-        return selectedScreen == .myProfile ? "gearshape" : "bubble.left.and.bubble.right"
     }
 
     private var titleActionAccessibilityLabel: String {
-        if selectedScreen == .settingsSoulmate || selectedScreen == .messages {
+        switch selectedScreen {
+        case .settingsSoulmate, .messages, .notifications:
             return "Close"
+        case .myProfile:
+            return "Settings"
+        case .meetOverview, .meetRecap:
+            return "Notifications"
+        default:
+            return "Messages"
         }
-        return selectedScreen == .myProfile ? "Settings" : "Messages"
     }
 
     private var titleActionAvailable: Bool {
-        guard appState.isSignedIn else { return false }
-        if selectedScreen == .myProfile || selectedScreen == .settingsSoulmate || selectedScreen == .messages {
+        // Meet bell must appear even while dev-auth is still resolving — concept
+        // header already shows "When you meet." before isSignedIn flips true.
+        if selectedScreen == .meetOverview || selectedScreen == .meetRecap {
             return true
         }
-        return !appState.soulmateMatches.isEmpty
+        guard appState.isSignedIn else { return false }
+        switch selectedScreen {
+        case .soulmateOverview, .soulmateDiscover:
+            return false
+        case .myProfile, .settingsSoulmate, .messages, .notifications:
+            return true
+        default:
+            return !appState.soulmateMatches.isEmpty
+        }
     }
 
     private func performTitleAction() {
         switch selectedScreen {
-        case .settingsSoulmate, .messages:
+        case .settingsSoulmate, .messages, .notifications:
             navigateBack()
         case .myProfile:
             returnScreen = selectedScreen
             selectedScreen = .settingsSoulmate
+        case .meetOverview, .meetRecap:
+            returnScreen = selectedScreen
+            selectedScreen = .notifications
         default:
             returnScreen = selectedScreen
             selectedScreen = .messages
@@ -272,33 +268,38 @@ struct MacRootView: View {
     }
 
     private func navigateBack() {
-        guard let returnScreen else { return }
-        selectedScreen = returnScreen
-        self.returnScreen = nil
+        guard let destination = backDestination else { return }
+        selectedScreen = destination
+        returnScreen = nil
     }
 
 }
 
-struct MacBottomNav: View {
+struct MacTopNavigation: View {
     let selectedTab: MacTab
     let soulmateEnabled: Bool
     let select: (MacTab) -> Void
 
     var body: some View {
-        HStack(spacing: 6) {
-            ForEach(MacTab.visible(soulmateEnabled: soulmateEnabled)) { tab in
+        let tabs = MacTab.visible(soulmateEnabled: soulmateEnabled)
+        let tabWidth: CGFloat = 144
+        HStack(spacing: 4) {
+            ForEach(tabs) { tab in
                 Button {
                     select(tab)
                 } label: {
                     Label(tab.rawValue, systemImage: tab.systemImage)
                         .font(MacType.small.weight(.semibold))
                         .foregroundStyle(selectedTab == tab ? MacPalette.accent : MacPalette.muted)
-                        .frame(width: 124)
-                        .padding(.vertical, 14)
+                        .frame(width: tabWidth)
+                        .padding(.vertical, 12)
                         .background(selectedTab == tab ? MacPalette.accentSoft.opacity(0.62) : .clear, in: Capsule())
                 }
                 .buttonStyle(.plain)
                 .focusable(false)
+                .accessibilityLabel(tab.rawValue)
+                .accessibilityValue(selectedTab == tab ? "Selected" : "Not selected")
+                .accessibilityAddTraits(selectedTab == tab ? [.isButton, .isSelected] : .isButton)
             }
         }
         .padding(8)

@@ -3,7 +3,7 @@
  * Record runtime test result on one flow (primary status owner, schema v2).
  *
  *   npm run ledger:record-flow -- --platform macos --screen meet --flow rsvp-weekend \
- *     --result pass --evidence "CUA validation-gurusharan: RSVP toggles" --method CUA-click \
+ *     --result pass --evidence "<dated semantic observation>" --method Computer-use \
  *     --screenshot-ref output/validation/macos-screens/meetOverview.png
  */
 const fs = require("node:fs");
@@ -36,7 +36,7 @@ const forceTier = process.argv.includes("--force-tier");
 
 if (!platform || !flowId || !result) {
   console.error(
-    "Usage: ledger_record_flow.js --platform ios|macos (--file NN.json | --screen meet) --flow FLOW_ID --result pass|fail|pending|blocked [--evidence TEXT] [--method CUA-click] [--screenshot-ref path] [--blocker TEXT] [--no-sync-controls] [--force-tier]"
+    "Usage: ledger_record_flow.js --platform ios|macos (--file NN.json | --screen meet) --flow FLOW_ID --result pass|fail|pending|blocked [--evidence TEXT] [--method Computer-use] [--screenshot-ref path] [--blocker TEXT] [--no-sync-controls] [--force-tier]"
   );
   process.exit(2);
 }

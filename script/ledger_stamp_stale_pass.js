@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
- * Re-stamp stale-pass controls and flows after CUA/screen-capture reproof (schema v2).
+ * Re-stamp stale-pass controls and flows after Computer/screen-capture reproof (schema v2).
  *
  *   npm run ledger:stamp-stale -- --platform ios --method screen-capture
- *   npm run ledger:stamp-stale -- --platform macos --screen meetOverview --method CUA
+ *   npm run ledger:stamp-stale -- --platform macos --screen meetOverview --method Computer-use
  */
 const {
   findLedgerByScreenArg,
@@ -23,7 +23,7 @@ function arg(name) {
 
 const platform = arg("--platform") || "macos";
 const screen = arg("--screen");
-const method = arg("--method") || "CUA";
+const method = arg("--method") || "Computer-use";
 const evidencePrefix = arg("--evidence-prefix") || `${method} ${isoNow()}`;
 
 let screens = [];

@@ -19,19 +19,21 @@ One-time setup for new agents working on this repo.
 
 ```
 OPENAI_API_KEY=***
-OPENAI_REALTIME_MODEL=gpt-realtime-1.5
+OPENAI_REALTIME_MODEL=gpt-realtime-mini
 OPENAI_REALTIME_VOICE=marin
 SESSION_SECRET=replace-with-at-least-24-characters
-APPLE_BUNDLE_ID=com.likeminded.app
-APPLE_CLIENT_ID=com.likeminded.app
-APPLE_MAC_BUNDLE_ID=com.likeminded.mac
-APPLE_CLIENT_IDS=com.likeminded.app,com.likeminded.mac
+APPLE_BUNDLE_ID=com.gurusharan.likeminded
+APPLE_CLIENT_ID=com.gurusharan.likeminded
+APPLE_TEAM_ID=9UPQL479Z5
+APPLE_MAC_BUNDLE_ID=com.gurusharan.likeminded
+APPLE_CLIENT_IDS=com.gurusharan.likeminded
 APPLE_REQUIRE_NONCE=1
 APPLE_AUTH_BYPASS=0
 GOOGLE_CLIENT_ID_IOS=your-ios-client-id.apps.googleusercontent.com
 GOOGLE_CLIENT_ID_MAC=your-mac-client-id.apps.googleusercontent.com
-GOOGLE_REVERSED_CLIENT_ID=com.googleusercontent.apps.your-ios-client-id
-GOOGLE_CLIENT_IDS=your-ios-client-id.apps.googleusercontent.com
+GOOGLE_REVERSED_CLIENT_ID_IOS=com.googleusercontent.apps.your-ios-client-id
+GOOGLE_REVERSED_CLIENT_ID_MAC=com.googleusercontent.apps.your-mac-client-id
+GOOGLE_CLIENT_IDS=your-ios-client-id.apps.googleusercontent.com,your-mac-client-id.apps.googleusercontent.com
 GOOGLE_AUTH_BYPASS=0
 WALLETCONNECT_PROJECT_ID=your-walletconnect-cloud-project-id
 WALLET_AUTH_BYPASS=0
@@ -39,6 +41,8 @@ LIVEKIT_URL=wss://your-project.livekit.cloud
 LIVEKIT_API_KEY=your-livekit-api-key
 LIVEKIT_API_SECRET=your-livekit-api-secret
 ```
+
+Production Apple code exchange and account deletion also require `APPLE_KEY_ID` and `APPLE_PRIVATE_KEY`. Inject both through Render's secret manager from the Sign in with Apple key; do not place the `.p8` contents in `.env.local`, logs, or the repository.
 
 2. Source it before running the API server:
 ```sh
@@ -49,7 +53,7 @@ Copy from `.env.example` if starting fresh. `GET /health` reports `livekit`, `go
 
 ## Sign-in (iOS + macOS)
 
-Both natives share the same auth UI pattern: **Sign in with Apple**, **Google**, **MetaMask**, and **Solflare** (`AuthGateView` on iOS; `MacScreens` welcome on macOS). Shared implementation lives in `Sources/Shared/` (`AppleSignInSupport`, `GoogleSignInSupport`, `WalletSignInSupport`, `SocialAuthButtonsView`).
+Both natives share auth providers (**Apple**, **Google**, **MetaMask**, **Solflare**) and `Sources/Shared/` (`ConvergenceFieldView`, `SocialAuthButtonsView`, wallet/Google helpers). UI: `AuthGateView` (iOS) and `MacScreens` welcome (macOS) — convergence field + aligned copy; reference `mockups/*/auth-login-convergence.png`.
 
 | Provider | Native flow | API route |
 |----------|-------------|-----------|
@@ -63,7 +67,7 @@ Both natives share the same auth UI pattern: **Sign in with Apple**, **Google**,
 
 - iOS entitlement: `Entitlements/Likeminded.entitlements`
 - macOS entitlement: `Entitlements/LikemindedMac.entitlements`
-- Server: set `APPLE_CLIENT_IDS=com.likeminded.app,com.likeminded.mac`, `APPLE_REQUIRE_NONCE=1`, `APPLE_AUTH_BYPASS=0` for real device/TestFlight.
+- Server: set `APPLE_CLIENT_IDS=com.gurusharan.likeminded`, `APPLE_REQUIRE_NONCE=1`, `APPLE_AUTH_BYPASS=0` for real device/TestFlight.
 - Local bypass (API only): `APPLE_AUTH_BYPASS=1` or app launch arg `--likeminded-dev-auth-bypass` with `npm run dev:api:local-auth`.
 
 ### Google
@@ -72,9 +76,10 @@ Set in `.env.local` (API) **and** pass into Xcode builds:
 
 ```
 GOOGLE_CLIENT_ID_IOS=your-client-id.apps.googleusercontent.com
-GOOGLE_CLIENT_ID_MAC=your-mac-client-id.apps.googleusercontent.com   # optional; falls back to iOS client
-GOOGLE_REVERSED_CLIENT_ID=com.googleusercontent.apps.your-client-id
-GOOGLE_CLIENT_IDS=your-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_ID_MAC=your-mac-client-id.apps.googleusercontent.com
+GOOGLE_REVERSED_CLIENT_ID_IOS=com.googleusercontent.apps.your-client-id
+GOOGLE_REVERSED_CLIENT_ID_MAC=com.googleusercontent.apps.your-mac-client-id
+GOOGLE_CLIENT_IDS=your-client-id.apps.googleusercontent.com,your-mac-client-id.apps.googleusercontent.com
 ```
 
 Native URL schemes and `GIDClientID` are in `Info/Likeminded-Info.plist` and `Info/LikemindedMac-Info.plist` (Google reversed client ID + bundle-id wallet callback). After editing `project.yml` or Info plists, run `cd apps/ios-macos && xcodegen generate`.
@@ -84,7 +89,7 @@ Google OAuth redirect must include both bundle IDs in the Google Cloud console.
 ### Wallet (MetaMask / Solflare)
 
 - Server: `WALLETCONNECT_PROJECT_ID` (WalletConnect Cloud) for the hosted sign page; `WALLET_AUTH_BYPASS=1` for local API-only testing.
-- Native callback scheme: `com.likeminded.app://auth/wallet` (iOS) and `com.likeminded.mac://auth/wallet` (macOS).
+- Native callback scheme: `com.gurusharan.likeminded://auth/wallet` on iOS and macOS.
 - iOS handles wallet callbacks in `LikemindedApp.onOpenURL`; macOS in `LikemindedMacApp.onOpenURL`.
 
 ## LiveKit (group video meets)
@@ -169,7 +174,7 @@ Placement loop: `POST /v1/auth/apple` (any body under bypass) → `sessionToken`
 
 ### Scripts to AVOID (macOS/Xcode-only — fail on Linux)
 
-`verify:simulator-local` · `verify:macos-screens` · `dev:macos:validation` · `audit:macos:*` · `./script/build_and_run.sh` · any `script/macos_*.sh` (all use `xcodebuild`/`simctl`/`xcodegen`/`osascript`).
+macOS native UI is unavailable in Linux. Do not attempt `dev:macos:validation`, Xcode builds, or bundled @Computer there; use a macOS host for exact testing-ledger proof. iOS simulator and native build scripts likewise require the macOS host.
 
 Notes: `run_api.sh`/`run_validation_api.sh` use `lsof` (present on VM). `OPENAI_API_KEY`/`LIVEKIT_*` are only needed for live voice/video; the placement loop works without them.
 

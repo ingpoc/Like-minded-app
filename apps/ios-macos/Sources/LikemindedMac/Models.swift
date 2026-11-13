@@ -310,6 +310,37 @@ struct ReflectPlaceConnectRequest: Encodable {
     let reflectionAnswers: [String]
 }
 
+struct ProfileInterviewMessage: Codable, Identifiable {
+    let id: UUID
+    let role: String
+    let content: String
+
+    init(id: UUID = UUID(), role: String, content: String) {
+        self.id = id
+        self.role = role
+        self.content = content
+    }
+
+    private enum CodingKeys: String, CodingKey { case role, content }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = UUID()
+        role = try container.decode(String.self, forKey: .role)
+        content = try container.decode(String.self, forKey: .content)
+    }
+}
+
+struct ProfileInterviewTurnRequest: Encodable {
+    let messages: [ProfileInterviewMessage]
+}
+
+struct ProfileInterviewTurnResponse: Decodable {
+    let assistantMessage: String
+    let readyToComplete: Bool
+    let synthesisMode: String
+}
+
 struct RealtimeSessionRequest: Encodable {
     let safetyIdentifier: String
 }
@@ -361,7 +392,7 @@ struct BasicInfoUpdate: Encodable, Equatable {
 
 struct BasicInfo: Codable, Equatable {
     let name: String
-    let gender: Gender
+    let gender: Gender?
     let dateOfBirth: String
     let city: String
     /// Omitted on draft profiles until the user sets one; API PATCH may not echo pincode.
@@ -414,6 +445,23 @@ struct HiddenSignals: Codable, Equatable {
 
 struct PlacementActionRequest: Encodable {
     let action: String
+    let circleId: String?
+
+    init(action: String, circleId: String? = nil) {
+        self.action = action
+        self.circleId = circleId
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(action, forKey: .action)
+        try container.encodeIfPresent(circleId, forKey: .circleId)
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case action
+        case circleId
+    }
 }
 
 struct FeedbackRequest: Encodable {
@@ -495,8 +543,37 @@ struct SynthesizedProfileResult: Codable {
 
 struct PlacementActionGroup: Codable {
     let primaryAction: String
-    let swapAction: String
+    let secondaryAction: String
     let deferAction: String
+
+    enum CodingKeys: String, CodingKey {
+        case primaryAction
+        case secondaryAction
+        case swapAction
+        case deferAction
+    }
+
+    init(primaryAction: String, secondaryAction: String, deferAction: String) {
+        self.primaryAction = primaryAction
+        self.secondaryAction = secondaryAction
+        self.deferAction = deferAction
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        primaryAction = try container.decode(String.self, forKey: .primaryAction)
+        deferAction = try container.decode(String.self, forKey: .deferAction)
+        secondaryAction = try container.decodeIfPresent(String.self, forKey: .secondaryAction)
+            ?? container.decodeIfPresent(String.self, forKey: .swapAction)
+            ?? "Make this my second circle"
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(primaryAction, forKey: .primaryAction)
+        try container.encode(secondaryAction, forKey: .secondaryAction)
+        try container.encode(deferAction, forKey: .deferAction)
+    }
 }
 
 struct RealtimeSessionEnvelope: Decodable {
@@ -570,9 +647,61 @@ struct CirclePlacement: Codable {
     let sourceReflectionSignals: [String]
     var primaryCircle: PlacementCircle
     var secondaryCircles: [PlacementCircle]
+    var selectedSecondaryCircleId: String?
     var userState: PlacementState
     let actions: PlacementActionGroup
     var isNewCircle: Bool = false
+
+    enum CodingKeys: String, CodingKey {
+        case rule
+        case confidenceLabel
+        case fitReasons
+        case sourceReflectionSignals
+        case primaryCircle
+        case secondaryCircles
+        case selectedSecondaryCircleId
+        case userState
+        case actions
+        case isNewCircle
+    }
+
+    init(
+        rule: String,
+        confidenceLabel: String,
+        fitReasons: [String],
+        sourceReflectionSignals: [String],
+        primaryCircle: PlacementCircle,
+        secondaryCircles: [PlacementCircle],
+        selectedSecondaryCircleId: String? = nil,
+        userState: PlacementState,
+        actions: PlacementActionGroup,
+        isNewCircle: Bool = false
+    ) {
+        self.rule = rule
+        self.confidenceLabel = confidenceLabel
+        self.fitReasons = fitReasons
+        self.sourceReflectionSignals = sourceReflectionSignals
+        self.primaryCircle = primaryCircle
+        self.secondaryCircles = secondaryCircles
+        self.selectedSecondaryCircleId = selectedSecondaryCircleId
+        self.userState = userState
+        self.actions = actions
+        self.isNewCircle = isNewCircle
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        rule = try container.decode(String.self, forKey: .rule)
+        confidenceLabel = try container.decode(String.self, forKey: .confidenceLabel)
+        fitReasons = try container.decode([String].self, forKey: .fitReasons)
+        sourceReflectionSignals = try container.decode([String].self, forKey: .sourceReflectionSignals)
+        primaryCircle = try container.decode(PlacementCircle.self, forKey: .primaryCircle)
+        secondaryCircles = try container.decodeIfPresent([PlacementCircle].self, forKey: .secondaryCircles) ?? []
+        selectedSecondaryCircleId = try container.decodeIfPresent(String.self, forKey: .selectedSecondaryCircleId)
+        userState = try container.decode(PlacementState.self, forKey: .userState)
+        actions = try container.decode(PlacementActionGroup.self, forKey: .actions)
+        isNewCircle = try container.decodeIfPresent(Bool.self, forKey: .isNewCircle) ?? false
+    }
 }
 
 struct PlacementCircle: Codable, Identifiable {
@@ -588,8 +717,10 @@ struct PlacementCircle: Codable, Identifiable {
     let easiestFirstAction: String
     let fitLabel: String
     let placementReason: String
-    let membersOnline: Int
+    let membersCount: Int
     let themes: [String]
+
+    var membersOnline: Int { membersCount }
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -623,7 +754,7 @@ struct PlacementCircle: Codable, Identifiable {
         easiestFirstAction: String,
         fitLabel: String,
         placementReason: String,
-        membersOnline: Int,
+        membersCount: Int,
         themes: [String]
     ) {
         self.id = id
@@ -638,7 +769,7 @@ struct PlacementCircle: Codable, Identifiable {
         self.easiestFirstAction = easiestFirstAction
         self.fitLabel = fitLabel
         self.placementReason = placementReason
-        self.membersOnline = membersOnline
+        self.membersCount = membersCount
         self.themes = themes
     }
 
@@ -657,8 +788,8 @@ struct PlacementCircle: Codable, Identifiable {
         easiestFirstAction = try container.decodeIfPresent(String.self, forKey: .easiestFirstAction) ?? "Review placement."
         fitLabel = try container.decodeIfPresent(String.self, forKey: .fitLabel) ?? "Fit"
         placementReason = try container.decodeIfPresent(String.self, forKey: .placementReason) ?? description ?? "Matched from your profile signals."
-        membersOnline = try container.decodeIfPresent(Int.self, forKey: .membersOnline)
-            ?? container.decodeIfPresent(Int.self, forKey: .membersCount)
+        membersCount = try container.decodeIfPresent(Int.self, forKey: .membersCount)
+            ?? container.decodeIfPresent(Int.self, forKey: .membersOnline)
             ?? 0
         themes = try container.decodeIfPresent([String].self, forKey: .themes) ?? []
     }
@@ -677,7 +808,7 @@ struct PlacementCircle: Codable, Identifiable {
         try container.encode(easiestFirstAction, forKey: .easiestFirstAction)
         try container.encode(fitLabel, forKey: .fitLabel)
         try container.encode(placementReason, forKey: .placementReason)
-        try container.encode(membersOnline, forKey: .membersOnline)
+        try container.encode(membersCount, forKey: .membersCount)
         try container.encode(themes, forKey: .themes)
     }
 }

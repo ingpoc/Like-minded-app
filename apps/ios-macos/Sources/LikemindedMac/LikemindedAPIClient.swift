@@ -1,5 +1,31 @@
 import Foundation
 
+enum LikemindedAPIError: LocalizedError {
+    case http(status: Int, message: String)
+    case invalidResponse
+
+    var errorDescription: String? {
+        switch self {
+        case let .http(_, message): message
+        case .invalidResponse: "The server returned an unreadable response. Please try again."
+        }
+    }
+
+    var statusCode: Int? {
+        if case let .http(status, _) = self { return status }
+        return nil
+    }
+}
+
+private struct APIErrorEnvelope: Decodable { let message: String? }
+
+private func apiError(data: Data, response: URLResponse) -> Error {
+    guard let http = response as? HTTPURLResponse else { return LikemindedAPIError.invalidResponse }
+    let message = (try? JSONDecoder().decode(APIErrorEnvelope.self, from: data).message)
+        ?? HTTPURLResponse.localizedString(forStatusCode: http.statusCode)
+    return LikemindedAPIError.http(status: http.statusCode, message: message)
+}
+
 struct ProfileCircleMatchRequest: Encodable {
     let interviewTranscript: String?
     let reflectionAnswers: [String]?
@@ -88,6 +114,7 @@ struct LikemindedAPIClient {
         let url = baseURL.appendingPathComponent("/v1/auth/google")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
+        request.timeoutInterval = 45
         applyCommonHeaders(&request)
         request.httpBody = try JSONEncoder().encode(GoogleAuthRequest(idToken: idToken))
 
@@ -126,11 +153,13 @@ struct LikemindedAPIClient {
         return try JSONDecoder().decode(AppleAuthResponse.self, from: data)
     }
 
-    func createProfileFromInterview(interviewTranscript: String?, reflectionAnswers: [String]?) async throws -> ProfileCircleMatchResult {
+    func createProfileFromInterview(interviewTranscript: String?, reflectionAnswers: [String]?, idempotencyKey: String) async throws -> ProfileCircleMatchResult {
         let url = baseURL.appendingPathComponent("/v1/discover")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
+        request.timeoutInterval = 45
         applyCommonHeaders(&request)
+        request.setValue(idempotencyKey, forHTTPHeaderField: "Idempotency-Key")
         request.httpBody = try JSONEncoder().encode(
             ProfileCircleMatchRequest(
                 interviewTranscript: interviewTranscript,
@@ -140,21 +169,55 @@ struct LikemindedAPIClient {
 
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
-            throw URLError(.badServerResponse)
+            throw apiError(data: data, response: response)
         }
 
         return try JSONDecoder().decode(ProfileCircleMatchResult.self, from: data)
+    }
+
+    func continueProfileInterview(messages: [ProfileInterviewMessage]) async throws -> ProfileInterviewTurnResponse {
+        let url = baseURL.appendingPathComponent("/v1/profile-interview/turn")
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.timeoutInterval = 45
+        applyCommonHeaders(&request)
+        request.httpBody = try JSONEncoder().encode(ProfileInterviewTurnRequest(messages: messages))
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw apiError(data: data, response: response)
+        }
+        return try JSONDecoder().decode(ProfileInterviewTurnResponse.self, from: data)
+    }
+
+    func createRealtimeSession(reinterviewContext: String? = nil) async throws -> RealtimeSessionEnvelope {
+        let url = baseURL.appendingPathComponent("/v1/realtime/session")
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.timeoutInterval = 30
+        applyCommonHeaders(&request)
+        if let reinterviewContext, !reinterviewContext.isEmpty {
+            request.setValue(
+                reinterviewContext.replacingOccurrences(of: "\n", with: " | "),
+                forHTTPHeaderField: "X-Likeminded-Reinterview-Context"
+            )
+        }
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw apiError(data: data, response: response)
+        }
+        return try JSONDecoder().decode(RealtimeSessionEnvelope.self, from: data)
     }
 
     func fetchMyPlacement() async throws -> ProfileCircleMatchResult {
         let url = baseURL.appendingPathComponent("/v1/me/placement")
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
+        request.timeoutInterval = 15
         applyCommonHeaders(&request)
 
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
-            throw URLError(.resourceUnavailable)
+            throw apiError(data: data, response: response)
         }
         return try JSONDecoder().decode(ProfileCircleMatchResult.self, from: data)
     }
@@ -167,7 +230,7 @@ struct LikemindedAPIClient {
 
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
-            throw URLError(.resourceUnavailable)
+            throw apiError(data: data, response: response)
         }
         return try JSONDecoder().decode(UserProfileResponse.self, from: data).profile
     }
@@ -187,17 +250,17 @@ struct LikemindedAPIClient {
         )
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
-            throw URLError(.badServerResponse)
+            throw apiError(data: data, response: response)
         }
         return try JSONDecoder().decode(UserProfileResponse.self, from: data).profile
     }
 
-    func updatePlacement(action: String) async throws -> ProfileCircleMatchResult {
+    func updatePlacement(action: String, circleId: String? = nil) async throws -> ProfileCircleMatchResult {
         let url = baseURL.appendingPathComponent("/v1/me/placement/actions")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         applyCommonHeaders(&request)
-        request.httpBody = try JSONEncoder().encode(PlacementActionRequest(action: action))
+        request.httpBody = try JSONEncoder().encode(PlacementActionRequest(action: action, circleId: circleId))
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
             throw URLError(.badServerResponse)
@@ -264,8 +327,13 @@ struct LikemindedAPIClient {
 
     func fetchMyCommunities() async throws -> [Community] {
         let url = baseURL.appendingPathComponent("/v1/me/communities")
-        var request = URLRequest(url: url)
+        var request = URLRequest(
+            url: url,
+            cachePolicy: .reloadIgnoringLocalCacheData,
+            timeoutInterval: 15
+        )
         applyCommonHeaders(&request, isJSON: false)
+        request.setValue("no-cache", forHTTPHeaderField: "Cache-Control")
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
             throw URLError(.badServerResponse)
@@ -279,6 +347,18 @@ struct LikemindedAPIClient {
 
     func leaveCommunity(id: String) async throws {
         try await updateCommunityMembership(id: id, action: "leave")
+    }
+
+    func reportCommunity(id: String, reason: String) async throws {
+        let url = baseURL.appendingPathComponent("/v1/communities/\(id)/report")
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        applyCommonHeaders(&request)
+        request.httpBody = try JSONSerialization.data(withJSONObject: ["reason": reason])
+        let (_, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
     }
 
     func createCommunity(name: String, summary: String, themes: [String]) async throws -> Community {

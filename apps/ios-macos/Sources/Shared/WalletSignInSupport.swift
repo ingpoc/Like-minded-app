@@ -41,7 +41,7 @@ struct WalletAuthCallback: Equatable {
 
 enum WalletSignInSupport {
     static var callbackScheme: String {
-        Bundle.main.bundleIdentifier ?? "com.likeminded.app"
+        Bundle.main.bundleIdentifier ?? "com.gurusharan.likeminded"
     }
 
     static func redirectScheme(for bundle: Bundle = .main) -> String {

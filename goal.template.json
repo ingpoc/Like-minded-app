@@ -119,9 +119,9 @@
     },
     {
       "name": "macos_screen_capture",
-      "command": "npm run verify:macos-screens",
+      "command": "npm run testing:ledger-batch-plan -- --platform macos --limit 10",
       "cost": "zero_token",
-      "proves": "LikemindedMac builds and every MacPrototypeScreen can be launched and captured for mockup comparison."
+      "proves": "Plans a source-local macOS flow band for sequential bundled @Computer proof without changing ledger status."
     },
     {
       "name": "smoke-mvp",
@@ -240,7 +240,7 @@
   "done_criteria": [
     "All deterministic graders pass.",
     "npm run verify:ledger-progress passes (open fail/pending/stale-blocked controls retain unchecked PROGRESS owners).",
-    "After parallel macOS UI work: `npm run macos:validation-batch` (full) or `npm run macos:validation-batch -- --stale-only --cua-only` when only `stale_pass` rows moved.",
+    "After parallel macOS UI work: plan a source-local band with `npm run testing:ledger-batch-plan -- --platform macos --limit 10`, then prove each flow sequentially with bundled @Computer.",
     "Local simulator build and launch pass when local validation inputs changed.",
     "Repo-owned MVP loop surfaces are ready for later external Render, Neon, Apple, and TestFlight proof.",
     "No stale docs or config describe prototype tabs, prototype bundle id, no auth, or SQLite as the production path.",

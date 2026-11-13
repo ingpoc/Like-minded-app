@@ -18,7 +18,10 @@ struct LikemindedMacApp: App {
         WindowGroup {
             MacRootView()
                 .environmentObject(appState)
-                .frame(minWidth: 1120, minHeight: 760)
+                .frame(
+                    minWidth: MacWindowMetrics.minWidth,
+                    minHeight: MacWindowMetrics.minHeight
+                )
                 .preferredColorScheme(.light)
                 .background(MacWindowChromeHider())
                 .onOpenURL { url in
@@ -37,7 +40,10 @@ struct LikemindedMacApp: App {
                     }
                 }
         }
-        .defaultSize(width: 1200, height: 760)
+        .defaultSize(
+            width: MacWindowMetrics.defaultWidth,
+            height: MacWindowMetrics.defaultHeight
+        )
         .commands {
             CommandMenu("Prototype") {
                 Button("Meet") {

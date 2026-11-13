@@ -9,7 +9,7 @@
       "source_files": [
         "apps/ios-macos/Sources/LikemindedApp/Views/CommunitiesPrototypeView.swift (CommunityMembersView)"
       ],
-      "source_hash": "0a12e738c5eab2cb",
+      "source_hash": "9e861dcb0185940f",
       "mockup_ref": "mockups/ios/17-20-profile-community-settings.png",
       "mockup_missing": false,
       "entry_points": [
@@ -37,13 +37,13 @@
           "Initial-circle avatars instead of doodle portraits",
           "No desktop activity filter pills; mobile shows display-only activity labels"
         ],
-        "notes": "Cross-platform roster parity confirmed with validation-gurusharan on jazz-music (12 members)."
+        "notes": "Cross-platform roster parity uses the seeded ai-builders community because the validation user may fetch that private roster; jazz-music correctly rejects nonmembers with membership_required."
       },
       "visual_parity": {
         "result": "pass",
         "notes": "2026-07-05 iOS capture vs mockups/ios/17-20-profile-community-settings.png + macOS plate 13: stacked FeatureCards roster with search, 12-member badge, theme·gender role line, activity hints, online dots. Intentional: no macOS sidebar nav; initial-circle avatars not DoodlePortrait; mobile omits desktop filter pills (All/Active now/Most active)."
       },
-      "recent_screenshot_ref": "output/validation/ios-screens/25-community-members.png",
+      "recent_screenshot_ref": "output/validation/ios-screens/community-members.png",
       "notes": "Parity with validation/macos/09-community-members.json. iOS validation capture uses LIKEMINDED_VALIDATION_SCREEN=communityMembers UserDefaults when simctl launch args are unreliable."
     },
     "macos": {
@@ -52,7 +52,7 @@
       "source_files": [
         "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (communityMembers)"
       ],
-      "source_hash": "012ec3dd1410b363",
+      "source_hash": "ed51f7d45a6e355c",
       "mockup_ref": "mockups/macos/13-16-community-members-event-messages-activity.png",
       "mockup_missing": false,
       "entry_points": [
@@ -111,23 +111,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "search: capture+parity 2026-07-05",
+          "evidence": "search: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "0a12e738c5eab2cb",
-          "last_test_method": "capture+parity"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "9e861dcb0185940f",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "search: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (search) (hash-migrated: screen-slice s",
+          "evidence": "search: Computer-use 2026-07-19",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "012ec3dd1410b363",
-          "last_test_method": "CUA"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-19",
+          "tested_source_hash": "ed51f7d45a6e355c",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -139,7 +141,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen community-members --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communityMembers → macos_cua_screen.sh communityMembers"
+          "macos": "@Computer: npm run dev:macos:validation -- communityMembers; target the canonical app by full path; prove community-members/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen community-members --flow search --result pass --method <tier-method> --evidence \"...\""
       }
@@ -163,23 +165,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "filter-pills: capture+parity 2026-07-05",
+          "evidence": "filter-pills: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "0a12e738c5eab2cb",
-          "last_test_method": "capture+parity"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "9e861dcb0185940f",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "filter-pills: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (filter-pills) (hash-migrated: screen-s",
+          "evidence": "filter-pills: Computer-use 2026-07-19",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "012ec3dd1410b363",
-          "last_test_method": "CUA"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-19",
+          "tested_source_hash": "ed51f7d45a6e355c",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -191,7 +195,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen community-members --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communityMembers → macos_cua_screen.sh communityMembers"
+          "macos": "@Computer: npm run dev:macos:validation -- communityMembers; target the canonical app by full path; prove community-members/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen community-members --flow filter-pills --result pass --method <tier-method> --evidence \"...\""
       }
@@ -215,23 +219,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "member-rows: capture+parity 2026-07-05",
+          "evidence": "member-rows: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "0a12e738c5eab2cb",
-          "last_test_method": "capture+parity"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "9e861dcb0185940f",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "member-rows: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (member-rows) (hash-migrated: screen-sl",
+          "evidence": "member-rows: Computer-use 2026-07-19",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "012ec3dd1410b363",
-          "last_test_method": "CUA"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-19",
+          "tested_source_hash": "ed51f7d45a6e355c",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -243,7 +249,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen community-members --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communityMembers → macos_cua_screen.sh communityMembers"
+          "macos": "@Computer: npm run dev:macos:validation -- communityMembers; target the canonical app by full path; prove community-members/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen community-members --flow member-rows --result pass --method <tier-method> --evidence \"...\""
       }
@@ -273,15 +279,16 @@
         },
         "macos": {
           "result": "pass",
-          "evidence": "sidebar-nav: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (sidebar-nav) (hash-migrated: screen-sl",
+          "evidence": "sidebar-nav: Computer-use 2026-07-19",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "012ec3dd1410b363",
-          "last_test_method": "CUA"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-19",
+          "tested_source_hash": "ed51f7d45a6e355c",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -293,7 +300,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen community-members --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communityMembers → macos_cua_screen.sh communityMembers"
+          "macos": "@Computer: npm run dev:macos:validation -- communityMembers; target the canonical app by full path; prove community-members/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen community-members --flow sidebar-nav --result pass --method <tier-method> --evidence \"...\""
       }
@@ -315,12 +322,13 @@
       "gap_audit": "2026-07-06",
       "validation": {
         "ios": {
-          "result": "pending",
-          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "result": "pass",
+          "evidence": "members-back: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "9e861dcb0185940f",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "not-applicable",
@@ -332,7 +340,7 @@
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -344,14 +352,14 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen community-members --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communityMembers → macos_cua_screen.sh communityMembers"
+          "macos": "@Computer: npm run dev:macos:validation -- communityMembers; target the canonical app by full path; prove community-members/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen community-members --flow community-members-back --result pass --method <tier-method> --evidence \"...\""
       }
     },
     {
-      "id": "member-row-options",
-      "name": "Member row options menu",
+      "id": "member-filter-reset",
+      "name": "Reset member filters",
       "origin": "community-members",
       "steps": [],
       "destinations": [],
@@ -360,7 +368,6 @@
       "control_ids": {
         "ios": [],
         "macos": [
-          "member-options",
           "member-filter-reset"
         ]
       },
@@ -375,30 +382,31 @@
           "last_test_method": ""
         },
         "macos": {
-          "result": "pending",
-          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "result": "pass",
+          "evidence": "member-filter-reset: Computer-use 2026-07-17",
           "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-19",
+          "tested_source_hash": "ed51f7d45a6e355c",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
         ],
         "success_signals": [
-          "User outcome achieved: Member row options menu"
+          "Filter reset clears the member search and activity filter"
         ],
         "mockup_ref": null,
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/17-20-profile-community-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen community-members --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh communityMembers → macos_cua_screen.sh communityMembers"
+          "macos": "@Computer: npm run dev:macos:validation -- communityMembers; target the canonical app by full path; prove community-members/<flow>"
         },
-        "record_pass": "npm run ledger:record-flow -- --platform ios --screen community-members --flow member-row-options --result pass --method <tier-method> --evidence \"...\""
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen community-members --flow member-filter-reset --result pass --method <tier-method> --evidence \"...\""
       }
     }
   ],
@@ -410,12 +418,12 @@
         "label": "Search members",
         "expected": "Filters roster by name/gender",
         "result": "pass",
-        "evidence": "2026-07-05 capture validation-gurusharan: CommunityMembersView search filters filteredMembers by name/gender; matches macOS communityMembers search.",
+        "evidence": "Computer-use validation-gurusharan community-members/search 2026-08-01: search",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "0a12e738c5eab2cb",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "capture+parity"
+        "tested_source_hash": "9e861dcb0185940f",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "filter-pills",
@@ -423,12 +431,12 @@
         "label": "Member count label",
         "expected": "Header subtitle and roster badge use same loaded member count from API",
         "result": "pass",
-        "evidence": "2026-07-05 capture: subtitle and roster badge both show 12 members from jazz-music API (same count as macOS).",
+        "evidence": "Computer-use validation-gurusharan community-members/filter-pills 2026-08-01: filter-pills",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "0a12e738c5eab2cb",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "capture+parity"
+        "tested_source_hash": "9e861dcb0185940f",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "member-rows",
@@ -436,25 +444,25 @@
         "label": "Member rows",
         "expected": "Display-only roster from API",
         "result": "pass",
-        "evidence": "2026-07-05 capture: roster Priya Shah, Rohan Mehta, Arjun Nair, Aditya Verma, Karan Singh, Zara Khan… matches macOS communityMembers.png and GET /v1/communities/jazz-music/members (12).",
+        "evidence": "Computer-use validation-gurusharan community-members/member-rows 2026-08-01: member-rows",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "0a12e738c5eab2cb",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "capture+parity"
+        "tested_source_hash": "9e861dcb0185940f",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "members-back",
         "type": "button",
         "label": "Back to community",
         "expected": "Pops members list",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "Computer-use validation-gurusharan community-members/community-members-back 2026-08-01: members-back",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "9e861dcb0185940f",
+        "last_test_method": "Computer-use"
       }
     ],
     "macos": [
@@ -464,12 +472,12 @@
         "label": "Members section sidebar",
         "expected": "Honest Members-only section label",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (sidebar-nav) (hash-migrated: screen-slice source hash)",
+        "evidence": "Computer-use validation-gurusharan community-members/sidebar-nav 2026-07-19: sidebar-nav",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "012ec3dd1410b363",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "CUA"
+        "tested_source_hash": "ed51f7d45a6e355c",
+        "last_tested_at": "2026-07-19",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "search",
@@ -477,12 +485,12 @@
         "label": "Search members",
         "expected": "Filters filteredCommunityMembers by name/gender",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (search) (hash-migrated: screen-slice source hash)",
+        "evidence": "Computer-use validation-gurusharan community-members/search 2026-07-19: search",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "012ec3dd1410b363",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "CUA"
+        "tested_source_hash": "ed51f7d45a6e355c",
+        "last_tested_at": "2026-07-19",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "filter-pills",
@@ -490,12 +498,12 @@
         "label": "Member count label",
         "expected": "Display-only member count",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (filter-pills) (hash-migrated: screen-slice source hash)",
+        "evidence": "Computer-use validation-gurusharan community-members/filter-pills 2026-07-19: filter-pills",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "012ec3dd1410b363",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "CUA"
+        "tested_source_hash": "ed51f7d45a6e355c",
+        "last_tested_at": "2026-07-19",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "member-rows",
@@ -503,38 +511,25 @@
         "label": "Member rows",
         "expected": "Display-only roster from API",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (member-rows) (hash-migrated: screen-slice source hash)",
+        "evidence": "Computer-use validation-gurusharan community-members/member-rows 2026-07-19: member-rows",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "012ec3dd1410b363",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "CUA"
-      },
-      {
-        "id": "member-options",
-        "type": "button",
-        "label": "Member row ⋯",
-        "expected": "Opens member options",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
-        "blocker": "",
-        "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "tested_source_hash": "ed51f7d45a6e355c",
+        "last_tested_at": "2026-07-19",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "member-filter-reset",
         "type": "button",
         "label": "Filter reset",
         "expected": "Clears member search/filter",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "Computer validation-gurusharan community-members/member-filter-reset 2026-07-17: member-filter-reset",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-07-17",
+        "tested_source_hash": "ed51f7d45a6e355c",
+        "last_test_method": "Computer-use"
       }
     ]
   }

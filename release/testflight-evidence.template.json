@@ -15,7 +15,7 @@
     "group_video_verified": false
   },
   "apple": {
-    "bundle_id": "com.likeminded.app",
+    "bundle_id": "com.gurusharan.likeminded",
     "bundle_id_configured": false,
     "sign_in_with_apple_enabled": false,
     "app_store_connect_app_created": false

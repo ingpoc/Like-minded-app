@@ -6,9 +6,27 @@ enum RealtimeVoicePhase: String {
     case idle = "Ready"
     case connecting = "Opening"
     case streaming = "Listening"
+    case speaking = "Responding"
     case stopping = "Placing"
     case stopped = "Captured"
     case failed = "Voice issue"
+}
+
+enum RealtimeVoiceError: LocalizedError {
+    case microphoneDenied
+    case microphoneRestricted
+    case microphoneUnavailable
+
+    var errorDescription: String? {
+        switch self {
+        case .microphoneDenied:
+            "Microphone access is off. Allow Likeminded in Privacy & Security → Microphone settings, then try again."
+        case .microphoneRestricted:
+            "Microphone access is restricted. Check Screen Time or device-management settings."
+        case .microphoneUnavailable:
+            "No microphone is available. Connect an input device, then try again."
+        }
+    }
 }
 
 struct RealtimeVoiceUpdate {
@@ -22,7 +40,6 @@ final class RealtimeVoiceClient: NSObject {
     var baseURL = LikemindedAPIClient.defaultBaseURL()
     var authToken: String?
     var basicInfo: BasicInfo?
-    var reinterviewContext: String?
 
     private var onUpdate: ((RealtimeVoiceUpdate) -> Void)?
     private var isStreaming = false
@@ -31,15 +48,23 @@ final class RealtimeVoiceClient: NSObject {
     private var peerConnection: LKRTCPeerConnection?
     private var dataChannel: LKRTCDataChannel?
     private var audioTrack: LKRTCAudioTrack?
+    private var audioLevelTimer: Timer?
+    private var onAudioLevel: ((Double) -> Void)?
+    private var previousAudioEnergy: Double?
+    private var previousAudioDuration: Double?
     private var voiceSession: RealtimeSessionEnvelope?
-    private var currentModel: String = "gpt-realtime-1.5"
+    private var currentModel: String = "gpt-realtime-mini"
     private var currentVoice: String = "marin"
+    private var ephemeralKey: String?
 
     private var assistantTranscriptBuffer = ""
     private var conversationTranscript = ""
     private var userTurnCount = 0
     private var didSubmitProfilePlacement = false
     private var processedFunctionCallIDs = Set<String>()
+    private var inFlightFunctionCallIDs = Set<String>()
+    private var functionCallGeneration = UUID()
+    private let functionCallLock = NSLock()
 
     private let factory: LKRTCPeerConnectionFactory
 
@@ -66,18 +91,27 @@ final class RealtimeVoiceClient: NSObject {
         sdpOffer: String,
         model: String,
         voice: String,
+        ephemeralKey: String,
+        onAudioLevel: ((Double) -> Void)? = nil,
         onUpdate: @escaping (RealtimeVoiceUpdate) -> Void
     ) async throws {
+        try await ensureMicrophoneAccess()
+        var didStart = false
+        defer {
+            if !didStart { teardown() }
+        }
         self.onUpdate = onUpdate
         self.currentModel = model
         self.currentVoice = voice
+        self.ephemeralKey = ephemeralKey
+        self.onAudioLevel = onAudioLevel
+        previousAudioEnergy = nil
+        previousAudioDuration = nil
         isClosing = false
         assistantTranscriptBuffer = ""
         conversationTranscript = ""
         userTurnCount = 0
-        didSubmitProfilePlacement = false
-        processedFunctionCallIDs = []
-        reconnectAttempts = 0
+        resetFunctionCallState()
         publish(.connecting, message: "Connecting to Realtime.", transcript: nil)
         log("start: WebRTC connection")
 
@@ -141,7 +175,8 @@ final class RealtimeVoiceClient: NSObject {
         log("start: local SDP offer created")
 
         // Exchange SDP with our server, which forwards to OpenAI
-        let answerSdp = try await exchangeSDPViaServer(pc.localDescription?.sdp ?? sdpOffer)
+        let answerSdp = try await exchangeSDPDirectly(pc.localDescription?.sdp ?? sdpOffer)
+        try Task.checkCancellation()
         log("start: received SDP answer from server")
 
         // Set remote description
@@ -150,6 +185,27 @@ final class RealtimeVoiceClient: NSObject {
         log("start: remote description set")
 
         isStreaming = true
+        startAudioLevelMonitoring()
+        didStart = true
+    }
+
+    private func ensureMicrophoneAccess() async throws {
+        guard AVCaptureDevice.default(for: .audio) != nil else {
+            throw RealtimeVoiceError.microphoneUnavailable
+        }
+        switch AVCaptureDevice.authorizationStatus(for: .audio) {
+        case .authorized:
+            return
+        case .notDetermined:
+            let granted = await AVCaptureDevice.requestAccess(for: .audio)
+            if !granted { throw RealtimeVoiceError.microphoneDenied }
+        case .denied:
+            throw RealtimeVoiceError.microphoneDenied
+        case .restricted:
+            throw RealtimeVoiceError.microphoneRestricted
+        @unknown default:
+            throw RealtimeVoiceError.microphoneUnavailable
+        }
     }
 
     func stop() async {
@@ -171,8 +227,6 @@ final class RealtimeVoiceClient: NSObject {
         publish(.stopped, message: "Voice session closed.", transcript: nil)
     }
 
-    private var reconnectAttempts = 0
-    private let maxReconnectAttempts = 3
     private var heartbeatTimer: Timer?
 
     private func startHeartbeat() {
@@ -191,83 +245,19 @@ final class RealtimeVoiceClient: NSObject {
     }
 
     private func attemptReconnect() {
-        guard reconnectAttempts < maxReconnectAttempts else {
-            log("ICE reconnect: max attempts reached")
-            publish(.failed, message: "Voice connection lost.", transcript: nil)
-            return
-        }
-
-        reconnectAttempts += 1
-        log("ICE reconnect: attempt \(reconnectAttempts)/\(maxReconnectAttempts)")
-
-        Task { [weak self] in
-            guard let self else { return }
-            do {
-                // Tear down existing connection locally
-                self.dataChannel?.close()
-                self.dataChannel = nil
-                self.peerConnection?.close()
-                self.peerConnection = nil
-                self.audioTrack = nil
-
-                // Re-create peer connection and audio track
-                let config = LKRTCConfiguration()
-                config.iceServers = []
-                config.sdpSemantics = .unifiedPlan
-                let constraints = LKRTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
-                guard let pc = self.factory.peerConnection(with: config, constraints: constraints, delegate: self) else {
-                    throw NSError(domain: "LikemindedRealtimeVoice", code: 3, userInfo: [
-                        NSLocalizedDescriptionKey: "Failed to create RTCPeerConnection."
-                    ])
-                }
-                self.peerConnection = pc
-
-                let audioConstraints = LKRTCMediaConstraints(
-                    mandatoryConstraints: [
-                        "googEchoCancellation": "true",
-                        "googAutoGainControl": "true",
-                        "googNoiseSuppression": "true"
-                    ],
-                    optionalConstraints: nil
-                )
-                let audioSource = self.factory.audioSource(with: audioConstraints)
-                let track = self.factory.audioTrack(with: audioSource, trackId: "audio0")
-                self.audioTrack = track
-                pc.add(track, streamIds: ["audio"])
-
-                let dcConfig = LKRTCDataChannelConfiguration()
-                dcConfig.isOrdered = true
-                guard let dc = pc.dataChannel(forLabel: "oai-events", configuration: dcConfig) else {
-                    throw NSError(domain: "LikemindedRealtimeVoice", code: 4, userInfo: [
-                        NSLocalizedDescriptionKey: "Failed to create data channel."
-                    ])
-                }
-                dc.delegate = self
-                self.dataChannel = dc
-
-                // Re-negotiate
-                let offerConstraints = LKRTCMediaConstraints(
-                    mandatoryConstraints: ["OfferToReceiveAudio": "true"],
-                    optionalConstraints: nil
-                )
-                let sdp = try await self.createOffer(peer: pc, constraints: offerConstraints)
-                try await self.setLocalDescription(peer: pc, sdp: sdp)
-                let answerSdp = try await self.exchangeSDPViaServer(pc.localDescription?.sdp ?? sdp.sdp)
-                let answer = LKRTCSessionDescription(type: .answer, sdp: answerSdp)
-                try await self.setRemoteDescription(peer: pc, description: answer)
-
-                self.reconnectAttempts = 0
-                self.isStreaming = true
-                self.log("ICE reconnect: successful")
-            } catch {
-                self.log("ICE reconnect failed: \(error.localizedDescription)")
-                self.publish(.failed, message: "Voice connection lost.", transcript: nil)
-            }
-        }
+        log("ICE connection lost; a new ephemeral session is required")
+        teardown()
+        publish(.failed, message: "Voice connection lost. Start again.", transcript: nil)
     }
 
     private func teardown() {
         stopHeartbeat()
+        audioLevelTimer?.invalidate()
+        audioLevelTimer = nil
+        onAudioLevel?(0)
+        onAudioLevel = nil
+        previousAudioEnergy = nil
+        previousAudioDuration = nil
         dataChannel?.close()
         dataChannel = nil
         peerConnection?.close()
@@ -275,28 +265,74 @@ final class RealtimeVoiceClient: NSObject {
         audioTrack = nil
         audioEngine.stop()
         audioPlayerNode?.stop()
+        ephemeralKey = nil
+    }
+
+    private func startAudioLevelMonitoring() {
+        audioLevelTimer?.invalidate()
+        guard onAudioLevel != nil else { return }
+        audioLevelTimer = Timer.scheduledTimer(withTimeInterval: 1.0 / 12.0, repeats: true) { [weak self] _ in
+            self?.sampleOutboundAudioLevel()
+        }
+    }
+
+    private func sampleOutboundAudioLevel() {
+        guard let peerConnection else { return }
+        peerConnection.statistics { [weak self] report in
+            let audioStatistics = report.statistics.values.filter { statistic in
+                statistic.type == "media-source" || statistic.type == "outbound-rtp"
+            }
+            let directLevel = audioStatistics.compactMap { statistic in
+                (statistic.values["audioLevel"] as? NSNumber)?.doubleValue
+            }.max()
+            let energySample = audioStatistics.compactMap { statistic -> (energy: Double, duration: Double)? in
+                guard let energy = statistic.values["totalAudioEnergy"] as? NSNumber,
+                      let duration = statistic.values["totalSamplesDuration"] as? NSNumber else {
+                    return nil
+                }
+                return (energy.doubleValue, duration.doubleValue)
+            }.max { first, second in
+                first.duration < second.duration
+            }
+            DispatchQueue.main.async {
+                guard let self else { return }
+                var measuredLevel = directLevel
+                if let energySample {
+                    if let previousAudioEnergy = self.previousAudioEnergy,
+                       let previousAudioDuration = self.previousAudioDuration,
+                       energySample.duration > previousAudioDuration {
+                        let energyDelta = max(energySample.energy - previousAudioEnergy, 0)
+                        let durationDelta = energySample.duration - previousAudioDuration
+                        measuredLevel = Self.normalizedAudioLevel(
+                            rootMeanSquare: sqrt(energyDelta / durationDelta)
+                        )
+                    }
+                    self.previousAudioEnergy = energySample.energy
+                    self.previousAudioDuration = energySample.duration
+                }
+                if let measuredLevel {
+                    self.onAudioLevel?(min(max(measuredLevel, 0), 1))
+                }
+            }
+        }
+    }
+
+    private static func normalizedAudioLevel(rootMeanSquare: Double) -> Double {
+        let decibels = 20 * log10(max(rootMeanSquare, 0.000_01))
+        return min(max((decibels + 55) / 55, 0), 1)
     }
 
     // MARK: - SDP Exchange
 
-    private func exchangeSDPViaServer(_ sdp: String) async throws -> String {
-        let url = baseURL.appendingPathComponent("/v1/realtime/calls")
-        var request = URLRequest(url: url)
+    private func exchangeSDPDirectly(_ sdp: String) async throws -> String {
+        guard let ephemeralKey else { throw URLError(.userAuthenticationRequired) }
+        self.ephemeralKey = nil
+        var request = URLRequest(url: URL(string: "https://api.openai.com/v1/realtime/calls")!)
         request.httpMethod = "POST"
+        request.timeoutInterval = 30
+        request.setValue("Bearer \(ephemeralKey)", forHTTPHeaderField: "Authorization")
         request.setValue("application/sdp", forHTTPHeaderField: "content-type")
-        if let authToken {
-            request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
-        }
-        if let reinterviewContext = reinterviewContext?.prefix(1200), !reinterviewContext.isEmpty {
-            request.setValue(
-                String(reinterviewContext)
-                    .replacingOccurrences(of: "\r", with: " ")
-                    .replacingOccurrences(of: "\n", with: " | "),
-                forHTTPHeaderField: "X-Likeminded-Reinterview-Context"
-            )
-        }
         request.httpBody = sdp.data(using: .utf8)
-
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
             let errorText = String(data: data, encoding: .utf8) ?? "Unknown error"
@@ -366,7 +402,6 @@ final class RealtimeVoiceClient: NSObject {
             if (name == nil || name == "submit_profile_placement"),
                let arguments = object["arguments"] as? String,
                !arguments.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                didSubmitProfilePlacement = true
                 Task {
                     await submitProfilePlacement(arguments, callID: object["call_id"] as? String)
                 }
@@ -378,6 +413,7 @@ final class RealtimeVoiceClient: NSObject {
         case "response.output_audio.delta":
             if let delta = object["delta"] as? String {
                 log("recv audio delta: \(delta.count) bytes")
+                publish(.speaking, message: "AI is responding", transcript: conversationTranscript)
             }
         case "response.cancel":
             log("response cancelled by server — sending response.create to continue")
@@ -389,6 +425,7 @@ final class RealtimeVoiceClient: NSObject {
             }
         case "response.done":
             log("response.done — turn complete")
+            publish(.streaming, message: "Listening", transcript: conversationTranscript)
         case "error":
             let errorObj = object["error"] as? [String: Any]
             let errorMsg = errorObj?["message"] as? String ?? "Realtime session error."
@@ -406,16 +443,17 @@ final class RealtimeVoiceClient: NSObject {
               !arguments.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             return
         }
-        didSubmitProfilePlacement = true
         Task {
             await submitProfilePlacement(arguments, callID: item["call_id"] as? String)
         }
     }
 
     private func submitProfilePlacement(_ arguments: String, callID: String?) async {
-        if let callID {
-            if processedFunctionCallIDs.contains(callID) { return }
-            processedFunctionCallIDs.insert(callID)
+        let claim = claimFunctionCall(callID)
+        guard claim.accepted else { return }
+        var didProcess = false
+        defer {
+            finishFunctionCall(callID, generation: claim.generation, didProcess: didProcess)
         }
         guard let data = arguments.data(using: .utf8),
               var payload = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any] else {
@@ -433,8 +471,9 @@ final class RealtimeVoiceClient: NSObject {
         let url = baseURL.appendingPathComponent("/v1/realtime/profile-placement")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.timeoutInterval = 4
+        request.timeoutInterval = 20
         request.setValue("application/json", forHTTPHeaderField: "content-type")
+        if let callID { request.setValue("realtime-profile-\(callID)", forHTTPHeaderField: "Idempotency-Key") }
         if let authToken {
             request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         }
@@ -445,6 +484,7 @@ final class RealtimeVoiceClient: NSObject {
             guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
                 throw URLError(.badServerResponse)
             }
+            didProcess = true
             if let callID {
                 sendFunctionResult(callID: callID, output: ["saved": true])
             }
@@ -455,6 +495,37 @@ final class RealtimeVoiceClient: NSObject {
             }
             publish(.failed, message: "Profile placement could not be saved.", transcript: nil)
         }
+    }
+
+    private func claimFunctionCall(_ callID: String?) -> (accepted: Bool, generation: UUID) {
+        functionCallLock.lock()
+        defer { functionCallLock.unlock() }
+        let generation = functionCallGeneration
+        guard let callID else { return (true, generation) }
+        guard !processedFunctionCallIDs.contains(callID), !inFlightFunctionCallIDs.contains(callID) else {
+            return (false, generation)
+        }
+        inFlightFunctionCallIDs.insert(callID)
+        return (true, generation)
+    }
+
+    private func resetFunctionCallState() {
+        functionCallLock.lock()
+        defer { functionCallLock.unlock() }
+        functionCallGeneration = UUID()
+        didSubmitProfilePlacement = false
+        processedFunctionCallIDs = []
+        inFlightFunctionCallIDs = []
+    }
+
+    private func finishFunctionCall(_ callID: String?, generation: UUID, didProcess: Bool) {
+        functionCallLock.lock()
+        defer { functionCallLock.unlock() }
+        guard generation == functionCallGeneration else { return }
+        didSubmitProfilePlacement = didSubmitProfilePlacement || didProcess
+        guard let callID else { return }
+        inFlightFunctionCallIDs.remove(callID)
+        if didProcess { processedFunctionCallIDs.insert(callID) }
     }
 
     private func sendFunctionResult(callID: String, output: [String: Any]) {
@@ -507,7 +578,10 @@ final class RealtimeVoiceClient: NSObject {
     }
 
     private func stoppedMessage() -> String {
-        if didSubmitProfilePlacement {
+        functionCallLock.lock()
+        let submitted = didSubmitProfilePlacement
+        functionCallLock.unlock()
+        if submitted {
             return "Profile placement is being saved."
         }
         if userTurnCount == 0 && conversationTranscript.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {

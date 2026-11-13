@@ -10,7 +10,7 @@
         "apps/ios-macos/Sources/LikemindedApp/Views/CommunitiesPrototypeView.swift (CreateCommunityView)",
         "apps/ios-macos/Sources/LikemindedApp/Views/RootView.swift (--likeminded-start-create-community)"
       ],
-      "source_hash": "be1d37d95205b345",
+      "source_hash": "a9c1ce9ef5c7f374",
       "mockup_ref": "mockups/ios/05-08-circles-meet-communities.png",
       "mockup_missing": false,
       "entry_points": [
@@ -25,11 +25,13 @@
         "reference_mockup_ref": "mockups/ios/05-08-circles-meet-communities.png",
         "recent_screenshot_ref": "output/validation/ios-screens/create-community.png",
         "design_ref": "DESIGN.md",
-        "last_compared_at": "2026-07-05",
+        "last_compared_at": "2026-07-21",
         "validated": [
-          "latest screenshot exists and was compared with iOS plate 05-08 browse family + macOS createCommunity capture",
-          "form labels and preview card match macOS createCommunity field parity",
-          "validation deep link --likeminded-start-create-community opens CreateCommunityView sheet"
+          "live standard-size screenshot compared with DESIGN.md creation-form visibility contract and iOS plate 05-08 communities family",
+          "required Name and Summary stay primary; optional Themes remains collapsed until requested; Preview appears only after required details are complete",
+          "disabled Create community action explains missing requirements adjacent to the action",
+          "Accessibility Extra Extra Large with Increased Contrast and Reduce Motion preserves title, fields, optional disclosure, action, guidance, and Cancel without overlap",
+          "validation deep link --likeminded-start-create-community opens the exact CreateCommunityView sheet"
         ],
         "pending_validation": [],
         "requires_implementation": [],
@@ -39,11 +41,11 @@
           "iOS stacks Community details above Preview; macOS uses side-by-side MacPanels.",
           "iOS mockup plate 05-08 shows browse entry tile only; compared functionally to macOS 22-create-community."
         ],
-        "notes": "2026-07-05 cross-platform parity pass for iOS 24-create-community."
+        "notes": "2026-07-21 live iPhone review passed at standard size and Accessibility Extra Extra Large. Accessibility evidence: output/validation/ios-screens/accessibility/create-community-axxlarge-contrast.png."
       },
       "visual_parity": {
         "result": "pass",
-        "notes": "2026-07-05 output/validation/ios-screens/create-community.png vs mockups/ios/05-08 + macOS createCommunity: labeled Name/Summary/Themes form, DoodleCover preview with title overlay, default theme chips, member-led footer. Intentional: iOS sheet stack vs macOS side-by-side columns; iOS mockup plate has browse entry not dedicated create panel."
+        "notes": "2026-07-21 output/validation/ios-screens/create-community.png vs DESIGN.md and iOS plate 05-08: focused modal sheet, required fields first, optional themes on demand, adjacent disabled-state guidance, and Preview deferred until meaningful content exists. Intentional: iOS sheet stack vs macOS side-by-side columns; the iOS mockup plate has the browse entry rather than a dedicated create panel."
       },
       "recent_screenshot_ref": "output/validation/ios-screens/create-community.png",
       "notes": "macOS parity: validation/macos/22-create-community.json. Capture user validation-gurusharan / Gurusharan Gupta."
@@ -54,7 +56,7 @@
       "source_files": [
         "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (createCommunity)"
       ],
-      "source_hash": "6998e0e5c9ceb4ef",
+      "source_hash": "9df1654efbf18c00",
       "mockup_ref": "mockups/macos/05-08-chat-communities-detail-recap.png",
       "mockup_missing": false,
       "entry_points": [
@@ -107,11 +109,12 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "create-entry: screen-capture 2026-07-05",
+          "evidence": "create-entry: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "be1d37d95205b345",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "output/validation/ios-screens/create-community.png",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "a9c1ce9ef5c7f374",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "not-applicable",
@@ -123,7 +126,7 @@
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -135,7 +138,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/05-08-circles-meet-communities.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen create-community --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh createCommunity → macos_cua_screen.sh createCommunity"
+          "macos": "@Computer: npm run dev:macos:validation -- createCommunity; target the canonical app by full path; prove create-community/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen create-community --flow create-entry --result pass --method <tier-method> --evidence \"...\""
       }
@@ -159,23 +162,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "name: screen-capture 2026-07-05",
+          "evidence": "name: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "be1d37d95205b345",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "output/validation/ios-screens/create-community.png",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "a9c1ce9ef5c7f374",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "name: 2026-07-05 Computer Use + mockup compare at 1120x901: name, summary, and themes edit live preview; Create community post",
+          "evidence": "name: Computer-use 2026-07-19",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "6998e0e5c9ceb4ef",
-          "last_test_method": "Computer Use + mockup compare"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-19",
+          "tested_source_hash": "9df1654efbf18c00",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -187,7 +192,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/05-08-circles-meet-communities.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen create-community --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh createCommunity → macos_cua_screen.sh createCommunity"
+          "macos": "@Computer: npm run dev:macos:validation -- createCommunity; target the canonical app by full path; prove create-community/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen create-community --flow name --result pass --method <tier-method> --evidence \"...\""
       }
@@ -211,23 +216,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "summary: screen-capture 2026-07-05",
+          "evidence": "summary: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "be1d37d95205b345",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "output/validation/ios-screens/create-community.png",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "a9c1ce9ef5c7f374",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "summary: 2026-07-05 Computer Use + mockup compare at 1120x901: name, summary, and themes edit live preview; Create community post",
+          "evidence": "summary: Computer-use 2026-07-19",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "6998e0e5c9ceb4ef",
-          "last_test_method": "Computer Use + mockup compare"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-19",
+          "tested_source_hash": "9df1654efbf18c00",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -239,7 +246,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/05-08-circles-meet-communities.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen create-community --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh createCommunity → macos_cua_screen.sh createCommunity"
+          "macos": "@Computer: npm run dev:macos:validation -- createCommunity; target the canonical app by full path; prove create-community/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen create-community --flow summary --result pass --method <tier-method> --evidence \"...\""
       }
@@ -263,23 +270,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "themes: screen-capture 2026-07-05",
+          "evidence": "themes: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "be1d37d95205b345",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "output/validation/ios-screens/create-community.png",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "a9c1ce9ef5c7f374",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "themes: 2026-07-05 Computer Use + mockup compare at 1120x901: name, summary, and themes edit live preview; Create community post",
+          "evidence": "themes: Computer-use 2026-07-19",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "6998e0e5c9ceb4ef",
-          "last_test_method": "Computer Use + mockup compare"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-19",
+          "tested_source_hash": "9df1654efbf18c00",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -291,7 +300,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/05-08-circles-meet-communities.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen create-community --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh createCommunity → macos_cua_screen.sh createCommunity"
+          "macos": "@Computer: npm run dev:macos:validation -- createCommunity; target the canonical app by full path; prove create-community/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen create-community --flow themes --result pass --method <tier-method> --evidence \"...\""
       }
@@ -315,23 +324,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "submit: screen-capture 2026-07-05",
+          "evidence": "submit: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "be1d37d95205b345",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "output/validation/ios-screens/create-community.png",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "a9c1ce9ef5c7f374",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "submit: 2026-07-05 Computer Use + mockup compare at 1120x901: name, summary, and themes edit live preview; Create community post",
+          "evidence": "submit: Computer-use 2026-07-19",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "6998e0e5c9ceb4ef",
-          "last_test_method": "Computer Use + mockup compare"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-19",
+          "tested_source_hash": "9df1654efbf18c00",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -343,7 +354,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/05-08-circles-meet-communities.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen create-community --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh createCommunity → macos_cua_screen.sh createCommunity"
+          "macos": "@Computer: npm run dev:macos:validation -- createCommunity; target the canonical app by full path; prove create-community/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen create-community --flow submit --result pass --method <tier-method> --evidence \"...\""
       }
@@ -365,12 +376,13 @@
       "gap_audit": "2026-07-06",
       "validation": {
         "ios": {
-          "result": "pending",
-          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "result": "pass",
+          "evidence": "create-cancel: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
+          "screenshot_ref": "output/validation/ios-screens/create-community.png",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "a9c1ce9ef5c7f374",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "not-applicable",
@@ -382,7 +394,7 @@
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -394,7 +406,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/05-08-circles-meet-communities.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen create-community --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh createCommunity → macos_cua_screen.sh createCommunity"
+          "macos": "@Computer: npm run dev:macos:validation -- createCommunity; target the canonical app by full path; prove create-community/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen create-community --flow create-community-cancel --result pass --method <tier-method> --evidence \"...\""
       }
@@ -408,12 +420,12 @@
         "label": "Create a community",
         "expected": "Opens CreateCommunityView sheet",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (create-entry)",
+        "evidence": "Computer-use validation-gurusharan create-community/create-entry 2026-08-01: create-entry",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "screen-capture",
-        "tested_source_hash": "be1d37d95205b345"
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use",
+        "tested_source_hash": "a9c1ce9ef5c7f374"
       },
       {
         "id": "name",
@@ -421,12 +433,12 @@
         "label": "Community name",
         "expected": "Editable name field bound to create payload",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (name)",
+        "evidence": "Computer-use validation-gurusharan create-community/name 2026-08-01: name",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "screen-capture",
-        "tested_source_hash": "be1d37d95205b345"
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use",
+        "tested_source_hash": "a9c1ce9ef5c7f374"
       },
       {
         "id": "summary",
@@ -434,12 +446,12 @@
         "label": "Community summary",
         "expected": "Editable summary field bound to create payload",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (summary)",
+        "evidence": "Computer-use validation-gurusharan create-community/summary 2026-08-01: summary",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "screen-capture",
-        "tested_source_hash": "be1d37d95205b345"
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use",
+        "tested_source_hash": "a9c1ce9ef5c7f374"
       },
       {
         "id": "themes",
@@ -447,12 +459,12 @@
         "label": "Community themes",
         "expected": "Comma-separated themes (max 3) in create payload",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (themes)",
+        "evidence": "Computer-use validation-gurusharan create-community/themes 2026-08-01: themes",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "screen-capture",
-        "tested_source_hash": "be1d37d95205b345"
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use",
+        "tested_source_hash": "a9c1ce9ef5c7f374"
       },
       {
         "id": "submit",
@@ -460,25 +472,25 @@
         "label": "Create community",
         "expected": "POST /v1/communities then navigate to CommunityDetailView",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (submit)",
+        "evidence": "Computer-use validation-gurusharan create-community/submit 2026-08-01: submit",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "screen-capture",
-        "tested_source_hash": "be1d37d95205b345"
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use",
+        "tested_source_hash": "a9c1ce9ef5c7f374"
       },
       {
         "id": "create-cancel",
         "type": "button",
         "label": "Cancel",
         "expected": "Dismisses create community sheet",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "Computer-use validation-gurusharan create-community/create-community-cancel 2026-08-01: create-cancel",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "a9c1ce9ef5c7f374",
+        "last_test_method": "Computer-use"
       }
     ],
     "macos": [
@@ -488,12 +500,12 @@
         "label": "Community name",
         "expected": "Editable name field bound to create payload",
         "result": "pass",
-        "evidence": "2026-07-05 Computer Use + mockup compare at 1120x901: name, summary, and themes edit live preview; Create community posts to local API and navigates to the created community detail. (name) (hash-migrated: screen-slice source hash)",
+        "evidence": "Computer-use validation-gurusharan create-community/name 2026-07-19: name",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "6998e0e5c9ceb4ef",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "Computer Use + mockup compare"
+        "tested_source_hash": "9df1654efbf18c00",
+        "last_tested_at": "2026-07-19",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "summary",
@@ -501,12 +513,12 @@
         "label": "Community summary",
         "expected": "Editable summary field bound to create payload",
         "result": "pass",
-        "evidence": "2026-07-05 Computer Use + mockup compare at 1120x901: name, summary, and themes edit live preview; Create community posts to local API and navigates to the created community detail. (summary) (hash-migrated: screen-slice source hash)",
+        "evidence": "Computer-use validation-gurusharan create-community/summary 2026-07-19: summary",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "6998e0e5c9ceb4ef",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "Computer Use + mockup compare"
+        "tested_source_hash": "9df1654efbf18c00",
+        "last_tested_at": "2026-07-19",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "themes",
@@ -514,12 +526,12 @@
         "label": "Community themes",
         "expected": "Comma-separated themes (max 3) in create payload",
         "result": "pass",
-        "evidence": "2026-07-05 Computer Use + mockup compare at 1120x901: name, summary, and themes edit live preview; Create community posts to local API and navigates to the created community detail. (themes) (hash-migrated: screen-slice source hash)",
+        "evidence": "Computer-use validation-gurusharan create-community/themes 2026-07-19: themes",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "6998e0e5c9ceb4ef",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "Computer Use + mockup compare"
+        "tested_source_hash": "9df1654efbf18c00",
+        "last_tested_at": "2026-07-19",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "submit",
@@ -527,12 +539,12 @@
         "label": "Create community",
         "expected": "POST /v1/communities then navigate → communityDetail",
         "result": "pass",
-        "evidence": "2026-07-05 Computer Use + mockup compare at 1120x901: name, summary, and themes edit live preview; Create community posts to local API and navigates to the created community detail. (submit) (hash-migrated: screen-slice source hash)",
+        "evidence": "Computer-use validation-gurusharan create-community/submit 2026-07-19: submit",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "6998e0e5c9ceb4ef",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "Computer Use + mockup compare"
+        "tested_source_hash": "9df1654efbf18c00",
+        "last_tested_at": "2026-07-19",
+        "last_test_method": "Computer-use"
       }
     ]
   }

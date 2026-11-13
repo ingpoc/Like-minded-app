@@ -22,11 +22,11 @@
       "label": "Join meetup (hero)",
       "expected": "Navigate → meetVideoCall (macOS prototype room; LiveKit Phase 10)",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (join-meetup) (hash-migrated: screen-slice source hash)",
+      "evidence": "CUA-click validation-gurusharan 2026-07-19: join-meetup",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3853db5a868359d5",
-      "last_tested_at": "2026-07-06",
+      "tested_source_hash": "0431edf4416e42a9",
+      "last_tested_at": "2026-07-19",
       "last_test_method": "CUA-click"
     },
     {
@@ -35,11 +35,11 @@
       "label": "Saturday Available pill",
       "expected": "POST rsvp community available=true",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (rsvp-sat-yes) (hash-migrated: screen-slice source hash)",
+      "evidence": "CUA-click validation-gurusharan 2026-07-19: rsvp-sat-yes",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3853db5a868359d5",
-      "last_tested_at": "2026-07-06",
+      "tested_source_hash": "0431edf4416e42a9",
+      "last_tested_at": "2026-07-19",
       "last_test_method": "CUA-click"
     },
     {
@@ -48,11 +48,11 @@
       "label": "Saturday Not pill",
       "expected": "POST rsvp community available=false",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (rsvp-sat-no) (hash-migrated: screen-slice source hash)",
+      "evidence": "CUA-click validation-gurusharan 2026-07-19: rsvp-sat-no",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3853db5a868359d5",
-      "last_tested_at": "2026-07-06",
+      "tested_source_hash": "0431edf4416e42a9",
+      "last_tested_at": "2026-07-19",
       "last_test_method": "CUA-click"
     },
     {
@@ -61,11 +61,11 @@
       "label": "Sunday Available pill",
       "expected": "POST rsvp circle available=true",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (rsvp-sun-yes) (hash-migrated: screen-slice source hash)",
+      "evidence": "CUA-click validation-gurusharan 2026-07-19: rsvp-sun-yes",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3853db5a868359d5",
-      "last_tested_at": "2026-07-06",
+      "tested_source_hash": "0431edf4416e42a9",
+      "last_tested_at": "2026-07-19",
       "last_test_method": "CUA-click"
     },
     {
@@ -74,11 +74,11 @@
       "label": "Sunday Not pill",
       "expected": "POST rsvp circle available=false",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (rsvp-sun-no) (hash-migrated: screen-slice source hash)",
+      "evidence": "CUA-click validation-gurusharan 2026-07-19: rsvp-sun-no",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3853db5a868359d5",
-      "last_tested_at": "2026-07-06",
+      "tested_source_hash": "0431edf4416e42a9",
+      "last_tested_at": "2026-07-19",
       "last_test_method": "CUA-click"
     },
     {
@@ -87,11 +87,11 @@
       "label": "Past meeting row",
       "expected": "Navigate → meetRecap",
       "result": "pass",
-      "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (past-row) (hash-migrated: screen-slice source hash)",
+      "evidence": "CUA-click validation-gurusharan 2026-07-19: past-row",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "3853db5a868359d5",
-      "last_tested_at": "2026-07-06",
+      "tested_source_hash": "0431edf4416e42a9",
+      "last_tested_at": "2026-07-19",
       "last_test_method": "CUA-click"
     }
   ],
@@ -100,7 +100,7 @@
     "notes": "2026-07-04 capture vs plate 02: hero RSVP weekend panel past-meet list layout matches. Intentional: green gradient hero vs mockup wavy texture; seeded Reflective Builders title; no notification bell (activity via notifications tab)."
   },
   "notes": "",
-  "source_hash": "3853db5a868359d5",
+  "source_hash": "0431edf4416e42a9",
   "recent_screenshot_ref": "output/validation/macos-screens/meetOverview.png",
   "ui_validation": {
     "result": "pass",

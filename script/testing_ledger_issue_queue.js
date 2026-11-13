@@ -49,6 +49,11 @@ function findControl(screenData, platform, controlId) {
 }
 
 function resolveFixOwner(screenData, platform, controlId, rootCauseClass) {
+  if (rootCauseClass === "harness") {
+    return platform === "ios"
+      ? "script/testing_ledger_prove_ios.sh"
+      : ".agents/skills/testing-ledger/SKILL.md + bundled @Computer";
+  }
   const slice = screenData.platforms?.[platform] || {};
   const files = slice.source_files || [];
   if (!files.length) return null;
@@ -73,7 +78,7 @@ function inferRootCauseClass(observed, blocker = "") {
   if (/apple id|testflight|livekit|infra|blocked-infra|real-auth unavailable/.test(text)) {
     return "infra";
   }
-  if (/cua|harness|timeout|ax |accessibility|osascript|menu shortcut|overlay|coordinate/.test(text)) {
+  if (/harness|timeout|ax |accessibility|osascript|menu shortcut|overlay|coordinate/.test(text)) {
     return "harness";
   }
   return "app";
@@ -81,6 +86,51 @@ function inferRootCauseClass(observed, blocker = "") {
 
 function retestCommand(platform, screen, flowId) {
   return `npm run testing:ledger-run -- --platform ${platform} --screen ${screen} --flow ${flowId}`;
+}
+
+function isOpenFixIssue(issue) {
+  if (!issue || issue.retest_ready === true) return false;
+  const status = String(issue.status || "open").toLowerCase();
+  return status === "open" || status === "fixing";
+}
+
+function selectOpenFixIssue(queue, { platform = null, issueId = null } = {}) {
+  const issues = (queue.issues || []).filter(isOpenFixIssue);
+  if (issueId) {
+    return issues.find((issue) => issue.id === issueId && (!platform || issue.platform === platform)) || null;
+  }
+  if (platform) return issues.find((issue) => issue.platform === platform) || null;
+  return issues[0] || null;
+}
+
+function matchingRetestIssues(queue, { platform, screen, flowId }) {
+  if (!platform || !screen || !flowId) return [];
+  return (queue.issues || []).filter((issue) => {
+    const status = String(issue.status || "").toLowerCase();
+    return (
+      issue.platform === platform &&
+      issue.screen === screen &&
+      issue.flow_id === flowId &&
+      issue.retest_ready === true &&
+      status !== "resolved"
+    );
+  });
+}
+
+function resolveMatchingRetestIssues(
+  queue,
+  target,
+  { resolvedAt = new Date().toISOString(), resolution = "Successful retest" } = {}
+) {
+  const ids = new Set(matchingRetestIssues(queue, target).map((issue) => issue.id));
+  for (const issue of queue.issues || []) {
+    if (!ids.has(issue.id)) continue;
+    issue.retest_ready = false;
+    issue.status = "resolved";
+    issue.resolved_at = resolvedAt;
+    issue.resolution = resolution;
+  }
+  return [...ids];
 }
 
 module.exports = {
@@ -92,5 +142,9 @@ module.exports = {
   findControl,
   resolveFixOwner,
   inferRootCauseClass,
-  retestCommand
+  retestCommand,
+  isOpenFixIssue,
+  selectOpenFixIssue,
+  matchingRetestIssues,
+  resolveMatchingRetestIssues
 };

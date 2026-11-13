@@ -1,19 +1,50 @@
 {
-  "audit_date": "2026-07-06",
-  "audit_note": "Source-vs-ledger gap flows. Applied via npm run ledger:apply-gaps.",
+  "audit_date": "2026-07-19",
+  "audit_note": "Source-vs-ledger gap flows. Obsolete Profile/Soulmate fixture contracts removed; redesigned exact journeys are audited explicitly.",
+  "retired_legacy_controls": [
+    "ios:04-profile-populated#update-profile",
+    "ios:04-profile-populated#comm-read-card",
+    "ios:04-profile-populated#trait-bars",
+    "ios:14-soulmate#conversations-icon",
+    "macos:12-my-profile#share-profile",
+    "macos:12-my-profile#retake-voice",
+    "macos:12-my-profile#signal-cards",
+    "macos:12-my-profile#interest-tags",
+    "macos:14-profile-signals#share-profile",
+    "macos:16-soulmate-discover#distance-slider",
+    "macos:16-soulmate-discover#filter-pills",
+    "macos:16-soulmate-discover#new-matches",
+    "macos:17-soulmate-detail#about-panels",
+    "macos:20-settings-soulmate#view-profile",
+    "macos:20-settings-soulmate#voice-profile",
+    "macos:20-settings-soulmate#discovery-preference",
+    "macos:20-settings-soulmate#age-range",
+    "macos:20-settings-soulmate#visibility"
+  ],
   "new_screens": {
     "app-shell": {
       "screen": "App shell (tabs, chrome, global navigation)",
       "platforms": {
         "ios": {
           "implemented": true,
-          "source_files": ["apps/ios-macos/Sources/LikemindedApp/Views/RootView.swift", "apps/ios-macos/Sources/LikemindedApp/Views/CustomTabBar.swift"],
-          "entry_points": ["Signed-in tab shell"]
+          "source_files": [
+            "apps/ios-macos/Sources/LikemindedApp/Views/RootView.swift",
+            "apps/ios-macos/Sources/LikemindedApp/Views/CustomTabBar.swift"
+          ],
+          "entry_points": [
+            "Signed-in tab shell"
+          ]
         },
         "macos": {
           "implemented": true,
-          "source_files": ["apps/ios-macos/Sources/LikemindedMac/MacRootView.swift", "apps/ios-macos/Sources/LikemindedMac/LikemindedMacApp.swift"],
-          "entry_points": ["Signed-in MacRootView", "App menu ⌘1-5"]
+          "source_files": [
+            "apps/ios-macos/Sources/LikemindedMac/MacRootView.swift",
+            "apps/ios-macos/Sources/LikemindedMac/LikemindedMacApp.swift"
+          ],
+          "entry_points": [
+            "Signed-in MacRootView",
+            "App menu ⌘1-5"
+          ]
         }
       }
     }
@@ -24,25 +55,82 @@
       "flow": {
         "id": "tab-navigation",
         "name": "Switch main tabs via bottom bar",
-        "steps": ["Tap Meet / Circles / Communities / Soulmate / Profile"],
-        "control_ids": { "ios": ["tab-meet", "tab-circles", "tab-communities", "tab-soulmate", "tab-profile"], "macos": ["tab-meet", "tab-circles", "tab-communities", "tab-soulmate", "tab-profile"] },
+        "steps": [
+          "Tap Meet / Circles / Communities / Soulmate / Profile"
+        ],
+        "control_ids": {
+          "ios": [
+            "tab-meet",
+            "tab-circles",
+            "tab-communities",
+            "tab-soulmate",
+            "tab-profile"
+          ],
+          "macos": [
+            "tab-meet",
+            "tab-circles",
+            "tab-communities",
+            "tab-soulmate",
+            "tab-profile"
+          ]
+        },
         "ios": "pending",
         "macos": "pending"
       },
       "controls": {
         "ios": [
-          { "id": "tab-meet", "label": "Meet tab", "expected": "Selects Meet tab" },
-          { "id": "tab-circles", "label": "Circles tab", "expected": "Selects Circles tab" },
-          { "id": "tab-communities", "label": "Communities tab", "expected": "Selects Communities tab" },
-          { "id": "tab-soulmate", "label": "Soulmate tab", "expected": "Selects Soulmate tab when enabled" },
-          { "id": "tab-profile", "label": "Profile tab", "expected": "Selects Profile tab" }
+          {
+            "id": "tab-meet",
+            "label": "Meet tab",
+            "expected": "Selects Meet tab"
+          },
+          {
+            "id": "tab-circles",
+            "label": "Circles tab",
+            "expected": "Selects Circles tab"
+          },
+          {
+            "id": "tab-communities",
+            "label": "Communities tab",
+            "expected": "Selects Communities tab"
+          },
+          {
+            "id": "tab-soulmate",
+            "label": "Soulmate tab",
+            "expected": "Selects Soulmate tab when enabled"
+          },
+          {
+            "id": "tab-profile",
+            "label": "Profile tab",
+            "expected": "Selects Profile tab"
+          }
         ],
         "macos": [
-          { "id": "tab-meet", "label": "Meet tab", "expected": "Selects Meet tab" },
-          { "id": "tab-circles", "label": "Circles tab", "expected": "Selects Circles tab" },
-          { "id": "tab-communities", "label": "Communities tab", "expected": "Selects Communities tab" },
-          { "id": "tab-soulmate", "label": "Soulmate tab", "expected": "Selects Soulmate tab when enabled" },
-          { "id": "tab-profile", "label": "Profile tab", "expected": "Selects Profile tab" }
+          {
+            "id": "tab-meet",
+            "label": "Meet tab",
+            "expected": "Selects Meet tab"
+          },
+          {
+            "id": "tab-circles",
+            "label": "Circles tab",
+            "expected": "Selects Circles tab"
+          },
+          {
+            "id": "tab-communities",
+            "label": "Communities tab",
+            "expected": "Selects Communities tab"
+          },
+          {
+            "id": "tab-soulmate",
+            "label": "Soulmate tab",
+            "expected": "Selects Soulmate tab when enabled"
+          },
+          {
+            "id": "tab-profile",
+            "label": "Profile tab",
+            "expected": "Selects Profile tab"
+          }
         ]
       }
     },
@@ -51,13 +139,32 @@
       "flow": {
         "id": "global-back",
         "name": "Navigate back from pushed screen",
-        "control_ids": { "ios": ["global-back"], "macos": ["global-back"] },
+        "control_ids": {
+          "ios": [
+            "global-back"
+          ],
+          "macos": [
+            "global-back"
+          ]
+        },
         "ios": "pending",
         "macos": "pending"
       },
       "controls": {
-        "ios": [{ "id": "global-back", "label": "Back", "expected": "Pops navigation stack or dismisses cover" }],
-        "macos": [{ "id": "global-back", "label": "Back chevron", "expected": "navigateBack() to previous screen" }]
+        "ios": [
+          {
+            "id": "global-back",
+            "label": "Back",
+            "expected": "Pops navigation stack or dismisses cover"
+          }
+        ],
+        "macos": [
+          {
+            "id": "global-back",
+            "label": "Back chevron",
+            "expected": "navigateBack() to previous screen"
+          }
+        ]
       }
     },
     {
@@ -65,14 +172,35 @@
       "flow": {
         "id": "title-action-messages",
         "name": "Open Messages from title action",
-        "destinations": ["conversations"],
-        "control_ids": { "ios": ["title-messages"], "macos": ["title-messages"] },
+        "destinations": [
+          "conversations"
+        ],
+        "control_ids": {
+          "ios": [
+            "title-messages"
+          ],
+          "macos": [
+            "title-messages"
+          ]
+        },
         "ios": "pending",
         "macos": "pending"
       },
       "controls": {
-        "ios": [{ "id": "title-messages", "label": "Messages bubble (toolbar)", "expected": "Opens conversations / chat entry" }],
-        "macos": [{ "id": "title-messages", "label": "Messages bubble (title action)", "expected": "Navigate to messages screen" }]
+        "ios": [
+          {
+            "id": "title-messages",
+            "label": "Messages bubble (toolbar)",
+            "expected": "Opens conversations / chat entry"
+          }
+        ],
+        "macos": [
+          {
+            "id": "title-messages",
+            "label": "Messages bubble (title action)",
+            "expected": "Navigate to messages screen"
+          }
+        ]
       }
     },
     {
@@ -80,14 +208,35 @@
       "flow": {
         "id": "title-action-settings",
         "name": "Open Settings from title action",
-        "destinations": ["settings"],
-        "control_ids": { "ios": ["title-settings"], "macos": ["title-settings"] },
+        "destinations": [
+          "settings"
+        ],
+        "control_ids": {
+          "ios": [
+            "title-settings"
+          ],
+          "macos": [
+            "title-settings"
+          ]
+        },
         "ios": "pending",
         "macos": "pending"
       },
       "controls": {
-        "ios": [{ "id": "title-settings", "label": "Settings gear", "expected": "Pushes SettingsPrototypeView" }],
-        "macos": [{ "id": "title-settings", "label": "Settings gear (title action)", "expected": "Navigate to settingsSoulmate" }]
+        "ios": [
+          {
+            "id": "title-settings",
+            "label": "Settings gear",
+            "expected": "Pushes SettingsPrototypeView"
+          }
+        ],
+        "macos": [
+          {
+            "id": "title-settings",
+            "label": "Settings gear (title action)",
+            "expected": "Navigate to settingsSoulmate"
+          }
+        ]
       }
     },
     {
@@ -95,17 +244,46 @@
       "flow": {
         "id": "app-menu-nav",
         "name": "Switch tabs via app menu shortcuts",
-        "control_ids": { "ios": [], "macos": ["menu-meet", "menu-circles", "menu-communities", "menu-soulmate", "menu-profile"] },
+        "control_ids": {
+          "ios": [],
+          "macos": [
+            "menu-meet",
+            "menu-circles",
+            "menu-communities",
+            "menu-soulmate",
+            "menu-profile"
+          ]
+        },
         "macos": "pending",
         "macos_blocker": "macOS only — ⌘1-5 app menu"
       },
       "controls": {
         "macos": [
-          { "id": "menu-meet", "label": "App menu Meet", "expected": "Selects Meet tab via NotificationCenter" },
-          { "id": "menu-circles", "label": "App menu Circles", "expected": "Selects Circles tab" },
-          { "id": "menu-communities", "label": "App menu Communities", "expected": "Selects Communities tab" },
-          { "id": "menu-soulmate", "label": "App menu Soulmate", "expected": "Selects Soulmate tab when enabled" },
-          { "id": "menu-profile", "label": "App menu Profile", "expected": "Selects Profile tab" }
+          {
+            "id": "menu-meet",
+            "label": "App menu Meet",
+            "expected": "Selects Meet tab via NotificationCenter"
+          },
+          {
+            "id": "menu-circles",
+            "label": "App menu Circles",
+            "expected": "Selects Circles tab"
+          },
+          {
+            "id": "menu-communities",
+            "label": "App menu Communities",
+            "expected": "Selects Communities tab"
+          },
+          {
+            "id": "menu-soulmate",
+            "label": "App menu Soulmate",
+            "expected": "Selects Soulmate tab when enabled"
+          },
+          {
+            "id": "menu-profile",
+            "label": "App menu Profile",
+            "expected": "Selects Profile tab"
+          }
         ]
       }
     },
@@ -114,11 +292,22 @@
       "flow": {
         "id": "sign-in-google",
         "name": "Sign in with Google",
-        "control_ids": { "ios": [], "macos": ["sign-in-google"] },
+        "control_ids": {
+          "ios": [],
+          "macos": [
+            "sign-in-google"
+          ]
+        },
         "macos": "pending"
       },
       "controls": {
-        "macos": [{ "id": "sign-in-google", "label": "Continue with Google", "expected": "signInWithGoogle() creates session" }]
+        "macos": [
+          {
+            "id": "sign-in-google",
+            "label": "Continue with Google",
+            "expected": "signInWithGoogle() creates session"
+          }
+        ]
       }
     },
     {
@@ -126,11 +315,22 @@
       "flow": {
         "id": "sign-in-metamask",
         "name": "Sign in with MetaMask",
-        "control_ids": { "ios": [], "macos": ["sign-in-metamask"] },
+        "control_ids": {
+          "ios": [],
+          "macos": [
+            "sign-in-metamask"
+          ]
+        },
         "macos": "pending"
       },
       "controls": {
-        "macos": [{ "id": "sign-in-metamask", "label": "Continue with MetaMask", "expected": "Wallet auth flow" }]
+        "macos": [
+          {
+            "id": "sign-in-metamask",
+            "label": "Continue with MetaMask",
+            "expected": "Wallet auth flow"
+          }
+        ]
       }
     },
     {
@@ -138,11 +338,22 @@
       "flow": {
         "id": "sign-in-solflare",
         "name": "Sign in with Solflare",
-        "control_ids": { "ios": [], "macos": ["sign-in-solflare"] },
+        "control_ids": {
+          "ios": [],
+          "macos": [
+            "sign-in-solflare"
+          ]
+        },
         "macos": "pending"
       },
       "controls": {
-        "macos": [{ "id": "sign-in-solflare", "label": "Continue with Solflare", "expected": "Wallet auth flow" }]
+        "macos": [
+          {
+            "id": "sign-in-solflare",
+            "label": "Continue with Solflare",
+            "expected": "Wallet auth flow"
+          }
+        ]
       }
     },
     {
@@ -150,11 +361,22 @@
       "flow": {
         "id": "auth-privacy-link",
         "name": "Open privacy policy from welcome",
-        "control_ids": { "ios": [], "macos": ["auth-privacy-link"] },
+        "control_ids": {
+          "ios": [],
+          "macos": [
+            "auth-privacy-link"
+          ]
+        },
         "macos": "pending"
       },
       "controls": {
-        "macos": [{ "id": "auth-privacy-link", "label": "Privacy policy link", "expected": "Opens privacy sheet on welcome" }]
+        "macos": [
+          {
+            "id": "auth-privacy-link",
+            "label": "Privacy policy link",
+            "expected": "Opens privacy sheet on welcome"
+          }
+        ]
       }
     },
     {
@@ -164,18 +386,43 @@
         "id": "chat-call-headers",
         "name": "Voice/video call and conversation info from chat",
         "control_ids": {
-          "ios": ["voice-call-header", "video-call-header", "conversation-info-header", "call-sheet-done"],
-          "macos": ["voice-call-header", "video-call-header", "conversation-info-header"]
+          "ios": [
+            "voice-call-header",
+            "video-call-header",
+            "conversation-info-header",
+            "call-sheet-done"
+          ],
+          "macos": [
+            "voice-call-header",
+            "video-call-header",
+            "conversation-info-header"
+          ]
         },
         "ios": "pending",
         "macos": "pending"
       },
       "controls": {
         "ios": [
-          { "id": "voice-call-header", "label": "Voice call (toolbar)", "expected": "Opens voice call stub sheet" },
-          { "id": "video-call-header", "label": "Video call (toolbar)", "expected": "Opens video call stub sheet" },
-          { "id": "conversation-info-header", "label": "Conversation info", "expected": "Opens thread info sheet" },
-          { "id": "call-sheet-done", "label": "Done (call/info sheet)", "expected": "Dismisses call or info sheet" }
+          {
+            "id": "voice-call-header",
+            "label": "Voice call (toolbar)",
+            "expected": "Opens voice call stub sheet"
+          },
+          {
+            "id": "video-call-header",
+            "label": "Video call (toolbar)",
+            "expected": "Opens video call stub sheet"
+          },
+          {
+            "id": "conversation-info-header",
+            "label": "Conversation info",
+            "expected": "Opens thread info sheet"
+          },
+          {
+            "id": "call-sheet-done",
+            "label": "Done (call/info sheet)",
+            "expected": "Dismisses call or info sheet"
+          }
         ]
       }
     },
@@ -184,15 +431,37 @@
       "flow": {
         "id": "video-call-participants",
         "name": "Show participants roster in call",
-        "control_ids": { "ios": ["show-participants"], "macos": ["show-participants", "call-participants-bar"] },
+        "control_ids": {
+          "ios": [
+            "show-participants"
+          ],
+          "macos": [
+            "show-participants",
+            "call-participants-bar"
+          ]
+        },
         "ios": "pending",
         "macos": "pending"
       },
       "controls": {
-        "ios": [{ "id": "show-participants", "label": "Show participants", "expected": "Opens participant list sheet" }],
+        "ios": [
+          {
+            "id": "show-participants",
+            "label": "Show participants",
+            "expected": "Opens participant list sheet"
+          }
+        ],
         "macos": [
-          { "id": "show-participants", "label": "Participants panel tab", "expected": "Shows participants side panel" },
-          { "id": "call-participants-bar", "label": "Participants (call bar)", "expected": "Focuses participants panel" }
+          {
+            "id": "show-participants",
+            "label": "Participants panel tab",
+            "expected": "Shows participants side panel"
+          },
+          {
+            "id": "call-participants-bar",
+            "label": "Participants (call bar)",
+            "expected": "Focuses participants panel"
+          }
         ]
       }
     },
@@ -201,13 +470,27 @@
       "flow": {
         "id": "call-side-panel-tabs",
         "name": "Switch Agenda / Participants in call",
-        "control_ids": { "ios": [], "macos": ["call-agenda-tab", "call-participants-tab"] },
+        "control_ids": {
+          "ios": [],
+          "macos": [
+            "call-agenda-tab",
+            "call-participants-tab"
+          ]
+        },
         "macos": "pending"
       },
       "controls": {
         "macos": [
-          { "id": "call-agenda-tab", "label": "Agenda tab", "expected": "Shows agenda side panel" },
-          { "id": "call-participants-tab", "label": "Participants tab", "expected": "Shows participants side panel" }
+          {
+            "id": "call-agenda-tab",
+            "label": "Agenda tab",
+            "expected": "Shows agenda side panel"
+          },
+          {
+            "id": "call-participants-tab",
+            "label": "Participants tab",
+            "expected": "Shows participants side panel"
+          }
         ]
       }
     },
@@ -216,12 +499,25 @@
       "flow": {
         "id": "call-open-chat",
         "name": "Open chat from in-call bar",
-        "destinations": ["conversations"],
-        "control_ids": { "ios": [], "macos": ["call-chat-shortcut"] },
+        "destinations": [
+          "conversations"
+        ],
+        "control_ids": {
+          "ios": [],
+          "macos": [
+            "call-chat-shortcut"
+          ]
+        },
         "macos": "pending"
       },
       "controls": {
-        "macos": [{ "id": "call-chat-shortcut", "label": "Chat (in-call)", "expected": "Navigate to messages" }]
+        "macos": [
+          {
+            "id": "call-chat-shortcut",
+            "label": "Chat (in-call)",
+            "expected": "Navigate to messages"
+          }
+        ]
       }
     },
     {
@@ -229,26 +525,64 @@
       "flow": {
         "id": "settings-discovery-details",
         "name": "Edit and save Soulmate discovery preferences",
-        "backend": ["POST /v1/me/soulmate/preferences"],
+        "backend": [
+          "POST /v1/me/soulmate/preferences"
+        ],
         "control_ids": {
-          "ios": ["discovery-who", "discovery-age-range", "discovery-visibility", "discovery-save"],
-          "macos": ["discovery-who", "discovery-age-range", "discovery-visibility", "discovery-save"]
+          "ios": [
+            "discovery-who",
+            "discovery-age-range",
+            "discovery-visibility",
+            "discovery-save"
+          ],
+          "macos": [
+            "discovery-age-range",
+            "discovery-visibility",
+            "discovery-save"
+          ]
         },
         "ios": "pending",
         "macos": "pending"
       },
       "controls": {
         "ios": [
-          { "id": "discovery-who", "label": "Who can discover you", "expected": "Picker updates discovery scope" },
-          { "id": "discovery-age-range", "label": "Age range slider", "expected": "Updates age range preference" },
-          { "id": "discovery-visibility", "label": "Visibility radios", "expected": "Selects visibility mode" },
-          { "id": "discovery-save", "label": "Save preferences", "expected": "POST soulmate preferences" }
+          {
+            "id": "discovery-who",
+            "label": "Who can discover you",
+            "expected": "Picker updates discovery scope"
+          },
+          {
+            "id": "discovery-age-range",
+            "label": "Age range slider",
+            "expected": "Updates age range preference"
+          },
+          {
+            "id": "discovery-visibility",
+            "label": "Visibility radios",
+            "expected": "Selects visibility mode"
+          },
+          {
+            "id": "discovery-save",
+            "label": "Save preferences",
+            "expected": "POST soulmate preferences"
+          }
         ],
         "macos": [
-          { "id": "discovery-who", "label": "Who can discover you", "expected": "Picker updates discovery scope" },
-          { "id": "discovery-age-range", "label": "Age range", "expected": "Updates age range preference" },
-          { "id": "discovery-visibility", "label": "Visibility radios", "expected": "Selects visibility mode" },
-          { "id": "discovery-save", "label": "Save preferences", "expected": "POST soulmate preferences" }
+          {
+            "id": "discovery-age-range",
+            "label": "Age range",
+            "expected": "Updates age range preference"
+          },
+          {
+            "id": "discovery-visibility",
+            "label": "Visibility radios",
+            "expected": "Selects visibility mode"
+          },
+          {
+            "id": "discovery-save",
+            "label": "Save preferences",
+            "expected": "POST soulmate preferences"
+          }
         ]
       }
     },
@@ -257,13 +591,32 @@
       "flow": {
         "id": "settings-sign-out-cancel",
         "name": "Cancel sign-out confirmation",
-        "control_ids": { "ios": ["sign-out-cancel"], "macos": ["sign-out-cancel"] },
+        "control_ids": {
+          "ios": [
+            "sign-out-cancel"
+          ],
+          "macos": [
+            "sign-out-cancel"
+          ]
+        },
         "ios": "pending",
         "macos": "pending"
       },
       "controls": {
-        "ios": [{ "id": "sign-out-cancel", "label": "Cancel (sign out)", "expected": "Dismisses sign-out dialog without signing out" }],
-        "macos": [{ "id": "sign-out-cancel", "label": "Cancel (sign out)", "expected": "Dismisses sign-out dialog" }]
+        "ios": [
+          {
+            "id": "sign-out-cancel",
+            "label": "Cancel (sign out)",
+            "expected": "Dismisses sign-out dialog without signing out"
+          }
+        ],
+        "macos": [
+          {
+            "id": "sign-out-cancel",
+            "label": "Cancel (sign out)",
+            "expected": "Dismisses sign-out dialog"
+          }
+        ]
       }
     },
     {
@@ -271,13 +624,32 @@
       "flow": {
         "id": "settings-delete-cancel",
         "name": "Cancel delete-account confirmation",
-        "control_ids": { "ios": ["delete-cancel"], "macos": ["delete-cancel"] },
+        "control_ids": {
+          "ios": [
+            "delete-cancel"
+          ],
+          "macos": [
+            "delete-cancel"
+          ]
+        },
         "ios": "pending",
         "macos": "pending"
       },
       "controls": {
-        "ios": [{ "id": "delete-cancel", "label": "Cancel (delete account)", "expected": "Dismisses delete dialog" }],
-        "macos": [{ "id": "delete-cancel", "label": "Cancel (delete account)", "expected": "Dismisses delete dialog" }]
+        "ios": [
+          {
+            "id": "delete-cancel",
+            "label": "Cancel (delete account)",
+            "expected": "Dismisses delete dialog"
+          }
+        ],
+        "macos": [
+          {
+            "id": "delete-cancel",
+            "label": "Cancel (delete account)",
+            "expected": "Dismisses delete dialog"
+          }
+        ]
       }
     },
     {
@@ -285,11 +657,22 @@
       "flow": {
         "id": "settings-support-done",
         "name": "Dismiss contact support sheet",
-        "control_ids": { "ios": ["support-done"], "macos": [] },
+        "control_ids": {
+          "ios": [
+            "support-done"
+          ],
+          "macos": []
+        },
         "ios": "pending"
       },
       "controls": {
-        "ios": [{ "id": "support-done", "label": "Done (support sheet)", "expected": "Dismisses ContactSupportSheet" }]
+        "ios": [
+          {
+            "id": "support-done",
+            "label": "Done (support sheet)",
+            "expected": "Dismisses ContactSupportSheet"
+          }
+        ]
       }
     },
     {
@@ -297,22 +680,67 @@
       "flow": {
         "id": "community-detail-tabs",
         "name": "Switch community detail tabs",
-        "control_ids": { "ios": ["detail-tab-upcoming", "detail-tab-members", "detail-tab-resources", "detail-tab-highlights"], "macos": ["detail-tab-upcoming", "detail-tab-members", "detail-tab-resources", "detail-tab-highlights"] },
+        "control_ids": {
+          "ios": [
+            "detail-tab-upcoming",
+            "detail-tab-members",
+            "detail-tab-resources",
+            "detail-tab-highlights"
+          ],
+          "macos": [
+            "detail-tab-upcoming",
+            "detail-tab-members",
+            "detail-tab-resources",
+            "detail-tab-highlights"
+          ]
+        },
         "ios": "pending",
         "macos": "pending"
       },
       "controls": {
         "ios": [
-          { "id": "detail-tab-upcoming", "label": "Upcoming tab", "expected": "Shows upcoming events" },
-          { "id": "detail-tab-members", "label": "Members tab", "expected": "Shows members preview" },
-          { "id": "detail-tab-resources", "label": "Resources tab", "expected": "Shows resources" },
-          { "id": "detail-tab-highlights", "label": "Highlights tab", "expected": "Shows highlights" }
+          {
+            "id": "detail-tab-upcoming",
+            "label": "Upcoming tab",
+            "expected": "Shows upcoming events"
+          },
+          {
+            "id": "detail-tab-members",
+            "label": "Members tab",
+            "expected": "Shows members preview"
+          },
+          {
+            "id": "detail-tab-resources",
+            "label": "Resources tab",
+            "expected": "Shows resources"
+          },
+          {
+            "id": "detail-tab-highlights",
+            "label": "Highlights tab",
+            "expected": "Shows highlights"
+          }
         ],
         "macos": [
-          { "id": "detail-tab-upcoming", "label": "Upcoming tab", "expected": "Shows upcoming events" },
-          { "id": "detail-tab-members", "label": "Members tab", "expected": "Shows members preview" },
-          { "id": "detail-tab-resources", "label": "Resources tab", "expected": "Shows resources" },
-          { "id": "detail-tab-highlights", "label": "Highlights tab", "expected": "Shows highlights" }
+          {
+            "id": "detail-tab-upcoming",
+            "label": "Upcoming tab",
+            "expected": "Shows upcoming events"
+          },
+          {
+            "id": "detail-tab-members",
+            "label": "Members tab",
+            "expected": "Shows members preview"
+          },
+          {
+            "id": "detail-tab-resources",
+            "label": "Resources tab",
+            "expected": "Shows resources"
+          },
+          {
+            "id": "detail-tab-highlights",
+            "label": "Highlights tab",
+            "expected": "Shows highlights"
+          }
         ]
       }
     },
@@ -321,11 +749,22 @@
       "flow": {
         "id": "community-options-ios",
         "name": "Community options sheet actions (iOS)",
-        "control_ids": { "ios": ["options-view-guidelines"], "macos": [] },
+        "control_ids": {
+          "ios": [
+            "options-view-guidelines"
+          ],
+          "macos": []
+        },
         "ios": "pending"
       },
       "controls": {
-        "ios": [{ "id": "options-view-guidelines", "label": "View guidelines (options)", "expected": "Opens guidelines resource sheet" }]
+        "ios": [
+          {
+            "id": "options-view-guidelines",
+            "label": "View guidelines (options)",
+            "expected": "Opens guidelines resource sheet"
+          }
+        ]
       }
     },
     {
@@ -333,13 +772,27 @@
       "flow": {
         "id": "share-report-community",
         "name": "Share or report community (options)",
-        "control_ids": { "ios": [], "macos": ["share-community", "report-concern"] },
+        "control_ids": {
+          "ios": [],
+          "macos": [
+            "share-community",
+            "report-concern"
+          ]
+        },
         "macos": "pending"
       },
       "controls": {
         "macos": [
-          { "id": "share-community", "label": "Share community", "expected": "Share/copy action" },
-          { "id": "report-concern", "label": "Report concern", "expected": "Reports concern via status/API" }
+          {
+            "id": "share-community",
+            "label": "Share community",
+            "expected": "Share/copy action"
+          },
+          {
+            "id": "report-concern",
+            "label": "Report concern",
+            "expected": "Reports concern via status/API"
+          }
         ]
       }
     },
@@ -348,11 +801,22 @@
       "flow": {
         "id": "community-join-browse-card",
         "name": "Join or leave from browse card overlay",
-        "control_ids": { "ios": [], "macos": ["browse-join-leave"] },
+        "control_ids": {
+          "ios": [],
+          "macos": [
+            "browse-join-leave"
+          ]
+        },
         "macos": "pending"
       },
       "controls": {
-        "macos": [{ "id": "browse-join-leave", "label": "Join/Joined overlay", "expected": "Toggles membership from browse card" }]
+        "macos": [
+          {
+            "id": "browse-join-leave",
+            "label": "Join/Joined overlay",
+            "expected": "Toggles membership from browse card"
+          }
+        ]
       }
     },
     {
@@ -360,16 +824,45 @@
       "flow": {
         "id": "circle-detail-tabs",
         "name": "Switch circle detail tabs",
-        "control_ids": { "ios": [], "macos": ["circle-tab-about", "circle-tab-members", "circle-tab-events", "circle-tab-discussions", "circle-tab-resources"] },
+        "control_ids": {
+          "ios": [],
+          "macos": [
+            "circle-tab-about",
+            "circle-tab-members",
+            "circle-tab-events",
+            "circle-tab-discussions",
+            "circle-tab-resources"
+          ]
+        },
         "macos": "pending"
       },
       "controls": {
         "macos": [
-          { "id": "circle-tab-about", "label": "About tab", "expected": "Shows about panel" },
-          { "id": "circle-tab-members", "label": "Members tab", "expected": "Shows members" },
-          { "id": "circle-tab-events", "label": "Events tab", "expected": "Shows events" },
-          { "id": "circle-tab-discussions", "label": "Discussions tab", "expected": "Shows discussions" },
-          { "id": "circle-tab-resources", "label": "Resources tab", "expected": "Shows resources" }
+          {
+            "id": "circle-tab-about",
+            "label": "About tab",
+            "expected": "Shows about panel"
+          },
+          {
+            "id": "circle-tab-members",
+            "label": "Members tab",
+            "expected": "Shows members"
+          },
+          {
+            "id": "circle-tab-events",
+            "label": "Events tab",
+            "expected": "Shows events"
+          },
+          {
+            "id": "circle-tab-discussions",
+            "label": "Discussions tab",
+            "expected": "Shows discussions"
+          },
+          {
+            "id": "circle-tab-resources",
+            "label": "Resources tab",
+            "expected": "Shows resources"
+          }
         ]
       }
     },
@@ -378,28 +871,50 @@
       "flow": {
         "id": "circle-options-ios",
         "name": "Circle options sheet (iOS)",
-        "control_ids": { "ios": ["options-report-concern", "options-done"], "macos": [] },
+        "control_ids": {
+          "ios": [
+            "options-report-concern",
+            "options-done"
+          ],
+          "macos": []
+        },
         "ios": "pending"
       },
       "controls": {
         "ios": [
-          { "id": "options-report-concern", "label": "Report placement concern", "expected": "Reports concern from options sheet" },
-          { "id": "options-done", "label": "Done (options sheet)", "expected": "Dismisses circle options" }
+          {
+            "id": "options-report-concern",
+            "label": "Report placement concern",
+            "expected": "Reports concern from options sheet"
+          },
+          {
+            "id": "options-done",
+            "label": "Done (options sheet)",
+            "expected": "Dismisses circle options"
+          }
         ]
       }
     },
     {
       "screen": "circle-detail",
       "flow": {
-        "id": "circle-share-leave",
-        "name": "Share or leave circle (macOS)",
-        "control_ids": { "ios": [], "macos": ["share-circle", "leave-circle-macos"] },
+        "id": "circle-share",
+        "name": "Share circle invitation (macOS)",
+        "control_ids": {
+          "ios": [],
+          "macos": [
+            "share-circle"
+          ]
+        },
         "macos": "pending"
       },
       "controls": {
         "macos": [
-          { "id": "share-circle", "label": "Share circle", "expected": "Share circle action" },
-          { "id": "leave-circle-macos", "label": "Leave circle", "expected": "Leaves circle" }
+          {
+            "id": "share-circle",
+            "label": "Share circle",
+            "expected": "Copies circle invitation"
+          }
         ]
       }
     },
@@ -408,26 +923,24 @@
       "flow": {
         "id": "hero-circle-macos",
         "name": "Open featured circle hero card",
-        "destinations": ["circle-detail"],
-        "control_ids": { "ios": [], "macos": ["hero-circle-macos"] },
-        "macos": "pending"
-      },
-      "controls": {
-        "macos": [{ "id": "hero-circle-macos", "label": "Featured circle hero", "expected": "Navigate to circleDetail" }]
-      }
-    },
-    {
-      "screen": "circles",
-      "flow": {
-        "id": "browse-expand",
-        "name": "Browse all circles / show less",
-        "control_ids": { "ios": [], "macos": ["browse-all", "show-less"] },
+        "destinations": [
+          "circle-detail"
+        ],
+        "control_ids": {
+          "ios": [],
+          "macos": [
+            "hero-circle-macos"
+          ]
+        },
         "macos": "pending"
       },
       "controls": {
         "macos": [
-          { "id": "browse-all", "label": "Browse all circles", "expected": "Expands circle list" },
-          { "id": "show-less", "label": "Show less", "expected": "Collapses circle list" }
+          {
+            "id": "hero-circle-macos",
+            "label": "Featured circle hero",
+            "expected": "Navigate to circleDetail"
+          }
         ]
       }
     },
@@ -436,14 +949,33 @@
       "flow": {
         "id": "messages-filter-pills",
         "name": "Filter messages list (All/Unread/Groups)",
-        "control_ids": { "ios": [], "macos": ["filter-all", "filter-unread", "filter-groups"] },
+        "control_ids": {
+          "ios": [],
+          "macos": [
+            "filter-all",
+            "filter-unread",
+            "filter-groups"
+          ]
+        },
         "macos": "pending"
       },
       "controls": {
         "macos": [
-          { "id": "filter-all", "label": "All filter", "expected": "Shows all conversations" },
-          { "id": "filter-unread", "label": "Unread filter", "expected": "Shows unread only" },
-          { "id": "filter-groups", "label": "Groups filter", "expected": "Shows group threads" }
+          {
+            "id": "filter-all",
+            "label": "All filter",
+            "expected": "Shows all conversations"
+          },
+          {
+            "id": "filter-unread",
+            "label": "Unread filter",
+            "expected": "Shows unread only"
+          },
+          {
+            "id": "filter-groups",
+            "label": "Groups filter",
+            "expected": "Shows group threads"
+          }
         ]
       }
     },
@@ -452,42 +984,25 @@
       "flow": {
         "id": "messages-compose-discover",
         "name": "Find matches from messages compose",
-        "destinations": ["soulmate-discover"],
-        "control_ids": { "ios": [], "macos": ["find-matches"] },
+        "destinations": [
+          "soulmate-discover"
+        ],
+        "control_ids": {
+          "ios": [],
+          "macos": [
+            "find-matches"
+          ]
+        },
         "macos": "pending"
       },
       "controls": {
-        "macos": [{ "id": "find-matches", "label": "Find matches", "expected": "Navigate to soulmateDiscover" }]
-      }
-    },
-    {
-      "screen": "soulmate-discover",
-      "flow": {
-        "id": "discover-filter-toggles",
-        "name": "Discover sidebar filter toggles",
-        "control_ids": { "ios": [], "macos": ["discover-unmet", "discover-active-week", "discover-add-interest"] },
-        "macos": "pending",
-        "macos_blocker": "Toggles visible but non-functional (.constant) — fix UI or document stub"
-      },
-      "controls": {
         "macos": [
-          { "id": "discover-unmet", "label": "People I haven't met yet", "expected": "Filters discover roster" },
-          { "id": "discover-active-week", "label": "Active this week", "expected": "Filters by activity" },
-          { "id": "discover-add-interest", "label": "Add interest (+)", "expected": "Adds interest filter" }
+          {
+            "id": "find-matches",
+            "label": "Find matches",
+            "expected": "Navigate to soulmateDiscover"
+          }
         ]
-      }
-    },
-    {
-      "screen": "soulmate-match",
-      "flow": {
-        "id": "soulmate-pass",
-        "name": "Pass on match (macOS)",
-        "control_ids": { "ios": [], "macos": ["pass-match"] },
-        "macos": "pending",
-        "macos_blocker": "Button visible but no-op — wire action or remove"
-      },
-      "controls": {
-        "macos": [{ "id": "pass-match", "label": "Pass", "expected": "Dismisses or passes on match" }]
       }
     },
     {
@@ -495,11 +1010,22 @@
       "flow": {
         "id": "soulmate-tab-enable",
         "name": "Enable Soulmate from tab when disabled",
-        "control_ids": { "ios": ["tab-enable-toggle"], "macos": [] },
+        "control_ids": {
+          "ios": [
+            "tab-enable-toggle"
+          ],
+          "macos": []
+        },
         "ios": "pending"
       },
       "controls": {
-        "ios": [{ "id": "tab-enable-toggle", "label": "Enable Soulmate (tab)", "expected": "Enables soulmate from Soulmate tab shell" }]
+        "ios": [
+          {
+            "id": "tab-enable-toggle",
+            "label": "Enable Soulmate (tab)",
+            "expected": "Enables soulmate from Soulmate tab shell"
+          }
+        ]
       }
     },
     {
@@ -507,11 +1033,22 @@
       "flow": {
         "id": "refresh-matches",
         "name": "Refresh new matches",
-        "control_ids": { "ios": ["refresh-matches"], "macos": [] },
+        "control_ids": {
+          "ios": [
+            "refresh-matches"
+          ],
+          "macos": []
+        },
         "ios": "pending"
       },
       "controls": {
-        "ios": [{ "id": "refresh-matches", "label": "New matches", "expected": "Calls fetchSoulmateStatus()" }]
+        "ios": [
+          {
+            "id": "refresh-matches",
+            "label": "New matches",
+            "expected": "Calls fetchSoulmateStatus()"
+          }
+        ]
       }
     },
     {
@@ -519,15 +1056,31 @@
       "flow": {
         "id": "post-meet-selection-ui-macos",
         "name": "Post-meet Soulmate selection UI (macOS)",
-        "backend": ["POST /v1/me/soulmate/select"],
-        "control_ids": { "ios": [], "macos": ["match-toggle", "submit"] },
+        "backend": [
+          "POST /v1/me/soulmate/select"
+        ],
+        "control_ids": {
+          "ios": [],
+          "macos": [
+            "match-toggle",
+            "submit"
+          ]
+        },
         "macos": "pending",
         "macos_blocker": "Product gap — API client exists; MacAppState loads pendingSelections; no selection UI wired"
       },
       "controls": {
         "macos": [
-          { "id": "match-toggle", "label": "Select match row", "expected": "Toggles selection" },
-          { "id": "submit", "label": "Submit selection", "expected": "POST soulmate select" }
+          {
+            "id": "match-toggle",
+            "label": "Select match row",
+            "expected": "Toggles selection"
+          },
+          {
+            "id": "submit",
+            "label": "Submit selection",
+            "expected": "POST soulmate select"
+          }
         ]
       }
     },
@@ -536,13 +1089,26 @@
       "flow": {
         "id": "open-notifications-macos",
         "name": "Open notifications from Meet (macOS parity)",
-        "destinations": ["notifications"],
-        "control_ids": { "ios": [], "macos": ["meet-bell"] },
+        "destinations": [
+          "notifications"
+        ],
+        "control_ids": {
+          "ios": [],
+          "macos": [
+            "meet-bell"
+          ]
+        },
         "macos": "pending",
         "macos_blocker": "Parity gap — no Meet-tab bell; notifications screen deep-link only"
       },
       "controls": {
-        "macos": [{ "id": "meet-bell", "label": "Notifications bell", "expected": "Opens notifications screen" }]
+        "macos": [
+          {
+            "id": "meet-bell",
+            "label": "Notifications bell",
+            "expected": "Opens notifications screen"
+          }
+        ]
       }
     },
     {
@@ -550,18 +1116,43 @@
       "flow": {
         "id": "onboarding-voice-nav",
         "name": "Voice step back and next prompt",
-        "control_ids": { "ios": ["voice-back", "voice-next-prompt"], "macos": ["voice-back", "voice-next-prompt"] },
+        "control_ids": {
+          "ios": [
+            "voice-back",
+            "voice-next-prompt"
+          ],
+          "macos": [
+            "voice-back",
+            "voice-next-prompt"
+          ]
+        },
         "ios": "pending",
         "macos": "pending"
       },
       "controls": {
         "ios": [
-          { "id": "voice-back", "label": "Back (voice step)", "expected": "Previous reflection prompt" },
-          { "id": "voice-next-prompt", "label": "Next prompt", "expected": "Advances reflection prompt" }
+          {
+            "id": "voice-back",
+            "label": "Back (voice step)",
+            "expected": "Previous reflection prompt"
+          },
+          {
+            "id": "voice-next-prompt",
+            "label": "Next prompt",
+            "expected": "Advances reflection prompt"
+          }
         ],
         "macos": [
-          { "id": "voice-back", "label": "Back (voice step)", "expected": "Previous reflection prompt" },
-          { "id": "voice-next-prompt", "label": "Next prompt", "expected": "Advances reflection prompt" }
+          {
+            "id": "voice-back",
+            "label": "Back (voice step)",
+            "expected": "Previous reflection prompt"
+          },
+          {
+            "id": "voice-next-prompt",
+            "label": "Next prompt",
+            "expected": "Advances reflection prompt"
+          }
         ]
       }
     },
@@ -570,11 +1161,22 @@
       "flow": {
         "id": "onboarding-add-interest",
         "name": "Add custom interest chip",
-        "control_ids": { "ios": [], "macos": ["add-interest-chip"] },
+        "control_ids": {
+          "ios": [],
+          "macos": [
+            "add-interest-chip"
+          ]
+        },
         "macos": "pending"
       },
       "controls": {
-        "macos": [{ "id": "add-interest-chip", "label": "Add interest (+)", "expected": "Adds custom interest" }]
+        "macos": [
+          {
+            "id": "add-interest-chip",
+            "label": "Add interest (+)",
+            "expected": "Adds custom interest"
+          }
+        ]
       }
     },
     {
@@ -582,11 +1184,22 @@
       "flow": {
         "id": "create-community-cancel",
         "name": "Cancel create community",
-        "control_ids": { "ios": ["create-cancel"], "macos": [] },
+        "control_ids": {
+          "ios": [
+            "create-cancel"
+          ],
+          "macos": []
+        },
         "ios": "pending"
       },
       "controls": {
-        "ios": [{ "id": "create-cancel", "label": "Cancel", "expected": "Dismisses create community sheet" }]
+        "ios": [
+          {
+            "id": "create-cancel",
+            "label": "Cancel",
+            "expected": "Dismisses create community sheet"
+          }
+        ]
       }
     },
     {
@@ -594,11 +1207,22 @@
       "flow": {
         "id": "create-event-cancel",
         "name": "Cancel create event",
-        "control_ids": { "ios": ["create-event-cancel"], "macos": [] },
+        "control_ids": {
+          "ios": [
+            "create-event-cancel"
+          ],
+          "macos": []
+        },
         "ios": "pending"
       },
       "controls": {
-        "ios": [{ "id": "create-event-cancel", "label": "Cancel / back", "expected": "Pops create event" }]
+        "ios": [
+          {
+            "id": "create-event-cancel",
+            "label": "Cancel / back",
+            "expected": "Pops create event"
+          }
+        ]
       }
     },
     {
@@ -606,11 +1230,22 @@
       "flow": {
         "id": "past-meet-back",
         "name": "Back to meet from recap",
-        "control_ids": { "ios": ["recap-back"], "macos": [] },
+        "control_ids": {
+          "ios": [
+            "recap-back"
+          ],
+          "macos": []
+        },
         "ios": "pending"
       },
       "controls": {
-        "ios": [{ "id": "recap-back", "label": "Back to meet", "expected": "Returns to Meet tab stack" }]
+        "ios": [
+          {
+            "id": "recap-back",
+            "label": "Back to meet",
+            "expected": "Returns to Meet tab stack"
+          }
+        ]
       }
     },
     {
@@ -618,11 +1253,22 @@
       "flow": {
         "id": "community-members-back",
         "name": "Back to community from members",
-        "control_ids": { "ios": ["members-back"], "macos": [] },
+        "control_ids": {
+          "ios": [
+            "members-back"
+          ],
+          "macos": []
+        },
         "ios": "pending"
       },
       "controls": {
-        "ios": [{ "id": "members-back", "label": "Back to community", "expected": "Pops members list" }]
+        "ios": [
+          {
+            "id": "members-back",
+            "label": "Back to community",
+            "expected": "Pops members list"
+          }
+        ]
       }
     },
     {
@@ -630,12 +1276,25 @@
       "flow": {
         "id": "notif-open-settings",
         "name": "Open settings from notifications gear",
-        "destinations": ["settings"],
-        "control_ids": { "ios": [], "macos": ["notif-settings-gear"] },
+        "destinations": [
+          "settings"
+        ],
+        "control_ids": {
+          "ios": [],
+          "macos": [
+            "notif-settings-gear"
+          ]
+        },
         "macos": "pending"
       },
       "controls": {
-        "macos": [{ "id": "notif-settings-gear", "label": "Settings gear", "expected": "Navigate to settingsSoulmate" }]
+        "macos": [
+          {
+            "id": "notif-settings-gear",
+            "label": "Settings gear",
+            "expected": "Navigate to settingsSoulmate"
+          }
+        ]
       }
     },
     {
@@ -643,11 +1302,22 @@
       "flow": {
         "id": "desktop-notifications-prompt",
         "name": "Desktop notifications enable CTA",
-        "control_ids": { "ios": [], "macos": ["desktop-notif-cta"] },
+        "control_ids": {
+          "ios": [],
+          "macos": [
+            "desktop-notif-cta"
+          ]
+        },
         "macos": "pending"
       },
       "controls": {
-        "macos": [{ "id": "desktop-notif-cta", "label": "Enable desktop notifications", "expected": "Prompts or enables OS notifications" }]
+        "macos": [
+          {
+            "id": "desktop-notif-cta",
+            "label": "Enable desktop notifications",
+            "expected": "Prompts or enables OS notifications"
+          }
+        ]
       }
     },
     {
@@ -655,25 +1325,44 @@
       "flow": {
         "id": "interests-expand",
         "name": "View all interests",
-        "control_ids": { "ios": [], "macos": ["view-all-interests"] },
+        "control_ids": {
+          "ios": [],
+          "macos": [
+            "view-all-interests"
+          ]
+        },
         "macos": "pending"
       },
       "controls": {
-        "macos": [{ "id": "view-all-interests", "label": "View all", "expected": "Expands interest tags" }]
+        "macos": [
+          {
+            "id": "view-all-interests",
+            "label": "View all",
+            "expected": "Expands interest tags"
+          }
+        ]
       }
     },
     {
       "screen": "community-members",
       "flow": {
-        "id": "member-row-options",
-        "name": "Member row options menu",
-        "control_ids": { "ios": [], "macos": ["member-options", "member-filter-reset"] },
+        "id": "member-filter-reset",
+        "name": "Reset member filters",
+        "control_ids": {
+          "ios": [],
+          "macos": [
+            "member-filter-reset"
+          ]
+        },
         "macos": "pending"
       },
       "controls": {
         "macos": [
-          { "id": "member-options", "label": "Member row ⋯", "expected": "Opens member options" },
-          { "id": "member-filter-reset", "label": "Filter reset", "expected": "Clears member search/filter" }
+          {
+            "id": "member-filter-reset",
+            "label": "Filter reset",
+            "expected": "Clears member search/filter"
+          }
         ]
       }
     },
@@ -682,7 +1371,223 @@
       "flow": {
         "id": "settings-gear-label-fix",
         "name": "Open settings from profile (gear)",
-        "patch_control": { "ios": "pencil-settings", "label": "Settings gear", "expected": "Pushes SettingsPrototypeView — ledger id pencil-settings is legacy misname" }
+        "patch_control": {
+          "ios": "pencil-settings",
+          "label": "Settings gear",
+          "expected": "Pushes SettingsPrototypeView — ledger id pencil-settings is legacy misname"
+        }
+      }
+    },
+    {
+      "screen": "profile-populated",
+      "flow": {
+        "id": "review-signals",
+        "name": "Review profile signals",
+        "destinations": [
+          "profile-signals"
+        ],
+        "control_ids": {
+          "ios": [],
+          "macos": [
+            "review-signals"
+          ]
+        },
+        "macos": "pending"
+      },
+      "controls": {
+        "macos": [
+          {
+            "id": "review-signals",
+            "label": "Review signals",
+            "expected": "Navigate to profileSignals and expose Done"
+          }
+        ]
+      }
+    },
+    {
+      "screen": "profile-populated",
+      "flow": {
+        "id": "re-interview",
+        "name": "Re-interview to correct profile placement",
+        "destinations": [
+          "profile-onboarding"
+        ],
+        "control_ids": {
+          "ios": [],
+          "macos": [
+            "re-interview"
+          ]
+        },
+        "macos": "pending"
+      },
+      "controls": {
+        "macos": [
+          {
+            "id": "re-interview",
+            "label": "Re-interview to correct this",
+            "expected": "Navigate to the AI profile interview"
+          }
+        ]
+      }
+    },
+    {
+      "screen": "profile-signals",
+      "flow": {
+        "id": "done",
+        "name": "Finish reviewing profile signals",
+        "destinations": [
+          "profile-populated"
+        ],
+        "control_ids": {
+          "ios": [],
+          "macos": [
+            "done"
+          ]
+        },
+        "macos": "pending"
+      },
+      "controls": {
+        "macos": [
+          {
+            "id": "done",
+            "label": "Done",
+            "expected": "Return to Profile and expose Voice-informed signals"
+          }
+        ]
+      }
+    },
+    {
+      "screen": "soulmate-discover",
+      "flow": {
+        "id": "soulmate-real-roster",
+        "name": "Open a real mutual match",
+        "destinations": [
+          "soulmate-match"
+        ],
+        "control_ids": {
+          "ios": [],
+          "macos": [
+            "mutual-match-roster",
+            "match-card"
+          ]
+        },
+        "macos": "pending"
+      },
+      "controls": {
+        "macos": [
+          {
+            "id": "mutual-match-roster",
+            "label": "Your mutual matches",
+            "expected": "Open the exact backend match in Mutual match detail"
+          },
+          {
+            "id": "match-card",
+            "label": "Mutual match card",
+            "expected": "Open the exact backend match in Mutual match detail"
+          }
+        ]
+      }
+    },
+    {
+      "screen": "soulmate-discover",
+      "flow": {
+        "id": "refresh-matches",
+        "name": "Refresh mutual matches",
+        "destinations": [],
+        "control_ids": {
+          "ios": [],
+          "macos": [
+            "refresh-matches"
+          ]
+        },
+        "macos": "pending"
+      },
+      "controls": {
+        "macos": [
+          {
+            "id": "refresh-matches",
+            "label": "Refresh matches",
+            "expected": "Reload real status and matches without fixture filters"
+          }
+        ]
+      }
+    },
+    {
+      "screen": "soulmate-discover",
+      "flow": {
+        "id": "manage-soulmate-settings",
+        "name": "Manage Soulmate settings",
+        "destinations": [
+          "settings"
+        ],
+        "control_ids": {
+          "ios": [],
+          "macos": [
+            "manage-soulmate-settings"
+          ]
+        },
+        "macos": "pending"
+      },
+      "controls": {
+        "macos": [
+          {
+            "id": "manage-soulmate-settings",
+            "label": "Manage Soulmate settings",
+            "expected": "Open the Soulmate settings panel"
+          }
+        ]
+      }
+    },
+    {
+      "screen": "soulmate-match",
+      "flow": {
+        "id": "match-back-to-soulmate",
+        "name": "Back to Soulmate",
+        "destinations": [
+          "soulmate-discover"
+        ],
+        "control_ids": {
+          "ios": [],
+          "macos": [
+            "back-to-soulmate"
+          ]
+        },
+        "macos": "pending"
+      },
+      "controls": {
+        "macos": [
+          {
+            "id": "back-to-soulmate",
+            "label": "Back to Soulmate",
+            "expected": "Return to Your mutual matches"
+          }
+        ]
+      }
+    },
+    {
+      "screen": "soulmate-match",
+      "flow": {
+        "id": "message",
+        "name": "Message exact mutual match",
+        "destinations": [
+          "conversations"
+        ],
+        "control_ids": {
+          "ios": [],
+          "macos": [
+            "message"
+          ]
+        },
+        "macos": "pending"
+      },
+      "controls": {
+        "macos": [
+          {
+            "id": "message",
+            "label": "Message",
+            "expected": "Open the exact selected match thread"
+          }
+        ]
       }
     }
   ]

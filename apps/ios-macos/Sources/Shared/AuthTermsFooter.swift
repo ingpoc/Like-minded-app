@@ -8,12 +8,13 @@ struct AuthTermsFooter: View {
     @State private var showPrivacySheet = false
 
     var body: some View {
-        VStack(spacing: 4) {
-            HStack(spacing: 4) {
-                Image(systemName: "lock")
-                    .font(.system(size: 11, weight: .semibold))
-                Text("By continuing, you agree to our")
-            }
+        // Single wrapping line so macOS welcome never clips “By continuing…” at the
+        // window edge (legal must stay fully readable under Private by design).
+        HStack(alignment: .firstTextBaseline, spacing: 4) {
+            Image(systemName: "lock")
+                .font(.system(size: 11, weight: .semibold))
+            Text("By continuing, you agree to our")
+                .fixedSize(horizontal: false, vertical: true)
             Button("Terms & Privacy Policy") {
                 showPrivacySheet = true
                 onPrivacyTap?()
@@ -23,11 +24,12 @@ struct AuthTermsFooter: View {
             .accessibilityLabel("Terms & Privacy Policy")
             .accessibilityAddTraits(.isButton)
             .accessibilityIdentifier("auth-privacy-link")
+            .fixedSize(horizontal: true, vertical: true)
         }
         .font(.system(size: 12, weight: .medium))
         .foregroundStyle(muted)
-        .multilineTextAlignment(.center)
-        .frame(maxWidth: .infinity, alignment: .center)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.bottom, 8)
         .tint(accent)
         .sheet(isPresented: $showPrivacySheet) {
             NavigationStack {

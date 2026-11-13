@@ -105,10 +105,11 @@ function placementFromModel(profile, modelResult) {
     sourceReflectionSignals: stringArray(modelResult.sourceReflectionSignals).slice(0, 6),
     primaryCircle,
     secondaryCircles,
+    selectedSecondaryCircleId: null,
     userState: "proposed",
     actions: {
       primaryAction: "Accept this circle",
-      swapAction: "Try another circle",
+      secondaryAction: "Make this my second circle",
       deferAction: "Defer for now"
     },
     isNewCircle: false
@@ -192,7 +193,73 @@ async function modelBackedProfilePlacement({ interviewTranscript = "", reflectio
   };
 }
 
+function fallbackInterviewTurn(messages = []) {
+  const answerCount = messages.filter((message) => message?.role === "user").length;
+  const prompts = [
+    "What has felt most energizing in your social life lately?",
+    "When you meet someone new, what helps you feel comfortable enough to open up?",
+    "What kinds of conversations or shared activities make you lose track of time?"
+  ];
+  return {
+    assistantMessage: prompts[Math.min(answerCount, prompts.length - 1)],
+    readyToComplete: answerCount >= prompts.length,
+    synthesisMode: "deterministic_fallback"
+  };
+}
+
+async function modelBackedInterviewTurn({ messages = [] }) {
+  const safeMessages = Array.isArray(messages)
+    ? messages.slice(-12).filter((message) =>
+      message && ["assistant", "user"].includes(message.role) && typeof message.content === "string"
+    ).map((message) => ({ role: message.role, content: message.content.trim().slice(0, 1200) }))
+    : [];
+  if (!process.env.OPENAI_API_KEY) return fallbackInterviewTurn(safeMessages);
+
+  const response = await fetch("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      "content-type": "application/json"
+    },
+    body: JSON.stringify({
+      model: DEFAULT_MODEL,
+      input: [
+        {
+          role: "system",
+          content: "You are the private Likeminded social-profile interviewer. Ask exactly one short, warm follow-up at a time. Use the whole conversation, not keywords. Learn social energy, trust pace, communication style, conflict style, interests, and what kind of room helps this person connect. Do not expose psychological labels. Set readyToComplete after at least three meaningful user answers cover enough evidence for placement, and always after five meaningful answers. Return only valid JSON."
+        },
+        {
+          role: "user",
+          content: JSON.stringify({
+            conversation: safeMessages,
+            outputContract: {
+              assistantMessage: "one concise empathetic question or, when complete, a short completion acknowledgement",
+              readyToComplete: "boolean"
+            }
+          })
+        }
+      ],
+      text: { format: { type: "json_object" } }
+    })
+  });
+  const body = await response.json();
+  if (!response.ok) throw new Error(body.error?.message || "openai_profile_interview_failed");
+  const result = parseModelJson(body);
+  const userAnswerCount = safeMessages.filter((message) => message.role === "user").length;
+  const mustComplete = userAnswerCount >= 5;
+  return {
+    assistantMessage: mustComplete
+      ? "Thank you — I have enough to build your private profile and place you thoughtfully."
+      : typeof result.assistantMessage === "string" && result.assistantMessage.trim()
+      ? result.assistantMessage.trim()
+      : "Tell me a little more about what helps you feel at ease with new people.",
+    readyToComplete: mustComplete || (userAnswerCount >= 3 && Boolean(result.readyToComplete)),
+    synthesisMode: "model_backed"
+  };
+}
+
 module.exports = {
+  modelBackedInterviewTurn,
   modelBackedProfilePlacement,
   fallbackProfilePlacement,
   profilePlacementFromModelResult

@@ -10,10 +10,14 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { execFileSync } = require("node:child_process");
 const { root, parseSourcePath, parseSourceHint } = require("./ledger_hash");
+const { ownershipReport } = require("./ledger_progress");
 const { listScreenFiles, loadScreenFile } = require("./ledger_screens");
 
 const BUCKET_PATH = path.join(root, "session", "work-bucket.json");
 const SCHEMA_VERSION = 1;
+const SCREENSHOT_STOP_CONDITION = "Screenshot-compare vs mockup_ref before claiming pass.";
+const STALE_PASS_STOP_CONDITION =
+  `${SCREENSHOT_STOP_CONDITION} Do not start Phase 9 while macOS/iOS stale_pass tracks are open.`;
 
 const MOCKUP_SCREEN_HINTS = [
   { re: /auth[-/]|welcome|login/i, screen: "auth" },
@@ -188,10 +192,17 @@ function continueCommand(surface, preferredPlatform) {
     (surface.platforms.includes("macos") && !surface.platforms.includes("ios") ? "macos" : null) ||
     (surface.platforms.includes("ios") && !surface.platforms.includes("macos") ? "ios" : null) ||
     platformFromPaths(Object.values(surface.mockups || {}).filter(Boolean));
-  return `npm run ledger:screen -- --platform ${platform} --screen ${surface.screen_id} --section all`;
+  return `npm run ledger:screen -- --platform ${platform} --screen ${surface.screen_id} --section route`;
 }
 
-function inferBucket(paths, summary = null, forcedScreen = null) {
+function stopConditionForLedger(report) {
+  const hasStalePass = (report?.platforms || []).some(
+    (platform) => Number(platform.stale_pass || 0) > 0
+  );
+  return hasStalePass ? STALE_PASS_STOP_CONDITION : SCREENSHOT_STOP_CONDITION;
+}
+
+function inferBucket(paths, summary = null, forcedScreen = null, forcedPlatform = null) {
   const index = buildLedgerIndex();
   const { scores, dirtyFiles, mockups } = classifyPaths(paths, index);
 
@@ -224,7 +235,7 @@ function inferBucket(paths, summary = null, forcedScreen = null) {
     );
     if (forced) primary = forced;
   }
-  const preferredPlatform = platformFromPaths(dirtyFiles);
+  const preferredPlatform = forcedPlatform || platformFromPaths(dirtyFiles);
   const autoSummary =
     summary ||
     (primary
@@ -242,16 +253,17 @@ function inferBucket(paths, summary = null, forcedScreen = null) {
     secondary_surfaces: surfaces.slice(1, 4),
     dirty_files: dirtyFiles.slice(0, 24),
     dirty_path_count: dirtyFiles.length,
-    continue_command: primary ? continueCommand(primary, preferredPlatform) : "npm run ledger:open",
-    stop_condition:
-      "Screenshot-compare vs mockup_ref before claiming pass. Do not start Phase 9 while macOS/iOS stale_pass tracks are open."
+    work_platform: preferredPlatform,
+    continue_command: primary ? continueCommand(primary, preferredPlatform) : "npm run ledger:open"
   };
 }
 
 function readBucket() {
   if (!fs.existsSync(BUCKET_PATH)) return null;
   try {
-    return JSON.parse(fs.readFileSync(BUCKET_PATH, "utf8"));
+    const bucket = JSON.parse(fs.readFileSync(BUCKET_PATH, "utf8"));
+    delete bucket.stop_condition;
+    return bucket;
   } catch {
     return null;
   }
@@ -297,29 +309,16 @@ function findConceptMockup(screenId, platform) {
   const dir = path.join(root, "mockups", platform, "concepts");
   if (!fs.existsSync(dir)) return null;
   const needle = screenId.toLowerCase();
+  const placementSurface = /circle|communit/.test(needle);
   const hit = fs
     .readdirSync(dir)
     .filter((f) => /\.(png|jpg|webp)$/i.test(f))
-    .find((f) => f.toLowerCase().includes(needle) || f.toLowerCase().includes("placement"));
+    .find(
+      (f) =>
+        f.toLowerCase().includes(needle) ||
+        (placementSurface && f.toLowerCase().includes("placement"))
+    );
   return hit ? `mockups/${platform}/concepts/${hit}` : null;
-}
-
-function queryDecisions(task) {
-  try {
-    const out = execFileSync("./script/project_context.sh", ["query", "--task", task], {
-      cwd: root,
-      encoding: "utf8",
-      maxBuffer: 1024 * 1024
-    });
-    const parsed = JSON.parse(out);
-    return (parsed.decisions || []).slice(0, 3).map((d) => ({
-      key: d.decision_key,
-      title: d.title,
-      summary: d.summary
-    }));
-  } catch {
-    return [];
-  }
 }
 
 function macEntryForScreen(screenId, platform = "macos") {
@@ -347,8 +346,6 @@ function enrichBucket(bucket) {
     bucket.work_platform ||
     platformFromPaths(bucket.dirty_files || []) ||
     (bucket.continue_command?.includes("--platform ios") ? "ios" : "macos");
-  const task = `${screenId} ${bucket.summary || "visual parity migration"}`;
-  const decisions = queryDecisions(task);
 
   let recentScreenshot = null;
   let plateMockup = bucket.primary_surface.mockups?.[platform] || null;
@@ -370,12 +367,12 @@ function enrichBucket(bucket) {
   const proof_command =
     platform === "ios"
       ? `./script/cross_platform_screen_validate.sh --screen ${screenId} --platform ios`
-      : `./script/macos_cua_preflight.sh && ./script/macos_audit_prepare.sh ${macEntry} && ./script/macos_cua_screen.sh ${macEntry}`;
+      : `npm run testing:ledger-run -- --platform macos --screen ${screenId} --card-only; npm run dev:macos:validation -- ${macEntry}; prove with @Computer`;
 
   return {
     ...bucket,
     work_platform: platform,
-    decisions,
+    decisions: [],
     reference_mockup: referenceMockup,
     concept_mockup: conceptMockup,
     recent_screenshot: recentScreenshot,
@@ -399,8 +396,9 @@ function resolveBucket({ refreshFromDirty = true } = {}) {
   return enrichBucket(bucket);
 }
 
-function formatLines(bucket, { compact = false } = {}) {
+function formatLines(bucket, { compact = false, ledger = null } = {}) {
   if (!bucket) return [];
+  const stopCondition = stopConditionForLedger(ledger || ownershipReport());
   const lines = [];
   lines.push(compact ? "# Work bucket" : "# Work Bucket — continue previous session");
   if (bucket.summary) lines.push(`work_summary: ${bucket.summary}`);
@@ -424,7 +422,7 @@ function formatLines(bucket, { compact = false } = {}) {
   if (bucket.continue_command) lines.push(`continue_command: ${bucket.continue_command}`);
   if (bucket.proof_command) lines.push(`proof_command: ${bucket.proof_command}`);
   if (bucket.compare_before_pass) lines.push(`compare_before_pass: ${bucket.compare_before_pass}`);
-  if (!compact && bucket.stop_condition) lines.push(`stop_condition: ${bucket.stop_condition}`);
+  if (!compact && stopCondition) lines.push(`stop_condition: ${stopCondition}`);
   return lines;
 }
 
@@ -459,8 +457,13 @@ function stampFromArgv(argv) {
   const summary = summaryIdx >= 0 ? argv[summaryIdx + 1] : null;
   const screenIdx = argv.indexOf("--screen");
   const forcedScreen = screenIdx >= 0 ? argv[screenIdx + 1] : null;
+  const platformIdx = argv.indexOf("--platform");
+  const forcedPlatform = platformIdx >= 0 ? argv[platformIdx + 1] : null;
+  if (forcedPlatform && !["ios", "macos"].includes(forcedPlatform)) {
+    throw new Error(`--platform must be ios or macos, received: ${forcedPlatform}`);
+  }
   const dirty = gitDirtyPaths();
-  let bucket = inferBucket(dirty, summary, forcedScreen);
+  let bucket = inferBucket(dirty, summary, forcedScreen, forcedPlatform);
   bucket = enrichBucket(bucket);
   const written = writeBucket(bucket);
   return { written, bucket };
@@ -527,5 +530,7 @@ module.exports = {
   autoStamp,
   shouldPreferContinue,
   enrichBucket,
+  stopConditionForLedger,
+  findConceptMockup,
   gitDirtyPaths
 };

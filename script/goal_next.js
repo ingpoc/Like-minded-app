@@ -6,7 +6,7 @@ const { execFileSync } = require("node:child_process");
 const root = path.resolve(__dirname, "..");
 
 const MACOS_TRACK_RE =
-  /LikemindedMac|DoodleArt|doodle-art|validation\/macos|macos_cua|macos_audit|macos_validation_batch|install_doodle|mockups\/macos|verify:macos-screens|run_macos_manual/;
+  /LikemindedMac|DoodleArt|doodle-art|validation\/macos|testing_ledger|install_doodle|mockups\/macos|run_macos_manual/;
 
 function readJson(file) {
   return JSON.parse(fs.readFileSync(path.join(root, file), "utf8"));
@@ -110,12 +110,12 @@ const dirty = gitStatus();
 const dirtyPathCount = dirty ? dirty.split("\n").length : 0;
 const dirtyFirst = dirty.length > 0;
 const compact = process.argv.includes("--compact");
-const workBucket = resolveBucket();
-const workBucketLines = formatWorkBucketLines(workBucket, { compact });
 const progress = read("PROGRESS.md");
+const ledger = ownershipReport(progress);
+const workBucket = resolveBucket();
+const workBucketLines = formatWorkBucketLines(workBucket, { compact, ledger });
 const nextPhase = phaseSections(progress).find((phase) => phase.unchecked > 0);
 const activeCommand = activeFirstCommand(progress);
-const ledger = ownershipReport(progress);
 const activeTrack = pickActiveTrack(ledger, dirty);
 const trackRoute = routeCommandForTrack(activeTrack, ledger);
 const continueCommand = workBucket?.continue_command || trackRoute;

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Next open flow for testing-ledger skill (macOS CUA or iOS capture).
+ * Next open flow for testing-ledger skill (macOS bundled Computer or iOS capture).
  * Prefer testing:ledger-run for tester turns (merged card + prove).
  *
  *   npm run testing:ledger-next
@@ -32,8 +32,8 @@ if (!next) {
 const proveCmd =
   platform === "ios"
     ? `npm run testing:ledger-prove-ios -- --screen ${next.screen} --flow ${next.flow_id}`
-    : `npm run testing:ledger-prove -- --screen ${next.screen} --flow ${next.flow_id}`;
-const recordMethod = platform === "ios" ? "screenshot" : "CUA-click";
+    : `@Computer: npm run dev:macos:validation -- ${next.mac_screen || next.screen}; prove ${next.screen}/${next.flow_id} in the canonical app`;
+const recordMethod = platform === "ios" ? "screenshot" : "Computer-use";
 const out = {
   platform,
   screen: next.screen,
@@ -45,9 +45,9 @@ const out = {
   commands: {
     run: `npm run testing:ledger-run -- --platform ${platform} --screen ${next.screen} --flow ${next.flow_id}`,
     prove: proveCmd,
-    macos_cua:
+    macos_computer:
       platform === "macos"
-        ? `./script/testing_ledger_prove_flow.sh --screen ${next.screen} --flow ${next.flow_id}`
+        ? proveCmd
         : null,
     ios_capture:
       platform === "ios"

@@ -5,7 +5,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-BUNDLE_ID="${BUNDLE_ID:-com.likeminded.app}"
+BUNDLE_ID="${BUNDLE_ID:-com.gurusharan.likeminded}"
 OUT_DIR="$ROOT_DIR/output/validation"
 API_LOG="$OUT_DIR/local-auth-api.log"
 DEV_DB_DIR="$OUT_DIR/dev-empty-db"

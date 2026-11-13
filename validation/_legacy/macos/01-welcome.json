@@ -3,13 +3,15 @@
   "platform": "macos",
   "source_files": [
     "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (welcome)",
-    "apps/ios-macos/Sources/LikemindedMac/MacDesignSystem.swift (MacConvergenceField)",
+    "apps/ios-macos/Sources/LikemindedMac/MacDesignSystem.swift (MacConvergenceField → ConvergenceFieldView)",
+    "apps/ios-macos/Sources/Shared/ConvergenceFieldView.swift",
+    "apps/ios-macos/Sources/Shared/ConvergenceField.metal",
     "apps/ios-macos/Sources/Shared/SocialAuthButtonsView.swift",
     "apps/ios-macos/Sources/Shared/AuthAppleSignInButton.swift",
     "apps/ios-macos/Sources/Shared/AuthBrandMark.swift",
     "apps/ios-macos/Sources/Shared/AuthTermsFooter.swift"
   ],
-  "mockup_ref": "mockups/macos/24-auth-login-convergence-field.png",
+  "mockup_ref": "mockups/macos/auth-login-convergence.png",
   "mockup_missing": false,
   "entry_points": [
     "App launch when not signed in"
@@ -29,16 +31,16 @@
       "stub": false
     }
   ],
-  "notes": "2026-07-06: welcome uses MacConvergenceField (faint interference contour art) instead of MacOrb; mockup mockups/macos/24-auth-login-convergence-field.png.",
+  "notes": "2026-07-09: welcome uses ConvergenceFieldView; reference mockups/macos/auth-login-convergence.png.",
   "visual_parity": {
     "result": "pass",
-    "notes": "2026-07-06 capture output/validation/macos-screens/welcome.png vs mockups/macos/24-auth-login-convergence-field.png: MacConvergenceField contour art on cream, headline/copy/auth stack unchanged. Intentional: live animation vs static mockup; grid slightly more regular than mockup plate."
+    "notes": "2026-07-09 capture output/validation/macos-screens/welcome.png vs mockups/macos/auth-login-convergence.png."
   },
   "source_hash": "d53d01eb9810d977",
   "recent_screenshot_ref": "output/validation/macos-screens/welcome.png",
   "ui_validation": {
     "result": "pass",
-    "reference_mockup_ref": "mockups/macos/24-auth-login-convergence-field.png",
+    "reference_mockup_ref": "mockups/macos/auth-login-convergence.png",
     "recent_screenshot_ref": "output/validation/macos-screens/welcome.png",
     "design_ref": "DESIGN.md",
     "last_compared_at": "2026-07-06",
@@ -54,6 +56,6 @@
     "intentional_differences": [
       "live Canvas animation vs static mockup plate"
     ],
-    "notes": "2026-07-06 capture output/validation/macos-screens/welcome.png vs mockups/macos/24-auth-login-convergence-field.png: MacConvergenceField contour art on cream, headline/copy/auth stack unchanged. Intentional: live animation vs static mockup; grid slightly more regular than mockup plate."
+    "notes": "2026-07-09 capture output/validation/macos-screens/welcome.png vs mockups/macos/auth-login-convergence.png."
   }
 }

@@ -4,9 +4,13 @@ struct SocialAuthButtonsView: View {
     let isAuthenticating: Bool
     var titleColor: Color = Color(red: 0.063, green: 0.165, blue: 0.145)
     var borderColor: Color = Color.black.opacity(0.08)
+    /// When false, wallet providers stay behind disclosure (invite/MVP primary path).
+    var showWalletProvidersByDefault: Bool = false
     let onGoogleSignIn: () -> Void
     let onMetaMaskSignIn: () -> Void
     let onSolflareSignIn: () -> Void
+
+    @State private var showWalletProviders = false
 
     var body: some View {
         VStack(spacing: 12) {
@@ -19,23 +23,44 @@ struct SocialAuthButtonsView: View {
                 action: onGoogleSignIn
             )
 
-            AuthProviderButton(
-                title: "Continue with MetaMask",
-                brand: .metamask,
-                titleColor: titleColor,
-                borderColor: borderColor,
-                isAuthenticating: isAuthenticating,
-                action: onMetaMaskSignIn
-            )
+            if showWalletProvidersByDefault || showWalletProviders {
+                AuthProviderButton(
+                    title: "Continue with MetaMask",
+                    brand: .metamask,
+                    titleColor: titleColor,
+                    borderColor: borderColor,
+                    isAuthenticating: isAuthenticating,
+                    action: onMetaMaskSignIn
+                )
 
-            AuthProviderButton(
-                title: "Continue with Solflare",
-                brand: .solflare,
-                titleColor: titleColor,
-                borderColor: borderColor,
-                isAuthenticating: isAuthenticating,
-                action: onSolflareSignIn
-            )
+                AuthProviderButton(
+                    title: "Continue with Solflare",
+                    brand: .solflare,
+                    titleColor: titleColor,
+                    borderColor: borderColor,
+                    isAuthenticating: isAuthenticating,
+                    action: onSolflareSignIn
+                )
+            } else {
+                Button {
+                    showWalletProviders = true
+                } label: {
+                    Text("More sign-in options")
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundStyle(titleColor.opacity(0.72))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.top, 2)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("More sign-in options")
+                .accessibilityHint("Shows MetaMask and Solflare wallet sign-in")
+                .accessibilityIdentifier("auth-more-sign-in-options")
+            }
+        }
+        .onAppear {
+            if showWalletProvidersByDefault {
+                showWalletProviders = true
+            }
         }
     }
 }

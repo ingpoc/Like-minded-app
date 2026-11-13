@@ -22,6 +22,7 @@ settings:
     SWIFT_VERSION: 5.0
     CURRENT_PROJECT_VERSION: 1
     MARKETING_VERSION: 0.1.0
+    DEVELOPMENT_TEAM: 9UPQL479Z5
 
 targets:
   Likeminded:
@@ -40,9 +41,24 @@ targets:
         product: GoogleSignIn
     info:
       path: Info/Likeminded-Info.plist
+      properties:
+        GIDClientID: "$(GOOGLE_CLIENT_ID_IOS)"
+        LIKEMINDED_API_BASE_URL: "$(LIKEMINDED_API_BASE_URL)"
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        "UISupportedInterfaceOrientations~ipad":
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        CFBundleURLTypes:
+          - CFBundleURLSchemes:
+              - "$(GOOGLE_REVERSED_CLIENT_ID_IOS)"
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.likeminded.app
+        PRODUCT_BUNDLE_IDENTIFIER: com.gurusharan.likeminded
         PRODUCT_NAME: Likeminded
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: Likeminded
@@ -58,10 +74,9 @@ targets:
         SUPPORTS_MACCATALYST: NO
         CODE_SIGN_STYLE: Automatic
         CODE_SIGN_ENTITLEMENTS: Entitlements/Likeminded.entitlements
-        DEVELOPMENT_ASSET_PATHS: "\"\""
         LIKEMINDED_API_BASE_URL: ""
         GOOGLE_CLIENT_ID_IOS: ""
-        GOOGLE_REVERSED_CLIENT_ID: ""
+        GOOGLE_REVERSED_CLIENT_ID_IOS: ""
     scheme:
       gatherCoverageData: false
       testTargets: []
@@ -72,6 +87,7 @@ targets:
     deploymentTarget: "15.0"
     sources:
       - path: Sources/LikemindedMac
+      - path: Sources/LikemindedApp/Data/RealtimeVoiceClient.swift
       - path: Sources/Shared
       - path: Sources/DoodleArt
       - path: Assets.xcassets
@@ -82,9 +98,16 @@ targets:
         product: GoogleSignIn
     info:
       path: Info/LikemindedMac-Info.plist
+      properties:
+        GIDClientID: "$(GOOGLE_CLIENT_ID_MAC)"
+        LIKEMINDED_API_BASE_URL: "$(LIKEMINDED_API_BASE_URL)"
+        LSApplicationCategoryType: public.app-category.social-networking
+        CFBundleURLTypes:
+          - CFBundleURLSchemes:
+              - "$(GOOGLE_REVERSED_CLIENT_ID_MAC)"
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.likeminded.mac
+        PRODUCT_BUNDLE_IDENTIFIER: com.gurusharan.likeminded
         PRODUCT_NAME: LikemindedMac
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: Likeminded
@@ -94,10 +117,10 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         CODE_SIGN_STYLE: Automatic
         CODE_SIGN_ENTITLEMENTS: Entitlements/LikemindedMac.entitlements
-        DEVELOPMENT_ASSET_PATHS: "\"\""
+        ENABLE_HARDENED_RUNTIME: YES
         LIKEMINDED_API_BASE_URL: ""
-        GOOGLE_CLIENT_ID_IOS: ""
-        GOOGLE_REVERSED_CLIENT_ID: ""
+        GOOGLE_CLIENT_ID_MAC: ""
+        GOOGLE_REVERSED_CLIENT_ID_MAC: ""
       configs:
         Debug:
           CODE_SIGN_ENTITLEMENTS: Entitlements/LikemindedMac.Debug.entitlements

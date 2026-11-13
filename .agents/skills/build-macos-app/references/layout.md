@@ -27,7 +27,7 @@ apps/ios-macos/
 
 | Field | Value |
 | --- | --- |
-| Bundle id | `com.likeminded.mac` |
+| Bundle id | `com.gurusharan.likeminded` |
 | Deployment | macOS 15.0 |
 | Scheme | `LikemindedMac` |
 | Build output | `.build/macos/Build/Products/Debug/LikemindedMac.app` |

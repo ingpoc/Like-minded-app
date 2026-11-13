@@ -33,7 +33,7 @@ if (!evidence.render?.health_checked_at) missing("Render health_checked_at is re
 if (evidence.neon?.database_configured !== true) missing("Neon database_configured must be true", failures);
 if (!evidence.neon?.migration_checked_at) missing("Neon migration_checked_at is required", failures);
 
-if (evidence.apple?.bundle_id !== "com.likeminded.app") missing("Apple bundle_id must be com.likeminded.app", failures);
+if (evidence.apple?.bundle_id !== "com.gurusharan.likeminded") missing("Apple bundle_id must be com.gurusharan.likeminded", failures);
 if (evidence.apple?.bundle_id_configured !== true) missing("Apple bundle_id_configured must be true", failures);
 if (evidence.apple?.sign_in_with_apple_enabled !== true) missing("Sign in with Apple capability must be enabled", failures);
 if (evidence.apple?.app_store_connect_app_created !== true) missing("App Store Connect app must be created", failures);

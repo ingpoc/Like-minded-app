@@ -26,6 +26,7 @@ final class MacAppState: ObservableObject {
     @Published var isLoadingMeetings = false
     @Published var meetingError: String?
     @Published var soulmateEnabled = false
+    @Published private(set) var hasLoadedSoulmateStatus = false
     @Published var soulmatePreferences = SoulmatePreferences.defaults
     @Published var soulmatePendingSelections: [SoulmatePendingSelection] = []
     @Published var soulmateMatches: [SoulmateMatch] = []
@@ -40,12 +41,32 @@ final class MacAppState: ObservableObject {
     @Published var readNotificationIds: Set<String> = []
     @Published var concernFlag = false
     @Published var placementConcern = ""
+    @Published var realtimeStatus = RealtimeVoicePhase.idle.rawValue
+    @Published var realtimeMessage: String?
+    @Published var realtimeTranscript = ""
+    @Published var realtimeInputLevel = 0.0
+    @Published var isStartingVoice = false
+    @Published var didPersistVoiceProfile = false
 
-    static let defaultPlacementConcernCopy = "This circle doesn't match how I connect with people."
+    private let voiceClient = RealtimeVoiceClient()
+
+    static let defaultPlacementConcernCopy = "This doesn't feel like my circle. Placement refresh requested."
+
+    static func sanitizedPlacementConcern(_ raw: String?) -> String {
+        let trimmed = (raw ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return defaultPlacementConcernCopy }
+        let lower = trimmed.lowercased()
+        // Harness / prove strings must never appear as product copy or persist as such.
+        if lower.contains("macos circle concern")
+            || lower.contains("deterministic placement concern")
+            || lower.contains("ledger proof") {
+            return defaultPlacementConcernCopy
+        }
+        return trimmed
+    }
 
     var displayPlacementConcern: String {
-        let trimmed = placementConcern.trimmingCharacters(in: .whitespacesAndNewlines)
-        return trimmed.isEmpty ? Self.defaultPlacementConcernCopy : trimmed
+        Self.sanitizedPlacementConcern(placementConcern)
     }
 
     /// Saved profile name from API — not dev-auth seed or Apple sign-in display name.
@@ -222,7 +243,12 @@ final class MacAppState: ObservableObject {
         circleDetail = nil
         upcomingMeetings = []
         pastMeetings = []
+        soulmateEnabled = false
+        hasLoadedSoulmateStatus = false
+        soulmatePreferences = .defaults
+        soulmatePendingSelections = []
         soulmateMatches = []
+        soulmateError = nil
         chatMessages = []
         notifications = []
         activityItems = []
@@ -231,8 +257,12 @@ final class MacAppState: ObservableObject {
     }
 
     func deleteAccount() async -> Bool {
+        let userId = authSession?.userId
         do {
             try await client.deleteAccount()
+            if let userId {
+                UserDefaults.standard.removeObject(forKey: "likeminded.profile-interview.\(userId)")
+            }
             signOut()
             return true
         } catch {
@@ -248,9 +278,11 @@ final class MacAppState: ObservableObject {
             profile = try await client.fetchMyProfile()
             applyConcernState(concernFlag: profile?.concernFlag, placementConcern: profile?.placementConcern)
             loadError = nil
-        } catch {
+        } catch let error as LikemindedAPIError where error.statusCode == 404 {
             profile = nil
             loadError = "No profile yet. Complete the voice profile to unlock this screen."
+        } catch {
+            loadError = onboardingErrorMessage(for: error, fallback: "Your profile could not be loaded. Try again.")
         }
         applyValidationLaunchOverrides()
         applyDevProfileEmptyPreviewIfNeeded()
@@ -277,13 +309,32 @@ final class MacAppState: ObservableObject {
         )
         let interestModels = interests.map { Interest(area: "general", label: $0, depth: .active) }
         do {
-            profile = try await client.updateProfile(basicInfo: update, interests: interestModels.isEmpty ? nil : interestModels)
+            profile = try await client.updateProfile(basicInfo: update, interests: interestModels)
             loadError = nil
             return true
         } catch {
-            loadError = "Profile could not be saved."
+            loadError = onboardingErrorMessage(for: error, fallback: "Profile could not be saved. Try again.")
             return false
         }
+    }
+
+    func onboardingErrorMessage(for error: Error, fallback: String) -> String {
+        if let urlError = error as? URLError {
+            switch urlError.code {
+            case .notConnectedToInternet, .networkConnectionLost, .cannotConnectToHost, .cannotFindHost, .timedOut:
+                return "You're offline. Check your connection, then try again—your progress is safe."
+            default:
+                break
+            }
+        }
+        if let apiError = error as? LikemindedAPIError {
+            if apiError.statusCode == 401 { return "Your session expired. Sign in again to continue safely." }
+            if let status = apiError.statusCode, status >= 500 {
+                return "Likeminded is temporarily unavailable. Try again—your progress is safe."
+            }
+            return apiError.localizedDescription
+        }
+        return fallback
     }
 
     /// Refresh profile from API after local edits (e.g. tab switch) so UI shows saved basics.
@@ -299,12 +350,14 @@ final class MacAppState: ObservableObject {
             applyConcernState(concernFlag: placement?.concernFlag, placementConcern: placement?.placementConcern)
             loadError = nil
             applyDevProfileEmptyPreviewIfNeeded()
-        } catch {
+        } catch let error as LikemindedAPIError where error.statusCode == 404 {
             placement = nil
             applyDevProfileEmptyPreviewIfNeeded()
             if profile == nil {
                 loadError = "No profile placement yet. Complete the voice profile to unlock this screen."
             }
+        } catch {
+            loadError = onboardingErrorMessage(for: error, fallback: "Your circle placement could not be refreshed. Try again.")
         }
         applyValidationLaunchOverrides()
         isLoading = false
@@ -334,28 +387,48 @@ final class MacAppState: ObservableObject {
         isLoading = false
     }
 
-    func swapPrimaryCircle() async {
-        guard isSignedIn else { return }
+    func selectSecondaryCircle(id: String) async -> Bool {
+        guard isSignedIn else { return false }
         isLoading = true
         do {
-            placement = try await client.updatePlacement(action: "swap")
+            placement = try await client.updatePlacement(action: "select_secondary", circleId: id)
+            await fetchCircles()
             loadError = nil
+            isLoading = false
+            return true
         } catch {
-            loadError = "Placement update failed. Please retry."
+            loadError = "Secondary circle could not be saved. Please retry."
+            isLoading = false
+            return false
         }
-        isLoading = false
     }
 
-    func reportCircleConcern(_ message: String) async {
-        let note = message.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !note.isEmpty else { return }
-        placementConcern = note
-        concernFlag = true
+    @discardableResult
+    func reportCircleConcern(_ message: String) async -> Bool {
+        let note = Self.sanitizedPlacementConcern(message)
+        guard !note.isEmpty else { return false }
+
         do {
             try await client.registerCircleConcern(message: note)
+            let refreshedPlacement = try await client.fetchMyPlacement()
+            let confirmedConcern = Self.sanitizedPlacementConcern(refreshedPlacement.placementConcern)
+
+            guard refreshedPlacement.concernFlag == true else {
+                loadError = "Concern could not be confirmed."
+                return false
+            }
+
+            placement = refreshedPlacement
+            // Prefer the sanitized note we persisted; never surface harness echoes.
+            applyConcernState(concernFlag: true, placementConcern: note)
+            if confirmedConcern != note && confirmedConcern == Self.defaultPlacementConcernCopy {
+                placementConcern = note
+            }
             loadError = nil
+            return true
         } catch {
             loadError = "Concern could not be registered."
+            return false
         }
     }
 
@@ -363,11 +436,8 @@ final class MacAppState: ObservableObject {
         if concernFlag == true {
             self.concernFlag = true
         }
-        if let placementConcern {
-            let trimmed = placementConcern.trimmingCharacters(in: .whitespacesAndNewlines)
-            if !trimmed.isEmpty {
-                self.placementConcern = trimmed
-            }
+        if let placementConcern, !placementConcern.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            self.placementConcern = Self.sanitizedPlacementConcern(placementConcern)
         }
         if self.concernFlag && self.placementConcern.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             self.placementConcern = Self.defaultPlacementConcernCopy
@@ -378,7 +448,7 @@ final class MacAppState: ObservableObject {
         guard arguments.contains("--likeminded-dev-profile-concern") else { return }
         let message = Self.argumentValue(after: "--likeminded-dev-profile-concern", in: arguments)
             ?? Self.defaultPlacementConcernCopy
-        placementConcern = message
+        placementConcern = Self.sanitizedPlacementConcern(message)
         concernFlag = true
     }
 
@@ -436,21 +506,50 @@ final class MacAppState: ObservableObject {
         communityError = nil
     }
 
-    func joinCommunity(id: String) async {
+    func joinCommunity(id: String) async -> Bool {
         do {
             try await client.joinCommunity(id: id)
+            applyConfirmedCommunityMembership(id: id, joined: true)
             await fetchCommunities()
+            applyConfirmedCommunityMembership(id: id, joined: true)
+            communityError = nil
+            return true
         } catch {
             communityError = "Community could not be joined."
+            return false
         }
     }
 
-    func leaveCommunity(id: String) async {
+    func leaveCommunity(id: String) async -> Bool {
         do {
             try await client.leaveCommunity(id: id)
+            applyConfirmedCommunityMembership(id: id, joined: false)
             await fetchCommunities()
+            applyConfirmedCommunityMembership(id: id, joined: false)
+            communityError = nil
+            return true
         } catch {
             communityError = "Community could not be left."
+            return false
+        }
+    }
+
+    private func applyConfirmedCommunityMembership(id: String, joined: Bool) {
+        var updated = joinedCommunities.filter { $0.id != id }
+        if joined, let community = communities.first(where: { $0.id == id }) {
+            updated.append(community)
+        }
+        joinedCommunities = updated
+    }
+
+    func reportCommunity(id: String, reason: String) async -> Bool {
+        do {
+            try await client.reportCommunity(id: id, reason: reason)
+            communityError = nil
+            return true
+        } catch {
+            communityError = "Community concern could not be reported."
+            return false
         }
     }
 
@@ -531,6 +630,8 @@ final class MacAppState: ObservableObject {
 
     func fetchSoulmateStatus() async {
         guard isSignedIn else { return }
+        hasLoadedSoulmateStatus = false
+        soulmateError = nil
         isLoadingSoulmate = true
         defer { isLoadingSoulmate = false }
         do {
@@ -551,6 +652,7 @@ final class MacAppState: ObservableObject {
                 chatMessages = try await client.fetchMessages(matchId: firstMatch.matchId)
             }
             soulmateError = nil
+            hasLoadedSoulmateStatus = true
         } catch {
             soulmateError = "Soulmate could not be loaded."
         }
@@ -595,22 +697,88 @@ final class MacAppState: ObservableObject {
         }
     }
 
-    func refreshProfileFromReflection(_ answers: [String]) async -> Bool {
+    func refreshProfileFromReflection(_ answers: [String], idempotencyKey: String) async -> Bool {
         guard isSignedIn else { return false }
         isLoading = true
         defer { isLoading = false }
         do {
             let result = try await client.createProfileFromInterview(
                 interviewTranscript: answers.joined(separator: "\n"),
-                reflectionAnswers: answers
+                reflectionAnswers: answers,
+                idempotencyKey: idempotencyKey
             )
             placement = result
             await loadCurrentProfile()
             loadError = nil
             return true
         } catch {
-            loadError = "Voice profile refresh could not be saved."
+            loadError = onboardingErrorMessage(for: error, fallback: "Voice profile refresh could not be saved. Try again.")
             return false
+        }
+    }
+
+    func continueProfileInterview(_ messages: [ProfileInterviewMessage]) async throws -> ProfileInterviewTurnResponse {
+        try await client.continueProfileInterview(messages: messages)
+    }
+
+    func startVoiceProfile() async {
+        guard isSignedIn else { return }
+        guard !isStartingVoice,
+              ![RealtimeVoicePhase.connecting, .streaming, .speaking, .stopping]
+                .map(\.rawValue)
+                .contains(realtimeStatus) else { return }
+        isStartingVoice = true
+        realtimeStatus = RealtimeVoicePhase.connecting.rawValue
+        realtimeMessage = nil
+        realtimeInputLevel = 0
+        didPersistVoiceProfile = false
+        voiceClient.authToken = authSession?.token
+        voiceClient.baseURL = client.baseURL
+        voiceClient.basicInfo = profile?.basicInfo
+        do {
+            let session = try await client.createRealtimeSession(
+                reinterviewContext: concernFlag ? displayPlacementConcern : nil
+            )
+            guard let key = session.clientSecret.value else { throw URLError(.userAuthenticationRequired) }
+            try await voiceClient.start(
+                sdpOffer: "",
+                model: session.model,
+                voice: session.voice,
+                ephemeralKey: key,
+                onAudioLevel: { [weak self] level in
+                    Task { @MainActor in
+                        self?.realtimeInputLevel = level
+                    }
+                },
+                onUpdate: { [weak self] update in
+                Task { @MainActor in
+                    guard let self else { return }
+                    self.realtimeStatus = update.phase.rawValue
+                    self.realtimeMessage = update.message
+                    if let transcript = update.transcript, !transcript.isEmpty {
+                        self.realtimeTranscript = transcript
+                    }
+                    if update.didPersistProfile {
+                        self.didPersistVoiceProfile = true
+                        await self.loadCurrentPlacement()
+                        await self.loadCurrentProfile()
+                    }
+                }
+            })
+        } catch {
+            realtimeStatus = RealtimeVoicePhase.failed.rawValue
+            realtimeMessage = error.localizedDescription
+            realtimeInputLevel = 0
+        }
+        isStartingVoice = false
+    }
+
+    func stopVoiceProfile() async {
+        await voiceClient.stop()
+        realtimeInputLevel = 0
+        if didPersistVoiceProfile {
+            await loadCurrentPlacement()
+            await loadCurrentProfile()
         }
     }
 
@@ -673,7 +841,7 @@ struct MacAuthSession: Codable, Equatable {
 }
 
 enum MacAuthSessionStore {
-    private static let service = "com.likeminded.mac.auth"
+    private static let service = "com.gurusharan.likeminded.auth.macos"
     private static let account = "session"
 
     static func load() -> MacAuthSession? {

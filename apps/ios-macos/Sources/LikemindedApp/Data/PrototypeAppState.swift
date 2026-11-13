@@ -25,6 +25,7 @@ final class PrototypeAppState: ObservableObject {
     @Published var isLoading = false
     @Published var sourceLabel = "Loading"
     @Published var loadError: String?
+    @Published var profileUpdateConfirmation: String?
     @Published var hasConfirmedConnection = false
     @Published var editedReflection = PrototypeData.reflectPlaceConnectSlice.profile.reflection.summary
     @Published var reflectionDraft = PrototypeAppState.defaultReflectionAnswers.joined(separator: "\n")
@@ -33,6 +34,7 @@ final class PrototypeAppState: ObservableObject {
     @Published var realtimeError: String?
     @Published var isStartingVoice = false
     @Published var capturedVoiceSignals: [String] = []
+    @Published var didPersistVoiceProfile = false
     @Published var isSynthesizingPlacement = false
     @Published var realtimeTranscript = ""
     @Published var basicInfo: BasicInfo?
@@ -43,6 +45,7 @@ final class PrototypeAppState: ObservableObject {
     @Published var isLoadingCommunities = false
     @Published var communityError: String?
     @Published var communityMembers: [CommunityMember] = []
+    @Published private(set) var communityMembersCommunityId: String?
     @Published var isLoadingCommunityMembers = false
     @Published var circles: [PlacementCircle] = []
     @Published var joinedCircles: [PlacementCircle] = []
@@ -60,6 +63,8 @@ final class PrototypeAppState: ObservableObject {
     @Published var soulmateError: String?
     @Published var isLoadingSoulmate = false
     @Published var soulmatePreferences = SoulmatePreferences.defaults
+    /// Bumps on each soulmate fetch/enable write so stale in-flight GETs cannot clobber newer state.
+    private var soulmateStatusGeneration = 0
     @Published var notifications: [NotificationItem] = []
     @Published var activityItems: [NotificationItem] = []
     @Published var notificationError: String?
@@ -147,9 +152,9 @@ final class PrototypeAppState: ObservableObject {
         case .accepted:
             return "Your circle is live with member and meetup details."
         case .swapped:
-            return "Room swapped. Let the new fit settle."
+            return "Your secondary circle is set."
         case .proposed:
-            return "Accept or swap a room before full browsing."
+            return "Open a suggested circle to make it your second circle."
         case .deferred:
             return "Connections paused until placement resumes."
         }
@@ -174,6 +179,10 @@ final class PrototypeAppState: ObservableObject {
         realtimeStatus == RealtimeVoicePhase.streaming.rawValue || realtimeStatus == RealtimeVoicePhase.stopping.rawValue
     }
 
+    /// When true, `--likeminded-dev-auth-bypass` must not re-login after an explicit sign-out/delete.
+    /// Reset only by process relaunch (validation always uses `--likeminded-reset-auth-session`).
+    private var suppressDevAuthBypass = false
+
     func signInForLocalValidationIfNeeded() async {
         #if DEBUG
         let environment = ProcessInfo.processInfo.environment
@@ -191,6 +200,8 @@ final class PrototypeAppState: ObservableObject {
             UserDefaults.standard.set("chat", forKey: "LIKEMINDED_VALIDATION_SCREEN")
         }
         guard environment["LIKEMINDED_DEV_AUTH_BYPASS"] == "1" || arguments.contains("--likeminded-dev-auth-bypass") else { return }
+        // User signed out (or deleted) in this process — stay on AuthGate for settings-sign-out proof.
+        guard !suppressDevAuthBypass, !isSignedIn else { return }
         let shouldSeedVoicePlacement = arguments.contains("--likeminded-dev-voice-placement")
         isAuthenticating = true
         authError = nil
@@ -301,6 +312,9 @@ final class PrototypeAppState: ObservableObject {
     }
 
     func signOut() {
+        #if DEBUG
+        suppressDevAuthBypass = true
+        #endif
         AuthSessionStore.clear()
         authSession = nil
         slice = nil
@@ -322,22 +336,27 @@ final class PrototypeAppState: ObservableObject {
         }
     }
 
-    func loadCurrentPlacement() async {
-        guard isSignedIn else { return }
+    @discardableResult
+    func loadCurrentPlacement() async -> Bool {
+        guard isSignedIn else { return false }
         isLoading = true
         do {
             let result = try await client.fetchMyPlacement()
             applyProfileResult(result, source: "Saved placement")
             loadError = nil
             applyDevProfileEmptyPreviewIfNeeded()
+            applyValidationLaunchOverrides()
+            isLoading = false
+            return true
         } catch {
             if slice == nil {
                 sourceLabel = "Ready"
             }
             loadError = nil
+            applyValidationLaunchOverrides()
+            isLoading = false
+            return false
         }
-        applyValidationLaunchOverrides()
-        isLoading = false
     }
 
     func startVoiceSession() async {
@@ -345,19 +364,34 @@ final class PrototypeAppState: ObservableObject {
             authError = "Sign in before starting a voice profile."
             return
         }
+        guard !isStartingVoice,
+              ![RealtimeVoicePhase.connecting, .streaming, .speaking, .stopping]
+                .map(\.rawValue)
+                .contains(realtimeStatus) else { return }
+        profileUpdateConfirmation = nil
         isStartingVoice = true
         realtimeStatus = "Opening"
         realtimeError = nil
+        didPersistVoiceProfile = false
         voiceClient.authToken = authSession?.token
         voiceClient.baseURL = client.baseURL
         voiceClient.basicInfo = basicInfo
-        voiceClient.reinterviewContext = concernFlag ? placementConcernContext : nil
 
         do {
+            NSLog("[RealtimeVoice] requesting ephemeral session")
+            let session = try await client.createRealtimeSession(
+                reinterviewContext: concernFlag ? placementConcernContext : nil
+            )
+            guard let ephemeralKey = session.clientSecret.value else {
+                throw URLError(.userAuthenticationRequired)
+            }
+            realtimeSession = session
+            NSLog("[RealtimeVoice] ephemeral session ready model=%@", session.model)
             try await voiceClient.start(
                 sdpOffer: "",
-                model: realtimeSession?.model ?? "gpt-realtime-1.5",
-                voice: realtimeSession?.voice ?? "marin"
+                model: session.model,
+                voice: session.voice,
+                ephemeralKey: ephemeralKey
             ) { [weak self] update in
                 self?.applyVoiceUpdate(update)
             }
@@ -380,19 +414,28 @@ final class PrototypeAppState: ObservableObject {
         realtimeError = nil
         realtimeTranscript = ""
         capturedVoiceSignals = []
+        didPersistVoiceProfile = false
     }
 
     func seedVoiceSessionPreviewIfNeeded() {
         #if DEBUG
         guard ProcessInfo.processInfo.arguments.contains("--likeminded-dev-voice-preview") else { return }
-        realtimeStatus = RealtimeVoicePhase.streaming.rawValue
+        profileUpdateConfirmation = nil
+        realtimeStatus = RealtimeVoicePhase.stopped.rawValue
         realtimeError = nil
         capturedVoiceSignals = [
             "Prefers slow, honest conversation",
             "Values steady and thoughtful pacing",
             "Enjoys depth over small talk"
         ]
+        didPersistVoiceProfile = true
         #endif
+    }
+
+    func removeCapturedVoiceSignal(at index: Int) {
+        guard capturedVoiceSignals.indices.contains(index) else { return }
+        capturedVoiceSignals.remove(at: index)
+        didPersistVoiceProfile = !capturedVoiceSignals.isEmpty
     }
 
     func synthesizePlacementFromVoice() async {
@@ -401,6 +444,39 @@ final class PrototypeAppState: ObservableObject {
         isSynthesizingPlacement = true
         await loadSlice()
         isSynthesizingPlacement = false
+    }
+
+    func completeVoiceSession() async -> Bool {
+        guard didPersistVoiceProfile else {
+            realtimeError = "Keep talking until your profile is saved."
+            return false
+        }
+        profileUpdateConfirmation = nil
+        #if DEBUG
+        let isVoicePreview = ProcessInfo.processInfo.arguments.contains("--likeminded-dev-voice-preview")
+        let previewSummary = capturedVoiceSignals.joined(separator: " · ")
+        if isVoicePreview {
+            do {
+                _ = try await client.updateProfile(reflectionSummary: previewSummary)
+            } catch {
+                realtimeError = "The validation voice profile could not be persisted. Try again."
+                return false
+            }
+        }
+        #endif
+        await stopVoiceSession()
+        guard await loadCurrentPlacement() else {
+            realtimeError = "Your profile was saved, but placement could not be loaded. Try again."
+            return false
+        }
+        #if DEBUG
+        if isVoicePreview, slice?.profile.reflection.summary != previewSummary {
+            realtimeError = "The validation voice profile was not returned by the profile API."
+            return false
+        }
+        #endif
+        profileUpdateConfirmation = "Voice profile saved"
+        return true
     }
 
     func loadSlice() async {
@@ -456,12 +532,130 @@ final class PrototypeAppState: ObservableObject {
         }
     }
 
+    func dismissProfileSignal(_ title: String) async -> Bool {
+        guard let originalSignals = slice?.signals else { return false }
+        profileUpdateConfirmation = nil
+        var updatedSignals = originalSignals
+
+        switch title {
+        case "Communication":
+            updatedSignals.communicationStyle = nil
+        case "Energy":
+            updatedSignals.socialEnergy = nil
+        case "Trust":
+            updatedSignals.trustPattern = nil
+        case "Relating":
+            updatedSignals.attachment = nil
+        case "Humor":
+            updatedSignals.humorStyle = nil
+        default:
+            return false
+        }
+
+        withMutableSlice { next in
+            next.signals = updatedSignals
+        }
+
+        do {
+            _ = try await client.updateProfile(signals: updatedSignals)
+            loadError = nil
+            profileUpdateConfirmation = "Profile interpretation removed"
+            return true
+        } catch {
+            withMutableSlice { next in
+                next.signals = originalSignals
+            }
+            loadError = "That interpretation could not be removed. Please try again."
+            return false
+        }
+    }
+
+    func correctProfileSignal(_ title: String, value: String) async -> Bool {
+        let corrected = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !corrected.isEmpty, let originalSignals = slice?.signals else { return false }
+        profileUpdateConfirmation = nil
+        var updatedSignals = originalSignals
+
+        switch title {
+        case "Communication":
+            var style = updatedSignals.communicationStyle ?? ProfileSignals.CommunicationStyle()
+            style.primary = corrected
+            updatedSignals.communicationStyle = style
+        case "Energy":
+            updatedSignals.socialEnergy = corrected
+        case "Trust":
+            updatedSignals.trustPattern = corrected
+        case "Relating":
+            updatedSignals.attachment = corrected
+        case "Humor":
+            updatedSignals.humorStyle = corrected
+        default:
+            return false
+        }
+
+        withMutableSlice { next in
+            next.signals = updatedSignals
+        }
+
+        do {
+            _ = try await client.updateProfile(signals: updatedSignals)
+            loadError = nil
+            profileUpdateConfirmation = "Profile interpretation saved"
+            return true
+        } catch {
+            withMutableSlice { next in
+                next.signals = originalSignals
+            }
+            loadError = "That correction could not be saved. Please try again."
+            return false
+        }
+    }
+
+    func updateProfileSummary(_ summary: String) async -> Bool {
+        let corrected = summary.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !corrected.isEmpty, let originalSlice = slice else { return false }
+        profileUpdateConfirmation = nil
+
+        withMutableSlice { next in
+            let current = next.profile
+            next.profile = SynthesizedProfile(
+                profileId: current.profileId,
+                displayName: current.displayName,
+                basicInfo: current.basicInfo,
+                values: current.values,
+                communicationStyle: current.communicationStyle,
+                emotionalRhythm: current.emotionalRhythm,
+                relationshipIntent: current.relationshipIntent,
+                interests: current.interests,
+                privacy: current.privacy,
+                reflection: ProfileReflection(
+                    summary: corrected,
+                    strengths: current.reflection.strengths,
+                    nextQuestion: current.reflection.nextQuestion
+                )
+            )
+        }
+        editedReflection = corrected
+
+        do {
+            _ = try await client.updateProfile(reflectionSummary: corrected)
+            loadError = nil
+            profileUpdateConfirmation = "Profile update saved"
+            return true
+        } catch {
+            slice = originalSlice
+            editedReflection = originalSlice.profile.reflection.summary
+            loadError = "That profile update could not be saved. Please try again."
+            return false
+        }
+    }
+
     func deferPlacement() {
         Task { await updatePlacementAction("defer") }
     }
 
-    func swapPrimaryCircle() {
-        Task { await updatePlacementAction("swap") }
+    func selectSecondaryCircle(id: String) async -> Bool {
+        await updatePlacementAction("select_secondary", circleId: id)
     }
 
     func confirmConnection() {
@@ -668,11 +862,18 @@ final class PrototypeAppState: ObservableObject {
         defer { isLoadingCommunityMembers = false }
         do {
             communityMembers = try await client.fetchCommunityMembers(id: id)
+            communityMembersCommunityId = id
             communityError = nil
         } catch {
             communityMembers = []
+            communityMembersCommunityId = nil
             communityError = "Community members could not be loaded."
         }
+    }
+
+    func clearCommunityMembers() {
+        communityMembers = []
+        communityMembersCommunityId = nil
     }
 
     func createMeeting(
@@ -761,36 +962,52 @@ final class PrototypeAppState: ObservableObject {
 
     func fetchSoulmateStatus() async {
         guard isSignedIn else { return }
+        soulmateStatusGeneration += 1
+        let generation = soulmateStatusGeneration
         isLoadingSoulmate = true
-        defer { isLoadingSoulmate = false }
+        defer {
+            if generation == soulmateStatusGeneration {
+                isLoadingSoulmate = false
+            }
+        }
         do {
             let status = try await client.fetchSoulmateStatus()
+            guard generation == soulmateStatusGeneration else { return }
             soulmateEnabled = status.enabled
             soulmatePendingSelections = status.pendingSelections
             soulmatePreferences = status.preferences ?? .defaults
-            soulmateMatches = try await client.fetchSoulmateMatches()
+            let matches = try await client.fetchSoulmateMatches()
+            guard generation == soulmateStatusGeneration else { return }
+            soulmateMatches = matches
             var previews: [String: ChatMessage] = [:]
-            for match in soulmateMatches {
+            for match in matches {
                 let messages = try await client.fetchMessages(matchId: match.matchId)
+                guard generation == soulmateStatusGeneration else { return }
                 if let last = messages.last {
                     previews[match.matchId] = last
                 }
             }
+            guard generation == soulmateStatusGeneration else { return }
             chatPreviews = previews
             soulmateError = nil
         } catch {
+            guard generation == soulmateStatusGeneration else { return }
             soulmateError = "Soulmate could not be loaded."
         }
     }
 
     func setSoulmateEnabled(_ enabled: Bool) async {
+        let previous = soulmateEnabled
+        // Invalidate in-flight status fetches before optimistic publish so a stale GET
+        // cannot snap the toggle (and later UI) back to the pre-tap value.
+        soulmateStatusGeneration += 1
+        // Optimistic publish so Toggle bindings do not snap back while the API awaits.
+        soulmateEnabled = enabled
         do {
             try await client.setSoulmateEnabled(enabled)
-            withAnimation(.spring(response: 0.38, dampingFraction: 0.82)) {
-                soulmateEnabled = enabled
-            }
             await fetchSoulmateStatus()
         } catch {
+            soulmateEnabled = previous
             soulmateError = "Soulmate preference could not be saved."
         }
     }
@@ -836,16 +1053,19 @@ final class PrototypeAppState: ObservableObject {
         ].joined(separator: "\n")
     }
 
-    private func updatePlacementAction(_ action: String) async {
+    @discardableResult
+    private func updatePlacementAction(_ action: String, circleId: String? = nil) async -> Bool {
         do {
-            let result = try await client.updatePlacement(action: action)
+            let result = try await client.updatePlacement(action: action, circleId: circleId)
             applyProfileResult(result, source: "Placement updated")
-            if action != "accept" {
+            if action != "accept" && action != "select_secondary" {
                 hasConfirmedConnection = false
             }
             loadError = nil
+            return true
         } catch {
             loadError = "Placement update failed. Please retry."
+            return false
         }
     }
 
@@ -1017,6 +1237,7 @@ final class PrototypeAppState: ObservableObject {
 
         // Auto-submit transcript when voice session ends with content
         if update.didPersistProfile {
+            didPersistVoiceProfile = true
             concernFlag = false
             placementConcern = ""
             Task {

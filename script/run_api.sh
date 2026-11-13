@@ -9,7 +9,7 @@ API_SCRIPT="$ROOT_DIR/services/api/src/server.js"
 
 if [[ ! -f "$ROOT_DIR/.env.local" ]]; then
   echo "ERROR: .env.local not found in $ROOT_DIR" >&2
-  echo "Create it with: OPENAI_API_KEY=sk-... OPENAI_REALTIME_MODEL=gpt-realtime-1.5 OPENAI_REALTIME_VOICE=marin" >&2
+  echo "Create it with: OPENAI_API_KEY=sk-... OPENAI_REALTIME_MODEL=gpt-realtime-mini OPENAI_REALTIME_VOICE=marin" >&2
   exit 1
 fi
 
