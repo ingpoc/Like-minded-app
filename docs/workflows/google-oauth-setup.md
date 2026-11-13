@@ -1,5 +1,9 @@
 # Google Sign-In setup (Phase 2)
 
+## Control Owner
+
+This workflow owns the repository setup steps for Google OAuth; provider credentials and console state remain externally owned.
+
 Complete before disabling `APPLE_AUTH_BYPASS` for real auth testing.
 
 ## 1. Google Cloud Console
@@ -15,7 +19,7 @@ Complete before disabling `APPLE_AUTH_BYPASS` for real auth testing.
 Add to `.env.local`:
 
 ```sh
-GOOGLE_CLIENT_ID_IOS=your-id.apps.googleusercontent.com
+GOOGLE_CLIENT_ID_IOS=your-ios-id.apps.googleusercontent.com
 GOOGLE_CLIENT_ID_MAC=your-mac-id.apps.googleusercontent.com
 GOOGLE_REVERSED_CLIENT_ID_IOS=com.googleusercontent.apps.your-ios-id
 GOOGLE_REVERSED_CLIENT_ID_MAC=com.googleusercontent.apps.your-mac-id
@@ -24,7 +28,7 @@ GOOGLE_AUTH_BYPASS=0
 APPLE_AUTH_BYPASS=0
 ```
 
-Set each target's client ID and reversed client ID in `apps/ios-macos/project.yml`, then:
+Set each target's matching iOS/macOS client ID and reversed client ID in `apps/ios-macos/project.yml`, then:
 
 ```sh
 cd apps/ios-macos && xcodegen generate

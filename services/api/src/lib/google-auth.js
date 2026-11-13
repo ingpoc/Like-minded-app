@@ -6,6 +6,7 @@ function googleClientIds() {
     process.env.GOOGLE_CLIENT_IDS,
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_ID_IOS,
+    process.env.GOOGLE_CLIENT_ID_MAC,
     process.env.GOOGLE_CLIENT_ID_WEB
   ]) {
     if (!value) continue;

@@ -15,27 +15,25 @@ private enum MeetValidationFlags {
     static var opensPastMeetDetail: Bool {
         ProcessInfo.processInfo.arguments.contains("--likeminded-start-past-meet-detail")
     }
-
-    static var opensNotificationsDirectly: Bool {
-        ProcessInfo.processInfo.arguments.contains("--likeminded-start-notifications")
-    }
 }
 #else
 private enum MeetValidationFlags {
     static var allowsEarlyJoin: Bool { false }
     static var opensVideoCallDirectly: Bool { false }
     static var opensPastMeetDetail: Bool { false }
-    static var opensNotificationsDirectly: Bool { false }
 }
 #endif
 
 private enum MeetRoute: Hashable {
     case messages
+    case chat(SoulmateMatch)
 }
 
 struct MeetView: View {
     @EnvironmentObject private var appState: PrototypeAppState
-    @State private var showingNotifications = MeetValidationFlags.opensNotificationsDirectly
+    // Notifications deep-link is owned by RootView (--likeminded-start-notifications).
+    // Do not auto-open the Meet sheet from that flag or Done cannot reach the Meet tab.
+    @State private var showingNotifications = false
     @State private var showVideoCall = MeetValidationFlags.opensVideoCallDirectly
     @State private var navigationPath = NavigationPath()
 
@@ -78,13 +76,21 @@ struct MeetView: View {
                 }
             }
             .navigationDestination(for: Meeting.self) { meeting in
-                PastMeetDetailView(meeting: meeting)
-                    .environmentObject(appState)
+                PastMeetDetailView(meeting: meeting) {
+                    // Full reset — removeLast alone can no-op if path desyncs with the pushed destination.
+                    appState.pendingPastMeetDetail = false
+                    navigationPath = NavigationPath()
+                }
+                .environmentObject(appState)
+                .accessibilityIdentifier("past-meet-detail")
             }
             .navigationDestination(for: MeetRoute.self) { route in
                 switch route {
                 case .messages:
                     ConversationListView(matches: appState.soulmateMatches)
+                        .environmentObject(appState)
+                case .chat(let match):
+                    ChatView(match: match)
                         .environmentObject(appState)
                 }
             }
@@ -240,7 +246,7 @@ private struct MeetHeroJoinCard: View {
             NavigationLink {
                 GroupVideoCallView(meeting: meeting)
             } label: {
-                Label(canJoin ? "Join meetup" : "Join unlocks at meetup time", systemImage: "video.fill")
+                Label(canJoin ? "Join video call" : "Join unlocks at meetup time", systemImage: "video.fill")
                     .font(PrototypeTypography.button)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
@@ -249,7 +255,7 @@ private struct MeetHeroJoinCard: View {
                     .clipShape(Capsule(style: .continuous))
             }
             .disabled(!canJoin)
-            .accessibilityLabel(canJoin ? "Join live room" : "Join unlocks at meetup time")
+            .accessibilityLabel(canJoin ? "Join video call" : "Join unlocks at meetup time")
         }
         .padding(22)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -284,7 +290,7 @@ private struct RSVPCard: View {
                 subtitle: "Community meetup",
                 isAvailable: $saturdayAvailable,
                 availableLabel: "Saturday Available",
-                unavailableLabel: "Saturday Not"
+                unavailableLabel: "Saturday unavailable"
             )
             .onChange(of: saturdayAvailable) { _, value in onChange("community", value) }
 
@@ -297,7 +303,7 @@ private struct RSVPCard: View {
                 subtitle: "Circle meetup",
                 isAvailable: $sundayAvailable,
                 availableLabel: "Sunday Available",
-                unavailableLabel: "Sunday Not"
+                unavailableLabel: "Sunday unavailable"
             )
             .onChange(of: sundayAvailable) { _, value in onChange("circle", value) }
 
@@ -328,6 +334,8 @@ private struct RSVPCard: View {
 }
 
 private struct RSVPRow: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let icon: String
     let tint: Color
     let title: String
@@ -337,6 +345,13 @@ private struct RSVPRow: View {
     let unavailableLabel: String
 
     var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            identity
+            choices
+        }
+    }
+
+    private var identity: some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
                 .font(.system(size: 18, weight: .semibold))
@@ -354,22 +369,46 @@ private struct RSVPRow: View {
                     .foregroundStyle(PrototypePalette.subink)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
 
-            HStack(spacing: 0) {
-                RSVPChoice(title: "Available", accessibilityLabel: availableLabel, isSelected: isAvailable) {
-                    withAnimation(.spring(response: 0.34, dampingFraction: 0.82)) {
-                        isAvailable = true
-                    }
+    private var choices: some View {
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(spacing: 4) {
+                    availableChoice
+                    unavailableChoice
                 }
-                RSVPChoice(title: "Not", accessibilityLabel: unavailableLabel, isSelected: !isAvailable) {
-                    withAnimation(.spring(response: 0.34, dampingFraction: 0.82)) {
-                        isAvailable = false
-                    }
+            } else {
+                HStack(spacing: 0) {
+                    availableChoice
+                    unavailableChoice
                 }
             }
-            .padding(3)
-            .background(PrototypePalette.rule.opacity(0.55))
-            .clipShape(Capsule(style: .continuous))
+        }
+        .padding(3)
+        .background(PrototypePalette.rule.opacity(0.55))
+        .clipShape(
+            RoundedRectangle(
+                cornerRadius: dynamicTypeSize.isAccessibilitySize ? 16 : 999,
+                style: .continuous
+            )
+        )
+    }
+
+    private var availableChoice: some View {
+        RSVPChoice(title: "Available", accessibilityLabel: availableLabel, isSelected: isAvailable) {
+            withAnimation(reduceMotion ? nil : .interactive) {
+                isAvailable = true
+            }
+        }
+    }
+
+    private var unavailableChoice: some View {
+        RSVPChoice(title: "Unavailable", accessibilityLabel: unavailableLabel, isSelected: !isAvailable) {
+            withAnimation(reduceMotion ? nil : .interactive) {
+                isAvailable = false
+            }
         }
     }
 }
@@ -385,7 +424,7 @@ private struct RSVPChoice: View {
             Text(title)
                 .font(PrototypeTypography.caption)
                 .foregroundStyle(isSelected ? .white : PrototypePalette.subink)
-                .frame(width: 76, height: 30)
+                .frame(maxWidth: .infinity, minHeight: 44)
                 .background(isSelected ? PrototypePalette.accent : .clear)
                 .clipShape(Capsule(style: .continuous))
         }
@@ -425,6 +464,7 @@ private struct PastMeetRow: View {
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
         .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("past-row")
         .accessibilityLabel("Past meet row")
         .accessibilityValue("\(meeting.title), \(LikemindedDate.short(meeting.scheduledAt))")
     }
@@ -433,18 +473,13 @@ private struct PastMeetRow: View {
 struct PastMeetDetailView: View {
     @EnvironmentObject private var appState: PrototypeAppState
     let meeting: Meeting
+    var onBack: (() -> Void)? = nil
+    @Environment(\.dismiss) private var dismiss
     @State private var showingSoulmateSelection = false
+    @State private var messageMatch: SoulmateMatch?
     @State private var reflectionNote = ""
     @State private var noteStatus: String?
     @State private var isSavingNote = false
-
-    private var compositionTags: [String] {
-        meeting.compositionSummary
-            .split(separator: ".")
-            .prefix(3)
-            .map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
-            .filter { !$0.isEmpty }
-    }
 
     var body: some View {
         ScreenContainer(title: "Meet recap", subtitle: "Great meeting!") {
@@ -466,9 +501,6 @@ struct PastMeetDetailView: View {
                     RecapMetricCell(value: meeting.kind.capitalized, label: "Room type")
                 }
 
-                if !compositionTags.isEmpty {
-                    TokenRow(items: compositionTags)
-                }
             }
 
             FeatureCard(title: "Your notes", eyebrow: "Private") {
@@ -512,7 +544,9 @@ struct PastMeetDetailView: View {
                 } else {
                     VStack(spacing: 10) {
                         ForEach(appState.soulmateMatches) { match in
-                            RecapConnectionRow(match: match)
+                            RecapConnectionRow(match: match) {
+                                messageMatch = match
+                            }
                         }
                     }
                 }
@@ -532,15 +566,29 @@ struct PastMeetDetailView: View {
                         }
                         .buttonStyle(.plain)
                         .accessibilityLabel("Select connections")
+                        .accessibilityIdentifier("recap-select-connections")
                     }
                 }
             }
         }
         .navigationTitle("Recap")
         .navigationBarTitleDisplayMode(.inline)
-        .prototypeBackNavigation(label: "Back to meet")
+        // Reserve explicit space for the custom action-backed control instead of overlaying content.
+        .toolbar(.hidden, for: .navigationBar)
+        .prototypeBackNavigation(label: "Back to meet") {
+            appState.pendingPastMeetDetail = false
+            if let onBack {
+                onBack()
+            }
+            dismiss()
+        }
         .sheet(isPresented: $showingSoulmateSelection) {
             SoulmateSelectionDialog(meetingId: meeting.id)
+                .environmentObject(appState)
+        }
+        // Nested NavigationLink under the floating tab bar often no-ops; push via destination instead.
+        .navigationDestination(item: $messageMatch) { match in
+            ChatView(match: match)
                 .environmentObject(appState)
         }
         .task {
@@ -584,8 +632,8 @@ private struct RecapMetricCell: View {
 }
 
 private struct RecapConnectionRow: View {
-    @EnvironmentObject private var appState: PrototypeAppState
     let match: SoulmateMatch
+    var onMessage: () -> Void
 
     var body: some View {
         HStack(spacing: 12) {
@@ -609,10 +657,7 @@ private struct RecapConnectionRow: View {
 
             Spacer()
 
-            NavigationLink {
-                ChatView(match: match)
-                    .environmentObject(appState)
-            } label: {
+            Button(action: onMessage) {
                 Text("Message")
                     .font(PrototypeTypography.metadata.weight(.semibold))
                     .foregroundStyle(.white)
@@ -622,6 +667,7 @@ private struct RecapConnectionRow: View {
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Message \(match.name)")
+            .accessibilityIdentifier("recap-message-match")
         }
         .padding(12)
         .background(PrototypePalette.surface)
@@ -659,7 +705,9 @@ struct GroupVideoCallView: View {
     }
 
     var body: some View {
-        ZStack(alignment: .bottomTrailing) {
+        // Pin mute/leave/participants to the bottom overlay so a tall tile grid
+        // (large groupSize) cannot push call controls below the viewport.
+        ZStack(alignment: .bottom) {
             Color.black.ignoresSafeArea()
 
             VStack(spacing: 12) {
@@ -687,72 +735,74 @@ struct GroupVideoCallView: View {
                 .padding(.horizontal, 14)
                 .padding(.top, 12)
 
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 4) {
-                    if liveKitSession.isPrototypeFallback {
-                        ForEach(Array(callParticipants.enumerated()), id: \.offset) { index, name in
-                            VideoTile(
-                                name: name,
-                                index: index,
-                                isHost: name == meeting.hostName
-                            )
+                ScrollView {
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 4) {
+                        if liveKitSession.isPrototypeFallback {
+                            ForEach(Array(callParticipants.enumerated()), id: \.offset) { index, name in
+                                VideoTile(
+                                    name: name,
+                                    index: index,
+                                    isHost: name == meeting.hostName
+                                )
+                            }
+                        } else {
+                            VideoTile(name: "You", index: 0)
+                            ForEach(Array(liveKitSession.room.remoteParticipants.values.enumerated()), id: \.element.identity) { index, participant in
+                                VideoTile(name: String(describing: participant.identity), index: index + 1)
+                            }
+                            ForEach(liveKitSession.room.remoteParticipants.count + 1..<max(meeting.groupSize, 1), id: \.self) { index in
+                                VideoTile(name: "Seat \(index + 1)", index: index)
+                            }
                         }
-                    } else {
-                        VideoTile(name: "You", index: 0)
-                        ForEach(Array(liveKitSession.room.remoteParticipants.values.enumerated()), id: \.element.identity) { index, participant in
-                            VideoTile(name: String(describing: participant.identity), index: index + 1)
-                        }
-                        ForEach(liveKitSession.room.remoteParticipants.count + 1..<max(meeting.groupSize, 1), id: \.self) { index in
-                            VideoTile(name: "Seat \(index + 1)", index: index)
-                        }
+                    }
+                    .padding(.horizontal, 10)
+                    .accessibilityLabel("Participant tiles grid")
+                    .accessibilityValue("\(participantCount) participants")
+
+                    if let error = liveKitSession.errorMessage, liveKitSession.isPrototypeFallback {
+                        Text("Live room unavailable: \(error)")
+                            .font(PrototypeTypography.metadata)
+                            .foregroundStyle(PrototypePalette.amber)
+                            .padding(.horizontal, 16)
+                            .padding(.top, 8)
                     }
                 }
-                .padding(.horizontal, 10)
-                .accessibilityLabel("Participant tiles grid")
-                .accessibilityValue("\(participantCount) participants")
-
-                if let error = liveKitSession.errorMessage, liveKitSession.isPrototypeFallback {
-                    Text("Live room unavailable: \(error)")
-                        .font(PrototypeTypography.metadata)
-                        .foregroundStyle(PrototypePalette.amber)
-                        .padding(.horizontal, 16)
-                }
-
-                Spacer(minLength: 8)
-
-                HStack(spacing: 42) {
-                    Button {
-                        Task { await liveKitSession.setMuted(!liveKitSession.isMuted) }
-                    } label: {
-                        CallControl(icon: liveKitSession.isMuted ? "mic.slash.fill" : "mic.fill", title: liveKitSession.isMuted ? "Muted" : "Mute")
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel(liveKitSession.isMuted ? "Unmute microphone" : "Mute microphone")
-
-                    Button {
-                        Task {
-                            await liveKitSession.disconnect()
-                            dismiss()
-                        }
-                    } label: {
-                        CallControl(icon: "phone.down.fill", title: "Leave", isDestructive: true)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("Leave meetup")
-
-                    Button {
-                        showingParticipants = true
-                    } label: {
-                        CallControl(icon: "person.2.fill", title: "Participants")
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("Show participants")
-                }
-                .padding(.horizontal, 28)
-                .padding(.vertical, 16)
-                .background(.regularMaterial.opacity(0.78))
-                .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
-                .padding(.bottom, 22)
+                .padding(.bottom, 118)
             }
+
+            HStack(spacing: 42) {
+                Button {
+                    Task { await liveKitSession.setMuted(!liveKitSession.isMuted) }
+                } label: {
+                    CallControl(icon: liveKitSession.isMuted ? "mic.slash.fill" : "mic.fill", title: liveKitSession.isMuted ? "Muted" : "Mute")
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(liveKitSession.isMuted ? "Unmute microphone" : "Mute microphone")
+
+                Button {
+                    Task {
+                        await liveKitSession.disconnect()
+                        dismiss()
+                    }
+                } label: {
+                    CallControl(icon: "phone.down.fill", title: "Leave", isDestructive: true)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Leave meetup")
+
+                Button {
+                    showingParticipants = true
+                } label: {
+                    CallControl(icon: "person.2.fill", title: "Participants")
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Show participants")
+            }
+            .padding(.horizontal, 28)
+            .padding(.vertical, 16)
+            .background(.regularMaterial.opacity(0.78))
+            .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+            .padding(.bottom, 22)
 
             VideoTile(name: "You", index: 0, isSelfPreview: true)
                 .frame(width: 88, height: 118)
@@ -760,6 +810,7 @@ struct GroupVideoCallView: View {
                 .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(Color.white.opacity(0.35), lineWidth: 2))
                 .padding(.trailing, 16)
                 .padding(.bottom, 108)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
                 .accessibilityHidden(true)
         }
         .sheet(isPresented: $showingParticipants) {

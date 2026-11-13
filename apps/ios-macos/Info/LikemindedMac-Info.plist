@@ -34,5 +34,7 @@
 	<string>$(GOOGLE_CLIENT_ID_MAC)</string>
 	<key>LIKEMINDED_API_BASE_URL</key>
 	<string>$(LIKEMINDED_API_BASE_URL)</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.social-networking</string>
 </dict>
 </plist>

@@ -29,11 +29,11 @@
       "label": "Participant tiles",
       "expected": "Camera tiles grid",
       "result": "pass",
-      "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (tiles)",
+      "evidence": "CUA-click validation-gurusharan 2026-07-17: tiles",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "5f58d68c4fb27018",
-      "last_tested_at": "2026-07-06",
+      "tested_source_hash": "be094038d0f216e6",
+      "last_tested_at": "2026-07-17",
       "last_test_method": "CUA-click"
     },
     {
@@ -42,11 +42,11 @@
       "label": "Mute toggle",
       "expected": "Toggles local mic",
       "result": "pass",
-      "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (mute)",
+      "evidence": "CUA-click validation-gurusharan 2026-07-17: mute",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "5f58d68c4fb27018",
-      "last_tested_at": "2026-07-06",
+      "tested_source_hash": "be094038d0f216e6",
+      "last_tested_at": "2026-07-17",
       "last_test_method": "CUA-click"
     },
     {
@@ -55,11 +55,11 @@
       "label": "Leave",
       "expected": "Disconnects room",
       "result": "pass",
-      "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (leave)",
+      "evidence": "CUA-click validation-gurusharan 2026-07-17: leave",
       "blocker": "",
       "stub": false,
-      "tested_source_hash": "5f58d68c4fb27018",
-      "last_tested_at": "2026-07-06",
+      "tested_source_hash": "be094038d0f216e6",
+      "last_tested_at": "2026-07-17",
       "last_test_method": "CUA-click"
     }
   ],
@@ -68,7 +68,7 @@
     "notes": "2026-07-05 capture vs mockups/macos/21-meet-video-call.png: 2x2 tile grid, participant panel with avatars and +N more, mute/leave controls, agenda tab, safety card. Intentional: gradient initials on tiles (no LiveKit camera feeds); join-room blocked Phase 10."
   },
   "notes": "2026-07-05: join-room blocked on LiveKit infra (Phase 10). tiles/mute/leave pass as prototype UI. ui_validation pass — layout matches mockup 21; camera feeds deferred until LiveKit join.",
-  "source_hash": "5f58d68c4fb27018",
+  "source_hash": "be094038d0f216e6",
   "recent_screenshot_ref": "output/validation/macos-screens/meetVideoCall.png",
   "ui_validation": {
     "result": "pass",

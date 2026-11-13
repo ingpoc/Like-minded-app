@@ -10,15 +10,21 @@
         "apps/ios-macos/Sources/LikemindedApp/Views/RootView.swift",
         "apps/ios-macos/Sources/LikemindedApp/Views/CustomTabBar.swift"
       ],
-      "source_hash": "c303ef38cfebd62c",
+      "source_hash": "d3f65c3a496248fd",
       "mockup_ref": null,
       "mockup_missing": true,
       "entry_points": [
         "Signed-in tab shell"
       ],
       "backend_dependencies": [],
-      "ui_validation": null,
-      "visual_parity": null,
+      "ui_validation": {
+        "result": "pass",
+        "notes": "2026-07-21 live iPhone review vs DESIGN.md: all five persistent destinations remain visibly labeled with 74x48pt accessibility frames and selected/not-selected VoiceOver values; messages, notifications, tab navigation, and global back were live-proved by Computer clicks at source hash ef0d40cddd4a5edf. Standard and Accessibility Extra Extra Large with Increased Contrast captures preserve readable hierarchy, full scroll reachability, and final-row clearance above the dock. Reduce Motion was also live checked. Evidence: output/validation/ios-screens/accessibility/app-shell-standard.png, app-shell-axxlarge-contrast.png, and app-shell-axxlarge-bottom.png. Fresh blind UI and UX reviews passed; remaining P3 polish is the coarse but legible XXL vertical RSVP selector."
+      },
+      "visual_parity": {
+        "result": "pass",
+        "notes": "2026-07-21 no screen mockup is assigned; DESIGN.md is the reference. The shell uses one calm editorial hierarchy, native-safe persistent navigation, five visible one-word destinations, a non-color selected state, and unobscured scroll content. Persistent dock labels intentionally remain at stable native tab-label size at Accessibility Dynamic Type while page content and task controls scale."
+      },
       "recent_screenshot_ref": "output/validation/ios-screens/app-shell.png",
       "notes": "Gap audit 2026-07-06: global chrome screen"
     },
@@ -29,7 +35,7 @@
         "apps/ios-macos/Sources/LikemindedMac/MacRootView.swift",
         "apps/ios-macos/Sources/LikemindedMac/LikemindedMacApp.swift"
       ],
-      "source_hash": "2727155aaa14b723",
+      "source_hash": "b2f6855dff188a9b",
       "mockup_ref": null,
       "mockup_missing": true,
       "entry_points": [
@@ -74,25 +80,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "tab-meet: CUA-click 2026-07-06 | tab-circles: CUA-click 2026-07-06 | tab-communities: CUA-click 2026-07-06 | tab-soulmate: CUA-click 2026-07-06 | tab-profile: CUA-click 2026-07-06",
+          "evidence": "tab-meet: Computer-use 2026-08-01 | tab-circles: Computer-use 2026-08-01 | tab-communities: Computer-use 2026-08-01 | tab-soulmate: Computer-use 2026-08-01 | tab-profile: Computer-use 2026-08-01",
           "blocker": "",
-          "screenshot_ref": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "7ff61a63dac6b953",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/ios-screens/app-shell.png",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "d3f65c3a496248fd",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "tab-meet: CUA-click 2026-07-06 | tab-circles: CUA-click 2026-07-06 | tab-communities: CUA-click 2026-07-06 | tab-soulmate: CUA-click 2026-07-06 | tab-profile: CUA-click 2026-07-06",
+          "evidence": "Canonical LikemindedMac Computer proof: Visible tab controls were activated in order Circles, Communities, Soulmate, Profile, and Meet; each fresh semantic state exposed exactly that selected tab.",
           "blocker": "",
           "screenshot_ref": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "229aeca791e8afbe",
-          "last_test_method": "CUA-click"
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "b2f6855dff188a9b",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -104,7 +110,7 @@
         "mockup_note": "No mockup — functional proof only",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen app-shell --platform ios",
-          "macos": "npm run ledger:screen -- --platform macos --screen app-shell --section flows"
+          "macos": "@Computer: npm run dev:macos:validation -- meetOverview; target the canonical app by full path; prove app-shell/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen app-shell --flow tab-navigation --result pass --method <tier-method> --evidence \"...\""
       }
@@ -129,25 +135,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "global-back: CUA-click 2026-07-06",
+          "evidence": "global-back: Computer-use 2026-08-01",
           "blocker": "",
           "screenshot_ref": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "7ff61a63dac6b953",
-          "last_test_method": "CUA-click"
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "d3f65c3a496248fd",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "global-back: CUA-click 2026-07-06",
+          "evidence": "Canonical LikemindedMac Computer proof: From Messages, the global Back control returned to the previously selected Circles screen and restored its Messages title action.",
           "blocker": "",
           "screenshot_ref": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "229aeca791e8afbe",
-          "last_test_method": "CUA-click"
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "b2f6855dff188a9b",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -159,7 +165,7 @@
         "mockup_note": "No mockup — functional proof only",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen app-shell --platform ios",
-          "macos": "npm run ledger:screen -- --platform macos --screen app-shell --section flows"
+          "macos": "@Computer: npm run dev:macos:validation -- meetOverview; target the canonical app by full path; prove app-shell/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen app-shell --flow global-back --result pass --method <tier-method> --evidence \"...\""
       }
@@ -186,25 +192,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "CUA validation-gurusharan app-shell/title-action-messages: Meet→Messages→Recent conversations (title-messages AX wait timeout, tap OK)",
+          "evidence": "title-messages: Computer-use 2026-08-01",
           "blocker": "",
           "screenshot_ref": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "c303ef38cfebd62c",
-          "last_test_method": "CUA-click"
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "d3f65c3a496248fd",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "title-messages: CUA-click 2026-07-06",
+          "evidence": "Canonical LikemindedMac Computer proof: The Messages title action from Circles opened the Messages screen with conversation list, selected Priya thread, call headers, search, composer, and a Close action.",
           "blocker": "",
           "screenshot_ref": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "229aeca791e8afbe",
-          "last_test_method": "CUA-click"
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "b2f6855dff188a9b",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -216,7 +222,7 @@
         "mockup_note": "No mockup — functional proof only",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen app-shell --platform ios",
-          "macos": "npm run ledger:screen -- --platform macos --screen app-shell --section flows"
+          "macos": "@Computer: npm run dev:macos:validation -- meetOverview; target the canonical app by full path; prove app-shell/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen app-shell --flow title-action-messages --result pass --method <tier-method> --evidence \"...\""
       }
@@ -243,25 +249,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "CUA validation-gurusharan app-shell/title-action-settings: Profile→Settings→Account (title-settings AX wait timeout, tap OK)",
+          "evidence": "title-settings: Computer-use 2026-08-01",
           "blocker": "",
           "screenshot_ref": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "7ff61a63dac6b953",
-          "last_test_method": "CUA-click"
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "d3f65c3a496248fd",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "CUA validation-gurusharan: Profile title Settings opens Settings with Account",
+          "evidence": "Canonical LikemindedMac Computer proof: The Settings title action from Profile opened Settings with the Profile tab retained and the Soulmate settings pane rendered.",
           "blocker": "",
           "screenshot_ref": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "229aeca791e8afbe",
-          "last_test_method": "CUA-click"
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "b2f6855dff188a9b",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -273,7 +279,7 @@
         "mockup_note": "No mockup — functional proof only",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen app-shell --platform ios",
-          "macos": "npm run ledger:screen -- --platform macos --screen app-shell --section flows"
+          "macos": "@Computer: npm run dev:macos:validation -- meetOverview; target the canonical app by full path; prove app-shell/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen app-shell --flow title-action-settings --result pass --method <tier-method> --evidence \"...\""
       }
@@ -308,16 +314,16 @@
         },
         "macos": {
           "result": "pass",
-          "evidence": "menu-meet: CUA-click 2026-07-06 | menu-circles: CUA-click 2026-07-06 | menu-communities: CUA-click 2026-07-06 | menu-soulmate: CUA-click 2026-07-06 | menu-profile: CUA-click 2026-07-06",
+          "evidence": "Canonical LikemindedMac Computer proof: Command shortcuts ⌘1 through ⌘5 each selected Meet, Circles, Communities, Soulmate, and Profile respectively, with the destination content rendered after every shortcut.",
           "blocker": "",
           "screenshot_ref": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "229aeca791e8afbe",
-          "last_test_method": "CUA-click"
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "b2f6855dff188a9b",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -329,7 +335,7 @@
         "mockup_note": "No mockup — functional proof only",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen app-shell --platform ios",
-          "macos": "npm run ledger:screen -- --platform macos --screen app-shell --section flows"
+          "macos": "@Computer: npm run dev:macos:validation -- meetOverview; target the canonical app by full path; prove app-shell/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen app-shell --flow app-menu-nav --result pass --method <tier-method> --evidence \"...\""
       }
@@ -343,12 +349,12 @@
         "label": "Meet tab",
         "expected": "Selects Meet tab",
         "result": "pass",
-        "evidence": "CUA validation-gurusharan app-shell/tab-navigation: 5/5 tab taps ok=5 miss=0 flow_fail=0 retest 2026-07-07",
+        "evidence": "Computer-use validation-gurusharan app-shell/tab-navigation 2026-08-01: tab-meet",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "7ff61a63dac6b953",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "d3f65c3a496248fd",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "tab-circles",
@@ -356,12 +362,12 @@
         "label": "Circles tab",
         "expected": "Selects Circles tab",
         "result": "pass",
-        "evidence": "CUA validation-gurusharan app-shell/tab-navigation: 5/5 tab taps ok=5 miss=0 flow_fail=0 retest 2026-07-07",
+        "evidence": "Computer-use validation-gurusharan app-shell/tab-navigation 2026-08-01: tab-circles",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "7ff61a63dac6b953",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "d3f65c3a496248fd",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "tab-communities",
@@ -369,12 +375,12 @@
         "label": "Communities tab",
         "expected": "Selects Communities tab",
         "result": "pass",
-        "evidence": "CUA validation-gurusharan app-shell/tab-navigation: 5/5 tab taps ok=5 miss=0 flow_fail=0 retest 2026-07-07",
+        "evidence": "Computer-use validation-gurusharan app-shell/tab-navigation 2026-08-01: tab-communities",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "7ff61a63dac6b953",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "d3f65c3a496248fd",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "tab-soulmate",
@@ -382,12 +388,12 @@
         "label": "Soulmate tab",
         "expected": "Selects Soulmate tab when enabled",
         "result": "pass",
-        "evidence": "CUA validation-gurusharan app-shell/tab-navigation: 5/5 tab taps ok=5 miss=0 flow_fail=0 retest 2026-07-07",
+        "evidence": "Computer-use validation-gurusharan app-shell/tab-navigation 2026-08-01: tab-soulmate",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "7ff61a63dac6b953",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "d3f65c3a496248fd",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "tab-profile",
@@ -395,12 +401,12 @@
         "label": "Profile tab",
         "expected": "Selects Profile tab",
         "result": "pass",
-        "evidence": "CUA validation-gurusharan app-shell/tab-navigation: 5/5 tab taps ok=5 miss=0 flow_fail=0 retest 2026-07-07",
+        "evidence": "Computer-use validation-gurusharan app-shell/tab-navigation 2026-08-01: tab-profile",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "7ff61a63dac6b953",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "d3f65c3a496248fd",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "global-back",
@@ -408,12 +414,12 @@
         "label": "Back",
         "expected": "Pops navigation stack or dismisses cover",
         "result": "pass",
-        "evidence": "CUA validation-gurusharan app-shell/global-back: circle detail → Back to circles → Your room. prove_ios ok=1 flow_fail=0",
+        "evidence": "Computer-use validation-gurusharan app-shell/global-back 2026-08-01: global-back",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "7ff61a63dac6b953",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "d3f65c3a496248fd",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "title-messages",
@@ -421,12 +427,12 @@
         "label": "Messages bubble (toolbar)",
         "expected": "Opens conversations / chat entry",
         "result": "pass",
-        "evidence": "CUA validation-gurusharan app-shell/title-action-messages: Meet→Messages→Recent conversations (title-messages AX wait timeout, tap OK)",
+        "evidence": "Computer-use validation-gurusharan app-shell/title-action-messages 2026-08-01: title-messages",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "c303ef38cfebd62c",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "d3f65c3a496248fd",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "title-settings",
@@ -434,12 +440,12 @@
         "label": "Settings gear",
         "expected": "Pushes SettingsPrototypeView",
         "result": "pass",
-        "evidence": "CUA validation-gurusharan app-shell/title-action-settings: Profile→Settings→Account (title-settings AX wait timeout, tap OK)",
+        "evidence": "Computer-use validation-gurusharan app-shell/title-action-settings 2026-08-01: title-settings",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "7ff61a63dac6b953",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "d3f65c3a496248fd",
+        "last_test_method": "Computer-use"
       }
     ],
     "macos": [
@@ -449,12 +455,12 @@
         "label": "Meet tab",
         "expected": "Selects Meet tab",
         "result": "pass",
-        "evidence": "CUA validation-gurusharan: bottom nav switches all five tabs",
+        "evidence": "Canonical LikemindedMac Computer proof: Visible tab controls were activated in order Circles, Communities, Soulmate, Profile, and Meet; each fresh semantic state exposed exactly that selected tab.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "229aeca791e8afbe",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "b2f6855dff188a9b",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "tab-circles",
@@ -462,12 +468,12 @@
         "label": "Circles tab",
         "expected": "Selects Circles tab",
         "result": "pass",
-        "evidence": "CUA validation-gurusharan: bottom nav switches all five tabs",
+        "evidence": "Canonical LikemindedMac Computer proof: Visible tab controls were activated in order Circles, Communities, Soulmate, Profile, and Meet; each fresh semantic state exposed exactly that selected tab.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "229aeca791e8afbe",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "b2f6855dff188a9b",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "tab-communities",
@@ -475,12 +481,12 @@
         "label": "Communities tab",
         "expected": "Selects Communities tab",
         "result": "pass",
-        "evidence": "CUA validation-gurusharan: bottom nav switches all five tabs",
+        "evidence": "Canonical LikemindedMac Computer proof: Visible tab controls were activated in order Circles, Communities, Soulmate, Profile, and Meet; each fresh semantic state exposed exactly that selected tab.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "229aeca791e8afbe",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "b2f6855dff188a9b",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "tab-soulmate",
@@ -488,12 +494,12 @@
         "label": "Soulmate tab",
         "expected": "Selects Soulmate tab when enabled",
         "result": "pass",
-        "evidence": "CUA validation-gurusharan: bottom nav switches all five tabs",
+        "evidence": "Canonical LikemindedMac Computer proof: Visible tab controls were activated in order Circles, Communities, Soulmate, Profile, and Meet; each fresh semantic state exposed exactly that selected tab.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "229aeca791e8afbe",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "b2f6855dff188a9b",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "tab-profile",
@@ -501,12 +507,12 @@
         "label": "Profile tab",
         "expected": "Selects Profile tab",
         "result": "pass",
-        "evidence": "CUA validation-gurusharan: bottom nav switches all five tabs",
+        "evidence": "Canonical LikemindedMac Computer proof: Visible tab controls were activated in order Circles, Communities, Soulmate, Profile, and Meet; each fresh semantic state exposed exactly that selected tab.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "229aeca791e8afbe",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "b2f6855dff188a9b",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "global-back",
@@ -514,12 +520,12 @@
         "label": "Back chevron",
         "expected": "navigateBack() to previous screen",
         "result": "pass",
-        "evidence": "CUA validation-gurusharan: Back from circle detail returns to Circles room",
+        "evidence": "Canonical LikemindedMac Computer proof: From Messages, the global Back control returned to the previously selected Circles screen and restored its Messages title action.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "229aeca791e8afbe",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "b2f6855dff188a9b",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "title-messages",
@@ -527,12 +533,12 @@
         "label": "Messages bubble (title action)",
         "expected": "Navigate to messages screen",
         "result": "pass",
-        "evidence": "CUA validation-gurusharan: title Messages opens Messages screen",
+        "evidence": "Canonical LikemindedMac Computer proof: The Messages title action from Circles opened the Messages screen with conversation list, selected Priya thread, call headers, search, composer, and a Close action.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "229aeca791e8afbe",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "b2f6855dff188a9b",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "title-settings",
@@ -540,12 +546,12 @@
         "label": "Settings gear (title action)",
         "expected": "Navigate to settingsSoulmate",
         "result": "pass",
-        "evidence": "CUA validation-gurusharan: Profile title Settings opens Settings with Account",
+        "evidence": "Canonical LikemindedMac Computer proof: The Settings title action from Profile opened Settings with the Profile tab retained and the Soulmate settings pane rendered.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "229aeca791e8afbe",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "b2f6855dff188a9b",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "menu-meet",
@@ -553,12 +559,12 @@
         "label": "App menu Meet",
         "expected": "Selects Meet tab via NotificationCenter",
         "result": "pass",
-        "evidence": "CUA validation-gurusharan: Prototype menu ⌘1-5 switches Meet/Circles/Communities/Soulmate/Profile",
+        "evidence": "Canonical LikemindedMac Computer proof: Command shortcuts ⌘1 through ⌘5 each selected Meet, Circles, Communities, Soulmate, and Profile respectively, with the destination content rendered after every shortcut.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "229aeca791e8afbe",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "b2f6855dff188a9b",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "menu-circles",
@@ -566,12 +572,12 @@
         "label": "App menu Circles",
         "expected": "Selects Circles tab",
         "result": "pass",
-        "evidence": "CUA validation-gurusharan: Prototype menu ⌘1-5 switches Meet/Circles/Communities/Soulmate/Profile",
+        "evidence": "Canonical LikemindedMac Computer proof: Command shortcuts ⌘1 through ⌘5 each selected Meet, Circles, Communities, Soulmate, and Profile respectively, with the destination content rendered after every shortcut.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "229aeca791e8afbe",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "b2f6855dff188a9b",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "menu-communities",
@@ -579,12 +585,12 @@
         "label": "App menu Communities",
         "expected": "Selects Communities tab",
         "result": "pass",
-        "evidence": "CUA validation-gurusharan: Prototype menu ⌘1-5 switches Meet/Circles/Communities/Soulmate/Profile",
+        "evidence": "Canonical LikemindedMac Computer proof: Command shortcuts ⌘1 through ⌘5 each selected Meet, Circles, Communities, Soulmate, and Profile respectively, with the destination content rendered after every shortcut.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "229aeca791e8afbe",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "b2f6855dff188a9b",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "menu-soulmate",
@@ -592,12 +598,12 @@
         "label": "App menu Soulmate",
         "expected": "Selects Soulmate tab when enabled",
         "result": "pass",
-        "evidence": "CUA validation-gurusharan: Prototype menu ⌘1-5 switches Meet/Circles/Communities/Soulmate/Profile",
+        "evidence": "Canonical LikemindedMac Computer proof: Command shortcuts ⌘1 through ⌘5 each selected Meet, Circles, Communities, Soulmate, and Profile respectively, with the destination content rendered after every shortcut.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "229aeca791e8afbe",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "b2f6855dff188a9b",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "menu-profile",
@@ -605,12 +611,12 @@
         "label": "App menu Profile",
         "expected": "Selects Profile tab",
         "result": "pass",
-        "evidence": "CUA validation-gurusharan: Prototype menu ⌘1-5 switches Meet/Circles/Communities/Soulmate/Profile",
+        "evidence": "Canonical LikemindedMac Computer proof: Command shortcuts ⌘1 through ⌘5 each selected Meet, Circles, Communities, Soulmate, and Profile respectively, with the destination content rendered after every shortcut.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "229aeca791e8afbe",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "b2f6855dff188a9b",
+        "last_test_method": "Computer-use"
       }
     ]
   }

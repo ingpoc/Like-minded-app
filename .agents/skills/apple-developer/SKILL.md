@@ -1,11 +1,13 @@
 ---
 name: apple-developer
-description: Operate the Like-minded repo's Apple Developer and App Store Connect release lane. Use for Apple membership and team checks, bundle/App ID registration, Sign in with Apple, signing capabilities, App Store Connect app creation, TestFlight metadata or uploads, and reconciliation of Apple identifiers with repo release contracts.
+description: Use when operating the Like-minded repo's Apple Developer and App Store Connect release lane, including membership and team checks, bundle/App ID registration, Sign in with Apple, signing capabilities, App Store Connect records, TestFlight uploads, and reconciliation with repo release contracts.
 ---
 
 # Apple Developer
 
 Own Apple-side release setup for this repository. Keep portal state, Xcode configuration, backend Apple client IDs, and deterministic release evidence aligned.
+
+> **Self-validate after edits.** Run the local `create-skill` strict audit.
 
 ## Project binding
 
@@ -22,28 +24,10 @@ Own Apple-side release setup for this repository. Keep portal state, Xcode confi
 
 ## Verified state
 
-Update this section only after reading a saved Apple page, list, or detail view after submission.
-
-- 2026-07-20: Apple Developer Program membership active; renewal date 2027-07-21.
-- 2026-07-20: Apple Developer Program License Agreement accepted.
-- 2026-07-20: App Store Connect Terms of Service accepted by the user.
-- 2026-07-20: team App IDs contain `com.guru.entourage` and `com.guru.entourage.entourage`.
-- 2026-07-20: registration of `com.likeminded.app` failed because Apple reported the identifier unavailable; it was not created.
-- 2026-07-20: registered explicit App ID `com.gurusharan.likeminded` under team `9UPQL479Z5`; saved detail view confirms Sign in with Apple enabled as the primary App ID.
-- 2026-07-20: created one universal App Store Connect record for iOS and macOS with shared bundle ID `com.gurusharan.likeminded`, SKU `likeminded-apple`, listing name `Likeminded: Find Your Circle`, and Apple ID `6792839764`.
-- 2026-07-20: exact App Store name `Likeminded` was unavailable. The longer listing name succeeded; keep the in-app product name `Likeminded`.
-- 2026-07-20: capability audit found native Apple sign-in, Realtime microphone input, and LiveKit camera/microphone/network use. Keep the portal capability set to Sign in with Apple; configure macOS App Sandbox, outbound network, camera, audio input, and hardened runtime in XcodeGen/entitlements.
-- 2026-07-20: Apple portal access does not prove local signing access. Xcode still exposed only the Gmail Personal Team, and an automatic-provisioning macOS build failed with `No Account for Team "9UPQL479Z5"`. The paid Apple Account must appear in Xcode Accounts before signed-build proof can pass.
-- 2026-07-20: Xcode paid-team access was restored with Admin access to Certificates, Identifiers & Profiles. Automatic provisioning registered the development Mac and produced a signed macOS Release build for team `9UPQL479Z5`.
-- 2026-07-20: signed macOS entitlements proved application identifier `9UPQL479Z5.com.gurusharan.likeminded`, team `9UPQL479Z5`, Sign in with Apple, App Sandbox, outbound network, camera, microphone input, and hardened runtime.
-- 2026-07-20: registered the user's physical iPhone 17 in the Apple Developer device list and verified the saved row. Do not store its UDID or serial number in this skill or repo.
-- 2026-07-20: iOS automatic provisioning created and used the team provisioning profile, but the Release archive stopped on existing Swift compile errors before final app signing. Physical-device build/run also requires Developer Mode on the iPhone.
-- 2026-07-21: Developer Mode was enabled on the registered iPhone 17. A device-targeted iOS Release build succeeded, and signed entitlements proved team `9UPQL479Z5`, application identifier `9UPQL479Z5.com.gurusharan.likeminded`, and Sign in with Apple.
-- 2026-07-21: installed and launched the signed Release app on the physical iPhone 17, then produced a successful generic iOS Release archive at `.build/Likeminded-AppleConfig.xcarchive`.
-- 2026-07-21: iPhone Mirroring proved the native Sign in with Apple authorization sheet opens correctly. The post-authorization app failure `Not Found` came from the configured production fallback `https://likeminded-api.onrender.com`, which returned Render platform `404` with `x-render-routing: no-server` for both `/health` and `/v1/auth/apple`; this is a missing/stale backend deployment, not an Apple entitlement failure.
-- 2026-07-21: created the production Neon PostgreSQL project on the free plan in AWS Asia Pacific 1 (Singapore), with Neon Auth disabled because the app owns Apple/Google/wallet authentication. Never store or print its connection string.
-- 2026-07-21: deployed the Render Blueprint `likeminded-production` from commit `23e9736` on branch `cursor/circles-auth-convergence-wip-265f`. Render reports the `likeminded-api` deploy live; `/health` returns `200` with `db: postgres`, and an intentionally invalid request to `/v1/auth/apple` returns the backend-owned `401 apple_auth_failed` / `invalid_jwt` response instead of Render's former platform `404`.
-- 2026-07-21: production infrastructure recovery does not complete the Apple gate. Re-run the mirrored physical-device sign-in and require a persisted app session after the user performs device authentication; the latest retry was blocked because iPhone Mirroring reported `iPhone Not Found` while the phone was unavailable or locked.
+Read [references/verified-state.md](references/verified-state.md) before relying on
+saved portal, signing, device, backend, or App Store Connect claims. Update that
+reference only after reading a saved Apple page, list, detail view, or signed
+artifact after the relevant action.
 
 ## Portal workflow
 
@@ -68,12 +52,48 @@ Update this section only after reading a saved Apple page, list, or detail view 
 1. In Xcode Settings > Apple Accounts, verify that the paid account exposes team `9UPQL479Z5`; a Personal Team alone is insufficient.
 2. Leave password and 2FA entry to the user. Do not read, store, echo, or automate those secrets.
 3. Select accounts by paid team and role, not by an assumed email address. Treat the account-pane label as a preliminary check only.
-4. Run a Release build with `-allowProvisioningUpdates` under `script/cross_platform_validation_lock.sh`.
+4. Treat `-allowProvisioningUpdates` as an Apple-account mutation. Use it only when the requested provisioning scope authorizes that effect, then run the Release build under `script/cross_platform_validation_lock.sh`.
 5. When a connected development device is not registered, add `-allowProvisioningDeviceRegistration` together with `-allowProvisioningUpdates`, or register the exact user-authorized device in the Apple Developer portal. Verify the saved device list after registration.
-6. Claim local signing readiness only after the build succeeds and `codesign -d --entitlements :-` confirms the expected application identifier, team identifier, and entitlements on the built app.
+6. Claim local signing readiness only after the build succeeds, `codesign -d --entitlements :-` confirms the expected application identifier, team identifier, and entitlements, and the embedded provisioning profile authorizes the same restricted entitlements.
 7. Prove macOS and generic-device iOS separately; simulator or `CODE_SIGNING_ALLOWED=NO` builds are compile proof, not provisioning proof.
 8. A paired iPhone still needs Developer Mode enabled before Xcode can target, install, or launch a development build. Treat portal registration and device-runtime readiness as separate gates.
 9. After a signed device build, prove the live lane with `xcrun devicectl device install app` and `xcrun devicectl device process launch`; do not store device identifiers in repo files or command examples.
+
+## Physical iPhone developer diagnostics
+
+Use bundled `@Computer` for read-only native inspection of iPhone Mirroring and device Settings. Do not route this work through legacy macOS CUA. Use Xcode, `xcodebuild`, `devicectl`, and XCUITest for deterministic device execution; Computer Use supplies visual and system-sheet evidence, not a replacement for those tools.
+
+1. Preflight one explicit physical-device identity. Require `developerModeStatus: enabled`, `pairingState: paired`, developer services available, Developer Mode **On**, and UI Automation **On**. Keep the device identifier in the current process only; never persist it in the repo, skill, evidence JSON, or logs.
+2. Build and install once per source hash, then reuse that signed binary for compatible physical-device tests. Prefer XCUITest for repeatable navigation and assertions; reserve Computer Use for permission sheets, Apple authentication handoffs, device Settings, and visual inspection.
+3. Treat iPhone Mirroring as interaction and screenshot evidence only. Do not use it as the sole camera, microphone, WebRTC, or two-participant LiveKit proof; complete those checks directly on the physical iPhone and verify media state from both participants.
+4. Use Network Link Conditioner only in a bounded resilience lane. Recommended profiles for the current API and LiveKit paths are Wi-Fi baseline, LTE, High Latency DNS, Very Bad Network, and 100% Loss for disconnect/recovery. Changing this network setting requires action-time confirmation. Record the starting state and profile, then restore **Enable: Off** and verify it before leaving the lane.
+5. Use Hang Detection temporarily for voice interview, LiveKit join/rejoin, long scrolling, and account-deletion waits. It captures hangs over 250 ms; retain the diagnostic with the affected journey, then restore the prior setting. Do not enable Performance Trace by default: it requires a device restart and belongs only in targeted performance diagnosis.
+6. The Responsiveness test may record an RPM/network baseline before a media run, but it is environment metadata, not app success evidence. Network Override cost settings remain default unless the app implements explicit expensive/constrained-network behavior.
+7. Associated Domains Development and Universal Links Diagnostics are useful only when universal links enter the approved product scope. The device toggle does not prove the app entitlement, AASA file, production domain, or App Store-signed behavior.
+8. Never use **Clear Trusted Computers** as routine recovery; it destroys pairing records and expands the failure surface. Re-pair only when the current trust relationship is proven broken and the user authorizes that recovery.
+
+For a device resilience pass, retain a compact evidence bundle: source hash, binary identity, redacted device alias, network profile, immediate semantic postconditions, `.xcresult` or hang diagnostic path, screenshot references, and backend readback. Keep full logs on disk and load them only on mismatch or failure.
+
+## Keychain secret locator contract
+
+Read [references/keychain-secret-locators.md](references/keychain-secret-locators.md)
+before storing, locating, or consuming release credentials.
+
+## iOS TestFlight campaign
+
+Use this order for an iOS upload. Stop at the first failed gate; do not turn later portal setup into apparent release proof.
+
+1. Work from a clean release branch or isolated worktree. In a new worktree, run `npm ci` from the lockfile before the full auth suite; never symlink another worktree's `node_modules`.
+2. Query App Store Connect for uploaded iOS builds and set `CURRENT_PROJECT_VERSION` to `max(builds) + 1`; use `1` only when the saved build list is empty.
+3. Run `xcodegen generate --spec apps/ios-macos/project.yml`, then require `git diff --check` and no unexpected generated diff. `project.yml` remains the owner; never patch the generated project by hand.
+4. Deploy the exact reviewed commit before archiving. For a Blueprint-managed Render service, change the Blueprint branch, approve the sync, then explicitly deploy the latest commit if auto-deploy did not start. Verify the intended commit in Render plus live `/health`, `/privacy`, and backend-owned auth JSON.
+5. Run release configuration, auth, MVP smoke, and production gates. A failed ledger or external-evidence gate remains a blocker; do not replace it with a successful compile.
+6. Under `script/cross_platform_validation_lock.sh with_lock xcodebuild-ios`, archive `Release` for `generic/platform=iOS` with `-allowProvisioningUpdates`, then export with App Store Connect managed signing.
+7. Run `npm run verify:ios-release-candidate -- <exported-app>` on the exported signed `.app`. Require the expected bundle/team, build number, Sign in with Apple entitlement, privacy manifest, usage descriptions, production API URL, `get-task-allow=false`, and no auth bypass/debug route.
+8. Upload only the verified export. Wait for App Store processing and export-compliance resolution before assigning it to groups.
+9. Prove internal install first, then external Beta App Review, approval, email invitation, non-development-device install, and one external core-loop completion. Each is a separate evidence field; group creation alone is not TestFlight acceptance.
+
+If signing opens a password, 2FA, Face ID, or device-passcode gate, pause for the user. Do not ask them to paste the credential into chat or automation.
 
 ## Friction playbook
 
@@ -90,6 +110,11 @@ Update this section only after reading a saved Apple page, list, or detail view 
 - Use `set -o pipefail` and filter large `xcodebuild` output for `error:`, signing identity, provisioning profile, `CodeSign`, and the final build/archive result. Preserve the real pipeline exit status.
 - If Xcode creates or uses a provisioning profile and later reports Swift compiler errors, record provisioning as successful but final app signing as incomplete. Do not convert a source failure into an Apple-account failure.
 - Never store device IDs, serial numbers, phone numbers, account emails, certificate hashes, or provisioning-profile UUIDs in repo skills or logs intended for reuse.
+- Treat an Apple private key as compromised if its contents appear in any browser snapshot, terminal output, log, or chat transcript. Discard any unsaved provider edit, revoke the key in Apple Developer, permanently delete the downloaded file, create a replacement, and verify only masked provider metadata afterward.
+- Store the active `.p8` outside the repository with directory mode `700` and file mode `600`; inject it through the production secret manager. Never print, re-open, screenshot, or commit its contents, and scan the repo for private-key markers before commit.
+- When a Render branch change reports a successful Blueprint sync but the service still shows an older commit, use the service's **Manual Deploy → Deploy latest commit** action and verify the resulting live commit independently.
+- If a release test fails with `Cannot find module` in an isolated worktree, restore dependencies with `npm ci` and rerun the same gate. Do not classify missing local dependencies as an auth or Apple-platform defect.
+- If `xcodegen` changes tracked generated files unexpectedly, stop and reconcile `project.yml` before archiving. A locally patched `.pbxproj` is not a durable release fix.
 
 ## Release research gates
 
@@ -111,10 +136,17 @@ Official owners: [upload builds](https://developer.apple.com/help/app-store-conn
 - Never request, read, store, or repeat passwords, 2FA codes, recovery data, phone numbers, addresses, or unrelated account details.
 - Leave legal agreements, CAPTCHAs, payments, tax/banking data, and identity attestations to the user unless they explicitly authorize the exact action and policy permits it. Never accept legal terms on the user's behalf.
 - Keep portal inspection read-only until the user authorizes the exact external records or capabilities to create.
+- Never revoke or delete certificates, provisioning profiles, or Keychain identities without explicit authorization for the exact resource.
 - If Apple rejects an identifier, do not claim partial creation. Verify absence, record the collision here, and choose a replacement only within the user's authority.
 - Keep simulator and local-auth proof separate from real Apple sign-in, signed-device, and TestFlight proof.
 - Do not mark `release/testflight-evidence.json` true until the corresponding live postcondition is verified.
 - Do not enable capabilities merely because the membership includes them. Enable only implemented product requirements; unused services add provisioning, privacy, review, or compliance obligations.
+
+## Proof tiers
+
+- Report compile, development signing, archive, App Store/TestFlight, and release acceptance separately.
+- App Store/TestFlight proof requires a distribution export with `get-task-allow=false`, a processed build, and the correct App Store record.
+- Release acceptance requires installation through the intended external channel and completion of the required product journey. Never promote an earlier tier into a later one.
 
 ## Completion gates
 
@@ -123,4 +155,7 @@ Official owners: [upload builds](https://developer.apple.com/help/app-store-conn
 - App Store Connect app exists and exposes a numeric Apple ID.
 - Repo bundle ID and Apple client-ID configuration match the saved App ID.
 - Xcode exposes paid team `9UPQL479Z5`, and signed Release builds prove provisioning for macOS and iOS separately.
+- The exported iOS candidate passes `verify:ios-release-candidate` against the actual signed `.app`, not a simulator or archive-only artifact.
+- Render serves the intended reviewed commit, public `/privacy`, healthy production storage, and backend-owned Apple auth responses.
+- External TestFlight completion requires Beta App Review approval, an invited external tester, a non-development-device install, and a completed core loop.
 - `verify:release-config` and `verify:external-preflight` report truthfully; an external gate may remain incomplete for later infrastructure or TestFlight proof.

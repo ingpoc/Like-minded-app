@@ -24,8 +24,10 @@ enum IOSChatFixtures {
     }
 
     static var isActive: Bool {
-        ProcessInfo.processInfo.arguments.contains("--likeminded-start-chat")
-            || ProcessInfo.processInfo.environment["LIKEMINDED_VALIDATION_SCREEN"] == "chat"
+        let process = ProcessInfo.processInfo
+        if process.arguments.contains("--likeminded-start-chat") { return true }
+        if process.arguments.contains(where: { $0.hasPrefix("--likeminded-start-") }) { return false }
+        return process.environment["LIKEMINDED_VALIDATION_SCREEN"] == "chat"
             || UserDefaults.standard.string(forKey: "LIKEMINDED_VALIDATION_SCREEN") == "chat"
     }
 
@@ -108,95 +110,66 @@ struct SoulmatePrototypeView: View {
     @State private var validationMatchDetail: SoulmateMatch?
     @State private var validationChatMatch: SoulmateMatch?
     @State private var showValidationConversations = false
+    @State private var featuredMatchDetail: SoulmateMatchDetail?
+    @State private var deferredMatchId: String?
 
     var body: some View {
         NavigationStack {
-            ScreenContainer(title: "Soulmate", subtitle: "Discover") {
-                SoulmateHeroCard()
-
-                if !appState.soulmateEnabled {
-                    FeatureCard(title: "Enable Soulmate", eyebrow: "Private") {
-                        Toggle("Enable Soulmate", isOn: Binding(
-                            get: { appState.soulmateEnabled },
-                            set: { enabled in Task { await appState.setSoulmateEnabled(enabled) } }
-                        ))
-                        .font(PrototypeTypography.bodyStrong)
-                        .tint(PrototypePalette.accent)
-                        .accessibilityLabel("Enable Soulmate")
-                        .accessibilityValue("Off")
-
-                        Text("Shows only when enabled. Matches need mutual post-meet selection.")
-                            .font(PrototypeTypography.body)
-                            .foregroundStyle(PrototypePalette.subink)
-                    }
-                }
-
+            ScreenContainer(
+                title: "Soulmate",
+                subtitle: "This week’s introduction.",
+                caption: "A slower way to meet someone, shaped by how you connect."
+            ) {
                 if let error = appState.soulmateError {
                     Text(error)
                         .font(PrototypeTypography.metadata)
                         .foregroundStyle(PrototypePalette.amber)
-                }
-
-                if !appState.soulmatePendingSelections.isEmpty {
-                    Button { showingSelection = true } label: {
-                        PrimaryActionButton(title: "Post-meet selection", systemImage: "heart.circle.fill")
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("Post-meet selection")
+                        .accessibilityLabel("Soulmate error. \(error)")
                 }
 
                 if appState.soulmateEnabled {
-                    VStack(alignment: .leading, spacing: 14) {
-                        HStack {
-                            Text("YOUR MATCHES")
-                                .font(PrototypeTypography.eyebrow)
-                                .foregroundStyle(PrototypePalette.accent)
-                            Spacer()
-                            Button {
-                                Task { await appState.fetchSoulmateStatus() }
-                            } label: {
-                                Text("New matches")
-                                    .font(PrototypeTypography.metadata)
-                                    .foregroundStyle(PrototypePalette.accent)
-                            }
-                            .buttonStyle(.plain)
-                            .accessibilityLabel("New matches")
-                        }
-
                     if appState.isLoadingSoulmate {
                         ProgressView("Loading matches")
                             .font(PrototypeTypography.metadata)
                     } else if appState.soulmateMatches.isEmpty {
-                        Text("No matches yet. Join meetups and select connections.")
-                            .font(PrototypeTypography.body)
-                            .foregroundStyle(PrototypePalette.subink)
-                    } else {
-                        LazyVStack(spacing: 12) {
-                            ForEach(appState.soulmateMatches) { match in
-                                NavigationLink {
-                                    SoulmateMatchDetailView(match: match)
-                                } label: {
-                                    SoulmateMatchRow(match: match)
+                        SoulmateHeroCard()
+                    } else if let featured = appState.soulmateMatches.first {
+                        if deferredMatchId == featured.matchId {
+                            deferredIntroduction(featured)
+                        } else {
+                            featuredIntroduction(featured)
+                        }
+
+                        if appState.soulmateMatches.count > 1 {
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text("OTHER THOUGHTFUL POSSIBILITIES")
+                                    .font(PrototypeTypography.eyebrow)
+                                    .foregroundStyle(PrototypePalette.accent)
+                                ForEach(appState.soulmateMatches.dropFirst()) { match in
+                                    NavigationLink {
+                                        SoulmateMatchDetailView(match: match)
+                                    } label: {
+                                        SoulmateMatchRow(match: match)
+                                    }
+                                    .buttonStyle(.plain)
                                 }
-                                .buttonStyle(.plain)
                             }
                         }
                     }
-                    }
                 }
-            }
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink {
-                        ConversationListView(matches: appState.soulmateMatches)
-                    } label: {
-                        Image(systemName: "bubble.right")
+
+                if !appState.soulmatePendingSelections.isEmpty {
+                    Button { showingSelection = true } label: {
+                        SecondaryActionButton(title: "Choose after your recent meetup", systemImage: "heart.circle")
                     }
-                    .accessibilityLabel("Conversations")
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Choose who you connected with")
+                    .accessibilityHint("Opens a private selection from your recent meetup")
                 }
             }
             .task {
                 await appState.fetchSoulmateStatus()
+                await loadFeaturedMatchDetail()
                 #if DEBUG
                 if SoulmateSelectionFixtures.isActive {
                     showingSelection = true
@@ -217,6 +190,7 @@ struct SoulmatePrototypeView: View {
             }
             .onChange(of: appState.soulmateMatches) { _, _ in
                 openValidationMatchDetailIfNeeded()
+                Task { await loadFeaturedMatchDetail() }
                 #if DEBUG
                 openValidationChatIfNeeded()
                 #endif
@@ -236,6 +210,133 @@ struct SoulmatePrototypeView: View {
                     .presentationDetents([.medium, .large])
             }
         }
+    }
+
+    private func featuredIntroduction(_ match: SoulmateMatch) -> some View {
+        let detail = featuredMatchDetail?.matchId == match.matchId ? featuredMatchDetail : nil
+        let reasons = connectionReasons(for: match, detail: detail)
+        return VStack(alignment: .leading, spacing: 8) {
+            Text("THIS WEEK’S MUTUAL INTRODUCTION")
+                .font(PrototypeTypography.eyebrow)
+                .foregroundStyle(PrototypePalette.accent)
+
+            HStack(spacing: 14) {
+                DoodlePortrait(
+                    assetName: DoodleArt.portrait(forGenderString: detail?.basicInfo.gender),
+                    size: 72
+                )
+                    .accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(match.name)
+                        .font(PrototypeTypography.sectionTitle)
+                        .foregroundStyle(PrototypePalette.ink)
+                    Text(SoulmateMeetingCopy.context(for: match))
+                        .font(PrototypeTypography.caption)
+                        .foregroundStyle(PrototypePalette.subink)
+                }
+            }
+
+            if let detail, !detail.interests.isEmpty {
+                TokenRow(items: Array(detail.interests.map(\.label).prefix(3)))
+            }
+
+            Text("Why you may connect")
+                .font(PrototypeTypography.bodyStrong)
+                .foregroundStyle(PrototypePalette.ink)
+            ForEach(Array(reasons.prefix(2).enumerated()), id: \.offset) { _, reason in
+                Label(reason.text, systemImage: reason.icon)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            NavigationLink {
+                SoulmateMatchDetailView(match: match)
+            } label: {
+                PrimaryActionButton(title: "View full introduction", systemImage: "person.text.rectangle")
+            }
+            .buttonStyle(.plain)
+
+            HStack(spacing: 10) {
+                NavigationLink {
+                    ChatView(match: match)
+                } label: {
+                    SecondaryActionButton(title: "Message", systemImage: "bubble.left.and.bubble.right")
+                }
+                .buttonStyle(.plain)
+
+                Button { deferredMatchId = match.matchId } label: {
+                    SecondaryActionButton(title: "Keep for later", systemImage: "bookmark")
+                }
+                    .buttonStyle(.plain)
+                    .accessibilityHint("Keeps this introduction available here for later")
+                    .accessibilityIdentifier("soulmate-defer-introduction")
+            }
+
+            Label("Private until the choice was mutual.", systemImage: "lock")
+                .font(PrototypeTypography.caption)
+                .foregroundStyle(PrototypePalette.subink)
+        }
+        .font(PrototypeTypography.body)
+        .foregroundStyle(PrototypePalette.ink)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(PrototypePalette.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 24, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+    }
+
+    private func deferredIntroduction(_ match: SoulmateMatch) -> some View {
+        HStack(spacing: 14) {
+            Image(systemName: "heart")
+                .foregroundStyle(PrototypePalette.accent)
+                .frame(width: 42, height: 42)
+                .background(PrototypePalette.accentSoft, in: Circle())
+            VStack(alignment: .leading, spacing: 3) {
+                Text("Saved for later")
+                    .font(PrototypeTypography.bodyStrong)
+                    .foregroundStyle(PrototypePalette.ink)
+                Text("\(match.name) stays available here.")
+                    .font(PrototypeTypography.caption)
+                    .foregroundStyle(PrototypePalette.subink)
+            }
+            Spacer()
+            Button("Show introduction") { deferredMatchId = nil }
+                .font(PrototypeTypography.metadata)
+                .foregroundStyle(PrototypePalette.accent)
+                .buttonStyle(.plain)
+        }
+        .padding(16)
+        .background(PrototypePalette.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+    }
+
+    private func connectionReasons(
+        for match: SoulmateMatch,
+        detail: SoulmateMatchDetail?
+    ) -> [(icon: String, text: String)] {
+        let theirInterests = detail?.interests.map(\.label) ?? []
+        let mine = Set(appState.slice?.profile.interests.map { $0.label.lowercased() } ?? [])
+        let shared = theirInterests.filter { mine.contains($0.lowercased()) }
+        var reasons: [(String, String)] = []
+        if !shared.isEmpty {
+            reasons.append(("sparkles", "You both care about \(shared.prefix(2).joined(separator: " and "))."))
+        }
+        reasons.append(("person.2", "You both privately chose each other."))
+        return Array(reasons.prefix(3))
+    }
+
+    private func loadFeaturedMatchDetail() async {
+        guard let match = appState.soulmateMatches.first else {
+            featuredMatchDetail = nil
+            return
+        }
+        #if DEBUG
+        if IOSMatchDetailFixtures.isActive, match.matchId == IOSMatchDetailFixtures.preferredMatch.matchId {
+            featuredMatchDetail = IOSMatchDetailFixtures.detail
+            return
+        }
+        #endif
+        featuredMatchDetail = try? await appState.fetchSoulmateMatchDetail(id: match.matchId)
     }
 
     private func openValidationMatchDetailIfNeeded() {
@@ -289,12 +390,13 @@ private struct SoulmateHeroCard: View {
                     )
                     .shadow(color: PrototypePalette.accent.opacity(0.12), radius: 18, y: 10)
             }
+            .accessibilityHidden(true)
 
             Text("Matches are mutual.")
                 .font(PrototypeTypography.bodyStrong)
                 .foregroundStyle(PrototypePalette.ink)
 
-            Text("When both of you select each other, you will show up here.")
+            Text("Your choices stay private. You will only see someone here when you both choose each other.")
                 .font(PrototypeTypography.body)
                 .foregroundStyle(PrototypePalette.subink)
                 .multilineTextAlignment(.center)
@@ -305,6 +407,7 @@ private struct SoulmateHeroCard: View {
         .background(PrototypePalette.surface)
         .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 24, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -334,16 +437,10 @@ private struct SoulmateMatchRow: View {
 
             Spacer()
 
-            VStack(alignment: .trailing, spacing: 6) {
-                if let date = match.meetingDate ?? Optional(match.createdAt) {
-                    Text(LikemindedDate.short(date))
-                        .font(PrototypeTypography.metadata)
-                        .foregroundStyle(PrototypePalette.subink)
-                }
-                Circle()
-                    .fill(PrototypePalette.accent)
-                    .frame(width: 8, height: 8)
-                    .accessibilityHidden(true)
+            if let date = SoulmateMeetingCopy.displayDate(for: match) {
+                Text(LikemindedDate.short(date))
+                    .font(PrototypeTypography.metadata)
+                    .foregroundStyle(PrototypePalette.subink)
             }
 
             Image(systemName: "chevron.right")
@@ -351,10 +448,11 @@ private struct SoulmateMatchRow: View {
                 .foregroundStyle(PrototypePalette.subink)
                 .accessibilityHidden(true)
         }
-        .padding(14)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Match row")
-        .accessibilityValue("\(match.name), \(SoulmateMeetingCopy.context(for: match))")
+        .accessibilityLabel("Mutual match with \(ChatDisplayNames.displayName(match.name))")
+        .accessibilityValue(SoulmateMeetingCopy.context(for: match))
+        .accessibilityHint("Opens match details")
+        .padding(14)
         .background(PrototypePalette.surface)
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
@@ -375,9 +473,21 @@ private enum SoulmateMeetingCopy {
     static func context(for match: SoulmateMatch) -> String {
         let meetTitle = title(from: match.meetingId)
         if let date = match.meetingDate {
+            if let parsed = LikemindedDate.parse(date), parsed > Date() {
+                return "Connected through \(meetTitle)"
+            }
             return "Met at \(meetTitle) · \(LikemindedDate.relative(date))"
         }
         return "Met at \(meetTitle)"
+    }
+
+    static func displayDate(for match: SoulmateMatch) -> String? {
+        guard let meetingDate = match.meetingDate,
+              let parsed = LikemindedDate.parse(meetingDate),
+              parsed <= Date() else {
+            return match.createdAt
+        }
+        return meetingDate
     }
 }
 
@@ -432,6 +542,7 @@ struct SoulmateMatchDetailView: View {
                             SoulmateInterestChipLayout(interests: detail.interests)
                         }
                     }
+                    .accessibilityIdentifier("interest-chips")
 
                     FeatureCard(title: "You both like", eyebrow: "Shared") {
                         Text("Mutual match from a meetup. Chat opens once both people selected each other.")
@@ -540,45 +651,6 @@ private struct SoulmateInterestChip: View {
         case .deep: PrototypePalette.accent
         case .active: PrototypePalette.accent.opacity(0.55)
         case .casual: PrototypePalette.rule
-        }
-    }
-}
-
-private struct FlowLayout: Layout {
-    var spacing: CGFloat = 8
-
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        let width = proposal.width ?? 0
-        var x: CGFloat = 0
-        var y: CGFloat = 0
-        var rowHeight: CGFloat = 0
-        for subview in subviews {
-            let size = subview.sizeThatFits(.unspecified)
-            if x + size.width > width, x > 0 {
-                x = 0
-                y += rowHeight + spacing
-                rowHeight = 0
-            }
-            rowHeight = max(rowHeight, size.height)
-            x += size.width + spacing
-        }
-        return CGSize(width: width, height: y + rowHeight)
-    }
-
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        var x = bounds.minX
-        var y = bounds.minY
-        var rowHeight: CGFloat = 0
-        for subview in subviews {
-            let size = subview.sizeThatFits(.unspecified)
-            if x + size.width > bounds.maxX, x > bounds.minX {
-                x = bounds.minX
-                y += rowHeight + spacing
-                rowHeight = 0
-            }
-            subview.place(at: CGPoint(x: x, y: y), proposal: ProposedViewSize(size))
-            rowHeight = max(rowHeight, size.height)
-            x += size.width + spacing
         }
     }
 }
@@ -760,6 +832,7 @@ struct ChatView: View {
             .background(.regularMaterial)
         }
         .navigationTitle(partnerName)
+        .likemindedTabBarHidden()
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 Button {
@@ -769,6 +842,7 @@ struct ChatView: View {
                     Image(systemName: "phone")
                 }
                 .accessibilityLabel("Voice call")
+                .accessibilityIdentifier("voice-call-header")
 
                 Button {
                     callSheetMode = "video"
@@ -777,6 +851,7 @@ struct ChatView: View {
                     Image(systemName: "video")
                 }
                 .accessibilityLabel("Video call")
+                .accessibilityIdentifier("video-call-header")
 
                 Button {
                     showConversationInfo = true
@@ -784,6 +859,7 @@ struct ChatView: View {
                     Image(systemName: "info.circle")
                 }
                 .accessibilityLabel("Conversation info")
+                .accessibilityIdentifier("conversation-info-header")
             }
         }
         .sheet(isPresented: $showCallSheet) {
@@ -791,12 +867,15 @@ struct ChatView: View {
                 VStack(alignment: .leading, spacing: 14) {
                     Text(callSheetMode == "voice" ? "Voice call" : "Video call")
                         .font(PrototypeTypography.sectionTitle)
+                        .accessibilityIdentifier(callSheetMode == "voice" ? "voice-call-sheet" : "video-call-sheet")
                     Text("Scheduling a \(callSheetMode) call with \(partnerName) is not wired in this MVP. Message them to coordinate a meetup room instead.")
                         .font(PrototypeTypography.caption)
                         .foregroundStyle(PrototypePalette.subink)
                     Button("Done") { showCallSheet = false }
+                        .frame(minWidth: 88, minHeight: 44)
                         .buttonStyle(.borderedProminent)
                         .tint(PrototypePalette.accent)
+                        .accessibilityIdentifier("call-sheet-done")
                 }
                 .padding(20)
                 .navigationTitle("Call")
@@ -812,9 +891,12 @@ struct ChatView: View {
                     Text("Mutual match from \(SoulmateMeetingCopy.title(from: match.meetingId)). Messages sync through the backend chat thread.")
                         .font(PrototypeTypography.caption)
                         .foregroundStyle(PrototypePalette.subink)
+                        .accessibilityIdentifier("conversation-info-sheet")
                     Button("Done") { showConversationInfo = false }
+                        .frame(minWidth: 88, minHeight: 44)
                         .buttonStyle(.borderedProminent)
                         .tint(PrototypePalette.accent)
+                        .accessibilityIdentifier("call-sheet-done")
                 }
                 .padding(20)
                 .navigationTitle("Conversation info")
@@ -918,6 +1000,7 @@ private struct MessageBubble: View {
 }
 
 struct TypingIndicatorView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var pulse = false
 
     var body: some View {
@@ -925,15 +1008,22 @@ struct TypingIndicatorView: View {
             ForEach(0..<3, id: \.self) { index in
                 Circle()
                     .frame(width: 6, height: 6)
-                    .opacity(pulse ? 1 : 0.35)
-                    .animation(.easeInOut(duration: 0.3).delay(Double(index) * 0.2).repeatForever(autoreverses: true), value: pulse)
+                    .opacity(reduceMotion ? 0.65 : (pulse ? 1 : 0.35))
+                    .animation(
+                        reduceMotion ? nil : .easeInOut(duration: 0.3).delay(Double(index) * 0.2).repeatForever(autoreverses: true),
+                        value: pulse
+                    )
             }
         }
         .foregroundStyle(PrototypePalette.subink)
         .padding(10)
         .background(PrototypePalette.surface)
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .onAppear { pulse = true }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Typing")
+        .onAppear {
+            if !reduceMotion { pulse = true }
+        }
     }
 }
 
@@ -948,6 +1038,14 @@ struct SoulmateSelectionDialog: View {
     private var selectionContext: (meetingId: String, candidates: [SoulmatePotentialMatch])? {
         #if DEBUG
         if SoulmateSelectionFixtures.isActive {
+            // Prefer live pending so api-persist proof can POST /v1/me/soulmate/select.
+            // Fixture roster is visual-only fallback when validation-db has no pending meeting.
+            if let selection {
+                let live = potentialMatches(for: selection)
+                if !live.isEmpty {
+                    return (selection.meetingId, live)
+                }
+            }
             return (SoulmateSelectionFixtures.meetingId, SoulmateSelectionFixtures.candidates)
         }
         #endif
@@ -970,6 +1068,11 @@ struct SoulmateSelectionDialog: View {
                 Text("Did you connect with someone?")
                     .font(PrototypeTypography.sectionTitle)
                     .foregroundStyle(PrototypePalette.ink)
+
+                Text("Choose only people you genuinely want to reconnect with. Your choice stays private unless they choose you too.")
+                    .font(PrototypeTypography.body)
+                    .foregroundStyle(PrototypePalette.subink)
+                    .fixedSize(horizontal: false, vertical: true)
 
                 if let selectionContext {
                     LazyVStack(spacing: 10) {
@@ -1000,6 +1103,7 @@ struct SoulmateSelectionDialog: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
                             }
                             .buttonStyle(.plain)
+                            .accessibilityIdentifier("match-toggle")
                             .accessibilityLabel("Potential match row")
                             .accessibilityValue(selectedUserIds.contains(potentialMatch.userId) ? "Selected" : "Not selected")
                             .sensoryFeedback(.success, trigger: feedbackTrigger)
@@ -1009,7 +1113,9 @@ struct SoulmateSelectionDialog: View {
                     Button {
                         Task {
                             #if DEBUG
-                            if SoulmateSelectionFixtures.isActive {
+                            // Visual-only fixture meeting has no API meeting row — skip network.
+                            if SoulmateSelectionFixtures.isActive,
+                               selectionContext.meetingId == SoulmateSelectionFixtures.meetingId {
                                 feedbackTrigger += 1
                                 dismiss()
                                 return
@@ -1023,11 +1129,17 @@ struct SoulmateSelectionDialog: View {
                             dismiss()
                         }
                     } label: {
-                        PrimaryActionButton(title: "Submit", systemImage: "checkmark")
+                        PrimaryActionButton(
+                            title: selectedUserIds.isEmpty
+                                ? "Choose someone"
+                                : "Confirm \(selectedUserIds.count) choice\(selectedUserIds.count == 1 ? "" : "s")",
+                            systemImage: "checkmark"
+                        )
                     }
                     .buttonStyle(.plain)
                     .disabled(selectedUserIds.isEmpty)
-                    .accessibilityLabel("Submit")
+                    .accessibilityIdentifier("submit")
+                    .accessibilityLabel(selectedUserIds.isEmpty ? "Choose someone" : "Confirm choices")
                     .sensoryFeedback(.success, trigger: feedbackTrigger)
                 } else {
                     Text("No meetup selection is waiting.")
@@ -1039,20 +1151,35 @@ struct SoulmateSelectionDialog: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             .background(PrototypePalette.background)
             .navigationTitle("Soulmate")
-            .onAppear {
-                guard !didSeedValidationSelection else { return }
-                #if DEBUG
-                if SoulmateSelectionFixtures.isActive {
-                    selectedUserIds = Set([
-                        SoulmateSelectionFixtures.candidates[0].userId,
-                        SoulmateSelectionFixtures.candidates[1].userId
-                    ])
-                    didSeedValidationSelection = true
-                }
-                #endif
+            #if DEBUG
+            .task {
+                await seedValidationSelectionIfNeeded()
             }
+            .onChange(of: appState.soulmatePendingSelections.map(\.meetingId)) { _, _ in
+                Task { await seedValidationSelectionIfNeeded() }
+            }
+            #endif
         }
     }
+
+    #if DEBUG
+    private func seedValidationSelectionIfNeeded() async {
+        guard SoulmateSelectionFixtures.isActive, !didSeedValidationSelection else { return }
+        for _ in 0..<20 {
+            if let selection = appState.soulmatePendingSelections.first {
+                let live = potentialMatches(for: selection)
+                if !live.isEmpty {
+                    selectedUserIds = []
+                    didSeedValidationSelection = true
+                    return
+                }
+            }
+            try? await Task.sleep(nanoseconds: 200_000_000)
+        }
+        selectedUserIds = []
+        didSeedValidationSelection = true
+    }
+    #endif
 
     private func potentialMatches(for selection: SoulmatePendingSelection) -> [SoulmatePotentialMatch] {
         let raw: [SoulmatePotentialMatch]

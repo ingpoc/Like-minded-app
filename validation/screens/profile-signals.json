@@ -5,17 +5,23 @@
   "platforms": {
     "ios": {
       "ledger_legacy_id": null,
-      "implemented": false,
-      "source_files": [],
-      "source_hash": null,
+      "implemented": true,
+      "source_files": [
+        "apps/ios-macos/Sources/LikemindedApp/Views/ProfilePrototypeView.swift (ProfileSignalsView)"
+      ],
+      "source_hash": "9e58022f2898afc0",
       "mockup_ref": null,
       "mockup_missing": true,
-      "entry_points": [],
-      "backend_dependencies": [],
+      "entry_points": [
+        "Profile → Review signals"
+      ],
+      "backend_dependencies": [
+        "GET /v1/me/profile"
+      ],
       "ui_validation": null,
       "visual_parity": null,
-      "recent_screenshot_ref": null,
-      "notes": "No dedicated iOS screen — feature may live under another logical screen"
+      "recent_screenshot_ref": "output/validation/ios-screens/profile-signals.png",
+      "notes": "Production ProfileSignalsView reached from the populated Profile root."
     },
     "macos": {
       "ledger_legacy_id": "14-profile-signals",
@@ -23,43 +29,33 @@
       "source_files": [
         "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift"
       ],
-      "source_hash": "5f58d68c4fb27018",
+      "source_hash": "710e284816d69b06",
       "mockup_ref": "mockups/macos/17-20-profile-onboarding-detail-settings.png",
       "mockup_missing": false,
       "entry_points": [
-        "Continue from profileOnboarding",
-        "Share profile from myProfile"
+        "Review signals from Profile"
       ],
       "backend_dependencies": [
         "GET /v1/me/profile"
       ],
       "ui_validation": {
-        "result": "pass",
+        "result": "pending",
         "reference_mockup_ref": "mockups/macos/17-20-profile-onboarding-detail-settings.png",
         "recent_screenshot_ref": "output/validation/macos-screens/profileSignals.png",
         "design_ref": "DESIGN.md",
-        "last_compared_at": "2026-07-05",
-        "validated": [
-          "latest screenshot exists and was compared with reference mockup plate 18",
-          "DESIGN.md design language checked: warm canvas, calm editorial hierarchy, card system, green accents, bottom glass navigation",
-          "photo-led profile sidebar with voice-active pill and Circles/Connections/Events metrics",
-          "5-column personality signal cards with category icons and Creativity fifth card",
-          "Your vibe orb panel, About me, Languages, and Done share-flow CTA",
-          "control behavior tracked separately in controls[]"
+        "last_compared_at": "",
+        "validated": [],
+        "pending_validation": [
+          "Signals review content and Done → Profile navigation"
         ],
-        "pending_validation": [],
         "requires_implementation": [],
         "requires_fixing": [],
-        "intentional_differences": [
-          "Doodle portrait art vs photographic avatar in mockup",
-          "Backend-seeded stats and interest tags vs mockup placeholder counts/copy",
-          "Signal trait labels from validation profile.signals vs mockup sample values"
-        ],
-        "notes": "2026-07-05 dedicated profileSignals surface matches mockup 18 layout; capture at output/validation/macos-screens/profileSignals.png."
+        "intentional_differences": [],
+        "notes": "Redesigned contract has no carried-forward macOS proof."
       },
       "visual_parity": {
-        "result": "pass",
-        "notes": "2026-07-05 capture vs plate 18: photo-led sidebar with Circles/Connections/Events metrics, 5 icon signal cards (Communication/Energy/Trust/Mindset/Creativity), Your vibe + About me + Languages rows, Done CTA."
+        "result": "pending",
+        "notes": "Awaiting live capture comparison at the responsive validation matrix."
       },
       "recent_screenshot_ref": "output/validation/macos-screens/profileSignals.png",
       "notes": ""
@@ -67,23 +63,25 @@
   },
   "flows": [
     {
-      "id": "share-profile",
-      "name": "Done",
+      "id": "done",
+      "name": "Done reviewing signals",
       "origin": "profile-signals",
       "steps": [],
-      "destinations": [],
+      "destinations": [
+        "profile-populated"
+      ],
       "spans": [],
       "backend": [],
       "control_ids": {
         "ios": [],
         "macos": [
-          "share-profile"
+          "done"
         ]
       },
       "validation": {
         "ios": {
           "result": "not-applicable",
-          "evidence": "Platform screen not implemented",
+          "evidence": "No iOS controls for this macOS redesign flow",
           "blocker": "",
           "last_tested_at": "",
           "tested_source_hash": "",
@@ -91,29 +89,30 @@
         },
         "macos": {
           "result": "pass",
-          "evidence": "share-profile: verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (share-profile)",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: Back to profile closed the signal/edit surface and restored Profile with Your profile, in context, Voice-informed signals, placement evidence, interests, Edit profile, and re-interview actions.",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "5f58d68c4fb27018",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/profileSignalsDone-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "710e284816d69b06",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
         ],
         "success_signals": [
-          "User outcome achieved: Done"
+          "Done returns to Profile and Voice-informed signals is visible"
         ],
         "mockup_ref": null,
-        "mockup_note": "No mockup — functional proof only",
+        "mockup_note": "Functional proof of the approved truthful macOS contract",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen profile-signals --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh profileSignals → macos_cua_screen.sh profileSignals"
+          "macos": "@Computer: npm run dev:macos:validation -- profileSignals; target the canonical app by full path; prove profile-signals/<flow>"
         },
-        "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-signals --flow share-profile --result pass --method <tier-method> --evidence \"...\""
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-signals --flow done --result pass --method <tier-method> --evidence \"...\""
       }
     }
   ],
@@ -121,17 +120,17 @@
     "ios": [],
     "macos": [
       {
-        "id": "share-profile",
+        "id": "done",
         "type": "button",
         "label": "Done",
-        "expected": "Navigate → myProfile (editing:false)",
+        "expected": "Navigate → myProfile; destination exposes Voice-informed signals",
         "result": "pass",
-        "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (share-profile)",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: Back to profile closed the signal/edit surface and restored Profile with Your profile, in context, Voice-informed signals, placement evidence, interests, Edit profile, and re-interview actions.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "5f58d68c4fb27018",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "710e284816d69b06",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       }
     ]
   }

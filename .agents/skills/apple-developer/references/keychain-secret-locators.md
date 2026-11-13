@@ -1,0 +1,9 @@
+# Keychain secret locator contract
+
+- Let Xcode manage signing certificates and private keys. Prove access with a signed build; do not export, dump, or identify signing keys from Keychain output.
+- Store CLI-managed release secrets as generic-password items only when a downstream tool cannot use its own secure store. Record only these stable locators in skills or scripts: service `com.likeminded.release.apple` with accounts `app-store-connect-key-id`, `app-store-connect-issuer-id`, `app-store-connect-private-key-p8`, `sign-in-with-apple-key-id`, and `sign-in-with-apple-private-key-p8`; service `com.likeminded.release.render` with account `api-token`.
+- Check existence without revealing values: `security find-generic-password -s <service> -a <account> >/dev/null`. Retrieve with `-w` only inside a no-echo owner script that captures stdout directly into the consuming process; never print, trace, interpolate into a logged command, or persist the value in the repo.
+- Add or replace an item only with explicit user authorization. Prefer the interactive `security add-generic-password -U -s <service> -a <account> -w` prompt; never pass the secret as a command-line argument and never grant all-applications access with `-A`.
+- If a consumer requires a `.p8` path, materialize it only into a `mktemp -d` directory with mode `700`, write the file with mode `600`, register an exit trap that deletes the temporary directory, and keep the path and contents out of logs. A durable external file remains acceptable when it follows the existing `700`/`600` contract.
+- Treat Keychain authorization, item presence, development signing, App Store distribution signing, and a TestFlight upload as separate gates.
+- Inspect array-valued entitlements such as `com.apple.developer.applesignin` with `plutil -p`; `plutil -extract <key> raw` fails for arrays and can create a false-negative result.

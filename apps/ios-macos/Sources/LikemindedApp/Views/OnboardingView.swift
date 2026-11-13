@@ -67,8 +67,7 @@ struct OnboardingView: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.top, 4)
         }
-        .accessibilityElement(children: .contain)
-        .accessibilityLabel("Onboarding steps")
+        // Keep step buttons as individual AX targets (Voice profile step, etc.).
     }
 
     @ViewBuilder
@@ -341,6 +340,7 @@ struct OnboardingView: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel("\(title) step")
+        .accessibilityAddTraits(.isButton)
     }
 
     private func formLine(_ label: String, value: String) -> some View {

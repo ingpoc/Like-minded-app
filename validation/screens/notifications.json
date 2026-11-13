@@ -9,7 +9,7 @@
       "source_files": [
         "apps/ios-macos/Sources/LikemindedApp/Views/NotificationsView.swift"
       ],
-      "source_hash": "ab8d6357d3ed6b3b",
+      "source_hash": "187a5f7b822cee84",
       "mockup_ref": "mockups/ios/31-notifications.png",
       "mockup_missing": false,
       "entry_points": [
@@ -47,7 +47,7 @@
         "result": "pass",
         "notes": "2026-07-05: iOS stacked Notifications + Activity layout aligned to mockups/ios/31-notifications.png and macOS 19-notifications control model. Grouped Today/Yesterday/Earlier, This week activity, relative timestamps, kind-based row icons, Stay in the loop + Refresh capsule."
       },
-      "recent_screenshot_ref": "output/validation/ios-screens/19-notifications.png",
+      "recent_screenshot_ref": "output/validation/ios-screens/notifications.png",
       "notes": "macOS counterpart: validation/macos/19-notifications.json (--mac-screen notifications). Replaces prior All/Meets/Matches/Messages single-filter model."
     },
     "macos": {
@@ -75,7 +75,7 @@
           "latest screenshot exists and was compared with reference mockup plate 16",
           "DESIGN.md design language checked: warm canvas, calm editorial hierarchy, card system, green accents, bottom glass navigation",
           "equal-width split Notifications and Activity panels with section headers, filter pills, row cards, Mark all as read, Stay in the loop + Refresh footer",
-          "control behavior tracked separately in controls[]; CUA-click reproof stamped at source_hash bfecd0dc132580bf"
+          "control behavior tracked separately in controls[]; Computer-use reproof stamped at source_hash bfecd0dc132580bf"
         ],
         "pending_validation": [],
         "requires_implementation": [],
@@ -115,23 +115,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "notif-filter-pills: source-trace 2026-07-05",
+          "evidence": "notif-filter-pills: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "ab8d6357d3ed6b3b",
-          "last_test_method": "source-trace"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "187a5f7b822cee84",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "notif-filter-pills: screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (notif-filter-pills) (hash-mig",
+          "evidence": "notif-filter-pills: Computer-use 2026-07-17",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-17",
           "tested_source_hash": "bfecd0dc132580bf",
-          "last_test_method": "CUA-click"
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -143,7 +145,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/31-notifications.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen notifications --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh notifications → macos_cua_screen.sh notifications"
+          "macos": "@Computer: npm run dev:macos:validation -- notifications; target the canonical app by full path; prove notifications/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen notifications --flow notif-filter-pills --result pass --method <tier-method> --evidence \"...\""
       }
@@ -167,23 +169,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "mark-all-read: source-trace 2026-07-05",
+          "evidence": "mark-all-read: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "ab8d6357d3ed6b3b",
-          "last_test_method": "source-trace"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "187a5f7b822cee84",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "mark-all-read: screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (mark-all-read) (hash-migrated",
+          "evidence": "mark-all-read: Computer-use 2026-07-17",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-17",
           "tested_source_hash": "bfecd0dc132580bf",
-          "last_test_method": "CUA-click"
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -195,7 +199,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/31-notifications.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen notifications --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh notifications → macos_cua_screen.sh notifications"
+          "macos": "@Computer: npm run dev:macos:validation -- notifications; target the canonical app by full path; prove notifications/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen notifications --flow mark-all-read --result pass --method <tier-method> --evidence \"...\""
       }
@@ -219,23 +223,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "activity-filter-pills: source-trace 2026-07-05",
+          "evidence": "activity-filter-pills: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "ab8d6357d3ed6b3b",
-          "last_test_method": "source-trace"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "187a5f7b822cee84",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "activity-filter-pills: screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (activity-filter-pills) (hash-",
+          "evidence": "activity-filter-pills: Computer-use 2026-07-17",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-17",
           "tested_source_hash": "bfecd0dc132580bf",
-          "last_test_method": "CUA-click"
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -247,7 +253,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/31-notifications.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen notifications --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh notifications → macos_cua_screen.sh notifications"
+          "macos": "@Computer: npm run dev:macos:validation -- notifications; target the canonical app by full path; prove notifications/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen notifications --flow activity-filter-pills --result pass --method <tier-method> --evidence \"...\""
       }
@@ -271,23 +277,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "refresh: source-trace 2026-07-05",
+          "evidence": "refresh: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "ab8d6357d3ed6b3b",
-          "last_test_method": "source-trace"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "187a5f7b822cee84",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "refresh: screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (refresh) (hash-migrated: scre",
+          "evidence": "refresh: Computer-use 2026-07-17",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-17",
           "tested_source_hash": "bfecd0dc132580bf",
-          "last_test_method": "CUA-click"
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -299,7 +307,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/31-notifications.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen notifications --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh notifications → macos_cua_screen.sh notifications"
+          "macos": "@Computer: npm run dev:macos:validation -- notifications; target the canonical app by full path; prove notifications/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen notifications --flow refresh --result pass --method <tier-method> --evidence \"...\""
       }
@@ -323,23 +331,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "rows: source-trace 2026-07-05",
+          "evidence": "rows: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "ab8d6357d3ed6b3b",
-          "last_test_method": "source-trace"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "187a5f7b822cee84",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "rows: screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (rows) (hash-migrated: screen-",
+          "evidence": "rows: Computer-use 2026-07-17",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-17",
           "tested_source_hash": "bfecd0dc132580bf",
-          "last_test_method": "CUA-click"
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -351,7 +361,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/31-notifications.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen notifications --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh notifications → macos_cua_screen.sh notifications"
+          "macos": "@Computer: npm run dev:macos:validation -- notifications; target the canonical app by full path; prove notifications/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen notifications --flow rows --result pass --method <tier-method> --evidence \"...\""
       }
@@ -373,11 +383,12 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "done: source-trace 2026-07-05",
+          "evidence": "done: Computer-use 2026-07-19",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "ab8d6357d3ed6b3b",
-          "last_test_method": "source-trace"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "187a5f7b822cee84",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "not-applicable",
@@ -389,7 +400,7 @@
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -401,7 +412,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/31-notifications.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen notifications --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh notifications → macos_cua_screen.sh notifications"
+          "macos": "@Computer: npm run dev:macos:validation -- notifications; target the canonical app by full path; prove notifications/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen notifications --flow done --result pass --method <tier-method> --evidence \"...\""
       }
@@ -433,16 +444,17 @@
           "last_test_method": ""
         },
         "macos": {
-          "result": "pending",
-          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "result": "pass",
+          "evidence": "notif-settings-gear: Computer-use 2026-07-17",
           "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-17",
+          "tested_source_hash": "bfecd0dc132580bf",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -454,7 +466,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/31-notifications.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen notifications --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh notifications → macos_cua_screen.sh notifications"
+          "macos": "@Computer: npm run dev:macos:validation -- notifications; target the canonical app by full path; prove notifications/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen notifications --flow notif-open-settings --result pass --method <tier-method> --evidence \"...\""
       }
@@ -484,16 +496,17 @@
           "last_test_method": ""
         },
         "macos": {
-          "result": "pending",
-          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "result": "pass",
+          "evidence": "2026-07-18 prove (fresh binary): Enable desktop notifications → Desktop notifications enabled; screenshot-compare vs mockups/macos/13-16-community-members-event-messages-activity.png",
           "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
+          "screenshot_ref": "output/validation/macos-screens/notifications.png",
+          "last_tested_at": "2026-07-17",
+          "tested_source_hash": "bfecd0dc132580bf",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -505,7 +518,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/31-notifications.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen notifications --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh notifications → macos_cua_screen.sh notifications"
+          "macos": "@Computer: npm run dev:macos:validation -- notifications; target the canonical app by full path; prove notifications/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen notifications --flow desktop-notifications-prompt --result pass --method <tier-method> --evidence \"...\""
       }
@@ -519,12 +532,12 @@
         "label": "All / Unread / Mentions",
         "expected": "Filter notification list",
         "result": "pass",
-        "evidence": "2026-07-05: NotificationsView grouped sections + All/Unread/Mentions pills match macOS notifications panel filters (source_hash ab8d6357d3ed6b3b).",
+        "evidence": "Computer-use validation-gurusharan notifications/notif-filter-pills 2026-08-01: notif-filter-pills",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "ab8d6357d3ed6b3b",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "source-trace"
+        "tested_source_hash": "187a5f7b822cee84",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "mark-all-read",
@@ -532,12 +545,12 @@
         "label": "Mark all read",
         "expected": "Mark all notifications read in view",
         "result": "pass",
-        "evidence": "2026-07-05: Toolbar Mark all read calls appState.markNotificationsRead() (source_hash ab8d6357d3ed6b3b).",
+        "evidence": "Computer-use validation-gurusharan notifications/mark-all-read 2026-08-01: mark-all-read",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "ab8d6357d3ed6b3b",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "source-trace"
+        "tested_source_hash": "187a5f7b822cee84",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "activity-filter-pills",
@@ -545,12 +558,12 @@
         "label": "All / Circles / Communities",
         "expected": "Filter activity list",
         "result": "pass",
-        "evidence": "2026-07-05: Activity section All/Circles/Communities pills + This week header match macOS activity panel (source_hash ab8d6357d3ed6b3b).",
+        "evidence": "Computer-use validation-gurusharan notifications/activity-filter-pills 2026-08-01: activity-filter-pills",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "ab8d6357d3ed6b3b",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "source-trace"
+        "tested_source_hash": "187a5f7b822cee84",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "refresh",
@@ -558,12 +571,12 @@
         "label": "Refresh notifications",
         "expected": "fetchNotifications from backend",
         "result": "pass",
-        "evidence": "2026-07-05: Stay in the loop footer Refresh Label+arrow.clockwise calls fetchNotifications (source_hash ab8d6357d3ed6b3b).",
+        "evidence": "Computer-use validation-gurusharan notifications/refresh 2026-08-01: refresh",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "ab8d6357d3ed6b3b",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "source-trace"
+        "tested_source_hash": "187a5f7b822cee84",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "rows",
@@ -571,12 +584,12 @@
         "label": "Notification/activity rows",
         "expected": "Navigate by kind (meet/soulmate/communities) and dismiss sheet",
         "result": "pass",
-        "evidence": "2026-07-05: Row taps set requestedTab for meet/soulmate/communities and mark read; same GET /v1/me/notifications items as macOS (source_hash ab8d6357d3ed6b3b).",
+        "evidence": "Computer-use validation-gurusharan notifications/rows 2026-08-01: rows",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "ab8d6357d3ed6b3b",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "source-trace"
+        "tested_source_hash": "187a5f7b822cee84",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "done",
@@ -584,12 +597,12 @@
         "label": "Done",
         "expected": "Dismisses sheet",
         "result": "pass",
-        "evidence": "2026-07-05: Done toolbar button dismisses notifications sheet (source_hash ab8d6357d3ed6b3b).",
+        "evidence": "Computer validation-gurusharan notifications/done 2026-07-19: done",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "ab8d6357d3ed6b3b",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "source-trace"
+        "tested_source_hash": "187a5f7b822cee84",
+        "last_tested_at": "2026-07-19",
+        "last_test_method": "Computer-use"
       }
     ],
     "macos": [
@@ -599,12 +612,12 @@
         "label": "All/Unread/Mentions pills",
         "expected": "Filter notification list",
         "result": "pass",
-        "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (notif-filter-pills) (hash-migrated: screen-slice source hash)",
+        "evidence": "Computer-use validation-gurusharan 2026-07-17: notif-filter-pills",
         "blocker": "",
         "stub": false,
         "tested_source_hash": "bfecd0dc132580bf",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-07-17",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "mark-all-read",
@@ -612,12 +625,12 @@
         "label": "Mark all as read",
         "expected": "Mark all notifications read in view",
         "result": "pass",
-        "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (mark-all-read) (hash-migrated: screen-slice source hash)",
+        "evidence": "Computer-use validation-gurusharan 2026-07-17: mark-all-read",
         "blocker": "",
         "stub": false,
         "tested_source_hash": "bfecd0dc132580bf",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-07-17",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "activity-filter-pills",
@@ -625,12 +638,12 @@
         "label": "All/Circles/Communities pills",
         "expected": "Filter activity list",
         "result": "pass",
-        "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (activity-filter-pills) (hash-migrated: screen-slice source hash)",
+        "evidence": "Computer-use validation-gurusharan 2026-07-17: activity-filter-pills",
         "blocker": "",
         "stub": false,
         "tested_source_hash": "bfecd0dc132580bf",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-07-17",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "refresh",
@@ -638,12 +651,12 @@
         "label": "Refresh notifications",
         "expected": "fetchNotifications from backend",
         "result": "pass",
-        "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (refresh) (hash-migrated: screen-slice source hash)",
+        "evidence": "Computer-use validation-gurusharan 2026-07-17: refresh",
         "blocker": "",
         "stub": false,
         "tested_source_hash": "bfecd0dc132580bf",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-07-17",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "rows",
@@ -651,38 +664,38 @@
         "label": "Notification/activity rows",
         "expected": "Navigate by kind (meet/messages/communities)",
         "result": "pass",
-        "evidence": "screen-capture 2026-07-05 post-CUA-needle accessibility: reproof after source hash change (rows) (hash-migrated: screen-slice source hash)",
+        "evidence": "Computer-use validation-gurusharan 2026-07-17: rows",
         "blocker": "",
         "stub": false,
         "tested_source_hash": "bfecd0dc132580bf",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-07-17",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "notif-settings-gear",
         "type": "button",
         "label": "Settings gear",
         "expected": "Navigate to settingsSoulmate",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "Computer validation-gurusharan notifications/notif-open-settings 2026-07-17: notif-settings-gear",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-07-17",
+        "tested_source_hash": "bfecd0dc132580bf",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "desktop-notif-cta",
         "type": "button",
         "label": "Enable desktop notifications",
         "expected": "Prompts or enables OS notifications",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "2026-07-18 prove (fresh binary): Enable desktop notifications → Desktop notifications enabled; screenshot-compare vs mockups/macos/13-16-community-members-event-messages-activity.png",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-07-17",
+        "tested_source_hash": "bfecd0dc132580bf",
+        "last_test_method": "Computer-use"
       }
     ]
   }

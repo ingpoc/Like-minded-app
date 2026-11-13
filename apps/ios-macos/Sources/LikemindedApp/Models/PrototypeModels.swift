@@ -319,10 +319,6 @@ struct ReflectPlaceConnectRequest: Encodable {
     let reflectionAnswers: [String]
 }
 
-struct RealtimeSessionRequest: Encodable {
-    let safetyIdentifier: String
-}
-
 struct GoogleAuthRequest: Encodable {
     let idToken: String
 }

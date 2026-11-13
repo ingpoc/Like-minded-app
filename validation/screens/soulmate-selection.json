@@ -10,7 +10,7 @@
         "apps/ios-macos/Sources/LikemindedApp/Views/SoulmateView.swift (SoulmateSelectionDialog)",
         "apps/ios-macos/Sources/LikemindedApp/Views/RootView.swift (showsValidationSoulmateSelection)"
       ],
-      "source_hash": "64d34e274e79ec62",
+      "source_hash": "af0e4e6651fc5dc6",
       "mockup_ref": "mockups/ios/30-soulmate-selection.png",
       "mockup_missing": false,
       "entry_points": [
@@ -50,7 +50,7 @@
   "flows": [
     {
       "id": "post-meet-selection-submit",
-      "name": "Submit post-meet Soulmate selection",
+      "name": "Confirm post-meet Soulmate choices",
       "origin": "soulmate-selection",
       "steps": [],
       "destinations": [],
@@ -68,11 +68,12 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "match-toggle: screen-capture 2026-07-05 | submit: screen-capture 2026-07-05",
+          "evidence": "match-toggle: api-persist 2026-08-01 | submit: api-persist 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "64d34e274e79ec62",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "af0e4e6651fc5dc6",
+          "last_test_method": "api-persist"
         },
         "macos": {
           "result": "not-applicable",
@@ -97,7 +98,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/30-soulmate-selection.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen soulmate-selection --platform ios",
-          "macos": "npm run ledger:screen -- --platform macos --screen soulmate-selection --section flows"
+          "macos": "@Computer: npm run dev:macos:validation -- soulmate-selection; target the canonical app by full path; prove soulmate-selection/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen soulmate-selection --flow post-meet-selection-submit --result pass --method <tier-method> --evidence \"...\""
       }
@@ -130,12 +131,12 @@
           "last_test_method": ""
         },
         "macos": {
-          "result": "pending",
-          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
-          "blocker": "Product gap — API client exists; MacAppState loads pendingSelections; no selection UI wired",
-          "last_tested_at": "",
+          "result": "not-applicable",
+          "evidence": "platforms.macos.implemented=false; no dedicated macOS post-meet selection screen (iOS owns SoulmateSelectionDialog)",
+          "blocker": "",
+          "last_tested_at": "2026-07-18",
           "tested_source_hash": "",
-          "last_test_method": ""
+          "last_test_method": "coordinator-closeout"
         }
       },
       "proof": {
@@ -151,7 +152,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/30-soulmate-selection.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen soulmate-selection --platform ios",
-          "macos": "npm run ledger:screen -- --platform macos --screen soulmate-selection --section flows"
+          "macos": "@Computer: npm run dev:macos:validation -- soulmate-selection; target the canonical app by full path; prove soulmate-selection/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen soulmate-selection --flow post-meet-selection-ui-macos --result pass --method <tier-method> --evidence \"...\""
       }
@@ -165,25 +166,25 @@
         "label": "Potential match row (multi-select)",
         "expected": "Toggles selection in selectedUserIds",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (match-toggle)",
+        "evidence": "api-persist validation-gurusharan soulmate-selection/post-meet-selection-submit 2026-08-01: match-toggle",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-05",
-        "tested_source_hash": "64d34e274e79ec62",
-        "last_test_method": "screen-capture"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "af0e4e6651fc5dc6",
+        "last_test_method": "api-persist"
       },
       {
         "id": "submit",
         "type": "button",
-        "label": "Submit",
-        "expected": "POST selection; creates mutual matches; disabled when empty",
+        "label": "Confirm choices",
+        "expected": "Starts with no preselection; POSTs explicit choices; creates mutual matches; disabled when empty",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (submit)",
+        "evidence": "api-persist validation-gurusharan soulmate-selection/post-meet-selection-submit 2026-08-01: submit",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-05",
-        "tested_source_hash": "64d34e274e79ec62",
-        "last_test_method": "screen-capture"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "af0e4e6651fc5dc6",
+        "last_test_method": "api-persist"
       }
     ],
     "macos": [

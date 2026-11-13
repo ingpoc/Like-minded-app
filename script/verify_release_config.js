@@ -23,6 +23,7 @@ assertIncludes("apps/ios-macos/project.yml", project, "DEVELOPMENT_TEAM: 9UPQL47
 assertIncludes("apps/ios-macos/project.yml", project, "CODE_SIGN_ENTITLEMENTS: Entitlements/Likeminded.entitlements");
 assertIncludes("apps/ios-macos/project.yml", project, "INFOPLIST_KEY_NSMicrophoneUsageDescription");
 assertIncludes("apps/ios-macos/project.yml", project, "INFOPLIST_KEY_NSCameraUsageDescription");
+assertIncludes("apps/ios-macos/project.yml", project, '"UISupportedInterfaceOrientations~ipad"');
 assertIncludes("apps/ios-macos/project.yml", project, "INFOPLIST_KEY_LIKEMINDED_API_BASE_URL");
 assertIncludes("apps/ios-macos/project.yml", project, "INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO");
 assertIncludes("apps/ios-macos/project.yml", project, "Resources/PrivacyInfo.xcprivacy");
@@ -41,6 +42,7 @@ assertIncludes("apps/ios-macos/Entitlements/LikemindedMac.entitlements", macEnti
 assertIncludes("apps/ios-macos/project.yml", project, "CODE_SIGN_ENTITLEMENTS: Entitlements/LikemindedMac.entitlements");
 assertIncludes("apps/ios-macos/project.yml", project, "CODE_SIGN_ENTITLEMENTS: Entitlements/LikemindedMac.Debug.entitlements");
 assertIncludes("apps/ios-macos/project.yml", project, "ENABLE_HARDENED_RUNTIME: YES");
+assertIncludes("apps/ios-macos/project.yml", project, "LSApplicationCategoryType: public.app-category.social-networking");
 
 const macDebugEntitlements = read("apps/ios-macos/Entitlements/LikemindedMac.Debug.entitlements");
 assertIncludes("apps/ios-macos/Entitlements/LikemindedMac.Debug.entitlements", macDebugEntitlements, "com.apple.developer.applesignin");
@@ -61,6 +63,26 @@ assertIncludes("apps/ios-macos/Info/LikemindedMac-Info.plist", macInfo, "GIDClie
 assertIncludes("apps/ios-macos/Info/LikemindedMac-Info.plist", macInfo, "$(GOOGLE_CLIENT_ID_MAC)");
 assertIncludes("apps/ios-macos/Info/LikemindedMac-Info.plist", macInfo, "$(GOOGLE_REVERSED_CLIENT_ID_MAC)");
 assertIncludes("apps/ios-macos/Info/LikemindedMac-Info.plist", macInfo, "$(PRODUCT_BUNDLE_IDENTIFIER)");
+const macAppState = read("apps/ios-macos/Sources/LikemindedMac/MacAppState.swift");
+assert.match(
+  macAppState,
+  /func deleteAccount\(using controller: AppleSignInController\) async -> Bool \{[\s\S]*?let userId = authSession\?\.userId[\s\S]*?try await client\.deleteAccount\(appleAuthorization: appleAuthorization\)[\s\S]*?UserDefaults\.standard\.removeObject\(forKey: "likeminded\.profile-interview\.\\\(userId\)"\)[\s\S]*?signOut\(\)/,
+  "MacAppState.deleteAccount must capture the user id, delete remotely, clear the local interview, then sign out"
+);
+
+const macAPIClient = read("apps/ios-macos/Sources/LikemindedMac/LikemindedAPIClient.swift");
+assertNotIncludes("LikemindedAPIClient.swift", macAPIClient, "likeminded.profile-interview");
+
+assertIncludes("apps/ios-macos/Info/Likeminded-Info.plist", read("apps/ios-macos/Info/Likeminded-Info.plist"), "GIDClientID");
+assertIncludes("apps/ios-macos/Info/Likeminded-Info.plist", read("apps/ios-macos/Info/Likeminded-Info.plist"), "LIKEMINDED_API_BASE_URL");
+assertIncludes("apps/ios-macos/Info/Likeminded-Info.plist", read("apps/ios-macos/Info/Likeminded-Info.plist"), "$(GOOGLE_REVERSED_CLIENT_ID_IOS)");
+assertIncludes("apps/ios-macos/Info/LikemindedMac-Info.plist", read("apps/ios-macos/Info/LikemindedMac-Info.plist"), "$(GOOGLE_CLIENT_ID_MAC)");
+assertIncludes("apps/ios-macos/Info/LikemindedMac-Info.plist", read("apps/ios-macos/Info/LikemindedMac-Info.plist"), "LIKEMINDED_API_BASE_URL");
+assertIncludes("apps/ios-macos/Info/LikemindedMac-Info.plist", read("apps/ios-macos/Info/LikemindedMac-Info.plist"), "$(GOOGLE_REVERSED_CLIENT_ID_MAC)");
+const sharedPrivacyManifest = read("apps/ios-macos/Sources/Shared/PrivacyInfo.xcprivacy");
+assertIncludes("PrivacyInfo.xcprivacy", sharedPrivacyManifest, "NSPrivacyTracking");
+assertIncludes("PrivacyInfo.xcprivacy", sharedPrivacyManifest, "NSPrivacyCollectedDataTypes");
+assertIncludes("PrivacyInfo.xcprivacy", sharedPrivacyManifest, "NSPrivacyAccessedAPICategoryUserDefaults");
 
 const apiClient = read("apps/ios-macos/Sources/LikemindedApp/Data/LikemindedAPIClient.swift");
 assertIncludes("LikemindedAPIClient.swift", apiClient, "https://likeminded-api.onrender.com");
@@ -82,6 +104,9 @@ for (const key of [
   "LIVEKIT_URL",
   "APPLE_BUNDLE_ID",
   "APPLE_CLIENT_ID",
+  "APPLE_TEAM_ID",
+  "APPLE_KEY_ID",
+  "APPLE_PRIVATE_KEY",
   "APPLE_MAC_BUNDLE_ID",
   "APPLE_CLIENT_IDS",
   "APPLE_TEAM_ID",
@@ -104,6 +129,9 @@ for (const key of [
   "LIVEKIT_URL=",
   "APPLE_BUNDLE_ID=com.gurusharan.likeminded",
   "APPLE_CLIENT_ID=com.gurusharan.likeminded",
+  "APPLE_TEAM_ID=9UPQL479Z5",
+  "APPLE_KEY_ID=",
+  "APPLE_PRIVATE_KEY=",
   "APPLE_MAC_BUNDLE_ID=com.gurusharan.likeminded",
   "APPLE_CLIENT_IDS=com.gurusharan.likeminded",
   "APPLE_TEAM_ID=9UPQL479Z5",
@@ -122,7 +150,7 @@ for (const key of [
 }
 
 const privacy = read("docs/references/privacy-policy-testflight.md");
-for (const phrase of ["voice interview transcripts", "AI And Media Processing", "Retention And Deletion"]) {
+for (const phrase of ["voice interview transcripts", "Voice interview transcript", "AI And Media Processing", "LiveKit", "Account Deletion", "Retention And Deletion"]) {
   assertIncludes("privacy-policy-testflight.md", privacy, phrase);
 }
 
@@ -134,6 +162,7 @@ const packageJson = read("package.json");
 assertIncludes("package.json", packageJson, "verify:simulator-local");
 assertIncludes("package.json", packageJson, "verify:external-preflight");
 assertIncludes("package.json", packageJson, "verify:ios-release-candidate");
+assertIncludes("package.json", packageJson, "verify:release-candidate");
 
 const iosReleaseVerifier = read("script/verify_ios_release_candidate.sh");
 for (const phrase of ["GIDClientID", "PrivacyInfo.xcprivacy", "get-task-allow", "LIKEMINDED_DEV_AUTH_BYPASS"]) {
@@ -151,7 +180,8 @@ assertIncludes("services/api/src/server.js", server, "appleAuthorization");
 
 const setupDoc = read("docs/workflows/setup.md");
 assertIncludes("docs/workflows/setup.md", setupDoc, "LiveKitMeetSession");
-assertIncludes("docs/workflows/setup.md", setupDoc, "GOOGLE_REVERSED_CLIENT_ID");
+assertIncludes("docs/workflows/setup.md", setupDoc, "GOOGLE_REVERSED_CLIENT_ID_IOS");
+assertIncludes("docs/workflows/setup.md", setupDoc, "GOOGLE_REVERSED_CLIENT_ID_MAC");
 
 const validation = read("docs/workflows/validation.md");
 assertIncludes("docs/workflows/validation.md", validation, "npm run verify:simulator-local");

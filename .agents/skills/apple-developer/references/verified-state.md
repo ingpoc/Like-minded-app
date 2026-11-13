@@ -1,0 +1,26 @@
+# Verified Apple release state
+
+Update this file only after reading a saved Apple page, list, or detail view after submission.
+
+- 2026-07-20: Apple Developer Program membership active; renewal date 2027-07-21.
+- 2026-07-20: Apple Developer Program License Agreement accepted.
+- 2026-07-20: App Store Connect Terms of Service accepted by the user.
+- 2026-07-20: team App IDs contain `com.guru.entourage` and `com.guru.entourage.entourage`.
+- 2026-07-20: registration of `com.likeminded.app` failed because Apple reported the identifier unavailable; it was not created.
+- 2026-07-20: registered explicit App ID `com.gurusharan.likeminded` under team `9UPQL479Z5`; saved detail view confirms Sign in with Apple enabled as the primary App ID.
+- 2026-07-20: created one universal App Store Connect record for iOS and macOS with shared bundle ID `com.gurusharan.likeminded`, SKU `likeminded-apple`, listing name `Likeminded: Find Your Circle`, and Apple ID `6792839764`.
+- 2026-07-20: exact App Store name `Likeminded` was unavailable. The longer listing name succeeded; keep the in-app product name `Likeminded`.
+- 2026-07-20: capability audit found native Apple sign-in, Realtime microphone input, and LiveKit camera/microphone/network use. Keep the portal capability set to Sign in with Apple; configure macOS App Sandbox, outbound network, camera, audio input, and hardened runtime in XcodeGen/entitlements.
+- 2026-07-20: Apple portal access does not prove local signing access. Xcode still exposed only the Gmail Personal Team, and an automatic-provisioning macOS build failed with `No Account for Team "9UPQL479Z5"`. The paid Apple Account must appear in Xcode Accounts before signed-build proof can pass.
+- 2026-07-20: Xcode paid-team access was restored with Admin access to Certificates, Identifiers & Profiles. Automatic provisioning registered the development Mac and produced a signed macOS Release build for team `9UPQL479Z5`.
+- 2026-07-20: signed macOS entitlements proved application identifier `9UPQL479Z5.com.gurusharan.likeminded`, team `9UPQL479Z5`, Sign in with Apple, App Sandbox, outbound network, camera, microphone input, and hardened runtime.
+- 2026-07-20: registered the user's physical iPhone 17 in the Apple Developer device list and verified the saved row. Do not store its UDID or serial number in this skill or repo.
+- 2026-07-20: iOS automatic provisioning created and used the team provisioning profile, but the Release archive stopped on existing Swift compile errors before final app signing. Physical-device build/run also requires Developer Mode on the iPhone.
+- 2026-07-21: Developer Mode was enabled on the registered iPhone 17. A device-targeted iOS Release build succeeded, and signed entitlements proved team `9UPQL479Z5`, application identifier `9UPQL479Z5.com.gurusharan.likeminded`, and Sign in with Apple.
+- 2026-07-21: installed and launched the signed Release app on the physical iPhone 17, then produced a successful generic iOS Release archive at `.build/Likeminded-AppleConfig.xcarchive`.
+- 2026-07-21: iPhone Mirroring proved the native Sign in with Apple authorization sheet opens correctly. The post-authorization app failure `Not Found` came from the configured production fallback `https://likeminded-api.onrender.com`, which returned Render platform `404` with `x-render-routing: no-server` for both `/health` and `/v1/auth/apple`; this is a missing/stale backend deployment, not an Apple entitlement failure.
+- 2026-07-21: created the production Neon PostgreSQL project on the free plan in AWS Asia Pacific 1 (Singapore), with Neon Auth disabled because the app owns Apple/Google/wallet authentication. Never store or print its connection string.
+- 2026-07-21: deployed the Render Blueprint `likeminded-production` from commit `23e9736` on branch `cursor/circles-auth-convergence-wip-265f`. Render reports the `likeminded-api` deploy live; `/health` returns `200` with `db: postgres`, and an intentionally invalid request to `/v1/auth/apple` returns the backend-owned `401 apple_auth_failed` / `invalid_jwt` response instead of Render's former platform `404`.
+- 2026-07-21: production infrastructure recovery does not complete the Apple gate. Re-run the mirrored physical-device sign-in and require a persisted app session after the user performs device authentication; the latest retry was blocked because iPhone Mirroring reported `iPhone Not Found` while the phone was unavailable or locked.
+- 2026-07-22: login Keychain access and automatic provisioning were re-proved with a signed generic-device iOS Release build. The signed app and embedded profile contain team `9UPQL479Z5`, application identifier `9UPQL479Z5.com.gurusharan.likeminded`, and Sign in with Apple. `get-task-allow=true` makes this development-signing proof only; require an App Store export with `get-task-allow=false` for TestFlight.
+- 2026-07-22: read-only inspection through bundled `@Computer` and iPhone Mirroring confirmed Developer Mode **On** in Privacy & Security. The Developer menu showed UI Automation **On**, Associated Domains Development **On**, and Hang Detection, Performance Trace, Network Link Conditioner, and Network Override **Off/default**. No device setting was changed.

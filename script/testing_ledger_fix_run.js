@@ -2,10 +2,11 @@
 "use strict";
 
 /**
- * Single fixer turn: claim next issue + compact fix card (~12 lines).
+ * Claim one issue and print the compact fix phase of a bounded flow campaign.
  *
  *   npm run testing:ledger-fix-run
  *   npm run testing:ledger-fix-run -- --platform ios
+ *   npm run testing:ledger-fix-run -- --platform ios --issue-id <id>
  *   npm run testing:ledger-fix-run -- --no-claim
  */
 const { spawnSync } = require("node:child_process");
@@ -18,11 +19,13 @@ function arg(name, fallback = null) {
 }
 
 const platformFilter = arg("--platform");
+const issueIdFilter = arg("--issue-id");
 const noClaim = process.argv.includes("--no-claim");
 const asJson = process.argv.includes("--json");
 
 const fixArgs = ["script/testing_ledger_fix_next.js", "--json"];
 if (platformFilter) fixArgs.push("--platform", platformFilter);
+if (issueIdFilter) fixArgs.push("--issue-id", issueIdFilter);
 if (!noClaim) fixArgs.push("--claim");
 
 const result = spawnSync("node", fixArgs, { cwd: root, encoding: "utf8" });
@@ -50,8 +53,6 @@ try {
   process.exit(0);
 }
 
-const lockAcquire = `./script/testing_ledger_runtime_lock.sh --platform ${target.platform} acquire fixer`;
-const lockRelease = `./script/testing_ledger_runtime_lock.sh --platform ${target.platform} release`;
 const retest =
   target.retest_command ||
   `npm run testing:ledger-run -- --platform ${target.platform} --screen ${target.screen} --flow ${target.flow_id}`;
@@ -67,8 +68,7 @@ const lines = [
   `class: ${target.root_cause_class} | expected: ${target.expected}`,
   `observed: ${target.observed}`,
   ownerRead,
-  `LOCK_ACQUIRE: ${lockAcquire}`,
-  `LOCK_RELEASE: ${lockRelease} (before mark-retest-ready)`,
+  "RUNTIME: keep the platform lock free during edits; the full retest acquires it",
   `RETEST: ${retest}`,
   `MARK_READY: ${markReady}`,
   `SKIP: ledger:open, GOAL.md, PROGRESS.md, mockups/**, full @build-ios-app skill`

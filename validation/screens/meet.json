@@ -9,7 +9,7 @@
       "source_files": [
         "apps/ios-macos/Sources/LikemindedApp/Views/MeetView.swift"
       ],
-      "source_hash": "6084a2409f18e3db",
+      "source_hash": "06c461223bf625f4",
       "mockup_ref": "mockups/ios/05-08-circles-meet-communities.png",
       "mockup_missing": false,
       "entry_points": [
@@ -35,9 +35,10 @@
       "ledger_legacy_id": "02-meet-overview",
       "implemented": true,
       "source_files": [
-        "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (meetOverview)"
+        "apps/ios-macos/Sources/LikemindedMac/MacMeetOverviewConceptView.swift",
+        "apps/ios-macos/Sources/LikemindedMac/MacAppState.swift (updateMeetingRSVP)"
       ],
-      "source_hash": "3853db5a868359d5",
+      "source_hash": "d9d0c9b74bc6595a",
       "mockup_ref": "mockups/macos/01-04-auth-meet-circles-profile.png",
       "mockup_missing": false,
       "entry_points": [
@@ -103,19 +104,21 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "rsvp-sat-yes: screen-capture 2026-07-06 | rsvp-sat-no: screen-capture 2026-07-06 | rsvp-sun-yes: screen-capture 2026-07-06 | rsvp-sun-no: screen-capture 2026-07-06",
+          "evidence": "rsvp-sat-yes: api-persist 2026-08-01 | rsvp-sat-no: api-persist 2026-08-01 | rsvp-sun-yes: api-persist 2026-08-01 | rsvp-sun-no: api-persist 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "6084a2409f18e3db",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "output/validation/ios-screens/meet.png",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "06c461223bf625f4",
+          "last_test_method": "api-persist"
         },
         "macos": {
           "result": "pass",
-          "evidence": "rsvp-sat-yes: test-dry 2026-07-06 | rsvp-sat-no: CUA-click 2026-07-06 | rsvp-sun-yes: CUA-click 2026-07-06 | rsvp-sun-no: CUA-click 2026-07-06",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/01-04-auth-meet-circles-profile.png: Saturday Community meetup responded to Not then Available with mutually exclusive selected states; Sunday Circle meetup responded to Not then Available likewise. Authenticated GET /v1/meetings/upcoming persisted rsvps community=true and circle=true.",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "3853db5a868359d5",
-          "last_test_method": "test-dry"
+          "screenshot_ref": "output/validation/macos-screens/meetWeekendAvailable-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "d9d0c9b74bc6595a",
+          "last_test_method": "api-persist"
         }
       },
       "proof": {
@@ -134,7 +137,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/05-08-circles-meet-communities.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen meet --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh meetOverview → macos_cua_screen.sh meetOverview"
+          "macos": "@Computer: npm run dev:macos:validation -- meetOverview; target the canonical app by full path; prove meet/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen meet --flow rsvp-weekend --result pass --method <tier-method> --evidence \"...\""
       }
@@ -158,11 +161,12 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "bell: screen-capture 2026-07-06",
+          "evidence": "bell: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "6084a2409f18e3db",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "06c461223bf625f4",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "not-applicable",
@@ -174,7 +178,7 @@
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -186,7 +190,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/05-08-circles-meet-communities.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen meet --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh meetOverview → macos_cua_screen.sh meetOverview"
+          "macos": "@Computer: npm run dev:macos:validation -- meetOverview; target the canonical app by full path; prove meet/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen meet --flow open-notifications --result pass --method <tier-method> --evidence \"...\""
       }
@@ -208,8 +212,7 @@
           "join-upcoming"
         ],
         "macos": [
-          "join-meetup",
-          "join-room"
+          "join-meetup"
         ]
       },
       "validation": {
@@ -222,12 +225,13 @@
           "last_test_method": "source-trace"
         },
         "macos": {
-          "result": "pass",
-          "evidence": "join-meetup: CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (join-meetup) (hash-migrated: screen-sl",
-          "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "3853db5a868359d5",
-          "last_test_method": "CUA-click"
+          "result": "blocked",
+          "evidence": "Fresh canonical Computer proof on 2026-08-02: Join video call navigated to Reflective Builders; POST /v1/meetings/<id>/join returned a non-empty signed token and ws URL; LiveKit server accepted signaling but SDK remained Connecting then rendered Preview mode and Live room unavailable: Timed out. Screenshot output/validation/macos-screens/meetLiveKitBlocked-20260802.jpeg.",
+          "blocker": "Local LiveKit signaling/token contract is healthy, but RTC ICE negotiation times out on this Mac; real room connection is not proven.",
+          "screenshot_ref": "output/validation/macos-screens/meetLiveKitBlocked-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "d9d0c9b74bc6595a",
+          "last_test_method": "real-livekit"
         }
       },
       "proof": {
@@ -243,7 +247,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/05-08-circles-meet-communities.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen meet --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh meetOverview → macos_cua_screen.sh meetOverview"
+          "macos": "@Computer: npm run dev:macos:validation -- meetOverview; target the canonical app by full path; prove meet/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen meet --flow join-live-meetup --result pass --method <tier-method> --evidence \"...\""
       }
@@ -269,23 +273,25 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "past-row: screen-capture 2026-07-06",
+          "evidence": "past-row: Computer-use 2026-07-21",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "6084a2409f18e3db",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "06c461223bf625f4",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "pass",
-          "evidence": "past-row: CUA-click 2026-07-06",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/01-04-auth-meet-circles-profile.png: opening Reflective Builders from Past meetups reached its attended-meet recap with meeting insights, attendee/mutual-match context, Priya Shah message action, and private note controls.",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "3853db5a868359d5",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/meetPastRecap-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "d9d0c9b74bc6595a",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -297,7 +303,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/05-08-circles-meet-communities.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen meet --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh meetOverview → macos_cua_screen.sh meetOverview"
+          "macos": "@Computer: npm run dev:macos:validation -- meetOverview; target the canonical app by full path; prove meet/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen meet --flow open-past-meet --result pass --method <tier-method> --evidence \"...\""
       }
@@ -329,16 +335,17 @@
           "last_test_method": ""
         },
         "macos": {
-          "result": "pending",
-          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
-          "blocker": "Parity gap — no Meet-tab bell; notifications screen deep-link only",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
+          "result": "pass",
+          "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/01-04-auth-meet-circles-profile.png: Meet bell opened Notifications with all/unread/mentions, activity source filters, current activity, desktop notification CTA, refresh, and mark-all controls.",
+          "blocker": "",
+          "screenshot_ref": "output/validation/macos-screens/meetNotifications-20260802.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "d9d0c9b74bc6595a",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -350,7 +357,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/05-08-circles-meet-communities.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen meet --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh meetOverview → macos_cua_screen.sh meetOverview"
+          "macos": "@Computer: npm run dev:macos:validation -- meetOverview; target the canonical app by full path; prove meet/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen meet --flow open-notifications-macos --result pass --method <tier-method> --evidence \"...\""
       }
@@ -364,12 +371,12 @@
         "label": "Bell icon (top-right)",
         "expected": "Opens NotificationsView sheet; badge shows unread",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (bell)",
+        "evidence": "Computer-use validation-gurusharan meet/open-notifications 2026-08-01: bell",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "6084a2409f18e3db",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "screen-capture"
+        "tested_source_hash": "06c461223bf625f4",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "rsvp-sat-yes",
@@ -377,12 +384,12 @@
         "label": "Saturday Available",
         "expected": "POST rsvp community available=true",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (rsvp-sat-yes)",
+        "evidence": "api-persist validation-gurusharan meet/rsvp-weekend 2026-08-01: rsvp-sat-yes",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "6084a2409f18e3db",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "screen-capture"
+        "tested_source_hash": "06c461223bf625f4",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "api-persist"
       },
       {
         "id": "rsvp-sat-no",
@@ -390,12 +397,12 @@
         "label": "Saturday Not",
         "expected": "POST rsvp community available=false",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (rsvp-sat-no)",
+        "evidence": "api-persist validation-gurusharan meet/rsvp-weekend 2026-08-01: rsvp-sat-no",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "6084a2409f18e3db",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "screen-capture"
+        "tested_source_hash": "06c461223bf625f4",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "api-persist"
       },
       {
         "id": "rsvp-sun-yes",
@@ -403,12 +410,12 @@
         "label": "Sunday Available",
         "expected": "POST rsvp circle available=true",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (rsvp-sun-yes)",
+        "evidence": "api-persist validation-gurusharan meet/rsvp-weekend 2026-08-01: rsvp-sun-yes",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "6084a2409f18e3db",
-        "last_test_method": "screen-capture"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "06c461223bf625f4",
+        "last_test_method": "api-persist"
       },
       {
         "id": "rsvp-sun-no",
@@ -416,12 +423,12 @@
         "label": "Sunday Not",
         "expected": "POST rsvp circle available=false",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (rsvp-sun-no)",
+        "evidence": "api-persist validation-gurusharan meet/rsvp-weekend 2026-08-01: rsvp-sun-no",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "6084a2409f18e3db",
-        "last_test_method": "screen-capture"
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "06c461223bf625f4",
+        "last_test_method": "api-persist"
       },
       {
         "id": "join-upcoming",
@@ -442,12 +449,12 @@
         "label": "Past meet row",
         "expected": "Pushes PastMeetDetailView",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-06 reproof: reproof after source hash change (past-row)",
+        "evidence": "Computer-use validation-gurusharan meet/open-past-meet 2026-07-21: past-row",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "6084a2409f18e3db",
-        "last_test_method": "screen-capture"
+        "last_tested_at": "2026-07-21",
+        "tested_source_hash": "06c461223bf625f4",
+        "last_test_method": "Computer-use"
       }
     ],
     "macos": [
@@ -457,12 +464,12 @@
         "label": "Join meetup (hero)",
         "expected": "Navigate → meetVideoCall (macOS prototype room; LiveKit Phase 10)",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (join-meetup) (hash-migrated: screen-slice source hash)",
+        "evidence": "Computer-use validation-gurusharan meet/join-live-meetup 2026-07-19: Join meetup → meetVideoCall; compared with mockups/macos/01-04-auth-meet-circles-profile.png; POST join token+url; proof_log=output/validation/testing-ledger/macos/meet--join-live-meetup.log",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "3853db5a868359d5",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "71081dbbf063af50",
+        "last_tested_at": "2026-07-19",
+        "last_test_method": "real-livekit"
       },
       {
         "id": "rsvp-sat-yes",
@@ -470,12 +477,12 @@
         "label": "Saturday Available pill",
         "expected": "POST rsvp community available=true",
         "result": "pass",
-        "evidence": "test-dry 2026-07-06: rsvp-sat-yes",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/01-04-auth-meet-circles-profile.png: Saturday Community meetup responded to Not then Available with mutually exclusive selected states; Sunday Circle meetup responded to Not then Available likewise. Authenticated GET /v1/meetings/upcoming persisted rsvps community=true and circle=true.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "3853db5a868359d5",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "test-dry"
+        "tested_source_hash": "d9d0c9b74bc6595a",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "api-persist"
       },
       {
         "id": "rsvp-sat-no",
@@ -483,12 +490,12 @@
         "label": "Saturday Not pill",
         "expected": "POST rsvp community available=false",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (rsvp-sat-no) (hash-migrated: screen-slice source hash)",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/01-04-auth-meet-circles-profile.png: Saturday Community meetup responded to Not then Available with mutually exclusive selected states; Sunday Circle meetup responded to Not then Available likewise. Authenticated GET /v1/meetings/upcoming persisted rsvps community=true and circle=true.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "3853db5a868359d5",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "d9d0c9b74bc6595a",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "api-persist"
       },
       {
         "id": "rsvp-sun-yes",
@@ -496,12 +503,12 @@
         "label": "Sunday Available pill",
         "expected": "POST rsvp circle available=true",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (rsvp-sun-yes) (hash-migrated: screen-slice source hash)",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/01-04-auth-meet-circles-profile.png: Saturday Community meetup responded to Not then Available with mutually exclusive selected states; Sunday Circle meetup responded to Not then Available likewise. Authenticated GET /v1/meetings/upcoming persisted rsvps community=true and circle=true.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "3853db5a868359d5",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "d9d0c9b74bc6595a",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "api-persist"
       },
       {
         "id": "rsvp-sun-no",
@@ -509,12 +516,12 @@
         "label": "Sunday Not pill",
         "expected": "POST rsvp circle available=false",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (rsvp-sun-no) (hash-migrated: screen-slice source hash)",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/01-04-auth-meet-circles-profile.png: Saturday Community meetup responded to Not then Available with mutually exclusive selected states; Sunday Circle meetup responded to Not then Available likewise. Authenticated GET /v1/meetings/upcoming persisted rsvps community=true and circle=true.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "3853db5a868359d5",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "d9d0c9b74bc6595a",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "api-persist"
       },
       {
         "id": "past-row",
@@ -522,25 +529,25 @@
         "label": "Past meeting row",
         "expected": "Navigate → meetRecap",
         "result": "pass",
-        "evidence": "CUA validation-priya 2026-07-05 reproof launch: reproof after source hash change (past-row) (hash-migrated: screen-slice source hash)",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/01-04-auth-meet-circles-profile.png: opening Reflective Builders from Past meetups reached its attended-meet recap with meeting insights, attendee/mutual-match context, Priya Shah message action, and private note controls.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "3853db5a868359d5",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "CUA-click"
+        "tested_source_hash": "d9d0c9b74bc6595a",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "meet-bell",
         "type": "button",
         "label": "Notifications bell",
         "expected": "Opens notifications screen",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "Canonical rebuilt LikemindedMac Computer proof compared with mockups/macos/01-04-auth-meet-circles-profile.png: Meet bell opened Notifications with all/unread/mentions, activity source filters, current activity, desktop notification CTA, refresh, and mark-all controls.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-02",
+        "tested_source_hash": "d9d0c9b74bc6595a",
+        "last_test_method": "Computer-use"
       }
     ]
   }

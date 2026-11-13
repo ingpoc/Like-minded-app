@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
-# Single-screen validation entrypoint with flock/lockf coordination for parallel agents.
+# iOS single-screen validation entrypoint with flock/lockf coordination.
 #
 # Agent hygiene (see docs/workflows/validation.md § Parallel screen validation):
 #   - Wave 1: parallel Swift/ledger edits OK.
 #   - Wave 2: sequential build + capture via this script only.
 #   - iOS: explicit simulator UDID (not booted); 15–60s post-launch wait.
-#   - macOS: --mac-screen BEFORE other launch flags; re-applied after sign-in.
 #   - Never bare pkill/open/simctl outside cross_platform_validation_lock.sh.
 #
 # Does not restart validation API or re-seed when :8787 is already healthy on validation-db.
@@ -19,32 +18,25 @@ USER_TOKEN="${LIKEMINDED_VALIDATION_USER:-validation-gurusharan}"
 USER_NAME="${LIKEMINDED_VALIDATION_NAME:-Gurusharan Gupta}"
 IOS_CAPTURE_WAIT="${IOS_CAPTURE_WAIT:-15}"
 SIMULATOR_ID="${SIMULATOR_ID:-}"
+IOS_IDB_CTL="$ROOT/validation/idb_ctl.sh"
 API_LOG="/tmp/likeminded-screen-validate-api.log"
 
 SCREEN=""
 PLATFORM=""
 OUT_IOS="$ROOT/output/validation/ios-screens"
-OUT_MACOS="$ROOT/output/validation/macos-screens"
 
 usage() {
   cat <<EOF
-Usage: $0 --screen <ledger-id> --platform ios|both
+Usage: $0 --screen <ledger-id> --platform ios
 
 Single-screen validation with flock coordination. Uses validation-gurusharan / Gurusharan Gupta.
 
   --screen <id>     Ledger id (e.g. 07-meet, meet, 02-meet-overview)
   --platform ios    iOS simulator capture only
-  --platform both   iOS capture + macOS capture when mac screen resolves from ledger
-
-macOS --mac-screen mapping: read `validation/screens/*.json` `platforms.macos.source_files` parenthetical,
-  e.g. "MacScreens.swift (meetOverview)" → --mac-screen meetOverview
-  (same lookup as ./script/macos_audit_prepare.sh)
-
-Lock order: seed (only when API was down) → ios-sim OR macos-app → macos-capture → release.
+Lock order: seed (only when API was down) → ios-sim → release.
 
 Examples:
   $0 --screen 07-meet --platform ios
-  $0 --screen 02-meet-overview --platform both
 EOF
 }
 
@@ -58,8 +50,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 [[ -n "$SCREEN" && -n "$PLATFORM" ]] || { usage >&2; exit 2; }
-[[ "$PLATFORM" == "ios" || "$PLATFORM" == "both" ]] || {
-  echo "--platform must be ios or both" >&2
+[[ "$PLATFORM" == "ios" ]] || {
+  echo "macOS native proof uses testing-ledger + bundled @Computer; this script accepts only --platform ios" >&2
   exit 2
 }
 
@@ -112,72 +104,6 @@ ensure_validation_api() {
   "$LOCK" with_lock seed bash -c "cd '$ROOT' && npm run reset:validation-data"
 }
 
-resolve_mac_screen() {
-  local ledger_arg="$1"
-  case "$ledger_arg" in
-    03-profile-empty|profile-empty) echo "profileOnboarding"; return 0 ;;
-    04-profile-populated|profile-populated) echo "myProfile"; return 0 ;;
-    05-profile-concern|profile-concern) echo "myProfile"; return 0 ;;
-  esac
-  node - "$ledger_arg" <<'NODE'
-const fs = require("fs");
-const path = require("path");
-
-const arg = process.argv[2];
-const norm = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-const needle = norm(arg);
-
-function hintFromData(data) {
-  for (const source of data.source_files || []) {
-    const m = String(source).match(/\(([^)]+)\)\s*$/);
-    if (m) return m[1];
-  }
-  return null;
-}
-
-const screensDir = path.join(process.cwd(), "validation", "screens");
-if (fs.existsSync(screensDir)) {
-  for (const file of fs.readdirSync(screensDir).filter((f) => f.endsWith(".json"))) {
-    const data = JSON.parse(fs.readFileSync(path.join(screensDir, file), "utf8"));
-    const logical = norm(data.logical_screen_id || file.replace(/\.json$/, ""));
-    const macLegacy = data.platforms?.macos?.ledger_legacy_id;
-    if (logical === needle || norm(macLegacy) === needle || logical.includes(needle) || needle.includes(logical)) {
-      const hint = hintFromData({ source_files: data.platforms?.macos?.source_files || [] });
-      if (hint) {
-        console.log(hint);
-        process.exit(0);
-      }
-    }
-  }
-}
-
-for (const sub of ["macos", "_legacy/macos"]) {
-  const dir = path.join(process.cwd(), "validation", sub);
-  if (!fs.existsSync(dir)) continue;
-  const files = fs.readdirSync(dir).filter((f) => f.endsWith(".json"));
-  for (const file of files) {
-    const data = JSON.parse(fs.readFileSync(path.join(dir, file), "utf8"));
-    const stem = norm(file.replace(/\.json$/, ""));
-    if (stem.includes(needle) || needle.includes(stem.replace(/^\d+/, ""))) {
-      const hint = hintFromData(data);
-      if (hint) {
-        console.log(hint);
-        process.exit(0);
-      }
-    }
-    for (const source of data.source_files || []) {
-      const m = String(source).match(/\(([^)]+)\)\s*$/);
-      if (m && norm(m[1]).includes(needle)) {
-        console.log(m[1]);
-        process.exit(0);
-      }
-    }
-  }
-}
-process.exit(1);
-NODE
-}
-
 ios_capture_slug() {
   local ledger_id="$1"
   case "$ledger_id" in
@@ -186,15 +112,17 @@ ios_capture_slug() {
     03-profile-empty|profile-empty) echo "profile-empty" ;;
     04-profile-populated|profile-populated) echo "profile-populated" ;;
     05-profile-concern|profile-concern) echo "profile-concern" ;;
-    06-voice-session-sheet|voice-session-sheet) echo "voice-session-sheet" ;;
+    06-voice-session-sheet|voice-session-sheet|voice-session) echo "voice-session-sheet" ;;
+    profile-edit) echo "profile-edit" ;;
+    profile-signals) echo "profile-signals" ;;
     07-meet|meet) echo "meet" ;;
-    08-past-meet-detail|past-meet-detail) echo "past-meet-detail" ;;
+    08-past-meet-detail|past-meet-detail|past-meet-recap) echo "past-meet-detail" ;;
     09-group-video-call|group-video-call) echo "group-video-call" ;;
     10-circles|circles) echo "circles" ;;
     11-circle-detail|circle-detail) echo "circle-detail" ;;
     12-communities|communities) echo "communities" ;;
     13-community-detail|community-detail) echo "community-detail" ;;
-    14-soulmate|soulmate) echo "soulmate" ;;
+    14-soulmate|soulmate|soulmate-overview) echo "soulmate" ;;
     15-soulmate-match-detail|soulmate-match-detail) echo "soulmate-match-detail" ;;
     16-chat|chat) echo "chat" ;;
     17-conversations|conversations) echo "conversations" ;;
@@ -225,7 +153,7 @@ ios_launch_args_for_screen() {
       printf '%s\n' --likeminded-reset-auth-session
       ;;
     02-onboarding|onboarding)
-      printf '%s\n' "${common[@]}" --likeminded-force-onboarding
+      printf '%s\n' "${common[@]}" --likeminded-force-onboarding --likeminded-start-profile
       ;;
     03-profile-empty|profile-empty)
       printf '%s\n' "${common[@]}" --likeminded-start-profile
@@ -236,16 +164,22 @@ ios_launch_args_for_screen() {
     05-profile-concern|profile-concern)
       printf '%s\n' "${common[@]}" --likeminded-start-profile
       ;;
-    06-voice-session-sheet|voice-session-sheet)
-      printf '%s\n' "${common[@]}" --likeminded-start-profile --likeminded-start-voice-session
+    06-voice-session-sheet|voice-session-sheet|voice-session)
+      printf '%s\n' "${common[@]}" --likeminded-start-profile --likeminded-start-voice-session --likeminded-dev-voice-preview
+      ;;
+    profile-edit)
+      printf '%s\n' "${common[@]}" --likeminded-start-profile --likeminded-start-profile-edit
+      ;;
+    profile-signals)
+      printf '%s\n' "${common[@]}" --likeminded-start-profile --likeminded-start-profile-signals
       ;;
     07-meet|meet)
       printf '%s\n' "${common[@]}"
       ;;
-    08-past-meet-detail|past-meet-detail)
+    08-past-meet-detail|past-meet-detail|past-meet-recap)
       printf '%s\n' "${common[@]}" --likeminded-start-past-meet-detail
       ;;
-    09-group-video-call|group-video-call)
+    09-group-video-call|group-video-call|video-call)
       printf '%s\n' "${common[@]}" --likeminded-start-video-call --likeminded-dev-meet-join
       ;;
     10-circles|circles)
@@ -258,9 +192,9 @@ ios_launch_args_for_screen() {
       printf '%s\n' "${common[@]}" --likeminded-start-communities
       ;;
     13-community-detail|community-detail)
-      printf '%s\n' "${common[@]}" --likeminded-start-communities
+      printf '%s\n' "${common[@]}" --likeminded-start-community-detail --likeminded-community-id jazz-music
       ;;
-    14-soulmate|soulmate)
+    14-soulmate|soulmate|soulmate-overview)
       printf '%s\n' "${common[@]}" --likeminded-start-soulmate
       ;;
     15-soulmate-match-detail|soulmate-match-detail)
@@ -270,7 +204,7 @@ ios_launch_args_for_screen() {
       printf '%s\n' "${common[@]}" --likeminded-start-chat
       ;;
     17-conversations|conversations)
-      printf '%s\n' "${common[@]}" --likeminded-start-soulmate
+      printf '%s\n' "${common[@]}" --likeminded-start-conversations
       ;;
     18-soulmate-selection|soulmate-selection)
       printf '%s\n' "${common[@]}" --likeminded-start-soulmate-selection
@@ -294,7 +228,7 @@ ios_launch_args_for_screen() {
       printf '%s\n' "${common[@]}" --likeminded-start-create-community
       ;;
     25-community-members|community-members)
-      printf '%s\n' "${common[@]}" --likeminded-start-community-members --likeminded-community-id reflective-builders
+      printf '%s\n' "${common[@]}" --likeminded-start-community-members --likeminded-community-id ai-builders
       ;;
     26-create-event|create-event)
       printf '%s\n' "${common[@]}" --likeminded-start-create-event
@@ -375,9 +309,38 @@ ios_sim_launch_and_capture() {
   local sim_id="$1"
   local outfile="$2"
   local wait="$3"
-  shift 3
+  local idb_ctl="$4"
+  shift 4
   xcrun simctl launch --terminate-running-process "$sim_id" "$BUNDLE_ID" "$@" >/dev/null
   sleep "$wait"
+
+  account_verification_present() {
+    IDB_UDID="$sim_id" "$idb_ctl" describe 2>/dev/null | python3 -c '
+import json, sys, unicodedata
+
+def normalized(value):
+    return " ".join(unicodedata.normalize("NFKC", str(value or "")).split())
+
+data = json.load(sys.stdin)
+needle = "Apple Account Verification"
+raise SystemExit(0 if any(
+    needle in normalized(element.get(key))
+    for element in data
+    for key in ("AXLabel", "label", "AXValue", "value")
+) else 1)
+'
+  }
+
+  if account_verification_present; then
+    IDB_UDID="$sim_id" "$idb_ctl" tap "Not Now"
+    sleep 1
+    if account_verification_present; then
+      echo "Apple Account Verification still obscures iOS capture" >&2
+      return 1
+    fi
+    echo "dismissed iOS Simulator Apple Account Verification alert" >&2
+  fi
+
   xcrun simctl io "$sim_id" screenshot "$outfile"
 }
 
@@ -419,8 +382,9 @@ validate_ios_screen() {
     BUNDLE_ID='$(printf '%q' "$BUNDLE_ID")'
     SIMULATOR_ID='$(printf '%q' "$sim_id")'
     CAPTURE_WAIT='$(printf '%q' "$capture_wait")'
+    IOS_IDB_CTL='$(printf '%q' "$IOS_IDB_CTL")'
     $(declare -f ios_sim_launch_and_capture)
-    ios_sim_launch_and_capture \"\$SIMULATOR_ID\" $(printf '%q' "$outfile") \"\$CAPTURE_WAIT\" $(printf ' %q' "${args[@]}")
+    ios_sim_launch_and_capture \"\$SIMULATOR_ID\" $(printf '%q' "$outfile") \"\$CAPTURE_WAIT\" \"\$IOS_IDB_CTL\" $(printf ' %q' "${args[@]}")
   "
 
   local size
@@ -430,6 +394,13 @@ validate_ios_screen() {
     return 1
   fi
   echo "iOS captured $outfile (${size}B)"
+
+  # Logical ids that alias to a capture slug (e.g. past-meet-recap → past-meet-detail)
+  # also get a fresh copy under the requested screen name so stale alias PNGs cannot mislead.
+  if [[ "$SCREEN" != "$slug" ]]; then
+    cp -f "$outfile" "$OUT_IOS/$SCREEN.png"
+    echo "iOS mirrored $OUT_IOS/$SCREEN.png ← $slug.png" >&2
+  fi
 
   if [[ "${LIKEMINDED_LEDGER_CLOSEOUT:-1}" != "0" ]]; then
     local closeout_args=(--platform ios --screen "$SCREEN" --screenshot "$outfile" --method screen-capture)
@@ -442,126 +413,8 @@ validate_ios_screen() {
   fi
 }
 
-macos_capture_window() {
-  local output_path="$1"
-  local window_id deadline=$((SECONDS + 12))
-  while (( SECONDS < deadline )); do
-    window_id="$(python3 -c "
-import Quartz
-for w in Quartz.CGWindowListCopyWindowInfo(
-    Quartz.kCGWindowListOptionOnScreenOnly | Quartz.kCGWindowListExcludeDesktopElements,
-    Quartz.kCGNullWindowID):
-    o = w.get('kCGWindowOwnerName') or ''
-    b = w.get('kCGWindowBounds', {})
-    if o.startswith('Likeminded') and b.get('Width',0) > 400 and b.get('Height',0) > 300:
-        print(w['kCGWindowNumber']); break
-" 2>/dev/null)"
-    if [[ -n "$window_id" ]]; then
-      screencapture -x -l "$window_id" "$output_path"
-      local size
-      size=$(stat -f%z "$output_path" 2>/dev/null || echo 0)
-      if (( size >= 10000 )); then
-        return 0
-      fi
-      rm -f "$output_path"
-    fi
-    sleep 0.5
-  done
-  echo "macOS window capture failed for $output_path" >&2
-  return 1
-}
-
-macos_launch_screen() {
-  local mac_screen="$1"
-  # shellcheck source=macos_canonical_app.sh
-  source "$ROOT/script/macos_canonical_app.sh"
-  macos_open_with_args \
-    --likeminded-reset-auth-session \
-    --likeminded-dev-auth-bypass \
-    --likeminded-dev-auth-token "$USER_TOKEN" \
-    --likeminded-dev-auth-name "$USER_NAME" \
-    --mac-screen "$mac_screen"
-  sleep 5
-  "$ROOT/script/macos_cua_focus_window.sh" >/dev/null || true
-}
-
-macos_launch_args_for_screen() {
-  local ledger_id="$1"
-  local mac_screen="$2"
-  local common=(
-    --likeminded-reset-auth-session
-    --likeminded-dev-auth-bypass
-    --likeminded-dev-auth-token "$USER_TOKEN"
-    --likeminded-dev-auth-name "$USER_NAME"
-  )
-
-  case "$ledger_id" in
-    03-profile-empty|profile-empty)
-      printf '%s\n' "${common[@]}" --mac-screen "$mac_screen" --likeminded-dev-profile-empty
-      ;;
-    *)
-      printf '%s\n' "${common[@]}" --mac-screen "$mac_screen"
-      ;;
-  esac
-}
-
-validate_macos_screen() {
-  local mac_screen outfile
-  if ! mac_screen="$(resolve_mac_screen "$SCREEN")"; then
-    echo "macOS: no --mac-screen mapping for ledger '$SCREEN' (see validation/screens/*.json platforms.macos.source_files hints)" >&2
-    return 1
-  fi
-
-  outfile="$OUT_MACOS/$mac_screen.png"
-  mkdir -p "$OUT_MACOS"
-  echo "macOS validate ledger=$SCREEN mac-screen=$mac_screen" >&2
-
-  "$LOCK" with_lock xcodebuild-macos bash -c "
-    set -euo pipefail
-    # shellcheck source=macos_canonical_app.sh
-    source '$ROOT/script/macos_canonical_app.sh'
-    macos_ensure_built > /tmp/likeminded-macos-build-\$\$.log 2>&1
-  "
-
-  "$LOCK" with_lock macos-app bash -c "
-    set -euo pipefail
-    source '$ROOT/script/macos_canonical_app.sh'
-    export LIKEMINDED_HOLDS_MACOS_APP_LOCK=1
-    macos_launch_args=()
-    while IFS= read -r arg; do
-      macos_launch_args+=(\"\$arg\")
-    done < <(macos_launch_args_for_screen '$SCREEN' '$mac_screen')
-    macos_open_with_args \"\${macos_launch_args[@]}\"
-    sleep 5
-    '$ROOT/script/macos_cua_focus_window.sh' >/dev/null || true
-  "
-  "$LOCK" with_lock macos-capture bash -s <<EOS
-set -euo pipefail
-$(declare -f macos_capture_window)
-macos_capture_window $(printf '%q' "$outfile")
-EOS
-
-  echo "macOS captured $outfile"
-
-  if [[ "${LIKEMINDED_LEDGER_CLOSEOUT:-1}" != "0" ]]; then
-    node "$ROOT/script/ledger_capture_closeout.js" \
-      --platform macos \
-      --screen "$SCREEN" \
-      --mac-screen "$mac_screen" \
-      --screenshot "$outfile" \
-      --stamp auto \
-      --method screen-capture || echo "WARN: macOS ledger closeout failed" >&2
-  fi
-}
-
 ensure_validation_api
 
-if [[ "$PLATFORM" == "ios" || "$PLATFORM" == "both" ]]; then
-  validate_ios_screen
-fi
-
-if [[ "$PLATFORM" == "both" ]]; then
-  validate_macos_screen || echo "macOS capture skipped or failed for $SCREEN" >&2
-fi
+validate_ios_screen
 
 echo "done screen=$SCREEN platform=$PLATFORM"

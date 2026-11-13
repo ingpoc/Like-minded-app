@@ -9,7 +9,7 @@
       "source_files": [
         "apps/ios-macos/Sources/LikemindedApp/Views/ProfilePrototypeView.swift (VoiceProfileView)"
       ],
-      "source_hash": "bbc3a0d9adb31ff4",
+      "source_hash": "01f4a53afd8558b9",
       "mockup_ref": "mockups/ios/01-04-onboarding-voice-meet-soulmate.png",
       "mockup_missing": false,
       "entry_points": [
@@ -63,11 +63,12 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "pencil-settings: screen-capture 2026-07-05",
+          "evidence": "pencil-settings: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "bbc3a0d9adb31ff4",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "01f4a53afd8558b9",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "not-applicable",
@@ -79,7 +80,7 @@
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -91,7 +92,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/01-04-onboarding-voice-meet-soulmate.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen profile-empty --platform ios",
-          "macos": "npm run ledger:screen -- --platform macos --screen profile-empty --section flows"
+          "macos": "@Computer: npm run dev:macos:validation -- profile-empty; target the canonical app by full path; prove profile-empty/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-empty --flow pencil-settings --result pass --method <tier-method> --evidence \"...\""
       }
@@ -112,12 +113,13 @@
       },
       "validation": {
         "ios": {
-          "result": "pass",
-          "evidence": "start-voice: screen-capture 2026-07-05",
-          "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "bbc3a0d9adb31ff4",
-          "last_test_method": "screen-capture"
+          "result": "blocked",
+          "evidence": "Text-box and non-microphone validation completed; spoken microphone behavior remains assigned to the user for device proof.",
+          "blocker": "Requires user-spoken microphone input and microphone-permission acceptance; the user explicitly assigned microphone validation to themselves.",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "01f4a53afd8558b9",
+          "last_test_method": "manual"
         },
         "macos": {
           "result": "not-applicable",
@@ -129,7 +131,7 @@
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -141,7 +143,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/01-04-onboarding-voice-meet-soulmate.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen profile-empty --platform ios",
-          "macos": "npm run ledger:screen -- --platform macos --screen profile-empty --section flows"
+          "macos": "@Computer: npm run dev:macos:validation -- profile-empty; target the canonical app by full path; prove profile-empty/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-empty --flow start-voice --result pass --method <tier-method> --evidence \"...\""
       }
@@ -178,7 +180,7 @@
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -190,7 +192,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/01-04-onboarding-voice-meet-soulmate.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen profile-empty --platform ios",
-          "macos": "npm run ledger:screen -- --platform macos --screen profile-empty --section flows"
+          "macos": "@Computer: npm run dev:macos:validation -- profile-empty; target the canonical app by full path; prove profile-empty/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen profile-empty --flow settings-gear-label-fix --result pass --method <tier-method> --evidence \"...\""
       }
@@ -204,12 +206,12 @@
         "label": "Pencil icon → Settings",
         "expected": "Pushes SettingsPrototypeView",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (pencil-settings)",
+        "evidence": "Computer-use validation-gurusharan profile-empty/pencil-settings 2026-08-01: pencil-settings",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "bbc3a0d9adb31ff4",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "screen-capture"
+        "tested_source_hash": "01f4a53afd8558b9",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "start-voice",
@@ -217,11 +219,11 @@
         "label": "Start voice profile",
         "expected": "Opens voice session sheet and calls startVoiceSession",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (start-voice)",
+        "evidence": "screen-capture validation-gurusharan 2026-08-01 capture closeout: reproof after source hash change (start-voice)",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-05",
-        "tested_source_hash": "bbc3a0d9adb31ff4",
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "01f4a53afd8558b9",
         "last_test_method": "screen-capture"
       }
     ],

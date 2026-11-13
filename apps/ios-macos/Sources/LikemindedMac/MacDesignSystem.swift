@@ -14,7 +14,7 @@ enum MacPalette {
     static let surface = Color(red: 1.0, green: 0.988, blue: 0.973)     // #FFFBF7 warm white
     static let surfaceTranslucent = Color.white.opacity(0.72)
     static let ink = Color(red: 0.059, green: 0.165, blue: 0.145)      // #0F2A25 near-black green
-    static let muted = Color(red: 0.34, green: 0.35, blue: 0.31)
+    static let muted = Color(red: 0.28, green: 0.30, blue: 0.27)
     static let accent = Color(red: 0.059, green: 0.290, blue: 0.239)   // #0F4A3D forest green
     static let accentSoft = Color(red: 0.78, green: 0.84, blue: 0.78)  // ~#C8D8C7 sage
     static let clay = Color(red: 0.77, green: 0.44, blue: 0.29)        // #C46F4A
@@ -25,15 +25,15 @@ enum MacPalette {
 
 enum MacType {
     /// Uppercase section labels — SF Pro, not serif.
-    static let eyebrow = Font.system(size: 11, weight: .semibold, design: .default)
+    static let eyebrow = Font.system(size: 12, weight: .semibold, design: .default)
     /// Hero phrases ("Your room.") — editorial serif.
     static let title = Font.system(size: 34, weight: .semibold, design: .serif)
     /// Panel / card titles on cream surfaces — editorial serif.
-    static let section = Font.system(size: 20, weight: .semibold, design: .serif)
+    static let section = Font.system(size: 24, weight: .semibold, design: .serif)
     /// Body copy and cover meta — SF Pro for readability (mockups use sans for body).
-    static let body = Font.system(size: 16, weight: .regular, design: .default)
-    static let small = Font.system(size: 12, weight: .medium, design: .default)
-    static let button = Font.system(size: 13, weight: .semibold, design: .default)
+    static let body = Font.system(size: 18, weight: .regular, design: .default)
+    static let small = Font.system(size: 16, weight: .medium, design: .default)
+    static let button = Font.system(size: 16, weight: .semibold, design: .default)
     /// White titles on thematic covers.
     static let coverTitle = Font.system(size: 26, weight: .semibold, design: .serif)
     static let coverTitleSmall = Font.system(size: 18, weight: .semibold, design: .serif)
@@ -124,6 +124,75 @@ struct MacPill: View {
 struct MacConvergenceField: View {
     var body: some View {
         ConvergenceFieldView(background: MacPalette.background)
+    }
+}
+
+/// Compact, activity-driven convergence field for AI conversation surfaces.
+/// Quiet at rest; faster and clearer only while the model is generating or speaking.
+struct ProfileAIActivityField: View {
+    let isActive: Bool
+    var audioLevel = 0.0
+    var exposesAudioLevel = false
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    var body: some View {
+        TimelineView(.animation(minimumInterval: isActive ? 1.0 / 20.0 : 0.5, paused: reduceMotion)) { timeline in
+            let phase = CGFloat(reduceMotion || !isActive ? 0 : timeline.date.timeIntervalSinceReferenceDate * 1.65)
+            let level = CGFloat(min(max(audioLevel, 0), 1))
+            Canvas { context, size in
+                let center = CGPoint(x: size.width * 0.5, y: size.height * 0.5)
+                let maxRadius = min(size.width, size.height) * 0.46
+                for ring in 0..<26 {
+                    let progress = CGFloat(ring + 1) / 26
+                    let baseRadius = maxRadius * progress
+                    var path = Path()
+                    for point in 0...96 {
+                        let angle = CGFloat(point) / 96 * .pi * 2
+                        let ringPhase = CGFloat(ring) * 0.16
+                        let flow = sin(angle * 3 + phase + ringPhase)
+                        let drift = cos(angle * 2 - phase * 0.65) * 0.55
+                        let warpStrength: CGFloat = isActive ? 7.2 + (level * 13) : 1.35
+                        let warp = (flow + drift) * warpStrength * progress
+                        let biasStrength: CGFloat = isActive ? 5.2 + (level * 7) : 0.8
+                        let xBias = sin(angle + phase * 0.35) * biasStrength * progress
+                        let x = center.x + cos(angle) * (baseRadius + warp) + xBias
+                        let y = center.y + sin(angle) * (baseRadius - warp * 0.42)
+                        let contourPoint = CGPoint(x: x, y: y)
+                        if path.isEmpty { path.move(to: contourPoint) } else { path.addLine(to: contourPoint) }
+                    }
+                    path.closeSubpath()
+                    let baseOpacity: CGFloat = isActive ? 0.52 : 0.22
+                    let opacity = baseOpacity * (1 - progress * 0.38)
+                    let lineWidth: CGFloat = ring % 5 == 0 ? 0.9 : 0.55
+                    context.stroke(
+                        path,
+                        with: .color(MacPalette.ink.opacity(opacity)),
+                        lineWidth: lineWidth
+                    )
+                }
+            }
+            .background(
+                RadialGradient(
+                    colors: [
+                        MacPalette.accentSoft.opacity(isActive ? 0.9 : 0.58),
+                        MacPalette.background.opacity(0.18)
+                    ],
+                    center: .center,
+                    startRadius: 2,
+                    endRadius: 120
+                )
+            )
+        }
+        .scaleEffect(isActive && !reduceMotion ? 1.025 + (audioLevel * 0.045) : 1)
+        .animation(.easeInOut(duration: 0.4), value: isActive)
+        .clipShape(Circle())
+        .overlay(Circle().stroke(MacPalette.accent.opacity(isActive ? 0.2 : 0.08), lineWidth: 1))
+        .shadow(color: MacPalette.accent.opacity(isActive ? 0.14 : 0.05), radius: isActive ? 18 : 8)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Microphone activity")
+        .accessibilityValue("\(Int(audioLevel * 100)) percent")
+        .accessibilityHidden(!exposesAudioLevel)
     }
 }
 
@@ -240,7 +309,7 @@ struct MacOrb: View {
 struct MacAgeRangeSlider: View {
     @Binding var minAge: Int
     @Binding var maxAge: Int
-    var bounds: ClosedRange<Int> = 18...100
+    var bounds: ClosedRange<Int> = 18...80
 
     private func fraction(_ age: Int) -> CGFloat {
         CGFloat(age - bounds.lowerBound) / CGFloat(bounds.upperBound - bounds.lowerBound)
@@ -294,6 +363,17 @@ struct MacAgeRangeSlider: View {
             )
             .tint(MacPalette.accent)
             .accessibilityLabel("Minimum age")
+            .accessibilityValue("\(minAge)")
+            .accessibilityAdjustableAction { direction in
+                switch direction {
+                case .increment:
+                    minAge = min(minAge + 1, maxAge)
+                case .decrement:
+                    minAge = max(bounds.lowerBound, minAge - 1)
+                @unknown default:
+                    break
+                }
+            }
             Slider(
                 value: Binding(
                     get: { Double(maxAge) },
@@ -304,6 +384,17 @@ struct MacAgeRangeSlider: View {
             )
             .tint(MacPalette.accent)
             .accessibilityLabel("Maximum age")
+            .accessibilityValue("\(maxAge)")
+            .accessibilityAdjustableAction { direction in
+                switch direction {
+                case .increment:
+                    maxAge = min(bounds.upperBound, maxAge + 1)
+                case .decrement:
+                    maxAge = max(minAge, maxAge - 1)
+                @unknown default:
+                    break
+                }
+            }
         }
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Age range")
@@ -316,6 +407,23 @@ struct MacRadioCard: View {
     let detail: String
     let selected: Bool
     let action: () -> Void
+
+    private var accessibilityIdentifier: String {
+        switch title {
+        case "Circles only":
+            return "discovery-visibility-circles"
+        case "Circles and communities":
+            return "discovery-visibility-circles-communities"
+        case "Mutual matches only":
+            return "discovery-visibility-mutual-matches"
+        case "Visible in discover":
+            return "discovery-visibility-discover"
+        case "Visible only after both like":
+            return "discovery-visibility-private"
+        default:
+            return "radio-\(title)"
+        }
+    }
 
     var body: some View {
         Button(action: action) {
@@ -331,13 +439,17 @@ struct MacRadioCard: View {
                     }
                 }
                 .padding(.top, 2)
+                .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 4) {
+                    // Keep title Text in the AX tree — CUA snap/SOM matches visible
+                    // text nodes; children:.ignore hid "Visible in discover" entirely.
                     Text(title)
                         .font(MacType.button)
                         .foregroundStyle(MacPalette.ink)
                     Text(detail)
                         .font(MacType.small)
                         .foregroundStyle(MacPalette.muted)
+                        .accessibilityHidden(true)
                 }
             }
             .padding(14)
@@ -349,8 +461,11 @@ struct MacRadioCard: View {
             )
         }
         .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
         .accessibilityLabel(title)
+        .accessibilityIdentifier(accessibilityIdentifier)
         .accessibilityAddTraits(selected ? [.isButton, .isSelected] : .isButton)
+        .accessibilityValue(selected ? "Selected" : "Not selected")
     }
 }
 
@@ -505,10 +620,10 @@ struct MacFilterTab: View {
 }
 
 enum MacWindowMetrics {
-    static let minWidth: CGFloat = 1200
-    static let minHeight: CGFloat = 820
+    static let minWidth: CGFloat = 1120
+    static let minHeight: CGFloat = 720
     static let defaultWidth: CGFloat = 1200
-    static let defaultHeight: CGFloat = 820
+    static let defaultHeight: CGFloat = 760
 }
 
 enum MacWindowChrome {
@@ -563,4 +678,3 @@ extension Notification.Name {
     static let macPrototypeSelectSoulmate = Notification.Name("macPrototypeSelectSoulmate")
     static let macPrototypeSelectProfile = Notification.Name("macPrototypeSelectProfile")
 }
-

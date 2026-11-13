@@ -1,19 +1,19 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-07-09T20:04:03.531Z",
+  "updated_at": "2026-08-02T01:34:56.405Z",
   "source": "session:stamp",
-  "summary": "Circles concept migration — AI primary placement + one AI-suggested secondary; browse types only.",
+  "summary": "Profile/Soulmate iOS-macOS parity and typed voice/profile-placement proof are current; both ledgers have zero actionable items and native builds/checks pass. Apple provisioning verifies team 9UPQL479Z5, bundle ID, Sign in with Apple, and beta entitlement. Release is blocked after three consecutive goal turns: App Store Connect live readback remains authResult=FAILED, real Apple sign-in and microphone-to-profile/device tester proof are user-owned, Xcode has no distribution identity, and 150 tracked diffs prevent a safe release revision. Production remains older commit 10ee332; no archive/upload was attempted.",
   "primary_surface": {
-    "screen_id": "circles",
-    "screen_title": "Circles (your circle + browse + concern)",
-    "ledger": "validation/screens/circles.json",
+    "screen_id": "voice-session",
+    "screen_title": "Voice Profile Session Sheet",
+    "ledger": "validation/screens/voice-session.json",
     "platforms": [
       "ios",
       "macos"
     ],
     "mockups": {
-      "ios": "mockups/ios/05-08-circles-meet-communities.png",
-      "macos": "mockups/macos/01-04-auth-meet-circles-profile.png"
+      "ios": "mockups/ios/01-04-onboarding-voice-meet-soulmate.png",
+      "macos": "mockups/macos/concepts/mockup-profile-ai-interview.png"
     },
     "score": 999,
     "reasons": [
@@ -22,20 +22,40 @@
   },
   "secondary_surfaces": [
     {
-      "screen_id": "meet",
-      "screen_title": "Meet (RSVP + upcoming + past)",
-      "ledger": "validation/screens/meet.json",
+      "screen_id": "create-event",
+      "screen_title": "Create Event",
+      "ledger": "validation/screens/create-event.json",
       "platforms": [
         "ios",
         "macos"
       ],
       "mockups": {
-        "ios": "mockups/ios/05-08-circles-meet-communities.png",
-        "macos": "mockups/macos/01-04-auth-meet-circles-profile.png"
+        "ios": "mockups/ios/17-20-profile-community-settings.png",
+        "macos": "mockups/macos/22-create-event.png"
       },
-      "score": 40,
+      "score": 28,
       "reasons": [
-        "path_hint"
+        "ledger_source",
+        "ledger_json"
+      ]
+    },
+    {
+      "screen_id": "settings",
+      "screen_title": "Settings (account, privacy, support)",
+      "ledger": "validation/screens/settings.json",
+      "platforms": [
+        "ios",
+        "macos"
+      ],
+      "mockups": {
+        "ios": "mockups/ios/17-20-profile-community-settings.png",
+        "macos": "mockups/macos/17-20-profile-onboarding-detail-settings.png"
+      },
+      "score": 27,
+      "reasons": [
+        "ledger_source",
+        "path_hint",
+        "ledger_json"
       ]
     },
     {
@@ -43,91 +63,54 @@
       "screen_title": "Auth / Sign in",
       "ledger": "validation/screens/auth.json",
       "platforms": [
-        "ios",
-        "macos"
-      ],
-      "mockups": {
-        "ios": "mockups/ios/27-auth-login.png",
-        "macos": "mockups/macos/23-auth-login-theme-consistent.png"
-      },
-      "score": 35,
-      "reasons": [
-        "ledger_source",
-        "path_hint",
-        "mockup",
-        "ledger_json"
-      ]
-    },
-    {
-      "screen_id": "communities",
-      "screen_title": "Communities (browse + search)",
-      "ledger": "validation/screens/communities.json",
-      "platforms": [
+        "macos",
         "ios"
       ],
       "mockups": {
-        "ios": "mockups/ios/05-08-circles-meet-communities.png",
-        "macos": "mockups/macos/05-08-chat-communities-detail-recap.png"
+        "ios": "mockups/ios/auth-login-convergence.png",
+        "macos": "mockups/macos/auth-login-convergence.png"
       },
-      "score": 32,
+      "score": 27,
       "reasons": [
         "ledger_source",
-        "path_hint"
+        "path_hint",
+        "ledger_json"
       ]
     }
   ],
   "dirty_files": [
-    ".agents/skills/build-ios-app/references/launch-args.md",
-    ".agents/skills/build-ios-app/references/layout.md",
+    ".agents/skills/apple-developer/SKILL.md",
     ".agents/skills/build-macos-app/SKILL.md",
-    ".cursor/hooks.json",
+    ".agents/skills/build-macos-app/references/fixtures.md",
+    ".agents/skills/build-macos-app/references/launch-args.md",
+    ".agents/skills/build-macos-app/references/troubleshooting.md",
+    ".agents/skills/testing-ledger/SKILL.md",
+    ".agents/skills/testing-ledger/references/add-flow-criteria.md",
+    ".agents/skills/testing-ledger/references/agent-coordination.md",
+    ".agents/skills/testing-ledger/references/context-budget.md",
+    ".agents/skills/testing-ledger/references/fix-retest-loop.md",
+    ".agents/skills/testing-ledger/references/hardened-workflow.md",
+    "DESIGN.md -> .voice/DESIGN.md",
+    "PROGRESS.md -> .voice/progress.md",
     "AGENTS.md",
-    "apps/ios-macos/Likeminded.xcodeproj/project.pbxproj",
-    "apps/ios-macos/Sources/DoodleArt/DoodleArt.swift",
+    "README.md",
+    "apps/ios-macos/Info/Likeminded-Info.plist",
     "apps/ios-macos/Sources/LikemindedApp/Data/LikemindedAPIClient.swift",
     "apps/ios-macos/Sources/LikemindedApp/Data/PrototypeAppState.swift",
-    "apps/ios-macos/Sources/LikemindedApp/Data/PrototypeData.swift",
+    "apps/ios-macos/Sources/LikemindedApp/Data/RealtimeVoiceClient.swift",
     "apps/ios-macos/Sources/LikemindedApp/Models/PrototypeModels.swift",
-    "apps/ios-macos/Sources/LikemindedApp/Views/AuthGateView.swift",
     "apps/ios-macos/Sources/LikemindedApp/Views/CommunitiesPrototypeView.swift",
-    "apps/ios-macos/Sources/LikemindedMac/LikemindedAPIClient.swift",
-    "apps/ios-macos/Sources/LikemindedMac/LikemindedMacApp.swift",
-    "apps/ios-macos/Sources/LikemindedMac/MacAppState.swift",
-    "apps/ios-macos/Sources/LikemindedMac/MacDesignSystem.swift",
-    "apps/ios-macos/Sources/LikemindedMac/Models.swift",
-    "apps/ios-macos/Sources/Shared/ConvergenceField.metal",
-    "docs/references/convergence-field-pattern.md",
-    "docs/workflows/setup.md",
-    "mockups/ios/27-auth-login.png",
-    "mockups/ios/28-auth-login-theme-consistent.png",
-    "mockups/macos/23-auth-login-theme-consistent.png"
+    "apps/ios-macos/Sources/LikemindedApp/Views/CustomTabBar.swift",
+    "apps/ios-macos/Sources/LikemindedApp/Views/MeetView.swift",
+    "apps/ios-macos/Sources/LikemindedApp/Views/NotificationsView.swift"
   ],
-  "dirty_path_count": 542,
-  "continue_command": "npm run ledger:screen -- --platform macos --screen circles --section all",
-  "stop_condition": "Screenshot-compare vs mockup_ref before claiming pass. Do not start Phase 9 while macOS/iOS stale_pass tracks are open.",
+  "dirty_path_count": 177,
   "work_platform": "macos",
-  "decisions": [
-    {
-      "key": "ai-chooses-circles-no-user-pick",
-      "title": "AI assigns primary circle; users do not browse-join circles",
-      "summary": "Users do not browse or self-select into circles. AI assigns the primary circle from the voice interview (personality + interests + city). Users may view circle types for education but cannot join by preference alone. Secondary circle selection is AI-suggested and user-confirmed inside circle detail (see secondary-circle-detail-only)."
-    },
-    {
-      "key": "circles-placement-ui-states",
-      "title": "Circles tab has two placement states with distinct layouts",
-      "summary": "Unplaced: left column shows editorial promise prose + Start interview CTA; right shows ghosted circle-type preview. Placed: left shows primary circle (no educational prose); right shows AI secondary suggestions and read-only circle types. Copy uses 'Your circle.' not 'Your room.'"
-    },
-    {
-      "key": "secondary-circle-detail-only",
-      "title": "Secondary circle selection happens inside circle detail only",
-      "summary": "AI assigns the primary circle. User may pick one secondary circle from AI suggestions. List cards have no Choose/Join CTA — tap opens detail. Inside detail, show 'Make this my second circle'. API action: select_secondary with circleId."
-    }
-  ],
-  "reference_mockup": "mockups/macos/concepts/mockup-circles-placement-convergence.png",
-  "concept_mockup": "mockups/macos/concepts/mockup-circles-placement-convergence.png",
-  "recent_screenshot": "output/validation/macos-screens/circlesRoom.png",
-  "proof_command": "./script/macos_cua_preflight.sh && ./script/macos_audit_prepare.sh circlesRoom && ./script/macos_cua_screen.sh circlesRoom",
-  "compare_before_pass": "Capture then open side-by-side: output/validation/macos-screens/circlesRoom.png vs mockups/macos/concepts/mockup-circles-placement-convergence.png",
-  "auto_stamp_trigger": "preCompact",
-  "auto_stamped_at": "2026-07-09T20:04:03.735Z"
+  "continue_command": "npm run ledger:screen -- --platform macos --screen voice-session --section route",
+  "decisions": [],
+  "reference_mockup": "mockups/macos/concepts/mockup-profile-ai-interview.png",
+  "concept_mockup": null,
+  "recent_screenshot": "output/validation/macos-screens/profile-ai-interview-default.jpg",
+  "proof_command": "npm run testing:ledger-run -- --platform macos --screen voice-session --card-only; npm run dev:macos:validation -- profileVoiceStepPanel; prove with @Computer",
+  "compare_before_pass": "Capture then open side-by-side: output/validation/macos-screens/profile-ai-interview-default.jpg vs mockups/macos/concepts/mockup-profile-ai-interview.png"
 }

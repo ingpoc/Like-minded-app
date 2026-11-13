@@ -148,15 +148,15 @@ function reproofCommand(platform, options = {}) {
   if (platform === "ios") return "npm run verify:ios-screens -- --stale-only";
   const cuaOnly = options.cuaOnly !== false;
   return cuaOnly
-    ? "npm run macos:validation-batch -- --stale-only --cua-only"
-    : "npm run macos:validation-batch -- --stale-only";
+    ? "npm run testing:ledger-batch-plan -- --platform macos --limit 10"
+    : "npm run testing:ledger-batch-plan -- --platform macos --limit 10";
 }
 
 function wave2ReproofCommand() {
   const ios = stalePassCount("ios");
   const mac = stalePassCount("macos");
   if (ios === 0 && mac === 0) return "npm run ledger:stale";
-  if (ios > 0 && mac > 0) return "npm run validation:wave2-reproof";
+  if (ios > 0 && mac > 0) return "run one testing:ledger-batch-plan per platform; serialize shared build and seed resources";
   if (mac > 0) return reproofCommand("macos");
   return reproofCommand("ios");
 }

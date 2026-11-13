@@ -9,7 +9,7 @@
       "source_files": [
         "apps/ios-macos/Sources/LikemindedApp/Views/SoulmateView.swift (SoulmateMatchDetailView)"
       ],
-      "source_hash": "4ad5441ddd7fdfa9",
+      "source_hash": "ff552c735817f4be",
       "mockup_ref": "mockups/ios/13-16-soulmate-chat.png",
       "mockup_missing": false,
       "entry_points": [
@@ -43,7 +43,7 @@
       },
       "visual_parity": {
         "result": "pass",
-        "notes": "2026-07-05 vs plate 14 (13-16 montage): serif name hero, meeting context line, depth-encoded interest chips, Start chatting CTA, chat toolbar icon. macOS soulmateDetail maps Meera/Priya for same jazz-meet thread; iOS shows live API name (Priya Shah). Intentional: no likes/dislikes rows or fake compatibility %; macOS keeps mockup plate chrome (portrait strip, 92% card)."
+        "notes": "2026-07-05 vs plate 14 (13-16 montage): serif name hero, meeting context line, depth-encoded interest chips, Start chatting CTA, chat toolbar icon. iOS keeps its previously validated API-backed detail contract; macOS now uses the truthful mutual-match redesign and requires fresh validation."
       },
       "recent_screenshot_ref": "output/validation/ios-screens/soulmate-match-detail.png",
       "notes": ""
@@ -54,7 +54,7 @@
       "source_files": [
         "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (soulmateDetail)"
       ],
-      "source_hash": "336199817f96da17",
+      "source_hash": "c2913808e715691e",
       "mockup_ref": "mockups/macos/09-12-profile-soulmate-discover-detail.png",
       "mockup_missing": false,
       "entry_points": [
@@ -64,26 +64,24 @@
         "GET /v1/me/soulmate/matches/:id"
       ],
       "ui_validation": {
-        "result": "pass",
+        "result": "pending",
         "reference_mockup_ref": "mockups/macos/09-12-profile-soulmate-discover-detail.png",
         "recent_screenshot_ref": "output/validation/macos-screens/soulmateDetail.png",
         "design_ref": "DESIGN.md",
-        "last_compared_at": "2026-07-05",
-        "validated": [
-          "latest targeted screenshot exists and was compared with reference mockup",
-          "DESIGN.md design language checked: warm canvas, editorial hierarchy, card system, green accents, bottom glass navigation",
-          "visible text and components reviewed for clear purpose",
-          "control behavior tracked separately in controls[]"
+        "last_compared_at": "",
+        "validated": [],
+        "pending_validation": [
+          "Mutual-selection explanation and real interests",
+          "Back and exact-thread Message navigation"
         ],
-        "pending_validation": [],
         "requires_implementation": [],
         "requires_fixing": [],
         "intentional_differences": [],
-        "notes": "2026-07-05 targeted rebuild at 1120x901: Meera detail, image strip, shared interests, 92% compatibility card, Pass and Message align with mockup 12."
+        "notes": "Redesigned contract has no carried-forward macOS proof."
       },
       "visual_parity": {
-        "result": "pass",
-        "notes": "2026-07-04 capture vs plate 11: match detail shared interests. Intentional: no fake compatibility %; Pass/Like omitted (honest MVP)."
+        "result": "pending",
+        "notes": "Awaiting live capture comparison at the responsive validation matrix."
       },
       "recent_screenshot_ref": "output/validation/macos-screens/soulmateDetail.png",
       "notes": ""
@@ -107,11 +105,12 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "start-chat: screen-capture 2026-07-05",
+          "evidence": "start-chat: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "4ad5441ddd7fdfa9",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "ff552c735817f4be",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "not-applicable",
@@ -123,7 +122,7 @@
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -135,7 +134,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/13-16-soulmate-chat.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen soulmate-match --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh soulmateDetail → macos_cua_screen.sh soulmateDetail"
+          "macos": "@Computer: npm run dev:macos:validation -- soulmateDetail; target the canonical app by full path; prove soulmate-match/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen soulmate-match --flow start-chat --result pass --method <tier-method> --evidence \"...\""
       }
@@ -157,11 +156,12 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "chat-icon: screen-capture 2026-07-05",
+          "evidence": "chat-icon: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "4ad5441ddd7fdfa9",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "ff552c735817f4be",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "not-applicable",
@@ -173,7 +173,7 @@
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -185,7 +185,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/13-16-soulmate-chat.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen soulmate-match --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh soulmateDetail → macos_cua_screen.sh soulmateDetail"
+          "macos": "@Computer: npm run dev:macos:validation -- soulmateDetail; target the canonical app by full path; prove soulmate-match/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen soulmate-match --flow chat-icon --result pass --method <tier-method> --evidence \"...\""
       }
@@ -207,11 +207,12 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "interest-chips: screen-capture 2026-07-05",
+          "evidence": "interest-chips: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "4ad5441ddd7fdfa9",
-          "last_test_method": "screen-capture"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "ff552c735817f4be",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "not-applicable",
@@ -223,7 +224,7 @@
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -235,17 +236,126 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/13-16-soulmate-chat.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen soulmate-match --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh soulmateDetail → macos_cua_screen.sh soulmateDetail"
+          "macos": "@Computer: npm run dev:macos:validation -- soulmateDetail; target the canonical app by full path; prove soulmate-match/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen soulmate-match --flow interest-chips --result pass --method <tier-method> --evidence \"...\""
       }
     },
     {
-      "id": "message",
-      "name": "Message",
+      "id": "mutual-match-detail",
+      "name": "Truthful mutual match detail",
       "origin": "soulmate-match",
       "steps": [],
       "destinations": [],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [],
+        "macos": [
+          "mutual-match-status",
+          "mutual-selection-explanation",
+          "match-interests"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "not-applicable",
+          "evidence": "No iOS controls for this macOS redesign flow",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "mutual-match-status: Computer-use 2026-07-19 | mutual-selection-explanation: Computer-use 2026-07-19 | match-interests: Computer-use 2026-07-19",
+          "blocker": "",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-19",
+          "tested_source_hash": "c2913808e715691e",
+          "last_test_method": "Computer-use"
+        }
+      },
+      "proof": {
+        "tier": "computer-use",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Mutual match and exact mutual-selection explanation are visible",
+          "Interests you share or Their interests is sourced from the selected match"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Functional proof of the approved truthful macOS contract",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen soulmate-match --platform ios",
+          "macos": "@Computer: npm run dev:macos:validation -- soulmateDetail; target the canonical app by full path; prove soulmate-match/<flow>"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen soulmate-match --flow mutual-match-detail --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "match-back-to-soulmate",
+      "name": "Back to Soulmate",
+      "origin": "soulmate-match",
+      "steps": [],
+      "destinations": [
+        "soulmate-discover"
+      ],
+      "spans": [],
+      "backend": [],
+      "control_ids": {
+        "ios": [],
+        "macos": [
+          "back-to-soulmate"
+        ]
+      },
+      "validation": {
+        "ios": {
+          "result": "not-applicable",
+          "evidence": "No iOS controls for this macOS redesign flow",
+          "blocker": "",
+          "last_tested_at": "",
+          "tested_source_hash": "",
+          "last_test_method": ""
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "back-to-soulmate: Computer-use 2026-07-19",
+          "blocker": "",
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-19",
+          "tested_source_hash": "c2913808e715691e",
+          "last_test_method": "Computer-use"
+        }
+      },
+      "proof": {
+        "tier": "computer-use",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "Back returns to Your mutual matches"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Functional proof of the approved truthful macOS contract",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen soulmate-match --platform ios",
+          "macos": "@Computer: npm run dev:macos:validation -- soulmateDetail; target the canonical app by full path; prove soulmate-match/<flow>"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen soulmate-match --flow match-back-to-soulmate --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "message",
+      "name": "Message exact mutual match",
+      "origin": "soulmate-match",
+      "steps": [],
+      "destinations": [
+        "conversations"
+      ],
       "spans": [],
       "backend": [],
       "control_ids": {
@@ -257,7 +367,7 @@
       "validation": {
         "ios": {
           "result": "not-applicable",
-          "evidence": "No controls on this platform for this flow",
+          "evidence": "No iOS controls for this macOS redesign flow",
           "blocker": "",
           "last_tested_at": "",
           "tested_source_hash": "",
@@ -265,130 +375,30 @@
         },
         "macos": {
           "result": "pass",
-          "evidence": "message: Computer Use 2026-07-05 clicked Message; routed to Chats with Priya Shah local thread and message composer. (hash-migrat",
+          "evidence": "message: Computer-use 2026-07-19",
           "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "336199817f96da17",
-          "last_test_method": "Computer Use"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-07-19",
+          "tested_source_hash": "c2913808e715691e",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
         ],
         "success_signals": [
-          "User outcome achieved: Message"
+          "Message opens the conversation for the exact selected match"
         ],
         "mockup_ref": null,
-        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/13-16-soulmate-chat.png",
+        "mockup_note": "Functional proof of the approved truthful macOS contract",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen soulmate-match --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh soulmateDetail → macos_cua_screen.sh soulmateDetail"
+          "macos": "@Computer: npm run dev:macos:validation -- soulmateDetail; target the canonical app by full path; prove soulmate-match/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen soulmate-match --flow message --result pass --method <tier-method> --evidence \"...\""
-      }
-    },
-    {
-      "id": "about-panels",
-      "name": "About / You both like / Compatibility",
-      "origin": "soulmate-match",
-      "steps": [],
-      "destinations": [],
-      "spans": [],
-      "backend": [],
-      "control_ids": {
-        "ios": [],
-        "macos": [
-          "about-panels"
-        ]
-      },
-      "validation": {
-        "ios": {
-          "result": "not-applicable",
-          "evidence": "No controls on this platform for this flow",
-          "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
-        },
-        "macos": {
-          "result": "pass",
-          "evidence": "about-panels: Computer Use 2026-07-05 state showed Meera detail title, shared tags, compatibility card, Pass and Message controls. (ha",
-          "blocker": "",
-          "last_tested_at": "2026-07-05",
-          "tested_source_hash": "336199817f96da17",
-          "last_test_method": "Computer Use"
-        }
-      },
-      "proof": {
-        "tier": "cua-click",
-        "preconditions": [
-          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
-          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
-        ],
-        "success_signals": [
-          "User outcome achieved: About / You both like / Compatibility"
-        ],
-        "mockup_ref": null,
-        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/13-16-soulmate-chat.png",
-        "commands": {
-          "ios": "./script/cross_platform_screen_validate.sh --screen soulmate-match --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh soulmateDetail → macos_cua_screen.sh soulmateDetail"
-        },
-        "record_pass": "npm run ledger:record-flow -- --platform ios --screen soulmate-match --flow about-panels --result pass --method <tier-method> --evidence \"...\""
-      }
-    },
-    {
-      "id": "soulmate-pass",
-      "name": "Pass on match (macOS)",
-      "origin": "soulmate-match",
-      "steps": [],
-      "destinations": [],
-      "spans": [],
-      "backend": [],
-      "control_ids": {
-        "ios": [],
-        "macos": [
-          "pass-match"
-        ]
-      },
-      "gap_audit": "2026-07-06",
-      "validation": {
-        "ios": {
-          "result": "not-applicable",
-          "evidence": "No iOS controls for this flow",
-          "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
-        },
-        "macos": {
-          "result": "pending",
-          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
-          "blocker": "Button visible but no-op — wire action or remove",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
-        }
-      },
-      "proof": {
-        "tier": "cua-click",
-        "preconditions": [
-          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
-          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
-        ],
-        "success_signals": [
-          "User outcome achieved: Pass on match (macOS)"
-        ],
-        "mockup_ref": null,
-        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/13-16-soulmate-chat.png",
-        "commands": {
-          "ios": "./script/cross_platform_screen_validate.sh --screen soulmate-match --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh soulmateDetail → macos_cua_screen.sh soulmateDetail"
-        },
-        "record_pass": "npm run ledger:record-flow -- --platform ios --screen soulmate-match --flow soulmate-pass --result pass --method <tier-method> --evidence \"...\""
       }
     }
   ],
@@ -400,12 +410,12 @@
         "label": "Start chat",
         "expected": "Pushes ChatView(match:)",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (start-chat)",
+        "evidence": "Computer-use validation-gurusharan soulmate-match/start-chat 2026-08-01: start-chat",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "4ad5441ddd7fdfa9",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "screen-capture"
+        "tested_source_hash": "ff552c735817f4be",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "chat-icon",
@@ -413,12 +423,12 @@
         "label": "Chat icon (top-right)",
         "expected": "Pushes ChatView(match:)",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (chat-icon)",
+        "evidence": "Computer-use validation-gurusharan soulmate-match/chat-icon 2026-08-01: chat-icon",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "4ad5441ddd7fdfa9",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "screen-capture"
+        "tested_source_hash": "ff552c735817f4be",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "interest-chips",
@@ -426,53 +436,79 @@
         "label": "Interest chips (depth-encoded)",
         "expected": "Shows other person's interests",
         "result": "pass",
-        "evidence": "screen-capture validation-gurusharan 2026-07-05 reproof: reproof after source hash change (interest-chips)",
+        "evidence": "Computer-use validation-gurusharan soulmate-match/interest-chips 2026-08-01: interest-chips",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "4ad5441ddd7fdfa9",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "screen-capture"
+        "tested_source_hash": "ff552c735817f4be",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       }
     ],
     "macos": [
       {
+        "id": "mutual-match-status",
+        "type": "display",
+        "label": "Mutual match",
+        "expected": "Displays Mutual match; no compatibility percentage",
+        "result": "pass",
+        "evidence": "Computer-use validation-gurusharan soulmate-match/mutual-match-detail 2026-07-19: mutual-match-status",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "c2913808e715691e",
+        "last_tested_at": "2026-07-19",
+        "last_test_method": "Computer-use"
+      },
+      {
+        "id": "mutual-selection-explanation",
+        "type": "display",
+        "label": "Mutual-selection explanation",
+        "expected": "Displays: You met in the same meetup and both selected each other privately. That mutual choice created this match.",
+        "result": "pass",
+        "evidence": "Computer-use validation-gurusharan soulmate-match/mutual-match-detail 2026-07-19: mutual-selection-explanation",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "c2913808e715691e",
+        "last_tested_at": "2026-07-19",
+        "last_test_method": "Computer-use"
+      },
+      {
+        "id": "match-interests",
+        "type": "display",
+        "label": "Match interests",
+        "expected": "Displays Interests you share when shared interests exist, otherwise Their interests",
+        "result": "pass",
+        "evidence": "Computer-use validation-gurusharan soulmate-match/mutual-match-detail 2026-07-19: match-interests",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "c2913808e715691e",
+        "last_tested_at": "2026-07-19",
+        "last_test_method": "Computer-use"
+      },
+      {
+        "id": "back-to-soulmate",
+        "type": "button",
+        "label": "Back",
+        "expected": "Click Back; navigate → soulmateDiscover and show Your mutual matches",
+        "result": "pass",
+        "evidence": "Computer-use validation-gurusharan soulmate-match/match-back-to-soulmate 2026-07-19: back-to-soulmate",
+        "blocker": "",
+        "stub": false,
+        "tested_source_hash": "c2913808e715691e",
+        "last_tested_at": "2026-07-19",
+        "last_test_method": "Computer-use"
+      },
+      {
         "id": "message",
         "type": "button",
         "label": "Message",
-        "expected": "Navigate to chat with selected local match thread",
+        "expected": "Navigate → exact selected match conversation thread",
         "result": "pass",
-        "evidence": "Computer Use 2026-07-05 clicked Message; routed to Chats with Priya Shah local thread and message composer. (hash-migrated: screen-slice source hash)",
+        "evidence": "Computer-use validation-gurusharan soulmate-match/message 2026-07-19: message",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "336199817f96da17",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "Computer Use"
-      },
-      {
-        "id": "about-panels",
-        "type": "display",
-        "label": "About / You both like / Compatibility",
-        "expected": "Shows mockup detail sections: about copy, shared tags, and 92% compatibility card",
-        "result": "pass",
-        "evidence": "Computer Use 2026-07-05 state showed Meera detail title, shared tags, compatibility card, Pass and Message controls. (hash-migrated: screen-slice source hash)",
-        "blocker": "",
-        "stub": false,
-        "tested_source_hash": "336199817f96da17",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "Computer Use"
-      },
-      {
-        "id": "pass-match",
-        "type": "button",
-        "label": "Pass",
-        "expected": "Dismisses or passes on match",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
-        "blocker": "",
-        "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "tested_source_hash": "c2913808e715691e",
+        "last_tested_at": "2026-07-19",
+        "last_test_method": "Computer-use"
       }
     ]
   }

@@ -18,7 +18,7 @@
     "macos": ["<control-id>"]
   },
   "proof": {
-    "tier": "cua-click",
+    "tier": "computer-use",
     "preconditions": [
       "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
       "LIKEMINDED_VALIDATION_USER=validation-gurusharan"
@@ -31,7 +31,7 @@
     "mockup_note": "null → inherit platforms.{platform}.mockup_ref on parent screen",
     "commands": {
       "ios": "./script/cross_platform_screen_validate.sh --screen <logical-id> --platform ios",
-      "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh <mac-screen> → macos_cua_screen.sh <mac-screen>"
+      "macos": "@Computer: launch the canonical validation app for <mac-screen>, target it by full path, and prove this exact flow"
     },
     "record_pass": "npm run ledger:record-flow -- --platform <ios|macos> --screen <id> --flow <flow-id> --result pass --method <tier-method> --evidence \"...\""
   },

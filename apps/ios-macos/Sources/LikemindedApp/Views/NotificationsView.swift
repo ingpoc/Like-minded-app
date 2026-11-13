@@ -3,22 +3,42 @@ import SwiftUI
 struct NotificationsView: View {
     @EnvironmentObject private var appState: PrototypeAppState
     @Environment(\.dismiss) private var dismiss
+    /// Used when presented as a pinned validation root (not a sheet) so Done/rows can exit.
+    var onDismiss: (() -> Void)? = nil
     @State private var notificationFilter = "All"
     @State private var activityFilter = "All"
     @State private var statusMessage: String?
 
+    private func closeNotifications() {
+        onDismiss?()
+        dismiss()
+    }
+
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    if appState.notifications.isEmpty && appState.activityItems.isEmpty {
-                        emptyState
-                    } else {
-                        notificationsSection
-                        activitySection
-                    }
+            // Status sits outside the scroll so Refresh (footer) confirmation
+            // stays visible without scrolling back to the top.
+            VStack(alignment: .leading, spacing: 0) {
+                if let statusMessage {
+                    Text(statusMessage)
+                        .font(PrototypeTypography.caption)
+                        .foregroundStyle(PrototypePalette.subink)
+                        .accessibilityIdentifier("notifications-status")
+                        .padding(.horizontal, 20)
+                        .padding(.top, 8)
+                        .padding(.bottom, 4)
                 }
-                .padding(20)
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 20) {
+                        if appState.notifications.isEmpty && appState.activityItems.isEmpty {
+                            emptyState
+                        } else {
+                            notificationsSection
+                            activitySection
+                        }
+                    }
+                    .padding(20)
+                }
             }
             .background(PrototypePalette.background.ignoresSafeArea())
             .navigationTitle("Notifications")
@@ -31,9 +51,12 @@ struct NotificationsView: View {
                             statusMessage = "All notifications marked read."
                         }
                         .foregroundStyle(PrototypePalette.accent)
+                        .accessibilityIdentifier("mark-all-read")
                         .accessibilityLabel("Mark all notifications as read")
-                        Button("Done") { dismiss() }
+                        Button("Done") { closeNotifications() }
                             .foregroundStyle(PrototypePalette.accent)
+                            .accessibilityIdentifier("done")
+                            .accessibilityLabel("Done")
                     }
                 }
             }
@@ -68,7 +91,7 @@ struct NotificationsView: View {
                 .font(PrototypeTypography.eyebrow)
                 .foregroundStyle(PrototypePalette.accent)
 
-            filterPills(selection: $notificationFilter, options: ["All", "Unread", "Mentions"])
+            filterPills(selection: $notificationFilter, options: ["All", "Unread", "Mentions"], group: "notifications")
 
             if filteredNotifications.isEmpty {
                 Text(appState.notificationError ?? "No notifications in this filter.")
@@ -110,7 +133,7 @@ struct NotificationsView: View {
                 .font(PrototypeTypography.eyebrow)
                 .foregroundStyle(PrototypePalette.accent)
 
-            filterPills(selection: $activityFilter, options: ["All", "Circles", "Communities"])
+            filterPills(selection: $activityFilter, options: ["All", "Circles", "Communities"], group: "activity")
 
             if filteredActivityItems.isEmpty {
                 Text("No activity in this filter.")
@@ -164,19 +187,14 @@ struct NotificationsView: View {
                 .foregroundStyle(.white)
                 .clipShape(Capsule(style: .continuous))
                 .buttonStyle(.plain)
+                .accessibilityIdentifier("refresh")
                 .accessibilityLabel("Refresh notifications")
             }
             .padding(.top, 8)
-
-            if let statusMessage {
-                Text(statusMessage)
-                    .font(PrototypeTypography.caption)
-                    .foregroundStyle(PrototypePalette.subink)
-            }
         }
     }
 
-    private func filterPills(selection: Binding<String>, options: [String]) -> some View {
+    private func filterPills(selection: Binding<String>, options: [String], group: String) -> some View {
         HStack(spacing: 10) {
             ForEach(options, id: \.self) { option in
                 Button {
@@ -191,7 +209,9 @@ struct NotificationsView: View {
                         .clipShape(Capsule(style: .continuous))
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("\(option) filter")
+                .accessibilityIdentifier("\(group)-filter-\(option.lowercased())")
+                .accessibilityLabel("\(option) \(group) filter")
+                .accessibilityValue(selection.wrappedValue == option ? "Selected" : "Not selected")
             }
             Spacer()
         }
@@ -260,7 +280,7 @@ struct NotificationsView: View {
         default:
             break
         }
-        dismiss()
+        closeNotifications()
     }
 
     private func openActivityItem(_ item: NotificationItem) {
@@ -272,7 +292,7 @@ struct NotificationsView: View {
         default:
             break
         }
-        dismiss()
+        closeNotifications()
     }
 }
 

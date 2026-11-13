@@ -13,6 +13,25 @@ function commandSet(goal) {
   return new Set(goal.deterministic_graders.map((grader) => grader.command));
 }
 
+function assertCurrentGoalCoversOpenTracks(goal) {
+  const { ownershipReport } = require("./ledger_progress");
+  const progress = fs.readFileSync(path.join(root, goal.progress_source), "utf8");
+  const openTracks = ownershipReport(progress, goal.status).open_tracks;
+  const goalText = String(goal.goal || "");
+  const genericNativeCloseout = /\b(?:native|ledger|validation)\s+(?:proof|closeout)\b/i.test(goalText);
+  const missing = openTracks.filter((track) => {
+    if (genericNativeCloseout) return false;
+    if (track === "ios-ledger-honesty") return !/\b(?:ios|iphone)\b/i.test(goalText);
+    if (track === "macos-visual-parity") return !/\bmacos\b/i.test(goalText);
+    return false;
+  });
+  assert.deepEqual(
+    missing,
+    [],
+    `goal.json: goal must name every open native proof track or an explicit native/ledger/validation closeout (${missing.join(", ")})`
+  );
+}
+
 function assertGoalShape(file, goal) {
   assert.equal(goal.schema_version, 1, `${file}: schema_version must be 1`);
   assert.ok(["pending", "active", "completed"].includes(goal.status), `${file}: status must be pending, active, or completed`);
@@ -126,6 +145,7 @@ const current = readJson("goal.json");
 
 assertGoalShape("goal.template.json", template);
 assertGoalShape("goal.json", current);
+assertCurrentGoalCoversOpenTracks(current);
 
 assert.deepEqual(
   [...commandSet(current)].sort(),

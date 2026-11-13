@@ -32,8 +32,10 @@ function emptyLocalStore() {
     profiles: [],
     placements: [],
     transcripts: [],
+    idempotencyResults: [],
     feedback: [],
     communityMemberships: [],
+    communityReports: [],
     meetingRsvps: [],
     meetings: [],
     soulmateUsers: {},
@@ -104,6 +106,14 @@ async function migrateMvpStore() {
       created_at TIMESTAMPTZ NOT NULL DEFAULT now()
     );
 
+    CREATE TABLE IF NOT EXISTS idempotency_results (
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      operation_key TEXT NOT NULL,
+      result JSONB NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      PRIMARY KEY (user_id, operation_key)
+    );
+
     CREATE TABLE IF NOT EXISTS feedback (
       id BIGSERIAL PRIMARY KEY,
       user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -120,6 +130,14 @@ async function migrateMvpStore() {
       community_id TEXT NOT NULL,
       created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
       PRIMARY KEY (user_id, community_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS community_reports (
+      id BIGSERIAL PRIMARY KEY,
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      community_id TEXT NOT NULL,
+      reason TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
     );
 
     CREATE TABLE IF NOT EXISTS meeting_rsvps (
@@ -174,6 +192,7 @@ async function migrateMvpStore() {
   await getPool().query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS wallet_address TEXT;`);
   await getPool().query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS wallet_chain TEXT;`);
   await getPool().query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS auth_provider TEXT;`);
+  await getPool().query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS apple_refresh_token_ciphertext TEXT;`);
   await getPool().query(`
     CREATE UNIQUE INDEX IF NOT EXISTS users_wallet_unique
     ON users (wallet_chain, lower(wallet_address))
@@ -181,7 +200,7 @@ async function migrateMvpStore() {
   `);
 }
 
-async function upsertAuthUser({ provider, subject, email, fullName, walletChain, walletAddress }) {
+async function upsertAuthUser({ provider, subject, email, fullName, walletChain, walletAddress, appleRefreshTokenCiphertext }) {
   const id = userIdForAuthSubject(provider, subject);
   const now = new Date().toISOString();
   const appleSub = provider === "apple" ? subject : null;
@@ -206,8 +225,8 @@ async function upsertAuthUser({ provider, subject, email, fullName, walletChain,
     }
 
     const result = await getPool().query(
-      `INSERT INTO users (id, apple_sub, google_sub, wallet_address, wallet_chain, auth_provider, email, full_name, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, now(), now())
+      `INSERT INTO users (id, apple_sub, google_sub, wallet_address, wallet_chain, auth_provider, email, full_name, apple_refresh_token_ciphertext, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, now(), now())
        ON CONFLICT (id) DO UPDATE
        SET apple_sub = COALESCE(users.apple_sub, EXCLUDED.apple_sub),
            google_sub = COALESCE(users.google_sub, EXCLUDED.google_sub),
@@ -216,9 +235,10 @@ async function upsertAuthUser({ provider, subject, email, fullName, walletChain,
            auth_provider = COALESCE(users.auth_provider, EXCLUDED.auth_provider),
            email = COALESCE(EXCLUDED.email, users.email),
            full_name = COALESCE(EXCLUDED.full_name, users.full_name),
+           apple_refresh_token_ciphertext = COALESCE(EXCLUDED.apple_refresh_token_ciphertext, users.apple_refresh_token_ciphertext),
            updated_at = now()
        RETURNING id, apple_sub, google_sub, wallet_address, wallet_chain, auth_provider, email, full_name`,
-      [existingId, appleSub, googleSub, walletAddressValue, walletChainValue, provider, email || null, fullName || null]
+      [existingId, appleSub, googleSub, walletAddressValue, walletChainValue, provider, email || null, fullName || null, appleRefreshTokenCiphertext || null]
     );
     return rowToUser(result.rows[0]);
   }
@@ -241,6 +261,7 @@ async function upsertAuthUser({ provider, subject, email, fullName, walletChain,
     auth_provider: existing?.auth_provider || provider,
     email: email || existing?.email || null,
     full_name: fullName || existing?.full_name || null,
+    apple_refresh_token_ciphertext: appleRefreshTokenCiphertext || existing?.apple_refresh_token_ciphertext || null,
     created_at: existing?.created_at || now,
     updated_at: now
   };
@@ -248,8 +269,8 @@ async function upsertAuthUser({ provider, subject, email, fullName, walletChain,
   return rowToUser(store.users[id]);
 }
 
-async function upsertAppleUser({ appleSub, email, fullName }) {
-  return upsertAuthUser({ provider: "apple", subject: appleSub, email, fullName });
+async function upsertAppleUser({ appleSub, email, fullName, appleRefreshTokenCiphertext }) {
+  return upsertAuthUser({ provider: "apple", subject: appleSub, email, fullName, appleRefreshTokenCiphertext });
 }
 
 async function upsertGoogleUser({ googleSub, email, fullName }) {
@@ -276,6 +297,17 @@ async function getUserById(id) {
     return rowToUser(result.rows[0]);
   }
   return rowToUser(readLocalStore().users[id]);
+}
+
+async function getAppleRefreshTokenCiphertext(id) {
+  if (isPostgres) {
+    const result = await getPool().query(
+      "SELECT apple_refresh_token_ciphertext FROM users WHERE id = $1",
+      [id]
+    );
+    return result.rows[0]?.apple_refresh_token_ciphertext || null;
+  }
+  return readLocalStore().users[id]?.apple_refresh_token_ciphertext || null;
 }
 
 function mergeProfileInterests(existing = [], incoming = []) {
@@ -318,7 +350,21 @@ function mergeProfileWithDiscovery(existing, discovered) {
   };
 }
 
-async function saveProfilePlacement({ userId, profile, placement, transcript }) {
+async function saveProfilePlacement({ userId, profile, placement, transcript, idempotencyKey = null }) {
+  if (idempotencyKey) {
+    if (isPostgres) {
+      const prior = await getPool().query(
+        "SELECT result FROM idempotency_results WHERE user_id = $1 AND operation_key = $2",
+        [userId, idempotencyKey]
+      );
+      if (prior.rows[0]?.result) return { ...prior.rows[0].result, idempotentReplay: true };
+    } else {
+      const prior = readLocalStore().idempotencyResults.find(
+        (row) => row.user_id === userId && row.operation_key === idempotencyKey
+      );
+      if (prior) return { ...prior.result, idempotentReplay: true };
+    }
+  }
   const now = new Date().toISOString();
   const existing = await getLatestProfile(userId);
   const profileToSave = mergeProfileWithDiscovery(existing, profile);
@@ -342,8 +388,19 @@ async function saveProfilePlacement({ userId, profile, placement, transcript }) 
           [userId, profileToSave.profileId, transcript]
         );
       }
+      const persistedResult = {
+        placementId: String(placed.rows[0].id),
+        profile: profileToSave,
+        placement
+      };
+      if (idempotencyKey) {
+        await client.query(
+          "INSERT INTO idempotency_results (user_id, operation_key, result) VALUES ($1, $2, $3::jsonb) ON CONFLICT (user_id, operation_key) DO NOTHING",
+          [userId, idempotencyKey, JSON.stringify(persistedResult)]
+        );
+      }
       await client.query("COMMIT");
-      return { placementId: String(placed.rows[0].id) };
+      return persistedResult;
     } catch (error) {
       await client.query("ROLLBACK");
       throw error;
@@ -386,8 +443,17 @@ async function saveProfilePlacement({ userId, profile, placement, transcript }) 
       created_at: now
     });
   }
+  const persistedResult = { placementId, profile: profileToSave, placement };
+  if (idempotencyKey) {
+    store.idempotencyResults.push({
+      user_id: userId,
+      operation_key: idempotencyKey,
+      result: persistedResult,
+      created_at: now
+    });
+  }
   writeLocalStore(store);
-  return { placementId, profile: profileToSave };
+  return persistedResult;
 }
 
 async function getLatestProfile(userId) {
@@ -449,7 +515,9 @@ async function updateLatestProfile(userId, updates) {
     profile.profileSummary = updates.reflectionSummary;
   }
   if (Array.isArray(updates.interests)) {
-    profile.interests = mergeProfileInterests(profile.interests, updates.interests);
+    profile.interests = updates.replaceInterests
+      ? updates.interests
+      : mergeProfileInterests(profile.interests, updates.interests);
   }
   const data = JSON.stringify(profile);
   if (isPostgres) {
@@ -882,6 +950,29 @@ async function saveFeedback({ userId, profileId, placementId, rating, message, a
   writeLocalStore(store);
 }
 
+async function saveCommunityReport({ userId, communityId, reason }) {
+  const normalizedReason = String(reason || "").trim();
+  if (!normalizedReason) throw new Error("reason is required");
+  if (isPostgres) {
+    const result = await getPool().query(
+      "INSERT INTO community_reports (user_id, community_id, reason, created_at) VALUES ($1, $2, $3, now()) RETURNING id, created_at",
+      [userId, communityId, normalizedReason]
+    );
+    return { id: String(result.rows[0].id), communityId, reason: normalizedReason, createdAt: result.rows[0].created_at };
+  }
+  const store = readLocalStore();
+  const report = {
+    id: String(store.communityReports.reduce((max, row) => Math.max(max, Number(row.id) || 0), 0) + 1),
+    user_id: userId,
+    communityId,
+    reason: normalizedReason,
+    createdAt: new Date().toISOString()
+  };
+  store.communityReports.push(report);
+  writeLocalStore(store);
+  return report;
+}
+
 async function deleteUserAccount(userId) {
   if (isPostgres) {
     const client = await getPool().connect();
@@ -928,6 +1019,7 @@ async function deleteUserAccount(userId) {
   store.transcripts = store.transcripts.filter((row) => row.user_id !== userId);
   store.feedback = store.feedback.filter((row) => row.user_id !== userId);
   store.communityMemberships = store.communityMemberships.filter((row) => row.user_id !== userId);
+  store.communityReports = store.communityReports.filter((row) => row.user_id !== userId);
   store.meetingRsvps = store.meetingRsvps.filter((row) => row.user_id !== userId);
   delete store.soulmateUsers[userId];
   store.soulmateSelections = store.soulmateSelections.filter((row) => row.userId !== userId);
@@ -1012,6 +1104,7 @@ module.exports = {
   upsertWalletUser,
   upsertAuthUser,
   getUserById,
+  getAppleRefreshTokenCiphertext,
   saveProfilePlacement,
   getLatestProfile,
   getLatestPlacement,
@@ -1039,6 +1132,7 @@ module.exports = {
   saveMessage,
   getMessages,
   saveFeedback,
+  saveCommunityReport,
   deleteUserAccount
 };
 module.exports.LOCAL_PATH = LOCAL_PATH;

@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 /**
  * iOS capture stamp map — control ids provable by screen-capture per logical screen.
- * Intersects macOS CUA stamp sets with ids present on platforms.ios controls.
+ * Intersects the historical macOS screen stamp sets with ids present on platforms.ios controls.
  */
 const { SCREEN_REGISTRY } = require("./ledger_migrate_to_screens");
 const { findScreenByArg, platformControls } = require("./ledger_screens");
 
-/** macOS --mac-screen → control ids (mirrors macos_cua_screen.sh STAMP_CONTROLS) */
+/** macOS logical launch screen → control ids retained for iOS capture compatibility. */
 const MAC_STAMP_CONTROLS = {
   meetOverview: "join-meetup,rsvp-sat-yes,rsvp-sat-no,rsvp-sun-yes,rsvp-sun-no,past-row",
   communityDetail:
@@ -22,14 +22,17 @@ const MAC_STAMP_CONTROLS = {
   profileOnboarding: "step-rows,form-lines,continue,voice-profile-step,join-circle-step",
   profileEdit: "comm-pills,trait-sliders,save",
   soulmateOverview: "enable-toggle,how-it-works",
-  soulmateDiscover: "distance-slider,filter-pills,new-matches,match-card",
-  soulmateDetail: "message,about-panels",
+  soulmateDiscover:
+    "mutual-match-roster,refresh-matches,manage-soulmate-settings,match-card,no-mutual-matches,pending-selection",
+  soulmateDetail:
+    "mutual-match-status,mutual-selection-explanation,match-interests,back-to-soulmate,message",
   settingsSoulmate:
-    "sidebar-honesty,account-settings,privacy-safety,notifications-settings,connected-apps,appearance,language,help-support,log-out,delete-account,soulmate-toggle,view-profile,voice-profile,discovery-preference,age-range,visibility",
+    "sidebar-honesty,account-settings,privacy-safety,notifications-settings,connected-apps,appearance,language,help-support,log-out,delete-account,soulmate-toggle,discovery-who,discovery-age-range,discovery-visibility,discovery-save,preferences-enforcement-disclaimer",
   meetVideoCall: "tiles,mute,leave",
-  myProfile: "share-profile,edit-profile,retake-voice,signal-cards,interest-tags",
+  myProfile:
+    "voice-informed-signals,profile-inference-disclaimer,why-this-placement,placement-disclaimer,review-signals,re-interview,edit-profile",
   createCommunity: "name,summary,themes,submit",
-  profileSignals: "share-profile",
+  profileSignals: "done",
   chat: "match-row,draft,send,search,voice-call-header,video-call-header,conversation-info-header",
   messages: "match-row,draft,send,close,voice-call-header,video-call-header,conversation-info-header",
   welcome: "sign-in-apple,sign-in-google,sign-in-metamask,sign-in-solflare"
@@ -38,6 +41,12 @@ const MAC_STAMP_CONTROLS = {
 /** Logical screens without dedicated --mac-screen use signed-in shell entry */
 const LOGICAL_MAC_FALLBACK = {
   "app-shell": "meetOverview"
+};
+
+/** Logical iOS screens whose preview captures prove layout but no behavior. */
+const IOS_CAPTURE_OVERRIDES = {
+  "profile-edit": [],
+  "voice-session": []
 };
 
 /** Legacy iOS ledger id / slug aliases → logical_screen_id */
@@ -117,6 +126,9 @@ function iosStampControlsForScreen(screenArg) {
     return { logicalId, controls: [] };
   }
   const iosIds = new Set(platformControls(screenData, "ios").map((c) => c.id));
+  if (Object.hasOwn(IOS_CAPTURE_OVERRIDES, logicalId)) {
+    return { logicalId, controls: IOS_CAPTURE_OVERRIDES[logicalId] };
+  }
   const macScreen = macScreenForLogical(logicalId);
   let candidates = [];
   if (macScreen && MAC_STAMP_CONTROLS[macScreen]) {
@@ -131,6 +143,7 @@ function iosStampControlsForScreen(screenArg) {
 module.exports = {
   MAC_STAMP_CONTROLS,
   LOGICAL_MAC_FALLBACK,
+  IOS_CAPTURE_OVERRIDES,
   SCREEN_ALIASES,
   logicalIdFromScreenArg,
   macScreenForLogical,

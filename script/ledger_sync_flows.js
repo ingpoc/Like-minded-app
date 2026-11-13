@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Promote flows to pass when all linked controls are pass + fresh hash.
- * Use after CUA stamp or control-level proof so flows[] stays in sync.
+ * Use after native interaction or control-level proof so flows[] stays in sync.
  *
  *   npm run ledger:sync-flows -- --platform macos
  *   npm run ledger:sync-flows -- --platform macos --screen meet

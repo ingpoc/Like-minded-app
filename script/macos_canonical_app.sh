@@ -9,21 +9,6 @@ export MACOS_CANONICAL_APP="$ROOT/.build/macos/Build/Products/Debug/LikemindedMa
 export MACOS_CANONICAL_BUNDLE_ID="com.gurusharan.likeminded"
 export MACOS_CANONICAL_SCHEME="LikemindedMac"
 export MACOS_CANONICAL_EXEC="LikemindedMac"
-export MACOS_CUA_CACHE_DIR="${MACOS_CUA_CACHE_DIR:-$HOME/.cache/macos-cua}"
-
-macos_clear_cua_cache() {
-  python3 - "$MACOS_CUA_CACHE_DIR" <<'PY' 2>/dev/null || true
-import glob
-import os
-import sys
-
-for path in glob.glob(os.path.join(sys.argv[1], "*.json")):
-    try:
-        os.unlink(path)
-    except OSError:
-        pass
-PY
-}
 
 macos_macos_app_lock_held_by_other() {
   local lock_dir="${LIKEMINDED_VALIDATION_LOCK_DIR:-/tmp/likeminded-validation-locks}"
@@ -80,14 +65,57 @@ if apps:
     sleep 0.3
   fi
 
-  macos_clear_cua_cache
 }
 
 macos_running_pids() {
   pgrep -x "$MACOS_CANONICAL_EXEC" 2>/dev/null || true
 }
 
+# Preserve this workspace's canonical app while terminating same-name binaries
+# relaunched by another worktree during an active validation flow. Bundled
+# Computer targets this canonical full path; foreign copies remain invalid.
+macos_kill_stray_instances() {
+  local quiet="${1:-0}"
+  local canonical_bin="$MACOS_CANONICAL_APP/Contents/MacOS/$MACOS_CANONICAL_EXEC"
+  local pid proc_path
+  while IFS= read -r pid; do
+    [[ -n "$pid" ]] || continue
+    proc_path="$(ps -p "$pid" -o command= 2>/dev/null | awk '{print $1}')"
+    if [[ "$proc_path" != "$canonical_bin" ]]; then
+      if [[ "$quiet" != "1" ]]; then
+        echo "[macos_kill_stray_instances] terminating foreign app pid=$pid path=$proc_path" >&2
+      fi
+      kill -9 "$pid" 2>/dev/null || true
+    fi
+  done < <(macos_running_pids)
+}
+
+macos_start_stray_guard() {
+  if [[ -n "${MACOS_STRAY_GUARD_PID:-}" ]] && kill -0 "$MACOS_STRAY_GUARD_PID" 2>/dev/null; then
+    return 0
+  fi
+  macos_kill_stray_instances
+  local owner_pid="${BASHPID:-$$}"
+  (
+    while kill -0 "$owner_pid" 2>/dev/null; do
+      macos_kill_stray_instances 1
+      sleep "${MACOS_STRAY_GUARD_INTERVAL:-0.1}"
+    done
+  ) </dev/null >/dev/null 2>&1 &
+  MACOS_STRAY_GUARD_PID=$!
+}
+
+macos_stop_stray_guard() {
+  local guard_pid="${MACOS_STRAY_GUARD_PID:-}"
+  if [[ -n "$guard_pid" ]]; then
+    kill "$guard_pid" 2>/dev/null || true
+    wait "$guard_pid" 2>/dev/null || true
+  fi
+  unset MACOS_STRAY_GUARD_PID
+}
+
 macos_assert_single_instance() {
+  macos_kill_stray_instances
   local -a pids=()
   while IFS= read -r pid; do
     [[ -n "$pid" ]] && pids+=("$pid")
@@ -116,6 +144,29 @@ macos_assert_single_instance() {
   echo "$pid"
 }
 
+macos_needs_build() {
+  if [[ "${LIKEMINDED_SKIP_MACOS_BUILD:-0}" == "1" ]]; then
+    return 1
+  fi
+  if [[ "${MACOS_FORCE_BUILD:-0}" == "1" || "${LIKEMINDED_FORCE_MACOS_BUILD:-0}" == "1" ]]; then
+    return 0
+  fi
+  local exec_path="$MACOS_CANONICAL_APP/Contents/MacOS/$MACOS_CANONICAL_EXEC"
+  if [[ ! -x "$exec_path" ]]; then
+    return 0
+  fi
+  local newest_source binary_mtime
+  newest_source="$(
+    find "$ROOT/apps/ios-macos/Sources/LikemindedMac" \
+      "$ROOT/apps/ios-macos/Sources/Shared" \
+      "$ROOT/apps/ios-macos/project.yml" \
+      -type f \( -name '*.swift' -o -name 'project.yml' \) -print0 2>/dev/null \
+      | xargs -0 stat -f '%m' 2>/dev/null | sort -rn | head -1
+  )"
+  binary_mtime="$(stat -f '%m' "$exec_path" 2>/dev/null || echo 0)"
+  [[ -n "$newest_source" && "$newest_source" -gt "$binary_mtime" ]]
+}
+
 macos_ensure_built() {
   local ios_dir="$ROOT/apps/ios-macos"
   macos_kill_all
@@ -135,7 +186,8 @@ macos_ensure_built() {
 macos_launch() {
   # Usage: macos_launch --arg1 val1 ...
   macos_kill_all
-  if [[ "${MACOS_FORCE_BUILD:-0}" == "1" ]] || [[ ! -x "$MACOS_CANONICAL_APP/Contents/MacOS/$MACOS_CANONICAL_EXEC" ]]; then
+  if macos_needs_build; then
+    echo "[macos_launch] rebuilding stale/missing LikemindedMac (sources newer than binary)" >&2
     macos_ensure_built
   fi
   macos_open_with_args "$@"
@@ -144,5 +196,4 @@ macos_launch() {
 macos_open_with_args() {
   macos_kill_all
   open -F -n "$MACOS_CANONICAL_APP" --args "$@"
-  macos_clear_cua_cache
 }

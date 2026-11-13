@@ -5,7 +5,7 @@ const { Wallet } = require("ethers");
 const nacl = require("tweetnacl");
 const bs58 = require("bs58").default;
 
-const { verifyGoogleIdentityToken } = require("../src/lib/google-auth");
+const { googleClientIds, verifyGoogleIdentityToken } = require("../src/lib/google-auth");
 const {
   createWalletChallenge,
   consumeWalletChallenge,
@@ -23,6 +23,15 @@ test("verifyGoogleIdentityToken bypass mode works", async () => {
   process.env.GOOGLE_AUTH_BYPASS = "1";
   const payload = await verifyGoogleIdentityToken("google-test-token");
   assert.ok(payload.sub.startsWith("dev-google-"));
+});
+
+test("googleClientIds accepts both native OAuth audiences", () => {
+  process.env.GOOGLE_CLIENT_ID_IOS = "ios.apps.googleusercontent.com";
+  process.env.GOOGLE_CLIENT_ID_MAC = "mac.apps.googleusercontent.com";
+  assert.deepEqual([...googleClientIds()], [
+    "ios.apps.googleusercontent.com",
+    "mac.apps.googleusercontent.com"
+  ]);
 });
 
 test("wallet challenge and ethereum verification round-trip", async () => {

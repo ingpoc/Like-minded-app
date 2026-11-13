@@ -95,14 +95,8 @@ function buildMeetings({ kind, targetId, targetName, participants, scheduledAt }
 }
 
 function summarizeGroup(kind, group) {
-  if (kind === "circle") return `${group.length} people. You share slow-trust patterns and analytical communication.`;
-  const counts = group.reduce((acc, item) => {
-    const energy = item.profile?.signals?.socialEnergy;
-    if (energy === "high") acc.extroverts += 1;
-    else acc.introverts += 1;
-    return acc;
-  }, { extroverts: 0, introverts: 0 });
-  return `${group.length} people from nearby circles. ${counts.extroverts} extroverts, ${counts.introverts} introverts.`;
+  if (kind === "circle") return "A small conversation with people from your circle.";
+  return "A nearby community conversation around a shared interest.";
 }
 
 module.exports = {

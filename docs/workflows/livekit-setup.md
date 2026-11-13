@@ -1,5 +1,9 @@
 # LiveKit Cloud setup (Phase 4)
 
+## Control Owner
+
+This workflow owns the repository setup and verification steps for LiveKit; deployed room infrastructure and credentials remain externally owned.
+
 ## 1. Create project
 
 1. Sign up at [LiveKit Cloud](https://cloud.livekit.io) (free dev tier).

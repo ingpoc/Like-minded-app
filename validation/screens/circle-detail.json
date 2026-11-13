@@ -9,7 +9,7 @@
       "source_files": [
         "apps/ios-macos/Sources/LikemindedApp/Views/CommunitiesPrototypeView.swift (CircleDetailView)"
       ],
-      "source_hash": "e913c8bf1fb01209",
+      "source_hash": "ee2698ef6cd99419",
       "mockup_ref": "mockups/ios/05-08-circles-meet-communities.png",
       "mockup_missing": false,
       "entry_points": [
@@ -50,36 +50,41 @@
         "result": "pass",
         "notes": "2026-07-05 rebuild vs mockups/ios/05-08 plate 6: DoodleCover hero with back/ellipsis overlays, trait line + tags, Why you fit card, next meetup + members + format rows, leave circle CTA. macOS circleDetail maps same backend fields in desktop 3-column layout (validation/macos/04-circle-detail.json). Intentional: DoodleCover thematic hero vs mockup scenic forest photo; iOS single-column vs macOS tabs/Moderators panel."
       },
-      "recent_screenshot_ref": "output/validation/ios-screens/11-circle-detail.png",
+      "recent_screenshot_ref": "output/validation/ios-screens/circle-detail.png",
       "notes": "Deep-link capture: --likeminded-start-circle-detail on Circles tab (RootView + CirclesPrototypeView.task id isSignedIn)."
     },
     "macos": {
       "ledger_legacy_id": "04-circle-detail",
       "implemented": true,
       "source_files": [
-        "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (circleDetailScreen)"
+        "apps/ios-macos/Sources/LikemindedMac/MacScreens.swift (circleDetailScreen)",
+        "apps/ios-macos/Sources/LikemindedMac/MacAppState.swift (placement concern persistence)",
+        "apps/ios-macos/Sources/LikemindedMac/LikemindedAPIClient.swift (circle and placement contracts)"
       ],
-      "source_hash": "24320c11ed3a958a",
+      "source_hash": "d769cf5fca03f41f",
       "mockup_ref": "mockups/macos/17-20-profile-onboarding-detail-settings.png",
       "mockup_missing": false,
       "entry_points": [
-        "Circle card in circlesRoom"
+        "Primary circle card in circlesRoom",
+        "AI-suggested secondary circle card in circlesRoom"
       ],
       "backend_dependencies": [
+        "GET /v1/me/placement",
         "GET /v1/circles/:id",
-        "POST /v1/me/circles/concern"
+        "GET /v1/meetings/upcoming",
+        "POST /v1/me/circles/concern",
+        "POST /v1/me/placement/actions"
       ],
       "ui_validation": {
         "result": "pass",
         "reference_mockup_ref": "mockups/macos/17-20-profile-onboarding-detail-settings.png",
         "recent_screenshot_ref": "output/validation/macos-screens/circleDetail.png",
         "design_ref": "DESIGN.md",
-        "last_compared_at": "2026-07-05",
+        "last_compared_at": "2026-07-19",
         "validated": [
-          "latest screenshot exists and was compared with reference mockup plate 19",
-          "DESIGN.md design language checked: warm canvas, calm editorial hierarchy, card system, green accents, bottom glass navigation",
-          "hero back button, fit badge, trait tags, description overlay, stats row, action pills, tab row, three-column About/Upcoming/Moderators layout",
-          "control behavior tracked separately in controls[]; CUA-click stamped message-circle, placement-concern, upcoming-meet"
+          "2026-07-19 screenshot exists and was compared with reference mockup plate 19",
+          "warm canvas, calm editorial hierarchy, hero art, tabs, card system, green accents, and bottom glass navigation remain clear and unclipped",
+          "current product-truth contract is visible: total members, unavailable circle chat, backend fit copy, display-only meetup, and no fabricated moderators or content"
         ],
         "pending_validation": [],
         "requires_implementation": [],
@@ -87,13 +92,14 @@
         "intentional_differences": [
           "DoodleCover thematic hero art vs scenic forest photograph in mockup",
           "Backend seeded circle name/copy (Reflective Builders) vs mockup placeholder (The Thinkers' Room)",
-          "In circle pill vs Join circle (user already placed in circle on seeded validation profile)"
+          "Placed users see In circle and an unavailable-chat notice instead of Join circle and Message mods",
+          "Unsupported moderator, location, start-date, discussion, and resource content is omitted rather than fabricated to match the mockup"
         ],
-        "notes": "2026-07-05 rebuilt circleDetailScreen to mockup 19 layout; CUA controls pass with relaunch between Message circle and remaining actions."
+        "notes": "2026-07-19 explicit macOS proofs passed for unavailable chat, authored concern API persistence, display-only meetup, truthful tabs, pasteboard summary, and secondary-circle relaunch persistence."
       },
       "visual_parity": {
         "result": "pass",
-        "notes": "2026-07-05 capture vs plate 19: hero with back/fit badge/trait line, stats row, In circle + Message circle + ellipsis, About/Members/Events/Discussions/Resources tabs, three-column About/Upcoming+discussions/Moderators. Intentional: DoodleCover hero vs scenic forest mockup; backend circle name Reflective Builders vs mockup Thinkers' Room copy."
+        "notes": "2026-07-19 capture compared with plate 19: hero hierarchy, tabs, warm palette, content card, and bottom navigation remain visually coherent. Intentional product-truth differences remove unsupported moderators/content and replace join/message actions with placed-state and unavailable-chat copy."
       },
       "recent_screenshot_ref": "output/validation/macos-screens/circleDetail.png",
       "notes": ""
@@ -117,11 +123,12 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "back: source-trace 2026-07-05",
+          "evidence": "back: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "e913c8bf1fb01209",
-          "last_test_method": "source-trace"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "ee2698ef6cd99419",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "not-applicable",
@@ -133,7 +140,7 @@
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -145,7 +152,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/05-08-circles-meet-communities.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen circle-detail --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh circleDetail → macos_cua_screen.sh circleDetail"
+          "macos": "@Computer: npm run dev:macos:validation -- circleDetail; target the canonical app by full path; prove circle-detail/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen circle-detail --flow back --result pass --method <tier-method> --evidence \"...\""
       }
@@ -167,11 +174,12 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "circle-options: source-trace 2026-07-05",
+          "evidence": "circle-options: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "e913c8bf1fb01209",
-          "last_test_method": "source-trace"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "ee2698ef6cd99419",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "not-applicable",
@@ -183,7 +191,7 @@
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -195,7 +203,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/05-08-circles-meet-communities.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen circle-detail --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh circleDetail → macos_cua_screen.sh circleDetail"
+          "macos": "@Computer: npm run dev:macos:validation -- circleDetail; target the canonical app by full path; prove circle-detail/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen circle-detail --flow circle-options --result pass --method <tier-method> --evidence \"...\""
       }
@@ -217,11 +225,12 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "detail-rows: source-trace 2026-07-05",
+          "evidence": "detail-rows: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "e913c8bf1fb01209",
-          "last_test_method": "source-trace"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "ee2698ef6cd99419",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "not-applicable",
@@ -233,7 +242,7 @@
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -245,7 +254,7 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/05-08-circles-meet-communities.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen circle-detail --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh circleDetail → macos_cua_screen.sh circleDetail"
+          "macos": "@Computer: npm run dev:macos:validation -- circleDetail; target the canonical app by full path; prove circle-detail/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen circle-detail --flow detail-rows --result pass --method <tier-method> --evidence \"...\""
       }
@@ -267,11 +276,12 @@
       "validation": {
         "ios": {
           "result": "pass",
-          "evidence": "leave-circle: source-trace 2026-07-05",
+          "evidence": "leave-circle: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "e913c8bf1fb01209",
-          "last_test_method": "source-trace"
+          "screenshot_ref": "",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "ee2698ef6cd99419",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "not-applicable",
@@ -283,7 +293,7 @@
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -295,16 +305,18 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/05-08-circles-meet-communities.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen circle-detail --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh circleDetail → macos_cua_screen.sh circleDetail"
+          "macos": "@Computer: npm run dev:macos:validation -- circleDetail; target the canonical app by full path; prove circle-detail/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen circle-detail --flow leave-circle --result pass --method <tier-method> --evidence \"...\""
       }
     },
     {
       "id": "message-circle",
-      "name": "Message circle",
+      "name": "Unavailable circle chat display",
       "origin": "circle-detail",
-      "steps": [],
+      "steps": [
+        "Observe the unavailable-chat outcome on Circle Detail; no navigation is offered"
+      ],
       "destinations": [],
       "spans": [],
       "backend": [],
@@ -325,40 +337,50 @@
         },
         "macos": {
           "result": "pass",
-          "evidence": "message-circle: local-product-loop 2026-07-06",
+          "evidence": "Bundled Computer current-source semantic proof 2026-08-02 compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: exact Circle chat isn’t available in this MVP yet. display is present and exposes no Messages navigation.",
           "blocker": "",
-          "screenshot_ref": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "b4309eca4da108ba",
-          "last_test_method": "local-product-loop"
+          "screenshot_ref": "output/validation/macos-screens/circleDetail.png",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "d769cf5fca03f41f",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "capture",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
         ],
         "success_signals": [
-          "User outcome achieved: Message circle"
+          "Exact unavailable-chat display copy is present",
+          "Exact display copy is Circle chat isn’t available in this MVP yet.",
+          "The outcome is display-only and does not navigate to Messages"
         ],
         "mockup_ref": null,
-        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/05-08-circles-meet-communities.png",
+        "mockup_note": "Inherit platforms.macos.mockup_ref: mockups/macos/17-20-profile-onboarding-detail-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen circle-detail --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh circleDetail → macos_cua_screen.sh circleDetail"
+          "macos": "@Computer: npm run dev:macos:validation -- circleDetail; target the canonical app by full path; prove circle-detail/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen circle-detail --flow message-circle --result pass --method <tier-method> --evidence \"...\""
       }
     },
     {
       "id": "placement-concern",
-      "name": "Placement concern",
+      "name": "Submit an authored placement concern",
       "origin": "circle-detail",
-      "steps": [],
+      "steps": [
+        "Open Circle options to reveal the Placement concern form",
+        "Enter deterministic text in Circle concern reason",
+        "Submit placement concern and observe Concern registered. Check Profile for re-interview.",
+        "Authenticate and GET /v1/me/placement to read back concernFlag and the exact authored message"
+      ],
       "destinations": [],
       "spans": [],
-      "backend": [],
+      "backend": [
+        "POST /v1/me/circles/concern",
+        "GET /v1/me/placement"
+      ],
       "control_ids": {
         "ios": [],
         "macos": [
@@ -376,40 +398,46 @@
         },
         "macos": {
           "result": "pass",
-          "evidence": "placement-concern: local-product-loop 2026-07-06",
+          "evidence": "Bundled Computer semantic proof submitted the authored placement concern and showed the confirmation; authenticated API readback returned concernFlag=true with the exact persisted message; compared with mockups/macos/17-20-profile-onboarding-detail-settings.png.",
           "blocker": "",
-          "screenshot_ref": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "b4309eca4da108ba",
-          "last_test_method": "local-product-loop"
+          "screenshot_ref": "output/validation/macos-screens/circleDetail.png",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "d769cf5fca03f41f",
+          "last_test_method": "api-persist"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "api-persist",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
         ],
         "success_signals": [
-          "User outcome achieved: Placement concern"
+          "The authored concern text remains visible before submission",
+          "Success copy is Concern registered. Check Profile for re-interview.",
+          "GET /v1/me/placement returns concernFlag true and placementConcern exactly equal to the authored text"
         ],
         "mockup_ref": null,
-        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/05-08-circles-meet-communities.png",
+        "mockup_note": "Inherit platforms.macos.mockup_ref: mockups/macos/17-20-profile-onboarding-detail-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen circle-detail --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh circleDetail → macos_cua_screen.sh circleDetail"
+          "macos": "@Computer: npm run dev:macos:validation -- circleDetail; target the canonical app by full path; prove circle-detail/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen circle-detail --flow placement-concern --result pass --method <tier-method> --evidence \"...\""
       }
     },
     {
       "id": "upcoming-meet",
-      "name": "Upcoming circle meet row",
+      "name": "Upcoming circle meetup display",
       "origin": "circle-detail",
-      "steps": [],
+      "steps": [
+        "Observe the display-only Upcoming circle meetup row on Circle Detail"
+      ],
       "destinations": [],
       "spans": [],
-      "backend": [],
+      "backend": [
+        "GET /v1/meetings/upcoming"
+      ],
       "control_ids": {
         "ios": [],
         "macos": [
@@ -427,40 +455,48 @@
         },
         "macos": {
           "result": "pass",
-          "evidence": "upcoming-meet: local-product-loop 2026-07-06",
+          "evidence": "Bundled Computer current-source semantic proof 2026-08-02 compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: Upcoming circle meetup exposes Reflective Builders, Sunday Aug 9 7:00 PM, host Priya Shah.",
           "blocker": "",
-          "screenshot_ref": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "b4309eca4da108ba",
-          "last_test_method": "local-product-loop"
+          "screenshot_ref": "output/validation/macos-screens/circleDetail.png",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "d769cf5fca03f41f",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "capture",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
         ],
         "success_signals": [
-          "User outcome achieved: Upcoming circle meet row"
+          "Accessibility label Upcoming circle meetup is present",
+          "The meetup row is display-only and does not claim navigation"
         ],
         "mockup_ref": null,
-        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/05-08-circles-meet-communities.png",
+        "mockup_note": "Inherit platforms.macos.mockup_ref: mockups/macos/17-20-profile-onboarding-detail-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen circle-detail --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh circleDetail → macos_cua_screen.sh circleDetail"
+          "macos": "@Computer: npm run dev:macos:validation -- circleDetail; target the canonical app by full path; prove circle-detail/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen circle-detail --flow upcoming-meet --result pass --method <tier-method> --evidence \"...\""
       }
     },
     {
       "id": "circle-detail-tabs",
-      "name": "Switch circle detail tabs",
+      "name": "Switch truthful Circle Detail tabs",
       "origin": "circle-detail",
-      "steps": [],
+      "steps": [
+        "Select Members, Events, Discussions, Resources, then About",
+        "After every click require that exact tab to expose AX value Selected",
+        "Require distinct truthful content and reject obsolete online-member, fake-discussion, and fake-resource copy"
+      ],
       "destinations": [],
       "spans": [],
-      "backend": [],
+      "backend": [
+        "GET /v1/circles/:id",
+        "GET /v1/meetings/upcoming"
+      ],
       "control_ids": {
         "ios": [],
         "macos": [
@@ -483,28 +519,33 @@
         },
         "macos": {
           "result": "pass",
-          "evidence": "Events AX + tab ids: ok=5 miss=0 flow_fail=0",
+          "evidence": "Bundled Computer semantic proof exercised Members, Events, Discussions, Resources, and About tabs against mockups/macos/17-20-profile-onboarding-detail-settings.png; each selected state rendered truthful screen-specific content.",
           "blocker": "",
-          "screenshot_ref": "",
-          "last_tested_at": "2026-07-06",
-          "tested_source_hash": "24320c11ed3a958a",
-          "last_test_method": "CUA-click"
+          "screenshot_ref": "output/validation/macos-screens/circleDetail.png",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "d769cf5fca03f41f",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
         ],
         "success_signals": [
-          "User outcome achieved: Switch circle detail tabs"
+          "Each clicked tab exposes AX value Selected",
+          "Members shows the seeded backend member count as <count> members plus the exact socialFormat and never members online",
+          "Events exposes Upcoming circle meetup",
+          "Discussions says Circle discussions aren’t available in this MVP yet. and contains no fake thread/reply copy",
+          "Resources says Circle resources aren’t available in this MVP yet. and contains no fake guideline/prompt copy",
+          "About returns to About this circle"
         ],
         "mockup_ref": null,
-        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/05-08-circles-meet-communities.png",
+        "mockup_note": "Inherit platforms.macos.mockup_ref: mockups/macos/17-20-profile-onboarding-detail-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen circle-detail --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh circleDetail → macos_cua_screen.sh circleDetail"
+          "macos": "@Computer: npm run dev:macos:validation -- circleDetail; target the canonical app by full path; prove circle-detail/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen circle-detail --flow circle-detail-tabs --result pass --method <tier-method> --evidence \"...\""
       }
@@ -527,12 +568,13 @@
       "gap_audit": "2026-07-06",
       "validation": {
         "ios": {
-          "result": "pending",
-          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "result": "pass",
+          "evidence": "options-report-concern: Computer-use 2026-08-01 | options-done: Computer-use 2026-08-01",
           "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
+          "screenshot_ref": "output/validation/ios-screens/11-circle-detail.png",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "ee2698ef6cd99419",
+          "last_test_method": "Computer-use"
         },
         "macos": {
           "result": "not-applicable",
@@ -544,7 +586,7 @@
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
@@ -557,24 +599,30 @@
         "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/05-08-circles-meet-communities.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen circle-detail --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh circleDetail → macos_cua_screen.sh circleDetail"
+          "macos": "@Computer: npm run dev:macos:validation -- circleDetail; target the canonical app by full path; prove circle-detail/<flow>"
         },
         "record_pass": "npm run ledger:record-flow -- --platform ios --screen circle-detail --flow circle-options-ios --result pass --method <tier-method> --evidence \"...\""
       }
     },
     {
-      "id": "circle-share-leave",
-      "name": "Share or leave circle (macOS)",
+      "id": "circle-share",
+      "name": "Copy truthful circle summary (macOS)",
       "origin": "circle-detail",
-      "steps": [],
+      "steps": [
+        "Open Circle options and choose Copy circle summary",
+        "Observe Circle summary copied.",
+        "Read pbpaste and compare it with the seeded backend circle name and description"
+      ],
       "destinations": [],
       "spans": [],
-      "backend": [],
+      "backend": [
+        "GET /v1/me/placement",
+        "GET /v1/circles/:id"
+      ],
       "control_ids": {
         "ios": [],
         "macos": [
-          "share-circle",
-          "leave-circle-macos"
+          "share-circle"
         ]
       },
       "gap_audit": "2026-07-06",
@@ -588,30 +636,95 @@
           "last_test_method": ""
         },
         "macos": {
-          "result": "pending",
-          "evidence": "Gap audit 2026-07-06: control exists in source; not yet runtime-validated",
+          "result": "pass",
+          "evidence": "Bundled Computer semantic proof opened circle options and copied the rendered Reflective Builders summary; clipboard content matched the visible circle title and description compared with mockups/macos/17-20-profile-onboarding-detail-settings.png.",
           "blocker": "",
-          "last_tested_at": "",
-          "tested_source_hash": "",
-          "last_test_method": ""
+          "screenshot_ref": "output/validation/macos-screens/circleDetail.png",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "d769cf5fca03f41f",
+          "last_test_method": "Computer-use"
         }
       },
       "proof": {
-        "tier": "cua-click",
+        "tier": "computer-use",
         "preconditions": [
           "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
           "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
         ],
         "success_signals": [
-          "User outcome achieved: Share or leave circle (macOS)"
+          "Copy circle summary reports Circle summary copied.",
+          "Pasteboard contains the seeded circle name and backend description",
+          "Pasteboard contains no Join me, invitation, link, or URL wording"
         ],
         "mockup_ref": null,
-        "mockup_note": "Inherit platforms.ios.mockup_ref: mockups/ios/05-08-circles-meet-communities.png",
+        "mockup_note": "Inherit platforms.macos.mockup_ref: mockups/macos/17-20-profile-onboarding-detail-settings.png",
         "commands": {
           "ios": "./script/cross_platform_screen_validate.sh --screen circle-detail --platform ios",
-          "macos": "macos_cua_preflight.sh → macos_audit_prepare.sh circleDetail → macos_cua_screen.sh circleDetail"
+          "macos": "@Computer: npm run dev:macos:validation -- circleDetail; target the canonical app by full path; prove circle-detail/<flow>"
         },
-        "record_pass": "npm run ledger:record-flow -- --platform ios --screen circle-detail --flow circle-share-leave --result pass --method <tier-method> --evidence \"...\""
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen circle-detail --flow circle-share --result pass --method <tier-method> --evidence \"...\""
+      }
+    },
+    {
+      "id": "secondary-circle-selection",
+      "name": "Confirm an AI-suggested second circle",
+      "origin": "circle-detail",
+      "steps": [
+        "Open an AI-suggested circle, confirm Make this my second circle in Circle Detail, relaunch, and reopen the persisted Your second circle card"
+      ],
+      "destinations": [],
+      "spans": [],
+      "backend": [
+        "POST /v1/me/placement/actions",
+        "GET /v1/me/placement"
+      ],
+      "control_ids": {
+        "ios": [
+          "make-secondary-circle"
+        ],
+        "macos": [
+          "make-secondary-circle"
+        ]
+      },
+      "gap_audit": "2026-07-14",
+      "validation": {
+        "ios": {
+          "result": "pass",
+          "evidence": "make-secondary-circle: Computer-use 2026-08-01",
+          "blocker": "",
+          "screenshot_ref": "output/validation/ios-screens/11-circle-detail.png",
+          "last_tested_at": "2026-08-01",
+          "tested_source_hash": "ee2698ef6cd99419",
+          "last_test_method": "Computer-use"
+        },
+        "macos": {
+          "result": "pass",
+          "evidence": "Bundled Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: selected Make this my second circle for Longform Thinkers; relaunched the canonical signed-in app without reseeding; the card returned with AX value Your second circle; reopening reached Circle Detail with About selected, About this circle visible, and Your second circle retained.",
+          "blocker": "",
+          "screenshot_ref": "output/validation/macos-screens/secondaryCirclePersisted-20260802-current.jpeg",
+          "last_tested_at": "2026-08-02",
+          "tested_source_hash": "d769cf5fca03f41f",
+          "last_test_method": "Computer-use"
+        }
+      },
+      "proof": {
+        "tier": "computer-use",
+        "preconditions": [
+          "curl -s http://127.0.0.1:8787/health → dbPath contains validation-db",
+          "LIKEMINDED_VALIDATION_USER=validation-gurusharan (dev-auth bypass unless flow tier is real-auth)"
+        ],
+        "success_signals": [
+          "The selected secondary-circle card persists with AX value Your second circle after relaunch",
+          "Reopening that card reaches Circle Detail and exposes About this circle",
+          "The reopened detail retains the selected secondary-circle state"
+        ],
+        "mockup_ref": null,
+        "mockup_note": "Inherit platforms.macos.mockup_ref: mockups/macos/17-20-profile-onboarding-detail-settings.png",
+        "commands": {
+          "ios": "./script/cross_platform_screen_validate.sh --screen circle-detail --platform ios",
+          "macos": "@Computer: npm run dev:macos:validation -- circleDetail; target the canonical app by full path; prove circle-detail/<flow>"
+        },
+        "record_pass": "npm run ledger:record-flow -- --platform ios --screen circle-detail --flow secondary-circle-selection --result pass --method <tier-method> --evidence \"...\""
       }
     }
   ],
@@ -623,12 +736,12 @@
         "label": "Back to circles",
         "expected": "Hero chevron dismisses fullScreenCover",
         "result": "pass",
-        "evidence": "source-trace 2026-07-05 validation-gurusharan: DoodleCover hero overlay chevron + accessibilityLabel Back to circles dismisses cover",
+        "evidence": "Computer-use validation-gurusharan circle-detail/back 2026-08-01: back",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "e913c8bf1fb01209",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "source-trace"
+        "tested_source_hash": "ee2698ef6cd99419",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "circle-options",
@@ -636,12 +749,12 @@
         "label": "Circle options",
         "expected": "Opens options sheet (Report placement concern)",
         "result": "pass",
-        "evidence": "source-trace 2026-07-05 validation-gurusharan: hero ellipsis opens Circle options sheet",
+        "evidence": "Computer-use validation-gurusharan circle-detail/circle-options 2026-08-01: circle-options",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "e913c8bf1fb01209",
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "source-trace"
+        "tested_source_hash": "ee2698ef6cd99419",
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "detail-rows",
@@ -649,12 +762,12 @@
         "label": "Next meetup / members / socialFormat rows with chevron",
         "expected": "Display only; members and format chevrons decorative (no navigation wired)",
         "result": "pass",
-        "evidence": "source-trace 2026-07-05 validation-gurusharan: next meetup row with countdown badge; members + socialFormat StaticDetailRow chevrons",
+        "evidence": "Computer-use validation-gurusharan circle-detail/detail-rows 2026-08-01: detail-rows",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "source-trace",
-        "tested_source_hash": "e913c8bf1fb01209"
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use",
+        "tested_source_hash": "ee2698ef6cd99419"
       },
       {
         "id": "leave-circle",
@@ -662,170 +775,183 @@
         "label": "Leave circle",
         "expected": "Confirmation dialog; Leave defers placement and dismisses cover",
         "result": "pass",
-        "evidence": "source-trace 2026-07-05 validation-gurusharan: SecondaryActionButton opens confirmationDialog; destructive Leave calls deferPlacement then dismiss",
+        "evidence": "Computer-use validation-gurusharan circle-detail/leave-circle 2026-08-01: leave-circle",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-05",
-        "last_test_method": "source-trace",
-        "tested_source_hash": "e913c8bf1fb01209"
+        "last_tested_at": "2026-08-01",
+        "last_test_method": "Computer-use",
+        "tested_source_hash": "ee2698ef6cd99419"
       },
       {
         "id": "options-report-concern",
         "type": "button",
         "label": "Report placement concern",
         "expected": "Reports concern from options sheet",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "Computer-use validation-gurusharan circle-detail/circle-options-ios 2026-08-01: options-report-concern",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "ee2698ef6cd99419",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "options-done",
         "type": "button",
         "label": "Done (options sheet)",
         "expected": "Dismisses circle options",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "result": "pass",
+        "evidence": "Computer-use validation-gurusharan circle-detail/circle-options-ios 2026-08-01: options-done",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "ee2698ef6cd99419",
+        "last_test_method": "Computer-use"
+      },
+      {
+        "id": "make-secondary-circle",
+        "type": "button",
+        "label": "make-secondary-circle",
+        "expected": "Open an AI-suggested circle, confirm Make this my second circle in Circle Detail, relaunch, and reopen the persisted Your second circle card",
+        "result": "pass",
+        "evidence": "Computer-use validation-gurusharan circle-detail/secondary-circle-selection 2026-08-01: make-secondary-circle",
+        "blocker": "",
+        "stub": false,
+        "last_tested_at": "2026-08-01",
+        "tested_source_hash": "ee2698ef6cd99419",
+        "last_test_method": "Computer-use"
       }
     ],
     "macos": [
       {
         "id": "message-circle",
-        "type": "button",
-        "label": "Message circle",
-        "expected": "Navigate → messages",
+        "type": "display",
+        "label": "Circle chat isn’t available in this MVP yet.",
+        "expected": "Display-only unavailable-chat outcome with exact accessible copy; no Messages navigation",
         "result": "pass",
-        "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (message-circle)",
+        "evidence": "Bundled Computer current-source semantic proof 2026-08-02 compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: exact Circle chat isn’t available in this MVP yet. display is present and exposes no Messages navigation.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "b4309eca4da108ba",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "local-product-loop"
+        "tested_source_hash": "d769cf5fca03f41f",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "placement-concern",
         "type": "button",
         "label": "Placement concern",
-        "expected": "POST /v1/me/circles/concern",
+        "expected": "Accept exact authored Circle concern reason, submit, show success, and persist concernFlag plus placementConcern via API",
         "result": "pass",
-        "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (placement-concern)",
+        "evidence": "Bundled Computer semantic proof submitted the authored placement concern and showed the confirmation; authenticated API readback returned concernFlag=true with the exact persisted message; compared with mockups/macos/17-20-profile-onboarding-detail-settings.png.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "b4309eca4da108ba",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "local-product-loop"
+        "tested_source_hash": "d769cf5fca03f41f",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "api-persist"
       },
       {
         "id": "upcoming-meet",
-        "type": "button",
-        "label": "Upcoming circle meet row",
-        "expected": "Navigate to meet flow",
+        "type": "display",
+        "label": "Upcoming circle meetup",
+        "expected": "Display-only upcoming meetup accessibility outcome; no navigation claim",
         "result": "pass",
-        "evidence": "verify:local-product-loop + macOS Debug build 2026-07-06: reproof after source hash change (upcoming-meet)",
+        "evidence": "Bundled Computer current-source semantic proof 2026-08-02 compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: Upcoming circle meetup exposes Reflective Builders, Sunday Aug 9 7:00 PM, host Priya Shah.",
         "blocker": "",
         "stub": false,
-        "tested_source_hash": "b4309eca4da108ba",
-        "last_tested_at": "2026-07-06",
-        "last_test_method": "local-product-loop"
+        "tested_source_hash": "d769cf5fca03f41f",
+        "last_tested_at": "2026-08-02",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "circle-tab-about",
         "type": "button",
         "label": "About tab",
-        "expected": "Shows about panel",
+        "expected": "AX value Selected and shows About this circle",
         "result": "pass",
-        "evidence": "Events AX + tab ids: ok=5 miss=0 flow_fail=0",
+        "evidence": "Bundled Computer semantic proof exercised Members, Events, Discussions, Resources, and About tabs against mockups/macos/17-20-profile-onboarding-detail-settings.png; each selected state rendered truthful screen-specific content.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "24320c11ed3a958a",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-02",
+        "tested_source_hash": "d769cf5fca03f41f",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "circle-tab-members",
         "type": "button",
         "label": "Members tab",
-        "expected": "Shows members",
+        "expected": "AX value Selected; shows seeded <count> members plus exact socialFormat and never members online",
         "result": "pass",
-        "evidence": "Events AX + tab ids: ok=5 miss=0 flow_fail=0",
+        "evidence": "Bundled Computer semantic proof exercised Members, Events, Discussions, Resources, and About tabs against mockups/macos/17-20-profile-onboarding-detail-settings.png; each selected state rendered truthful screen-specific content.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "24320c11ed3a958a",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-02",
+        "tested_source_hash": "d769cf5fca03f41f",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "circle-tab-events",
         "type": "button",
         "label": "Events tab",
-        "expected": "Shows events",
+        "expected": "AX value Selected and shows Upcoming circle meetup",
         "result": "pass",
-        "evidence": "Events AX + tab ids: ok=5 miss=0 flow_fail=0",
+        "evidence": "Bundled Computer semantic proof exercised Members, Events, Discussions, Resources, and About tabs against mockups/macos/17-20-profile-onboarding-detail-settings.png; each selected state rendered truthful screen-specific content.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "24320c11ed3a958a",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-02",
+        "tested_source_hash": "d769cf5fca03f41f",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "circle-tab-discussions",
         "type": "button",
         "label": "Discussions tab",
-        "expected": "Shows discussions",
+        "expected": "AX value Selected and shows truthful MVP-unavailable copy without fake discussions",
         "result": "pass",
-        "evidence": "Events AX + tab ids: ok=5 miss=0 flow_fail=0",
+        "evidence": "Bundled Computer semantic proof exercised Members, Events, Discussions, Resources, and About tabs against mockups/macos/17-20-profile-onboarding-detail-settings.png; each selected state rendered truthful screen-specific content.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "24320c11ed3a958a",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-02",
+        "tested_source_hash": "d769cf5fca03f41f",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "circle-tab-resources",
         "type": "button",
         "label": "Resources tab",
-        "expected": "Shows resources",
+        "expected": "AX value Selected and shows truthful MVP-unavailable copy without fake resources",
         "result": "pass",
-        "evidence": "Events AX + tab ids: ok=5 miss=0 flow_fail=0",
+        "evidence": "Bundled Computer semantic proof exercised Members, Events, Discussions, Resources, and About tabs against mockups/macos/17-20-profile-onboarding-detail-settings.png; each selected state rendered truthful screen-specific content.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "2026-07-06",
-        "tested_source_hash": "24320c11ed3a958a",
-        "last_test_method": "CUA-click"
+        "last_tested_at": "2026-08-02",
+        "tested_source_hash": "d769cf5fca03f41f",
+        "last_test_method": "Computer-use"
       },
       {
         "id": "share-circle",
         "type": "button",
-        "label": "Share circle",
-        "expected": "Share circle action",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "label": "Copy circle summary",
+        "expected": "Copies seeded backend circle name and description; excludes invitation, link, and URL wording",
+        "result": "pass",
+        "evidence": "Bundled Computer semantic proof opened circle options and copied the rendered Reflective Builders summary; clipboard content matched the visible circle title and description compared with mockups/macos/17-20-profile-onboarding-detail-settings.png.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-02",
+        "tested_source_hash": "d769cf5fca03f41f",
+        "last_test_method": "Computer-use"
       },
       {
-        "id": "leave-circle-macos",
+        "id": "make-secondary-circle",
         "type": "button",
-        "label": "Leave circle",
-        "expected": "Leaves circle",
-        "result": "pending",
-        "evidence": "Gap audit 2026-07-06",
+        "label": "make-secondary-circle",
+        "expected": "Persist selection, relaunch, reopen into Circle Detail (About this circle), and retain selected state in detail",
+        "result": "pass",
+        "evidence": "Bundled Computer proof compared with mockups/macos/17-20-profile-onboarding-detail-settings.png: selected Make this my second circle for Longform Thinkers; relaunched the canonical signed-in app without reseeding; the card returned with AX value Your second circle; reopening reached Circle Detail with About selected, About this circle visible, and Your second circle retained.",
         "blocker": "",
         "stub": false,
-        "last_tested_at": "",
-        "tested_source_hash": "",
-        "last_test_method": ""
+        "last_tested_at": "2026-08-02",
+        "tested_source_hash": "d769cf5fca03f41f",
+        "last_test_method": "Computer-use"
       }
     ]
   }
