@@ -19,6 +19,7 @@ const child = spawn(process.execPath, ["services/api/src/server.js"], {
     LIKEMINDED_DB_DIR: tmp,
     SESSION_SECRET: "local-smoke-secret-minimum-24-chars",
     APPLE_AUTH_BYPASS: "1",
+    GOOGLE_AUTH_BYPASS: "1",
     OPENAI_API_KEY: "",
     OPENAI_REALTIME_MODEL: "gpt-realtime-mini",
     OPENAI_REALTIME_VOICE: "marin",
@@ -82,6 +83,7 @@ async function expectStatus(status, pathname, options) {
     const privacy = await request("/privacy");
     assert.equal(privacy.response.status, 200);
     assert.match(privacy.response.headers.get("content-type") || "", /^text\/html/);
+    assert.match(String(privacy.body), /Likeminded TestFlight Privacy Policy/);
     assert.match(privacy.body, /Retention And Deletion/);
 
     await expectStatus(401, "/v1/discover", { method: "POST", body: {} });
@@ -402,8 +404,38 @@ async function expectStatus(status, pathname, options) {
       }
     });
     await expectStatus(200, "/v1/me/profile", { method: "GET", token: deleteAuth.sessionToken });
-    await expectStatus(200, "/v1/me/account", { method: "DELETE", token: deleteAuth.sessionToken });
+    await expectStatus(400, "/v1/me/account", { method: "DELETE", token: deleteAuth.sessionToken });
+    await expectStatus(401, "/v1/me/account", {
+      method: "DELETE",
+      token: deleteAuth.sessionToken,
+      body: {
+        appleAuthorization: {
+          identityToken: "different-apple-subject",
+          authorizationCode: "must-not-be-exchanged",
+          nonce: "validation-delete-nonce"
+        }
+      }
+    });
+    await expectStatus(200, "/v1/me/profile", { method: "GET", token: deleteAuth.sessionToken });
+    await expectStatus(200, "/v1/me/account", {
+      method: "DELETE",
+      token: deleteAuth.sessionToken,
+      body: {
+        appleAuthorization: {
+          identityToken: "tester-delete",
+          authorizationCode: "validation-delete-code",
+          nonce: "validation-delete-nonce"
+        }
+      }
+    });
     await expectStatus(401, "/v1/me/profile", { method: "GET", token: deleteAuth.sessionToken });
+
+    const googleDeleteAuth = await expectStatus(200, "/v1/auth/google", {
+      method: "POST",
+      body: { idToken: "google-delete-tester" }
+    });
+    await expectStatus(200, "/v1/me/account", { method: "DELETE", token: googleDeleteAuth.sessionToken });
+    await expectStatus(401, "/v1/me/profile", { method: "GET", token: googleDeleteAuth.sessionToken });
 
     console.log("MVP smoke passed");
   } finally {

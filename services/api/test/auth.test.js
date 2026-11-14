@@ -3,6 +3,7 @@ const test = require("node:test");
 const crypto = require("node:crypto");
 
 const {
+  AppleIdentityServiceError,
   appleAudiences,
   verifyNonce,
   verifyAppleIdentityToken,
@@ -12,9 +13,23 @@ const {
 } = require("../src/lib/auth");
 
 const originalEnv = { ...process.env };
+const originalFetch = global.fetch;
 
 test.afterEach(() => {
   process.env = { ...originalEnv };
+  global.fetch = originalFetch;
+});
+
+test("Apple key service outages are distinguishable from invalid identity proof", async () => {
+  process.env.APPLE_AUTH_BYPASS = "0";
+  process.env.APPLE_CLIENT_IDS = "com.gurusharan.likeminded";
+  global.fetch = async () => { throw new Error("network unavailable"); };
+  const header = Buffer.from(JSON.stringify({ alg: "RS256", kid: "missing-key" })).toString("base64url");
+  const payload = Buffer.from(JSON.stringify({ aud: "com.gurusharan.likeminded" })).toString("base64url");
+  await assert.rejects(
+    () => verifyAppleIdentityToken(`${header}.${payload}.c2ln`),
+    error => error instanceof AppleIdentityServiceError && error.code === "apple_identity_service_unavailable"
+  );
 });
 
 test("appleAudiences merges bundle, client, and comma-separated ids", () => {

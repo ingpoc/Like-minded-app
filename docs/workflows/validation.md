@@ -124,6 +124,7 @@ Session routing may use only a screen-specific concept plate (with placement pla
 | macOS validation window | Canonical launch defaults to 1200×760; resize only through the app's supported window controls |
 | Phase checklist | `npm run phase:preflight -- <N>` |
 | External gate | `npm run verify:external-preflight` |
+| Signed iOS export gate | `npm run verify:ios-release-candidate -- /absolute/path/to/export/Payload/Likeminded.app` |
 | Hash refresh | `npm run ledger:refresh-hashes` |
 | Record flow proof | `npm run ledger:record-flow` |
 | Sync flows from controls | `npm run ledger:sync-flows` |
@@ -149,10 +150,28 @@ Contract: `validation/production-contract.json` — defines in-scope screens, ou
 | Backfill `flows[].proof` | `npm run ledger:apply-proof` |
 | Production gate (composite) | `npm run verify:production-ready` |
 
+External TestFlight evidence uses `release/testflight-evidence.json` schema 2. It requires the processed iOS build number and upload time, approved external Beta App Review, the invite-only `Likeminded Early Access` group with public links disabled, first external installation, real Apple sign-in, LiveKit, cross-user isolation, and Apple-revoked account deletion proof.
+
 **Proof tiers** (`flows[].proof.tier`): `capture` < `computer-use` < `api-persist` < `real-auth` / `real-livekit`.
 `ledger:record-flow` rejects `pass` when `last_test_method` is below tier (unless `--force-tier`).
+Screen/control stamping also fails closed by tier: a capture stamp cannot satisfy a click-tier control or overwrite stronger evidence, and flow sync preserves an equal-or-stronger fresh explicit flow record.
+For annotated `source_files` entries such as `SomeView.swift (CirclesPrototypeView)`, hashing covers the complete Swift type declaration; edits anywhere inside that type make its proofs stale.
 
 **Agent packet fields:** preconditions, success_signals, mockup_ref, baseline_screenshot (`platforms.*.recent_screenshot_ref`), proof_screenshot (`validation.*.screenshot_ref`), run command, record command.
+
+Manual `@Computer` proofs span separate tool calls, so they must use `testing_ledger_runtime_lock.sh lease-acquire computer-prove`; retain the returned token and call `lease-release <token>` after recording the flow or bounded same-screen band. The lease holder expires after 30 minutes by default, preventing a crashed proof session from blocking the lane indefinitely.
+
+For Computer calls, identify the validation app by its canonical full path from `script/macos_canonical_app.sh`: `<repo>/.build/macos/Build/Products/Debug/LikemindedMac.app`. Do not use `LikemindedMac` (not the visible app name), `Likeminded` (shared by multiple running apps), or the bundle ID (shared by multiple local build products).
+Use the generated `RECORD_PASS` unchanged after saving the capture at its declared path; it already carries the screenshot and mockup-comparison evidence required by `ledger:record-flow`. A help read (`npm run session:stamp -- --help`) is non-mutating.
+
+For queue closeout, keep one stable seed/build/launch for an 8–12-flow same-screen band and record each flow before moving to the next. Stop on the first failure. Reproofs and harness retries do not count as new coverage; after two pre-product harness failures, repair and independently validate the harness before reopening the product surface.
+
+The session work bucket resumes a native screen through the compact `testing:ledger-run --screen … --card-only` route. Use `ledger:screen --section all` only for explicit schema diagnosis; it is not a normal continuation command.
+Auto-stamp consults the authoritative testing-ledger selector before preserving a screen. When that screen has no open flow, the bucket advances to the next open flow instead of pinning completed validation work because its ledger evidence is dirty.
+The macOS launch argument comes from the same `macScreenForLogical` map as the testing-ledger card; source-symbol hints such as `communityDetailScreen` are never treated as runtime route names.
+An authoritative `ledger:record-flow --result pass` atomically resolves matching open, fixing, or retest-ready issue capsules. Product failures described through fresh AX/Computer readback remain app-class findings unless the observation names a concrete harness symptom.
+
+Harness-class issue capsules route to the runtime/adapter owner rather than a product screen source. The shared issue queue is written by temporary-file rename so concurrent readers never treat a torn capsule as product evidence.
 
 ## Agent validation workflow (hardened)
 
@@ -298,6 +317,8 @@ Logical IDs must resolve to their launch arguments as well as their capture slug
 Preview-only screens may override automatic control stamping with an empty allowlist in `ios_screen_stamp_map.js`; `voice-session` captures layout but leaves live audio, persistence, and dismissal flows pending runtime proof.
 
 Live iOS voice proof uses the server-issued ephemeral Realtime secret and direct SDP exchange. Preview capture never exercises that network path.
+
+Profile sub-screen captures use the production Profile navigation destinations: `profile-edit` launches with `--likeminded-start-profile-edit`, and `profile-signals` launches with `--likeminded-start-profile-signals`.
 
 **Capture closeout (both platforms):** `npm run ledger:capture-closeout -- --platform ios|macos --screen <id> --screenshot <path> [--stamp auto|--stale-only]`
 
@@ -460,6 +481,9 @@ Use full ledger id: `npm run ledger:screen -- --platform ios --screen 22-setting
 - `verify:ios-screens` builds **once** then sets `LIKEMINDED_SKIP_IOS_BUILD=1` per screen; single `validate:screen` auto-skips xcodebuild when `.build/ios-simulator/.../Likeminded.app` is fresh (still installs to sim) — `LIKEMINDED_FORCE_IOS_BUILD=1` to force rebuild.
 - Wait **15–60s** after launch for dev-auth before screenshot.
 - When `simctl` drops `--likeminded-start-*` args, use `LIKEMINDED_VALIDATION_SCREEN` UserDefaults fallback (see `build-ios-app` skill).
+- Focused iOS proof launches include `--likeminded-clear-validation-screen`; this removes any stored fallback before applying the current deep-link arguments so a prior chat/recap capture cannot hijack the next screen.
+- For fixture-backed rows that can move while async data loads, use a bounded semantic tap retry and verify the destination; do not fail or pass from one stale AX coordinate.
+- iOS proof build freshness includes both `Sources/LikemindedApp` and `Sources/Shared`; a newer shared Swift file must force a rebuild before interaction.
 
 ### macOS Computer hygiene
 

@@ -8,6 +8,14 @@ const APPLE_KEYS_CACHE_MS = 60 * 60 * 1000;
 let cachedAppleKeys = null;
 let cachedAppleKeysAt = 0;
 
+class AppleIdentityServiceError extends Error {
+  constructor(code = "apple_identity_service_unavailable") {
+    super(code);
+    this.name = "AppleIdentityServiceError";
+    this.code = code;
+  }
+}
+
 function base64url(input) {
   return Buffer.from(input)
     .toString("base64")
@@ -95,9 +103,18 @@ function verifyNonce(rawNonce, tokenNonce, { requireNonce = false } = {}) {
 }
 
 async function fetchAppleKeys() {
-  const response = await fetch(APPLE_KEYS_URL);
-  if (!response.ok) throw new Error("apple_keys_unavailable");
-  return response.json();
+  let response;
+  try {
+    response = await fetch(APPLE_KEYS_URL);
+  } catch {
+    throw new AppleIdentityServiceError();
+  }
+  if (!response.ok) throw new AppleIdentityServiceError();
+  try {
+    return await response.json();
+  } catch {
+    throw new AppleIdentityServiceError("apple_identity_service_invalid_response");
+  }
 }
 
 async function appleKeys({ forceRefresh = false } = {}) {
@@ -163,6 +180,7 @@ function bearerToken(req) {
 }
 
 module.exports = {
+  AppleIdentityServiceError,
   createSessionToken,
   verifySessionToken,
   verifyAppleIdentityToken,

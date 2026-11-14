@@ -2,44 +2,41 @@ import Foundation
 
 enum LikemindedPrivacyPolicy {
     static let title = "Likeminded TestFlight Privacy Policy"
+    static let publicURL = URL(string: "https://likeminded-api.onrender.com/privacy")!
 
     static let intro =
-        "Likeminded is a voice-first conversation app designed to help you form meaningful connections. This policy describes how we collect, use, and protect your data when you use the TestFlight version of Likeminded."
+        "Effective July 21, 2026. Likeminded is a voice-first social app for private profile creation, AI-assisted circle placement, communities, scheduled group meets, recaps, and one-to-one matching."
 
     static let sections: [(title: String, items: [String])] = [
         (
             "Data Collected",
             [
-                "Voice conversations (audio) during calls",
-                "Profile information you provide",
-                "Profile signals generated from conversations (communication style, energy, interests)",
-                "Basic account and device information (email, device type, app version)",
-                "Usage data to help improve the app"
+                "Apple identifier and email or name only when Apple provides them",
+                "App-generated device identifier, profile information, manually entered city, interests, private profile signals, and voice transcripts",
+                "Community, event, meetup, recap, match, chat, report, and feedback content",
+                "Voice audio for AI interviews and audio/video streamed for LiveKit group meets; LiveKit video is not recorded in this MVP"
             ]
         ),
         (
             "How Data Is Used",
             [
-                "To enable and improve voice conversations",
-                "To generate and refine profile signals",
-                "To recommend and match you with like-minded people",
-                "To maintain safety, security, and prevent abuse",
-                "To improve Likeminded's features and performance"
+                "To authenticate and restore your account on iOS and macOS",
+                "To create private profiles and personalize circle placement",
+                "To operate communities, scheduled meets, recaps, matching, chat, safety reporting, and tester support",
+                "OpenAI processes AI voice interviews; LiveKit processes group-room media; Google processes authentication only when selected"
             ]
         ),
         (
             "Your Controls",
             [
                 "You can review and edit your profile at any time",
-                "You can manage or delete your data in Settings",
-                "You can request deletion of your data at any time",
-                "You can leave any community at any time"
+                "You can leave communities and manage or delete your data in Settings",
+                "Apple accounts reauthenticate and revoke Apple access before deletion completes",
+                "Likeminded does not sell data or use it for advertising or cross-app tracking"
             ]
         )
     ]
 
     static let footer =
-        "We take your privacy seriously. We never sell your data. For questions, contact us anytime at hello@likeminded.app."
-
-    static let contactEmail = "hello@likeminded.app"
+        "Use TestFlight feedback or the operator contact listed in App Store Connect for privacy questions."
 }

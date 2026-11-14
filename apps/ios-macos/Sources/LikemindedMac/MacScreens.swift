@@ -5180,7 +5180,7 @@ struct MacScreenView: View {
             Button("Delete account", role: .destructive) {
                 Task {
                     isDeletingAccount = true
-                    _ = await appState.deleteAccount()
+                    _ = await appState.deleteAccount(using: appleSignInController)
                     isDeletingAccount = false
                 }
             }
@@ -5366,6 +5366,10 @@ struct MacScreenView: View {
                     .foregroundStyle(MacPalette.ink)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.top, 4)
+
+                Link("Open public privacy policy", destination: LikemindedPrivacyPolicy.publicURL)
+                    .font(MacType.body.weight(.semibold))
+                    .foregroundStyle(MacPalette.accent)
             }
         }
         .frame(maxHeight: 520)
