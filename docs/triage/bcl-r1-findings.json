@@ -4,7 +4,7 @@
     "list_id": "bcl-r1",
     "worktree": "/Users/gurusharan/code/worktrees/likeminded-bcl-r1",
     "workflow": {
-      "stage": "collect",
+      "stage": "present",
       "updated_at": "2026-11-25T03:44:18Z",
       "now": "2026-11-25T03:44:18Z — Started collection"
     },
@@ -16,7 +16,8 @@
     },
     "last_written_at": "2026-11-25T03:44:18Z",
     "stages_reached": [
-      "collect"
+      "collect",
+      "present"
     ]
   },
   "findings": [
