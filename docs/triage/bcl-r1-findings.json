@@ -4,21 +4,112 @@
     "list_id": "bcl-r1",
     "worktree": "/Users/gurusharan/code/worktrees/likeminded-bcl-r1",
     "workflow": {
-      "stage": "present",
-      "updated_at": "2026-11-25T03:44:18Z",
-      "now": "2026-11-25T03:44:18Z — Started collection"
+      "stage": "plan_fix",
+      "updated_at": "2026-11-25T03:46:07Z",
+      "now": "2026-11-25T03:46:07Z — Plan recorded"
     },
     "cycle": 1,
-    "round_started_at": "2026-11-25T03:44:08Z",
+    "round_started_at": "2026-11-25T03:46:07Z",
     "gate": {
       "merge_previous_pr_threshold": 16,
       "report_threshold": 15
     },
-    "last_written_at": "2026-11-25T03:44:18Z",
+    "last_written_at": "2026-11-25T03:46:07Z",
     "stages_reached": [
       "collect",
-      "present"
-    ]
+      "present",
+      "plan_fix"
+    ],
+    "plan": {
+      "groups": [
+        {
+          "id": "obs",
+          "name": "Structured API and test events",
+          "finding_ids": [
+            "OBS-01"
+          ],
+          "depends_on": [],
+          "reason": "API, smoke and test runs write nothing developer-observability can collect.",
+          "worktree": "/Users/gurusharan/code/worktrees/likeminded-bcl-r1",
+          "verify": {
+            "command": "/Users/gurusharan/code/worktrees/likeminded-bcl-r1/script/verify_observability_events.sh",
+            "method": "Run smoke and API tests with events on, assert JSONL rows, then a scoped developer-observability collect reads them.",
+            "summary": "Likeminded runs show up as collected events."
+          },
+          "status": "planned",
+          "phase": "fix",
+          "failure_history": [],
+          "plan_review_history": [],
+          "updated_at": "2026-11-25T03:46:07Z",
+          "stage_entered_at": "2026-11-25T03:46:07Z"
+        },
+        {
+          "id": "build",
+          "name": "Native iOS and macOS builds",
+          "finding_ids": [
+            "BUILD-01"
+          ],
+          "depends_on": [],
+          "reason": "Merged #18 was never compiled natively.",
+          "worktree": "/Users/gurusharan/code/worktrees/likeminded-bcl-r1",
+          "verify": {
+            "command": "/Users/gurusharan/code/worktrees/likeminded-bcl-r1/script/verify_native_builds.sh",
+            "method": "xcodegen sync check, SPM resolve, unsigned iOS simulator and macOS builds.",
+            "summary": "Both apps compile unsigned on main plus this branch."
+          },
+          "status": "planned",
+          "phase": "fix",
+          "failure_history": [],
+          "plan_review_history": [],
+          "updated_at": "2026-11-25T03:46:07Z",
+          "stage_entered_at": "2026-11-25T03:46:07Z"
+        },
+        {
+          "id": "ci",
+          "name": "GitHub Actions CI and API tests",
+          "finding_ids": [
+            "CI-01"
+          ],
+          "depends_on": [],
+          "reason": "No CI and no non-auth API tests.",
+          "worktree": "/Users/gurusharan/code/worktrees/likeminded-bcl-r1",
+          "verify": {
+            "command": "/Users/gurusharan/code/worktrees/likeminded-bcl-r1/script/verify_ci.sh",
+            "method": "Run the new API tests locally, then confirm the GitHub Actions CI run on the pushed head succeeded.",
+            "summary": "CI green on the PR head."
+          },
+          "status": "planned",
+          "phase": "fix",
+          "failure_history": [],
+          "plan_review_history": [],
+          "updated_at": "2026-11-25T03:46:07Z",
+          "stage_entered_at": "2026-11-25T03:46:07Z"
+        },
+        {
+          "id": "node20",
+          "name": "Node 20 parity",
+          "finding_ids": [
+            "ENV-01"
+          ],
+          "depends_on": [],
+          "reason": "Local runs used Node 23/24 while Render and engines use Node 20.",
+          "worktree": "/Users/gurusharan/code/worktrees/likeminded-bcl-r1",
+          "verify": {
+            "command": "/Users/gurusharan/code/worktrees/likeminded-bcl-r1/script/verify_node20.sh",
+            "method": "Run check, test:auth, test:api and smoke:mvp under nvm Node 20.",
+            "summary": "All checks pass on Node 20."
+          },
+          "status": "planned",
+          "phase": "fix",
+          "failure_history": [],
+          "plan_review_history": [],
+          "updated_at": "2026-11-25T03:46:07Z",
+          "stage_entered_at": "2026-11-25T03:46:07Z"
+        }
+      ],
+      "round": 1,
+      "cycle": 1
+    }
   },
   "findings": [
     {
