@@ -37,7 +37,12 @@ console.log(`PASS ${rows.length} rows, no server errors`);
 NODE
 
 COLLECT="${DEVELOPER_OBSERVABILITY_BIN:-$HOME/.agents/plugins/developer-observability/bin/developer-observability}"
-if [[ ! -x "$COLLECT" ]]; then echo "SKIP collect: $COLLECT not installed"; exit 0; fi
+if [[ ! -x "$COLLECT" ]]; then
+  # The collect half is the acceptance; skipping it must be explicit (e.g. on a runner without the plugin).
+  if [[ "${OBS_ALLOW_NO_COLLECTOR:-}" == "1" ]]; then echo "SKIP collect: $COLLECT not installed (OBS_ALLOW_NO_COLLECTOR=1)"; exit 0; fi
+  echo "FAIL developer-observability collector not found at $COLLECT (set DEVELOPER_OBSERVABILITY_BIN or OBS_ALLOW_NO_COLLECTOR=1)" >&2
+  exit 1
+fi
 "$COLLECT" collect --no-known --no-prune --source "jsonl:$LIKEMINDED_EVENTS_FILE:likeminded" --out "$WORK/collect" --json > "$WORK/collect.json"
 node - "$WORK/collect.json" "$WORK/collect/findings.json" <<'NODE'
 const fs = require("node:fs");
