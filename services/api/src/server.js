@@ -21,6 +21,7 @@ const { savePlacement, getAllPlacements, getPlacementsByProfile, saveTranscript,
 const { AppleIdentityServiceError, bearerToken, createSessionToken, verifyAppleIdentityToken, verifySessionToken } = require("./lib/auth");
 const { AppleOAuthError, exchangeAppleAuthorizationCode, revokeAppleRefreshToken } = require("./lib/apple-oauth");
 const { verifyGoogleIdentityToken } = require("./lib/google-auth");
+const { createEventLog, errorType } = require("./lib/events");
 const {
   createWalletChallenge,
   getWalletChallenge,
@@ -98,7 +99,10 @@ const PORT = Number(process.env.PORT || 8787);
 const REALTIME_MODEL = process.env.OPENAI_REALTIME_MODEL || "gpt-realtime-2";
 const REALTIME_VOICE = process.env.OPENAI_REALTIME_VOICE || "marin";
 
+const events = createEventLog("likeminded-api");
+
 function json(res, statusCode, body) {
+  if (statusCode >= 400 && body && typeof body.error === "string") res.likemindedErrorType = body.error.slice(0, 80);
   const payload = JSON.stringify(body, null, 2);
   res.writeHead(statusCode, {
     "content-type": "application/json; charset=utf-8",
@@ -1575,8 +1579,28 @@ async function handleRequest(req, res) {
   json(res, 404, { error: "not_found", message: "No route matched the request." });
 }
 
+function requestRoute(req) {
+  try { return new URL(req.url, "http://local").pathname.slice(0, 160); } catch { return "invalid_url"; }
+}
+
 const server = http.createServer((req, res) => {
+  const started = process.hrtime.bigint();
+  res.on("finish", () => {
+    const status = res.statusCode;
+    const route = requestRoute(req);
+    events.emit("http_request", {
+      step: `${req.method} ${route}`,
+      method: req.method,
+      route,
+      status_code: status,
+      status: status >= 500 ? "error" : "ok",
+      duration_ms: Number((process.hrtime.bigint() - started) / 1000n) / 1000,
+      // error_type marks a failure for the collector, so only server errors carry it; 4xx codes are expected outcomes.
+      ...(res.likemindedErrorType ? { [status >= 500 ? "error_type" : "response_error"]: res.likemindedErrorType } : {})
+    });
+  });
   handleRequest(req, res).catch(error => {
+    events.emit("unhandled_error", { route: requestRoute(req), status: "error", error_type: errorType(error) });
     json(res, 500, { error: "internal_error", message: error.message });
   });
 });
@@ -1586,9 +1610,11 @@ migrateMvpStore()
     server.listen(PORT, HOST, () => {
       console.log(`likeminded-api listening on http://${HOST}:${PORT}`);
       console.log(`Circles seeded: ${circles.size} archetypes`);
+      events.emit("server_start", { status: "ok", db: process.env.DATABASE_URL ? "postgres" : "local-json" });
     });
   })
   .catch((error) => {
     console.error(`likeminded-api failed to start: ${error.message}`);
+    events.emit("server_start", { status: "error", error_type: errorType(error) });
     process.exit(1);
   });
