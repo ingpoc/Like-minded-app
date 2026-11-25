@@ -4,9 +4,9 @@
     "list_id": "bcl-r1",
     "worktree": "/Users/gurusharan/code/worktrees/likeminded-bcl-r1",
     "workflow": {
-      "stage": "install",
-      "updated_at": "2026-11-25T04:46:37Z",
-      "now": "2026-11-25T04:46:37Z — Install in progress"
+      "stage": "verify",
+      "updated_at": "2026-11-25T04:47:50Z",
+      "now": "2026-11-25T04:47:50Z — Verify in progress"
     },
     "cycle": 1,
     "round_started_at": "2026-11-25T03:46:07Z",
@@ -14,13 +14,14 @@
       "merge_previous_pr_threshold": 16,
       "report_threshold": 15
     },
-    "last_written_at": "2026-11-25T04:46:37Z",
+    "last_written_at": "2026-11-25T04:47:50Z",
     "stages_reached": [
       "collect",
       "present",
       "plan_fix",
       "review",
-      "install"
+      "install",
+      "verify"
     ],
     "plan": {
       "groups": [
@@ -42,8 +43,8 @@
             "failed": 0,
             "total": 1
           },
-          "status": "installing",
-          "phase": "install",
+          "status": "verifying",
+          "phase": "verify",
           "failure_history": [
             {
               "attempt_id": "8c6a0157ce31455a870af74f32b3af71",
@@ -80,8 +81,8 @@
             }
           ],
           "plan_review_history": [],
-          "updated_at": "2026-11-25T03:59:50Z",
-          "stage_entered_at": "2026-11-25T04:46:37Z",
+          "updated_at": "2026-11-25T04:47:50Z",
+          "stage_entered_at": "2026-11-25T04:47:50Z",
           "codex": {
             "fix_status": "passed",
             "job": {
@@ -314,11 +315,6 @@
           "install": {
             "status": "running",
             "started_at": "2026-11-25T04:46:37Z"
-          },
-          "stage_model": {
-            "stage": "install",
-            "model": "No model (scripted)",
-            "at": "2026-11-25T04:46:37Z"
           }
         },
         {
@@ -623,9 +619,9 @@
           "reason": "No CI and no non-auth API tests.",
           "worktree": "likeminded-bcl-r1",
           "verify": {
-            "command": "/Users/gurusharan/code/worktrees/likeminded-bcl-r1/script/verify_ci.sh",
-            "method": "Run the new API tests locally, then confirm the GitHub Actions CI run on the pushed head succeeded.",
-            "summary": "CI green on the PR head.",
+            "command": "/tmp/bcl-r1/verify_ci_wrapper.sh",
+            "method": "Local test:api, then the GitHub Actions CI run on the pushed head must succeed; code outside docs/triage must equal the pushed head (bcl snapshot commits move local HEAD).",
+            "summary": "CI is green on the pushed PR head.",
             "status": "pending",
             "fixed": 0,
             "failed": 0,
@@ -687,7 +683,7 @@
               "at": "2026-11-25T04:14:39Z"
             }
           ],
-          "updated_at": "2026-11-25T03:59:50Z",
+          "updated_at": "2026-11-25T04:47:41Z",
           "stage_entered_at": "2026-11-25T04:46:37Z",
           "codex": {
             "fix_status": "passed",
@@ -1123,6 +1119,91 @@
       ],
       "round": 1,
       "cycle": 1
+    },
+    "verification_history": [],
+    "verification_run": {
+      "id": "pr19-fc8d95d",
+      "build": "PR #19 branch cursor/bcl-r1-e678 (worktree likeminded-bcl-r1)",
+      "revision": "fc8d95d189fb225b9f509efe99d4383f0ba42338",
+      "installed_at": "2026-11-25T04:47:32Z",
+      "install_evidence": "git rev-parse HEAD equals origin/cursor/bcl-r1-e678 = fc8d95d at 10:17 IST; worktree is the install (no deploy).",
+      "cycle": 1,
+      "status": "active",
+      "checks": {
+        "OBS-01": {
+          "state": "pending"
+        },
+        "LEDGER-01": {
+          "state": "pending"
+        },
+        "ENV-01": {
+          "state": "pending"
+        },
+        "OBS-02": {
+          "state": "pending"
+        },
+        "PROC-01": {
+          "state": "pending"
+        },
+        "BUILD-01": {
+          "state": "pending"
+        },
+        "ENV-02": {
+          "state": "pending"
+        },
+        "GH-01": {
+          "state": "pending"
+        },
+        "CI-01": {
+          "state": "pending"
+        },
+        "ENV-03": {
+          "state": "pending"
+        },
+        "PROC-02": {
+          "state": "pending"
+        },
+        "BUILD-02": {
+          "state": "pending"
+        },
+        "PROC-03": {
+          "state": "pending"
+        },
+        "PROC-04": {
+          "state": "pending"
+        },
+        "DOBS-01": {
+          "state": "pending"
+        },
+        "OBS-03": {
+          "state": "pending"
+        },
+        "CI-02": {
+          "state": "pending"
+        },
+        "ENV-04": {
+          "state": "pending"
+        },
+        "DOBS-02": {
+          "state": "pending"
+        },
+        "DOBS-03": {
+          "state": "pending"
+        },
+        "PROC-05": {
+          "state": "pending"
+        },
+        "LEDGER-02": {
+          "state": "pending"
+        },
+        "BUILD-03": {
+          "state": "pending"
+        }
+      },
+      "run_id": "pr19-fc8d95d",
+      "pr": null,
+      "round": 1,
+      "started_at": "2026-11-25T04:47:32Z"
     }
   },
   "findings": [
