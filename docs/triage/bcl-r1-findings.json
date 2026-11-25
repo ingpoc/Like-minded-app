@@ -4,9 +4,9 @@
     "list_id": "bcl-r1",
     "worktree": "/Users/gurusharan/code/worktrees/likeminded-bcl-r1",
     "workflow": {
-      "stage": "review",
-      "updated_at": "2026-11-25T04:00:01Z",
-      "now": "2026-11-25T04:00:01Z — Review started"
+      "stage": "plan_fix",
+      "updated_at": "2026-11-25T04:11:22Z",
+      "now": "2026-11-25T04:11:22Z — Fix started"
     },
     "cycle": 1,
     "round_started_at": "2026-11-25T03:46:07Z",
@@ -14,7 +14,7 @@
       "merge_previous_pr_threshold": 16,
       "report_threshold": 15
     },
-    "last_written_at": "2026-11-25T04:00:01Z",
+    "last_written_at": "2026-11-25T04:11:22Z",
     "stages_reached": [
       "collect",
       "present",
@@ -41,8 +41,8 @@
             "failed": 0,
             "total": 1
           },
-          "status": "review",
-          "phase": "review",
+          "status": "running",
+          "phase": "fix",
           "failure_history": [
             {
               "attempt_id": "8c6a0157ce31455a870af74f32b3af71",
@@ -54,30 +54,41 @@
               "tool_fault": true,
               "fault_kind": "fix_job_exit",
               "tool_fault_reason": "failed fix job, not a review finding"
+            },
+            {
+              "attempt_id": "628b6d5ccb524b37af874eb857b6767d",
+              "source": "review",
+              "reason": "Reviewer exited 4",
+              "cycle": 1,
+              "round": 1,
+              "at": "2026-11-25T04:04:03Z",
+              "tool_fault": true,
+              "fault_kind": "runner_exit",
+              "tool_fault_reason": "Reviewer exited 4"
             }
           ],
           "plan_review_history": [],
           "updated_at": "2026-11-25T03:59:50Z",
-          "stage_entered_at": "2026-11-25T03:53:17Z",
+          "stage_entered_at": "2026-11-25T04:04:03Z",
           "codex": {
-            "fix_status": "passed",
+            "fix_status": "running",
             "job": {
-              "id": "628b6d5ccb524b37af874eb857b6767d",
-              "phase": "review",
-              "started_at": "2026-11-25T04:00:01Z",
-              "command": "review.sh",
-              "heartbeat_at": "2026-11-25T04:00:01Z",
+              "id": "4a05bd76afb94aeba6c52d99324bfcd7",
+              "phase": "fix",
+              "started_at": "2026-11-25T04:11:22Z",
+              "command": "lane_commit.sh",
+              "heartbeat_at": "2026-11-25T04:11:22Z",
               "plan_sha256": "5ee40be8e0ae7c1fc17c7f5cf5ab5c433c361a3906ac28faf1156c9c3e20668f",
               "finding_ids": [
                 "OBS-01"
               ],
               "worktree": "likeminded-bcl-r1",
-              "model": "opencode/deepseek-v4.1-flash-free (OpenCode free, read-only plan agent)",
+              "model": "grok-bot-executor (self, no Codex)",
               "lane_sha256": "998eea0a7d5958cb5f77b37f8c5213d292d4696b3ce806ddf2e0decad4e318b8",
               "cycle": 1,
               "round": 1
             },
-            "tool_fault_streak": 0,
+            "tool_fault_streak": 1,
             "jobs": [
               {
                 "id": "8c6a0157ce31455a870af74f32b3af71",
@@ -129,11 +140,39 @@
                 "tokens": null,
                 "wall_time_s": 2,
                 "finished_phase_status": "passed"
+              },
+              {
+                "id": "628b6d5ccb524b37af874eb857b6767d",
+                "phase": "review",
+                "started_at": "2026-11-25T04:00:01Z",
+                "command": "review.sh",
+                "heartbeat_at": "2026-11-25T04:04:03Z",
+                "plan_sha256": "5ee40be8e0ae7c1fc17c7f5cf5ab5c433c361a3906ac28faf1156c9c3e20668f",
+                "finding_ids": [
+                  "OBS-01"
+                ],
+                "worktree": "likeminded-bcl-r1",
+                "model": "opencode/deepseek-v4.1-flash-free (OpenCode free, read-only plan agent)",
+                "lane_sha256": "998eea0a7d5958cb5f77b37f8c5213d292d4696b3ce806ddf2e0decad4e318b8",
+                "cycle": 1,
+                "round": 1,
+                "pid": 26518,
+                "exit_code": 4,
+                "finished_at": "2026-11-25T04:04:03Z",
+                "first_error_line": "reviewer changed the worktree",
+                "output_path": "/Users/gurusharan/.agents/state/batched-change-list/04f50a708ea690ca394d313155554625fb71e92626c35ea9c0554d5e85c3abed/jobs/628b6d5ccb524b37af874eb857b6767d.log",
+                "output_retained": true,
+                "tokens_source": "none",
+                "tokens": null,
+                "wall_time_s": 242,
+                "session": "grok-bot-executor-bcl-r1-20261125 (Grok Bot subagent, no Codex session)",
+                "finished_phase_status": "incomplete",
+                "must_fix": "Reviewer exited 4"
               }
             ],
             "implementer_session": "grok-bot-executor-bcl-r1-20261125 (Grok Bot subagent, no Codex session)",
-            "review_status": "running",
-            "reviewer_model": "opencode/deepseek-v4.1-flash-free (OpenCode free, read-only plan agent)"
+            "reviewer_model": "opencode/deepseek-v4.1-flash-free (OpenCode free, read-only plan agent)",
+            "must_fix_note": "Reviewer exited 4"
           }
         },
         {
@@ -223,7 +262,7 @@
             "total": 1
           },
           "status": "review",
-          "phase": "review",
+          "phase": "plan_review",
           "failure_history": [
             {
               "attempt_id": "87ec494c992d4e01a677db301ce10c64",
@@ -235,39 +274,61 @@
               "tool_fault": true,
               "fault_kind": "fix_job_exit",
               "tool_fault_reason": "failed fix job, not a review finding"
+            },
+            {
+              "attempt_id": "a8589bf5dcef473fa888f73d4db3b5b4",
+              "source": "review",
+              "reason": "1. `npm run check` cannot pass on a GitHub runner. `check` starts with `verify:testing-ledger` → `.agents/skills/testing-ledger/scripts/validate.sh`, which hard-fails when `$HOME/.agents/skills/testing-framework/SKILL.md` is missing (line ~112: `test -f \"$FRAMEWORK_DIR/SKILL.md\" || exit 1`). That skill is not vendored in the repo (`.agents/skills/` has `testing-ledger` but no `testing-framework`). Reproduced: `HOME=$(mktemp -d) bash .agents/skills/testing-ledger/scripts/validate.sh` → `global testing-framework unavailable … exit 1`. So the \"Repo checks\" step fails before any test runs and the run can never conclude `success`. Fix: skip the global-skill validation when `TESTING_FRAMEWORK_DIR` is absent, or have CI run only the repo-local checks (`verify:ledger-migration`, `verify:ledger-progress`, `node --check`).\n\n2. Workflow references a file this commit does not add. `ci.yml` uses `node-version-file: .nvmrc`, but `.nvmrc` does not exist at e3c2b73 (`git cat-file -e e3c2b73:.nvmrc` → fatal). It is added later by 92ac55e (ENV-01). At this sha, `actions/setup-node` fails with \"node-version-file could not be found\". Fix: add `.nvmrc` (20) in this commit or use `node-version: 20`.\n\n3. Acceptance clause 2 is unmet, not merely pending. `script/verify_ci.sh` requires `origin/$BRANCH == HEAD` and a completed `pull_request` run for that exact sha. Branch `cursor/bcl-r1-e678` has no remote counterpart, and `gh workflow list` reports no `CI` workflow at all — so no run exists to verify. Cannot close the lane until the branch is pushed, a PR opened, and the run is green.",
+              "cycle": 1,
+              "round": 1,
+              "at": "2026-11-25T04:01:56Z",
+              "plan_answered": true
+            },
+            {
+              "attempt_id": "60f2acd0816f49a3a2d1be212eb47b03",
+              "source": "plan_review",
+              "reason": "Review incomplete: strict verdict or Must-fix section missing",
+              "cycle": 1,
+              "round": 1,
+              "at": "2026-11-25T04:10:06Z",
+              "tool_fault": true,
+              "fault_kind": "incomplete_review",
+              "tool_fault_reason": "Review incomplete: strict verdict or Must-fix section missing"
             }
           ],
           "plan_review_history": [],
           "updated_at": "2026-11-25T03:59:50Z",
-          "stage_entered_at": "2026-11-25T03:53:18Z",
+          "stage_entered_at": "2026-11-25T04:10:05Z",
           "codex": {
             "fix_status": "passed",
             "job": {
-              "id": "9ec9386f698d40b58aa8c8be48aa3742",
-              "phase": "fix",
-              "started_at": "2026-11-25T03:53:17Z",
-              "command": "lane_commit.sh",
-              "heartbeat_at": "2026-11-25T03:53:18Z",
-              "plan_sha256": "17575574506dc109277ba8b701cf13ef8024bcd81f1e676bff49c2e0484fb319",
+              "id": "60f2acd0816f49a3a2d1be212eb47b03",
+              "phase": "plan_review",
+              "started_at": "2026-11-25T04:06:53Z",
+              "command": "plan_review.sh",
+              "heartbeat_at": "2026-11-25T04:10:05Z",
+              "plan_sha256": "5ee40be8e0ae7c1fc17c7f5cf5ab5c433c361a3906ac28faf1156c9c3e20668f",
               "finding_ids": [
                 "CI-01"
               ],
               "worktree": "likeminded-bcl-r1",
-              "model": "grok-bot-executor (self, no Codex)",
-              "lane_sha256": "e7f0fc51b23fc95c717898947600ff0a12d603e8472cdaa60e4140d61a9074f7",
+              "model": "opencode/deepseek-v4.1-flash-free (OpenCode free, read-only plan agent)",
+              "lane_sha256": "548a47060adcbbe6bdca29f0dad190fef5619a57620864a88087032e603cc0a4",
               "cycle": 1,
               "round": 1,
-              "pid": 99885,
+              "pid": 46323,
               "exit_code": 0,
-              "finished_at": "2026-11-25T03:53:18Z",
-              "output_path": "/Users/gurusharan/.agents/state/batched-change-list/04f50a708ea690ca394d313155554625fb71e92626c35ea9c0554d5e85c3abed/jobs/9ec9386f698d40b58aa8c8be48aa3742.log",
+              "finished_at": "2026-11-25T04:10:05Z",
+              "output_path": "/Users/gurusharan/.agents/state/batched-change-list/04f50a708ea690ca394d313155554625fb71e92626c35ea9c0554d5e85c3abed/jobs/60f2acd0816f49a3a2d1be212eb47b03.log",
               "output_retained": true,
               "tokens_source": "none",
               "tokens": null,
-              "wall_time_s": 1,
-              "finished_phase_status": "passed"
+              "wall_time_s": 192,
+              "session": "grok-bot-executor-bcl-r1-20261125 (Grok Bot subagent, no Codex session)",
+              "finished_phase_status": "incomplete",
+              "must_fix": "Review incomplete: strict verdict or Must-fix section missing"
             },
-            "tool_fault_streak": 0,
+            "tool_fault_streak": 1,
             "jobs": [
               {
                 "id": "87ec494c992d4e01a677db301ce10c64",
@@ -294,9 +355,65 @@
                 "tokens": null,
                 "wall_time_s": 1,
                 "finished_phase_status": "failed"
+              },
+              {
+                "id": "9ec9386f698d40b58aa8c8be48aa3742",
+                "phase": "fix",
+                "started_at": "2026-11-25T03:53:17Z",
+                "command": "lane_commit.sh",
+                "heartbeat_at": "2026-11-25T03:53:18Z",
+                "plan_sha256": "17575574506dc109277ba8b701cf13ef8024bcd81f1e676bff49c2e0484fb319",
+                "finding_ids": [
+                  "CI-01"
+                ],
+                "worktree": "likeminded-bcl-r1",
+                "model": "grok-bot-executor (self, no Codex)",
+                "lane_sha256": "e7f0fc51b23fc95c717898947600ff0a12d603e8472cdaa60e4140d61a9074f7",
+                "cycle": 1,
+                "round": 1,
+                "pid": 99885,
+                "exit_code": 0,
+                "finished_at": "2026-11-25T03:53:18Z",
+                "output_path": "/Users/gurusharan/.agents/state/batched-change-list/04f50a708ea690ca394d313155554625fb71e92626c35ea9c0554d5e85c3abed/jobs/9ec9386f698d40b58aa8c8be48aa3742.log",
+                "output_retained": true,
+                "tokens_source": "none",
+                "tokens": null,
+                "wall_time_s": 1,
+                "finished_phase_status": "passed"
+              },
+              {
+                "id": "a8589bf5dcef473fa888f73d4db3b5b4",
+                "phase": "review",
+                "started_at": "2026-11-25T04:00:05Z",
+                "command": "review.sh",
+                "heartbeat_at": "2026-11-25T04:01:56Z",
+                "plan_sha256": "5ee40be8e0ae7c1fc17c7f5cf5ab5c433c361a3906ac28faf1156c9c3e20668f",
+                "finding_ids": [
+                  "CI-01"
+                ],
+                "worktree": "likeminded-bcl-r1",
+                "model": "opencode/deepseek-v4.1-flash-free (OpenCode free, read-only plan agent)",
+                "lane_sha256": "548a47060adcbbe6bdca29f0dad190fef5619a57620864a88087032e603cc0a4",
+                "cycle": 1,
+                "round": 1,
+                "pid": 26694,
+                "exit_code": 0,
+                "finished_at": "2026-11-25T04:01:56Z",
+                "output_path": "/Users/gurusharan/.agents/state/batched-change-list/04f50a708ea690ca394d313155554625fb71e92626c35ea9c0554d5e85c3abed/jobs/a8589bf5dcef473fa888f73d4db3b5b4.log",
+                "output_retained": true,
+                "tokens_source": "none",
+                "tokens": null,
+                "wall_time_s": 111,
+                "session": "grok-bot-executor-bcl-r1-20261125 (Grok Bot subagent, no Codex session)",
+                "finished_phase_status": "changes_requested",
+                "must_fix": "1. `npm run check` cannot pass on a GitHub runner. `check` starts with `verify:testing-ledger` → `.agents/skills/testing-ledger/scripts/validate.sh`, which hard-fails when `$HOME/.agents/skills/testing-framework/SKILL.md` is missing (line ~112: `test -f \"$FRAMEWORK_DIR/SKILL.md\" || exit 1`). That skill is not vendored in the repo (`.agents/skills/` has `testing-ledger` but no `testing-framework`). Reproduced: `HOME=$(mktemp -d) bash .agents/skills/testing-ledger/scripts/validate.sh` → `global testing-framework unavailable … exit 1`. So the \"Repo checks\" step fails before any test runs and the run can never conclude `success`. Fix: skip the global-skill validation when `TESTING_FRAMEWORK_DIR` is absent, or have CI run only the repo-local checks (`verify:ledger-migration`, `verify:ledger-progress`, `node --check`).\n\n2. Workflow references a file this commit does not add. `ci.yml` uses `node-version-file: .nvmrc`, but `.nvmrc` does not exist at e3c2b73 (`git cat-file -e e3c2b73:.nvmrc` → fatal). It is added later by 92ac55e (ENV-01). At this sha, `actions/setup-node` fails with \"node-version-file could not be found\". Fix: add `.nvmrc` (20) in this commit or use `node-version: 20`.\n\n3. Acceptance clause 2 is unmet, not merely pending. `script/verify_ci.sh` requires `origin/$BRANCH == HEAD` and a completed `pull_request` run for that exact sha. Branch `cursor/bcl-r1-e678` has no remote counterpart, and `gh workflow list` reports no `CI` workflow at all — so no run exists to verify. Cannot close the lane until the branch is pushed, a PR opened, and the run is green."
               }
             ],
-            "implementer_session": "grok-bot-executor-bcl-r1-20261125 (Grok Bot subagent, no Codex session)"
+            "implementer_session": "grok-bot-executor-bcl-r1-20261125 (Grok Bot subagent, no Codex session)",
+            "review_status": "changes_requested",
+            "reviewer_model": "opencode/deepseek-v4.1-flash-free (OpenCode free, read-only plan agent)",
+            "must_fix_note": "1. `npm run check` cannot pass on a GitHub runner. `check` starts with `verify:testing-ledger` → `.agents/skills/testing-ledger/scripts/validate.sh`, which hard-fails when `$HOME/.agents/skills/testing-framework/SKILL.md` is missing (line ~112: `test -f \"$FRAMEWORK_DIR/SKILL.md\" || exit 1`). That skill is not vendored in the repo (`.agents/skills/` has `testing-ledger` but no `testing-framework`). Reproduced: `HOME=$(mktemp -d) bash .agents/skills/testing-ledger/scripts/validate.sh` → `global testing-framework unavailable … exit 1`. So the \"Repo checks\" step fails before any test runs and the run can never conclude `success`. Fix: skip the global-skill validation when `TESTING_FRAMEWORK_DIR` is absent, or have CI run only the repo-local checks (`verify:ledger-migration`, `verify:ledger-progress`, `node --check`).\n\n2. Workflow references a file this commit does not add. `ci.yml` uses `node-version-file: .nvmrc`, but `.nvmrc` does not exist at e3c2b73 (`git cat-file -e e3c2b73:.nvmrc` → fatal). It is added later by 92ac55e (ENV-01). At this sha, `actions/setup-node` fails with \"node-version-file could not be found\". Fix: add `.nvmrc` (20) in this commit or use `node-version: 20`.\n\n3. Acceptance clause 2 is unmet, not merely pending. `script/verify_ci.sh` requires `origin/$BRANCH == HEAD` and a completed `pull_request` run for that exact sha. Branch `cursor/bcl-r1-e678` has no remote counterpart, and `gh workflow list` reports no `CI` workflow at all — so no run exists to verify. Cannot close the lane until the branch is pushed, a PR opened, and the run is green.",
+            "plan_review_status": "failed"
           }
         },
         {
@@ -338,28 +455,29 @@
           "codex": {
             "fix_status": "passed",
             "job": {
-              "id": "2db47209a484490e8f907e1ab8be265d",
-              "phase": "fix",
-              "started_at": "2026-11-25T03:53:19Z",
-              "command": "lane_commit.sh",
-              "heartbeat_at": "2026-11-25T03:53:23Z",
-              "plan_sha256": "17575574506dc109277ba8b701cf13ef8024bcd81f1e676bff49c2e0484fb319",
+              "id": "6b4f4b4bf3bb483bb84738326d0e9e1b",
+              "phase": "review",
+              "started_at": "2026-11-25T04:00:09Z",
+              "command": "review.sh",
+              "heartbeat_at": "2026-11-25T04:01:26Z",
+              "plan_sha256": "5ee40be8e0ae7c1fc17c7f5cf5ab5c433c361a3906ac28faf1156c9c3e20668f",
               "finding_ids": [
                 "ENV-01"
               ],
               "worktree": "likeminded-bcl-r1",
-              "model": "grok-bot-executor (self, no Codex)",
-              "lane_sha256": "983f2a14acbc31484d91165b175c3315630157d4b1a6eb38f3819875f8883168",
+              "model": "opencode/deepseek-v4.1-flash-free (OpenCode free, read-only plan agent)",
+              "lane_sha256": "ebf95d87cd18e376e50990d2462233100eaa99d831f72ed60247907b207d86e9",
               "cycle": 1,
               "round": 1,
-              "pid": 122,
+              "pid": 26886,
               "exit_code": 0,
-              "finished_at": "2026-11-25T03:53:23Z",
-              "output_path": "/Users/gurusharan/.agents/state/batched-change-list/04f50a708ea690ca394d313155554625fb71e92626c35ea9c0554d5e85c3abed/jobs/2db47209a484490e8f907e1ab8be265d.log",
+              "finished_at": "2026-11-25T04:01:26Z",
+              "output_path": "/Users/gurusharan/.agents/state/batched-change-list/04f50a708ea690ca394d313155554625fb71e92626c35ea9c0554d5e85c3abed/jobs/6b4f4b4bf3bb483bb84738326d0e9e1b.log",
               "output_retained": true,
               "tokens_source": "none",
               "tokens": null,
-              "wall_time_s": 4,
+              "wall_time_s": 77,
+              "session": "grok-bot-executor-bcl-r1-20261125 (Grok Bot subagent, no Codex session)",
               "finished_phase_status": "passed"
             },
             "tool_fault_streak": 0,
@@ -389,9 +507,36 @@
                 "tokens": null,
                 "wall_time_s": 4,
                 "finished_phase_status": "failed"
+              },
+              {
+                "id": "2db47209a484490e8f907e1ab8be265d",
+                "phase": "fix",
+                "started_at": "2026-11-25T03:53:19Z",
+                "command": "lane_commit.sh",
+                "heartbeat_at": "2026-11-25T03:53:23Z",
+                "plan_sha256": "17575574506dc109277ba8b701cf13ef8024bcd81f1e676bff49c2e0484fb319",
+                "finding_ids": [
+                  "ENV-01"
+                ],
+                "worktree": "likeminded-bcl-r1",
+                "model": "grok-bot-executor (self, no Codex)",
+                "lane_sha256": "983f2a14acbc31484d91165b175c3315630157d4b1a6eb38f3819875f8883168",
+                "cycle": 1,
+                "round": 1,
+                "pid": 122,
+                "exit_code": 0,
+                "finished_at": "2026-11-25T03:53:23Z",
+                "output_path": "/Users/gurusharan/.agents/state/batched-change-list/04f50a708ea690ca394d313155554625fb71e92626c35ea9c0554d5e85c3abed/jobs/2db47209a484490e8f907e1ab8be265d.log",
+                "output_retained": true,
+                "tokens_source": "none",
+                "tokens": null,
+                "wall_time_s": 4,
+                "finished_phase_status": "passed"
               }
             ],
-            "implementer_session": "grok-bot-executor-bcl-r1-20261125 (Grok Bot subagent, no Codex session)"
+            "implementer_session": "grok-bot-executor-bcl-r1-20261125 (Grok Bot subagent, no Codex session)",
+            "review_status": "passed",
+            "reviewer_model": "opencode/deepseek-v4.1-flash-free (OpenCode free, read-only plan agent)"
           }
         }
       ],
@@ -416,8 +561,8 @@
       },
       "state_changes": [],
       "last_seen": {
-        "at": "2026-11-25T03:52:22Z",
-        "source": "lane_failure"
+        "at": "2026-11-25T04:04:03Z",
+        "source": "review"
       }
     },
     {
@@ -569,8 +714,8 @@
       },
       "state_changes": [],
       "last_seen": {
-        "at": "2026-11-25T03:52:31Z",
-        "source": "lane_failure"
+        "at": "2026-11-25T04:10:06Z",
+        "source": "review"
       }
     },
     {
