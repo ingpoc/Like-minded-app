@@ -4,9 +4,9 @@
     "list_id": "bcl-r1",
     "worktree": "/Users/gurusharan/code/worktrees/likeminded-bcl-r1",
     "workflow": {
-      "stage": "review",
-      "updated_at": "2026-11-25T04:17:12Z",
-      "now": "2026-11-25T04:17:12Z — Review started"
+      "stage": "plan_fix",
+      "updated_at": "2026-11-25T04:20:30Z",
+      "now": "2026-11-25T04:20:30Z — Fix started"
     },
     "cycle": 1,
     "round_started_at": "2026-11-25T03:46:07Z",
@@ -14,7 +14,7 @@
       "merge_previous_pr_threshold": 16,
       "report_threshold": 15
     },
-    "last_written_at": "2026-11-25T04:17:12Z",
+    "last_written_at": "2026-11-25T04:20:30Z",
     "stages_reached": [
       "collect",
       "present",
@@ -84,28 +84,28 @@
           "codex": {
             "fix_status": "passed",
             "job": {
-              "id": "b036ad008e184368b71cdec307d80ff6",
-              "phase": "fix",
-              "started_at": "2026-11-25T04:16:57Z",
-              "command": "lane_commit.sh",
-              "heartbeat_at": "2026-11-25T04:16:58Z",
+              "id": "f2a6773db5fb4bd9afb03ad29432f142",
+              "phase": "review",
+              "started_at": "2026-11-25T04:17:16Z",
+              "command": "review.sh",
+              "heartbeat_at": "2026-11-25T04:18:16Z",
               "plan_sha256": "5ee40be8e0ae7c1fc17c7f5cf5ab5c433c361a3906ac28faf1156c9c3e20668f",
               "finding_ids": [
                 "OBS-01"
               ],
               "worktree": "likeminded-bcl-r1",
-              "model": "grok-bot-executor (self, no Codex)",
+              "model": "opencode/beam-free (OpenCode free, no-training terms, read-only plan agent; deepseek free limit reached)",
               "lane_sha256": "998eea0a7d5958cb5f77b37f8c5213d292d4696b3ce806ddf2e0decad4e318b8",
               "cycle": 1,
               "round": 1,
-              "pid": 84939,
+              "pid": 85969,
               "exit_code": 0,
-              "finished_at": "2026-11-25T04:16:58Z",
-              "output_path": "/Users/gurusharan/.agents/state/batched-change-list/04f50a708ea690ca394d313155554625fb71e92626c35ea9c0554d5e85c3abed/jobs/b036ad008e184368b71cdec307d80ff6.log",
+              "finished_at": "2026-11-25T04:18:16Z",
+              "output_path": "/Users/gurusharan/.agents/state/batched-change-list/04f50a708ea690ca394d313155554625fb71e92626c35ea9c0554d5e85c3abed/jobs/f2a6773db5fb4bd9afb03ad29432f142.log",
               "output_retained": true,
               "tokens_source": "none",
               "tokens": null,
-              "wall_time_s": 1,
+              "wall_time_s": 60,
               "session": "grok-bot-executor-bcl-r1-20261125 (Grok Bot subagent, no Codex session)",
               "finished_phase_status": "passed"
             },
@@ -243,11 +243,38 @@
                 "session": "grok-bot-executor-bcl-r1-20261125 (Grok Bot subagent, no Codex session)",
                 "finished_phase_status": "incomplete",
                 "must_fix": "Reviewer exited 5"
+              },
+              {
+                "id": "b036ad008e184368b71cdec307d80ff6",
+                "phase": "fix",
+                "started_at": "2026-11-25T04:16:57Z",
+                "command": "lane_commit.sh",
+                "heartbeat_at": "2026-11-25T04:16:58Z",
+                "plan_sha256": "5ee40be8e0ae7c1fc17c7f5cf5ab5c433c361a3906ac28faf1156c9c3e20668f",
+                "finding_ids": [
+                  "OBS-01"
+                ],
+                "worktree": "likeminded-bcl-r1",
+                "model": "grok-bot-executor (self, no Codex)",
+                "lane_sha256": "998eea0a7d5958cb5f77b37f8c5213d292d4696b3ce806ddf2e0decad4e318b8",
+                "cycle": 1,
+                "round": 1,
+                "pid": 84939,
+                "exit_code": 0,
+                "finished_at": "2026-11-25T04:16:58Z",
+                "output_path": "/Users/gurusharan/.agents/state/batched-change-list/04f50a708ea690ca394d313155554625fb71e92626c35ea9c0554d5e85c3abed/jobs/b036ad008e184368b71cdec307d80ff6.log",
+                "output_retained": true,
+                "tokens_source": "none",
+                "tokens": null,
+                "wall_time_s": 1,
+                "session": "grok-bot-executor-bcl-r1-20261125 (Grok Bot subagent, no Codex session)",
+                "finished_phase_status": "passed"
               }
             ],
             "implementer_session": "grok-bot-executor-bcl-r1-20261125 (Grok Bot subagent, no Codex session)",
-            "reviewer_model": "opencode/deepseek-v4.1-flash-free (OpenCode free, read-only plan agent)",
-            "must_fix_note": "Reviewer exited 5"
+            "reviewer_model": "opencode/beam-free (OpenCode free, no-training terms, read-only plan agent; deepseek free limit reached)",
+            "must_fix_note": "Reviewer exited 5",
+            "review_status": "passed"
           }
         },
         {
@@ -268,7 +295,7 @@
             "failed": 0,
             "total": 1
           },
-          "status": "failed",
+          "status": "running",
           "phase": "fix",
           "failure_history": [
             {
@@ -285,37 +312,55 @@
           ],
           "plan_review_history": [],
           "updated_at": "2026-11-25T03:59:50Z",
-          "stage_entered_at": "2026-11-25T03:58:35Z",
+          "stage_entered_at": "2026-11-25T04:20:30Z",
           "codex": {
-            "fix_status": "failed",
+            "fix_status": "running",
             "job": {
-              "id": "8157e5173faf423fbed9e9671ef273be",
+              "id": "d92257c935834375bc13a53a896d52e4",
               "phase": "fix",
-              "started_at": "2026-11-25T03:46:17Z",
-              "command": "verify_native_builds.sh",
-              "heartbeat_at": "2026-11-25T03:58:35Z",
-              "plan_sha256": "17575574506dc109277ba8b701cf13ef8024bcd81f1e676bff49c2e0484fb319",
+              "started_at": "2026-11-25T04:20:30Z",
+              "command": "lane_commit.sh",
+              "heartbeat_at": "2026-11-25T04:20:30Z",
+              "plan_sha256": "5ee40be8e0ae7c1fc17c7f5cf5ab5c433c361a3906ac28faf1156c9c3e20668f",
               "finding_ids": [
                 "BUILD-01"
               ],
               "worktree": "likeminded-bcl-r1",
               "model": "grok-bot-executor (self, no Codex)",
-              "lane_sha256": "c1d8d6e034600f580807947a31277cef8f8df316d76fc13b9d46117bec96d968",
+              "lane_sha256": "0fcf1f4eb60671042e22963780a242841eb73dd13f1e85914d56c863df92b6ef",
               "cycle": 1,
-              "round": 1,
-              "pid": 68466,
-              "exit_code": 1,
-              "finished_at": "2026-11-25T03:58:35Z",
-              "first_error_line": "PASS xcodegen in sync",
-              "output_path": "/Users/gurusharan/.agents/state/batched-change-list/04f50a708ea690ca394d313155554625fb71e92626c35ea9c0554d5e85c3abed/jobs/8157e5173faf423fbed9e9671ef273be.log",
-              "output_retained": true,
-              "tokens_source": "none",
-              "tokens": null,
-              "wall_time_s": 738,
-              "finished_phase_status": "failed"
+              "round": 1
             },
             "tool_fault_streak": 1,
-            "implementer_session": "grok-bot-executor-bcl-r1-20261125 (Grok Bot subagent, no Codex session)"
+            "implementer_session": "grok-bot-executor-bcl-r1-20261125 (Grok Bot subagent, no Codex session)",
+            "jobs": [
+              {
+                "id": "8157e5173faf423fbed9e9671ef273be",
+                "phase": "fix",
+                "started_at": "2026-11-25T03:46:17Z",
+                "command": "verify_native_builds.sh",
+                "heartbeat_at": "2026-11-25T03:58:35Z",
+                "plan_sha256": "17575574506dc109277ba8b701cf13ef8024bcd81f1e676bff49c2e0484fb319",
+                "finding_ids": [
+                  "BUILD-01"
+                ],
+                "worktree": "likeminded-bcl-r1",
+                "model": "grok-bot-executor (self, no Codex)",
+                "lane_sha256": "c1d8d6e034600f580807947a31277cef8f8df316d76fc13b9d46117bec96d968",
+                "cycle": 1,
+                "round": 1,
+                "pid": 68466,
+                "exit_code": 1,
+                "finished_at": "2026-11-25T03:58:35Z",
+                "first_error_line": "PASS xcodegen in sync",
+                "output_path": "/Users/gurusharan/.agents/state/batched-change-list/04f50a708ea690ca394d313155554625fb71e92626c35ea9c0554d5e85c3abed/jobs/8157e5173faf423fbed9e9671ef273be.log",
+                "output_retained": true,
+                "tokens_source": "none",
+                "tokens": null,
+                "wall_time_s": 738,
+                "finished_phase_status": "failed"
+              }
+            ]
           }
         },
         {
@@ -401,7 +446,7 @@
               "phase": "review",
               "started_at": "2026-11-25T04:17:12Z",
               "command": "review.sh",
-              "heartbeat_at": "2026-11-25T04:17:12Z",
+              "heartbeat_at": "2026-11-25T04:17:56Z",
               "plan_sha256": "5ee40be8e0ae7c1fc17c7f5cf5ab5c433c361a3906ac28faf1156c9c3e20668f",
               "finding_ids": [
                 "CI-01"
@@ -410,7 +455,17 @@
               "model": "opencode/beam-free (OpenCode free, no-training terms, read-only plan agent; deepseek free limit reached)",
               "lane_sha256": "548a47060adcbbe6bdca29f0dad190fef5619a57620864a88087032e603cc0a4",
               "cycle": 1,
-              "round": 1
+              "round": 1,
+              "pid": 85749,
+              "exit_code": 0,
+              "finished_at": "2026-11-25T04:17:56Z",
+              "output_path": "/Users/gurusharan/.agents/state/batched-change-list/04f50a708ea690ca394d313155554625fb71e92626c35ea9c0554d5e85c3abed/jobs/f061f5aec115480196f459d886e36605.log",
+              "output_retained": true,
+              "tokens_source": "none",
+              "tokens": null,
+              "wall_time_s": 44,
+              "session": "grok-bot-executor-bcl-r1-20261125 (Grok Bot subagent, no Codex session)",
+              "finished_phase_status": "passed"
             },
             "tool_fault_streak": 0,
             "jobs": [
@@ -603,7 +658,7 @@
             "implementer_session": "grok-bot-executor-bcl-r1-20261125 (Grok Bot subagent, no Codex session)",
             "reviewer_model": "opencode/beam-free (OpenCode free, no-training terms, read-only plan agent; deepseek free limit reached)",
             "must_fix_note": "1. `npm run check` cannot pass on a GitHub runner. `check` starts with `verify:testing-ledger` → `.agents/skills/testing-ledger/scripts/validate.sh`, which hard-fails when `$HOME/.agents/skills/testing-framework/SKILL.md` is missing (line ~112: `test -f \"$FRAMEWORK_DIR/SKILL.md\" || exit 1`). That skill is not vendored in the repo (`.agents/skills/` has `testing-ledger` but no `testing-framework`). Reproduced: `HOME=$(mktemp -d) bash .agents/skills/testing-ledger/scripts/validate.sh` → `global testing-framework unavailable … exit 1`. So the \"Repo checks\" step fails before any test runs and the run can never conclude `success`. Fix: skip the global-skill validation when `TESTING_FRAMEWORK_DIR` is absent, or have CI run only the repo-local checks (`verify:ledger-migration`, `verify:ledger-progress`, `node --check`).\n\n2. Workflow references a file this commit does not add. `ci.yml` uses `node-version-file: .nvmrc`, but `.nvmrc` does not exist at e3c2b73 (`git cat-file -e e3c2b73:.nvmrc` → fatal). It is added later by 92ac55e (ENV-01). At this sha, `actions/setup-node` fails with \"node-version-file could not be found\". Fix: add `.nvmrc` (20) in this commit or use `node-version: 20`.\n\n3. Acceptance clause 2 is unmet, not merely pending. `script/verify_ci.sh` requires `origin/$BRANCH == HEAD` and a completed `pull_request` run for that exact sha. Branch `cursor/bcl-r1-e678` has no remote counterpart, and `gh workflow list` reports no `CI` workflow at all — so no run exists to verify. Cannot close the lane until the branch is pushed, a PR opened, and the run is green.",
-            "review_status": "running"
+            "review_status": "passed"
           }
         },
         {
@@ -1073,6 +1128,82 @@
       "created_at": "2026-11-25T03:59:50Z",
       "first_seen": {
         "at": "2026-11-25T03:59:50Z",
+        "pr": null,
+        "round": 1,
+        "source": "created_at"
+      },
+      "state_changes": []
+    },
+    {
+      "id": "DOBS-02",
+      "title": "Passing test lines that mention errors are counted as failures",
+      "source": "Agent reported",
+      "status": "untested",
+      "summary": "The log reader treats a passing test whose name contains the word error as a failure.",
+      "impact": "False failure alerts on healthy test runs.",
+      "done_when": "A passing test line is never counted as a failure.",
+      "observed": "2026-11-25 09:47 IST: scoped collect of /tmp/bcl-r1/obs-r3 reported 'log_error/log failed 1x' from test-api.log line 3, which is the passing spec line '✔ unknown routes return a JSON not_found error'.",
+      "recommendation": "Owned by developer-observability: in textlog, skip lines that start with the node spec pass mark or 'ok N'.",
+      "created_at": "2026-11-25T04:20:18Z",
+      "first_seen": {
+        "at": "2026-11-25T04:20:18Z",
+        "pr": null,
+        "round": 1,
+        "source": "created_at"
+      },
+      "state_changes": []
+    },
+    {
+      "id": "DOBS-03",
+      "title": "Job usage is only read from Codex session files",
+      "source": "Agent reported",
+      "status": "untested",
+      "summary": "Observability counts a job only if a Codex session recorded its tokens, so 17 of 17 jobs this round are gaps.",
+      "impact": "No cost or token view for any non-Codex fix or review.",
+      "done_when": "Non-Codex jobs appear as job rows with model, version, tokens and cost.",
+      "observed": "2026-11-25 09:47 IST: scoped collect bcl_jobs coverage 9/340; all 17 completed jobs on this list appear only in gaps by model label (11 grok-bot-executor, 6 OpenCode deepseek/beam); bcl_events.py keeps only tokens_source stamp or inline jobs.",
+      "recommendation": "Owned by developer-observability: accept a usage stamp from any implementer (a sidecar JSON per job id), and read opencode stats for OpenCode runs.",
+      "created_at": "2026-11-25T04:20:18Z",
+      "first_seen": {
+        "at": "2026-11-25T04:20:18Z",
+        "pr": null,
+        "round": 1,
+        "source": "created_at"
+      },
+      "state_changes": []
+    },
+    {
+      "id": "PROC-05",
+      "title": "A reviewer crash sends the lane back to fixing",
+      "source": "Agent reported",
+      "status": "untested",
+      "summary": "When a review tool crashes or runs out of quota, the change-list tool demands a new fix commit before re-reviewing.",
+      "impact": "Forces busywork commits and burns the tool-fault streak.",
+      "done_when": "A crashed or quota-out review can simply be rerun.",
+      "observed": "2026-11-25 09:36 and 09:45 IST: OBS-01 review exited 4 (guard false positive) and then deepseek free limit; both times the lane moved to running/fix and 'review jobs require each lane to finish fix'. Reviewer scripts now exit 0 with an incomplete reply so bcl keeps the lane in review.",
+      "recommendation": "Owned by the batched-change-list plugin: keep the lane in review on any review tool fault.",
+      "created_at": "2026-11-25T04:20:18Z",
+      "first_seen": {
+        "at": "2026-11-25T04:20:18Z",
+        "pr": null,
+        "round": 1,
+        "source": "created_at"
+      },
+      "state_changes": []
+    },
+    {
+      "id": "LEDGER-02",
+      "title": "Context Ledger holds no Likeminded decisions and returns an unrelated one",
+      "source": "Agent reported",
+      "status": "untested",
+      "summary": "Looking up Guru's Likeminded preferences found nothing relevant; one unrelated project's record came back for most queries.",
+      "impact": "Agents get no recalled preferences for this project.",
+      "done_when": "Likeminded-scoped lookups return Likeminded or fleet decisions only.",
+      "observed": "2026-11-25 09:13-09:31 IST: 6 find calls scoped project like-minded-app; 4 returned only decision 364b7d61 (ORN forge CI), 2 returned none; 1 get. Two project-scoped decisions saved this round (6cb7ea19 port, 8675d855 SPM).",
+      "recommendation": "Owned by the Context Ledger: tighten the IDF floor so an ORN-entity record does not match generic CI queries.",
+      "created_at": "2026-11-25T04:20:18Z",
+      "first_seen": {
+        "at": "2026-11-25T04:20:18Z",
         "pr": null,
         "round": 1,
         "source": "created_at"
