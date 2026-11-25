@@ -4,9 +4,9 @@
     "list_id": "bcl-r1",
     "worktree": "/Users/gurusharan/code/worktrees/likeminded-bcl-r1",
     "workflow": {
-      "stage": "plan_fix",
-      "updated_at": "2026-11-25T04:20:30Z",
-      "now": "2026-11-25T04:20:30Z — Fix started"
+      "stage": "review",
+      "updated_at": "2026-11-25T04:37:50Z",
+      "now": "2026-11-25T04:37:50Z — Review started"
     },
     "cycle": 1,
     "round_started_at": "2026-11-25T03:46:07Z",
@@ -14,7 +14,7 @@
       "merge_previous_pr_threshold": 16,
       "report_threshold": 15
     },
-    "last_written_at": "2026-11-25T04:20:30Z",
+    "last_written_at": "2026-11-25T04:37:50Z",
     "stages_reached": [
       "collect",
       "present",
@@ -295,8 +295,8 @@
             "failed": 0,
             "total": 1
           },
-          "status": "running",
-          "phase": "fix",
+          "status": "review",
+          "phase": "review",
           "failure_history": [
             {
               "attempt_id": "8157e5173faf423fbed9e9671ef273be",
@@ -308,30 +308,62 @@
               "tool_fault": true,
               "fault_kind": "fix_job_exit",
               "tool_fault_reason": "failed fix job, not a review finding"
+            },
+            {
+              "attempt_id": "d92257c935834375bc13a53a896d52e4",
+              "source": "fix",
+              "reason": "Fix job exited 1",
+              "cycle": 1,
+              "round": 1,
+              "at": "2026-11-25T04:25:06Z",
+              "tool_fault": true,
+              "fault_kind": "fix_job_exit",
+              "tool_fault_reason": "failed fix job, not a review finding"
+            },
+            {
+              "attempt_id": "4e5349c2e03e42f89ccc114af7d7d9fb",
+              "source": "fix",
+              "reason": "Fix job exited 128",
+              "cycle": 1,
+              "round": 1,
+              "at": "2026-11-25T04:36:28Z",
+              "tool_fault": true,
+              "fault_kind": "fix_job_exit",
+              "tool_fault_reason": "failed fix job, not a review finding"
+            },
+            {
+              "attempt_id": "229ca018e6534c2ebabb9d7e684f441c",
+              "source": "fix",
+              "reason": "Fix job exited 128",
+              "cycle": 1,
+              "round": 1,
+              "at": "2026-11-25T04:37:04Z",
+              "tool_fault": true,
+              "fault_kind": "fix_job_exit",
+              "tool_fault_reason": "failed fix job, not a review finding"
             }
           ],
           "plan_review_history": [],
           "updated_at": "2026-11-25T03:59:50Z",
-          "stage_entered_at": "2026-11-25T04:20:30Z",
+          "stage_entered_at": "2026-11-25T04:37:31Z",
           "codex": {
-            "fix_status": "running",
+            "fix_status": "passed",
             "job": {
-              "id": "d92257c935834375bc13a53a896d52e4",
-              "phase": "fix",
-              "started_at": "2026-11-25T04:20:30Z",
-              "command": "lane_commit.sh",
-              "heartbeat_at": "2026-11-25T04:20:30Z",
+              "id": "00ce33d206144e38a7ae6c8f9601eaf8",
+              "phase": "review",
+              "started_at": "2026-11-25T04:37:50Z",
+              "command": "review.sh",
+              "heartbeat_at": "2026-11-25T04:37:50Z",
               "plan_sha256": "5ee40be8e0ae7c1fc17c7f5cf5ab5c433c361a3906ac28faf1156c9c3e20668f",
               "finding_ids": [
                 "BUILD-01"
               ],
               "worktree": "likeminded-bcl-r1",
-              "model": "grok-bot-executor (self, no Codex)",
+              "model": "opencode/beam-free",
               "lane_sha256": "0fcf1f4eb60671042e22963780a242841eb73dd13f1e85914d56c863df92b6ef",
               "cycle": 1,
               "round": 1
             },
-            "tool_fault_streak": 1,
             "implementer_session": "grok-bot-executor-bcl-r1-20261125 (Grok Bot subagent, no Codex session)",
             "jobs": [
               {
@@ -359,9 +391,130 @@
                 "tokens": null,
                 "wall_time_s": 738,
                 "finished_phase_status": "failed"
+              },
+              {
+                "id": "d92257c935834375bc13a53a896d52e4",
+                "phase": "fix",
+                "started_at": "2026-11-25T04:20:30Z",
+                "command": "lane_commit.sh",
+                "heartbeat_at": "2026-11-25T04:25:06Z",
+                "plan_sha256": "5ee40be8e0ae7c1fc17c7f5cf5ab5c433c361a3906ac28faf1156c9c3e20668f",
+                "finding_ids": [
+                  "BUILD-01"
+                ],
+                "worktree": "likeminded-bcl-r1",
+                "model": "grok-bot-executor (self, no Codex)",
+                "lane_sha256": "0fcf1f4eb60671042e22963780a242841eb73dd13f1e85914d56c863df92b6ef",
+                "cycle": 1,
+                "round": 1,
+                "pid": 92781,
+                "exit_code": 1,
+                "finished_at": "2026-11-25T04:25:06Z",
+                "first_error_line": "PASS xcodegen in sync",
+                "output_path": "/Users/gurusharan/.agents/state/batched-change-list/04f50a708ea690ca394d313155554625fb71e92626c35ea9c0554d5e85c3abed/jobs/d92257c935834375bc13a53a896d52e4.log",
+                "output_retained": true,
+                "tokens_source": "none",
+                "tokens": null,
+                "wall_time_s": 276,
+                "session": "grok-bot-executor-bcl-r1-20261125 (Grok Bot subagent, no Codex session)",
+                "finished_phase_status": "failed"
+              },
+              {
+                "id": "4e5349c2e03e42f89ccc114af7d7d9fb",
+                "phase": "fix",
+                "started_at": "2026-11-25T04:36:17Z",
+                "command": "lane_commit.sh",
+                "heartbeat_at": "2026-11-25T04:36:28Z",
+                "plan_sha256": "5ee40be8e0ae7c1fc17c7f5cf5ab5c433c361a3906ac28faf1156c9c3e20668f",
+                "finding_ids": [
+                  "BUILD-01"
+                ],
+                "worktree": "likeminded-bcl-r1",
+                "model": "grok-bot-executor (self, no Codex)",
+                "lane_sha256": "0fcf1f4eb60671042e22963780a242841eb73dd13f1e85914d56c863df92b6ef",
+                "cycle": 1,
+                "round": 1,
+                "pid": 12461,
+                "exit_code": 128,
+                "finished_at": "2026-11-25T04:36:28Z",
+                "first_error_line": "fix job made no commit",
+                "output_path": "/Users/gurusharan/.agents/state/batched-change-list/04f50a708ea690ca394d313155554625fb71e92626c35ea9c0554d5e85c3abed/jobs/4e5349c2e03e42f89ccc114af7d7d9fb.log",
+                "output_retained": true,
+                "tokens_source": "none",
+                "tokens": null,
+                "wall_time_s": 11,
+                "session": "grok-bot-executor-bcl-r1-20261125 (Grok Bot subagent, no Codex session)",
+                "finished_phase_status": "failed"
+              },
+              {
+                "id": "229ca018e6534c2ebabb9d7e684f441c",
+                "phase": "fix",
+                "started_at": "2026-11-25T04:36:54Z",
+                "command": "lane_commit.sh",
+                "heartbeat_at": "2026-11-25T04:37:03Z",
+                "plan_sha256": "5ee40be8e0ae7c1fc17c7f5cf5ab5c433c361a3906ac28faf1156c9c3e20668f",
+                "finding_ids": [
+                  "BUILD-01"
+                ],
+                "worktree": "likeminded-bcl-r1",
+                "model": "grok-bot-executor (self, no Codex)",
+                "lane_sha256": "0fcf1f4eb60671042e22963780a242841eb73dd13f1e85914d56c863df92b6ef",
+                "cycle": 1,
+                "round": 1,
+                "pid": 13484,
+                "exit_code": 128,
+                "finished_at": "2026-11-25T04:37:03Z",
+                "first_error_line": "fix job made no commit",
+                "output_path": "/Users/gurusharan/.agents/state/batched-change-list/04f50a708ea690ca394d313155554625fb71e92626c35ea9c0554d5e85c3abed/jobs/229ca018e6534c2ebabb9d7e684f441c.log",
+                "output_retained": true,
+                "tokens_source": "none",
+                "tokens": null,
+                "wall_time_s": 9,
+                "session": "grok-bot-executor-bcl-r1-20261125 (Grok Bot subagent, no Codex session)",
+                "finished_phase_status": "failed"
+              },
+              {
+                "id": "d60590d4c6144b5f8c0d978886017435",
+                "phase": "fix",
+                "started_at": "2026-11-25T04:37:22Z",
+                "command": "lane_commit.sh",
+                "heartbeat_at": "2026-11-25T04:37:31Z",
+                "plan_sha256": "5ee40be8e0ae7c1fc17c7f5cf5ab5c433c361a3906ac28faf1156c9c3e20668f",
+                "finding_ids": [
+                  "BUILD-01"
+                ],
+                "worktree": "likeminded-bcl-r1",
+                "model": "grok-bot-executor (self, no Codex)",
+                "lane_sha256": "0fcf1f4eb60671042e22963780a242841eb73dd13f1e85914d56c863df92b6ef",
+                "cycle": 1,
+                "round": 1,
+                "pid": 14508,
+                "exit_code": 0,
+                "finished_at": "2026-11-25T04:37:31Z",
+                "output_path": "/Users/gurusharan/.agents/state/batched-change-list/04f50a708ea690ca394d313155554625fb71e92626c35ea9c0554d5e85c3abed/jobs/d60590d4c6144b5f8c0d978886017435.log",
+                "output_retained": true,
+                "tokens_source": "none",
+                "tokens": null,
+                "wall_time_s": 9,
+                "session": "grok-bot-executor-bcl-r1-20261125 (Grok Bot subagent, no Codex session)",
+                "finished_phase_status": "passed"
               }
-            ]
-          }
+            ],
+            "tool_fault_streak": 0,
+            "review_status": "running",
+            "reviewer_model": "opencode/beam-free"
+          },
+          "unblock_history": [
+            {
+              "at": "2026-11-25T04:36:46Z",
+              "reason": "3rd fix job: build passed (ios+macos) but my commit helper ran git add on an already-staged deletion (exit 128); helper fixed to git add -A. Jobs 1-2 were the SPM hang (BUILD-02) and the duplicate privacy manifest, both now fixed.",
+              "tool_faults": [],
+              "covered_attempts": [],
+              "rows_seen": 3,
+              "by_cycle": 1,
+              "round": 1
+            }
+          ]
         },
         {
           "id": "ci",
@@ -892,7 +1045,7 @@
       "id": "BUILD-01",
       "title": "Native iOS and macOS builds of merged #18 are not verified yet",
       "source": "Agent reported",
-      "status": "untested",
+      "status": "in_progress",
       "observed": "#18 merged into main (01b536a) on Guru's call without a native compile. Earlier, xcodebuild -list spent over 3 minutes resolving SPM packages and was stopped; MacAppState.swift, SettingsPrototypeView.swift, both Info.plists and project.yml changed in the merge.",
       "recommendation": "Resolve SPM once, then do an unsigned build of the iOS and macOS schemes on main, then verify:ios-screens and verify:macos-screens.",
       "verification": "Pending: both schemes compile on 3f6c98a or a later head.",
@@ -902,11 +1055,25 @@
         "round": null,
         "source": "legacy_gap"
       },
-      "state_changes": [],
+      "state_changes": [
+        {
+          "at": "2026-11-25T04:36:28Z",
+          "from": "untested",
+          "to": "blocked",
+          "source": "tracker_update"
+        },
+        {
+          "at": "2026-11-25T04:36:46Z",
+          "from": "blocked",
+          "to": "in_progress",
+          "source": "tracker_update"
+        }
+      ],
       "last_seen": {
-        "at": "2026-11-25T03:58:35Z",
+        "at": "2026-11-25T04:37:04Z",
         "source": "lane_failure"
-      }
+      },
+      "needs": "Fix job exited 128"
     },
     {
       "id": "ENV-02",
@@ -1204,6 +1371,25 @@
       "created_at": "2026-11-25T04:20:18Z",
       "first_seen": {
         "at": "2026-11-25T04:20:18Z",
+        "pr": null,
+        "round": 1,
+        "source": "created_at"
+      },
+      "state_changes": []
+    },
+    {
+      "id": "BUILD-03",
+      "title": "The Mac's Xcode was missing the Metal shader compiler, so the iPhone build failed",
+      "source": "Agent reported",
+      "status": "untested",
+      "summary": "Xcode 27 ships the Metal shader compiler as a separate download, and the Mac did not have it.",
+      "impact": "The iPhone app could not be built on the Mac until the compiler was downloaded, and the build check gave no hint why.",
+      "done_when": "The build check says up front when the Metal compiler is missing, and both apps build on the Mac.",
+      "observed": "2026-11-25 10:00 IST: after the privacy manifest fix, ios-build failed at CompileMetalFile Sources/Shared/ConvergenceField.metal: cannot execute tool 'metal' due to missing Metal Toolchain (log /tmp/bcl-r1/build01-failing-metal.log). Downloaded Metal Toolchain 27A266a (838.9 MB, free) with xcodebuild -downloadComponent MetalToolchain at 10:03 IST.",
+      "recommendation": "Preflight xcrun metal in script/verify_native_builds.sh and fail with the download command; any new Mac or CI macOS runner needs the component.",
+      "created_at": "2026-11-25T04:34:30Z",
+      "first_seen": {
+        "at": "2026-11-25T04:34:30Z",
         "pr": null,
         "round": 1,
         "source": "created_at"
