@@ -30,9 +30,9 @@ function createEventLog(service, options = {}) {
 
   function emit(event, fields = {}) {
     if (!enabled || broken) return;
-    const row = { ts: new Date().toISOString(), service, event, session_id: sessionId, version: VERSION, ...fields };
-    const line = JSON.stringify(row) + "\n";
     try {
+      const row = { ts: new Date().toISOString(), service, event, session_id: sessionId, version: VERSION, ...fields };
+      const line = JSON.stringify(row) + "\n";
       if (target === "-") process.stdout.write(line);
       else fs.appendFileSync(target, line);
     } catch (error) {

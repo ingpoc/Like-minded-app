@@ -39,3 +39,23 @@ test("API events can be turned off", async t => {
   await api.request("/health");
   assert.deepEqual(api.events(), []);
 });
+
+test("an unserialisable event field never throws into the caller", () => {
+  const fs = require("node:fs");
+  const os = require("node:os");
+  const path = require("node:path");
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "likeminded-events-unit-"));
+  const previous = process.env.LIKEMINDED_EVENTS_FILE;
+  process.env.LIKEMINDED_EVENTS_FILE = path.join(dir, "e.jsonl");
+  const originalWrite = process.stderr.write;
+  process.stderr.write = () => true;
+  try {
+    const { createEventLog } = require("../src/lib/events");
+    const log = createEventLog("likeminded-unit");
+    assert.doesNotThrow(() => log.emit("bad_row", { size: 1n }));
+  } finally {
+    process.stderr.write = originalWrite;
+    if (previous === undefined) delete process.env.LIKEMINDED_EVENTS_FILE; else process.env.LIKEMINDED_EVENTS_FILE = previous;
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
