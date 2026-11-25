@@ -4,9 +4,9 @@
     "list_id": "bcl-r1",
     "worktree": "/Users/gurusharan/code/worktrees/likeminded-bcl-r1",
     "workflow": {
-      "stage": "verify",
-      "updated_at": "2026-11-25T05:15:09Z",
-      "now": "2026-11-25T05:15:09Z — Verify in progress"
+      "stage": "introspect",
+      "updated_at": "2026-11-25T05:23:05Z",
+      "now": "2026-11-25T05:23:05Z — Introspection recorded"
     },
     "cycle": 1,
     "round_started_at": "2026-11-25T03:46:07Z",
@@ -14,14 +14,15 @@
       "merge_previous_pr_threshold": 16,
       "report_threshold": 15
     },
-    "last_written_at": "2026-11-25T05:15:09Z",
+    "last_written_at": "2026-11-25T05:23:05Z",
     "stages_reached": [
       "collect",
       "present",
       "plan_fix",
       "review",
       "install",
-      "verify"
+      "verify",
+      "introspect"
     ],
     "plan": {
       "groups": [
@@ -331,13 +332,14 @@
             "command": "/Users/gurusharan/code/worktrees/likeminded-bcl-r1/script/verify_native_builds.sh",
             "method": "xcodegen sync check, SPM resolve, unsigned iOS simulator and macOS builds.",
             "summary": "Both apps compile unsigned on main plus this branch.",
-            "status": "pending",
-            "fixed": 0,
+            "status": "verified",
+            "fixed": 1,
             "failed": 0,
             "total": 1,
-            "failure": "Checked: verification command\nExpected: command exits 0\nObserved: Verification command exited 1"
+            "failure": "Checked: verification command\nExpected: command exits 0\nObserved: Verification command exited 1",
+            "finished_at": "2026-11-25T05:17:21Z"
           },
-          "status": "verifying",
+          "status": "verified",
           "phase": "verify",
           "failure_history": [
             {
@@ -387,7 +389,7 @@
           ],
           "plan_review_history": [],
           "updated_at": "2026-11-25T05:15:09Z",
-          "stage_entered_at": "2026-11-25T05:15:09Z",
+          "stage_entered_at": "2026-11-25T05:17:21Z",
           "codex": {
             "fix_status": "passed",
             "job": {
@@ -1183,7 +1185,8 @@
         }
       ],
       "round": 1,
-      "cycle": 1
+      "cycle": 1,
+      "status": "closed"
     },
     "verification_history": [
       {
@@ -1282,13 +1285,29 @@
       "status": "active",
       "checks": {
         "OBS-01": {
-          "state": "pending"
+          "state": "fixed",
+          "observation": "Branch head 83e4472 checked out; event log files absent before the run.",
+          "observed_at": "2026-11-25T05:19:32Z",
+          "started_at": "2026-11-25T05:19:32Z",
+          "updated_at": "2026-11-25T05:19:32Z",
+          "check_id": "ea16047359594b0495f95c8aa5adb70c",
+          "evidence": "Checked: Event logging on the pull request\nExpected: API, smoke and test runs write events the collector can read\nObserved: 205 events read back, no failures\nVerdict: fixed",
+          "details": "verify_observability_events.sh on 83e4472",
+          "finished_at": "2026-11-25T05:22:17.210765Z"
         },
         "LEDGER-01": {
           "state": "pending"
         },
         "ENV-01": {
-          "state": "pending"
+          "state": "fixed",
+          "observation": "Branch head 83e4472; nvm has Node 20.20.2 installed.",
+          "observed_at": "2026-11-25T05:19:32Z",
+          "started_at": "2026-11-25T05:19:32Z",
+          "updated_at": "2026-11-25T05:19:32Z",
+          "check_id": "f26988fa48964ebebc92401c55ceb840",
+          "evidence": "Checked: All checks on Node 20\nExpected: Every check passes on Node 20\nObserved: All four checks passed on Node 20\nVerdict: fixed",
+          "details": "verify_node20.sh on 83e4472, Node v20.20.2",
+          "finished_at": "2026-11-25T05:22:17.211446Z"
         },
         "OBS-02": {
           "state": "pending"
@@ -1297,7 +1316,15 @@
           "state": "pending"
         },
         "BUILD-01": {
-          "state": "pending"
+          "state": "fixed",
+          "observation": "Branch head 83e4472; native build cache emptied before the run.",
+          "observed_at": "2026-11-25T05:19:32Z",
+          "started_at": "2026-11-25T05:19:32Z",
+          "updated_at": "2026-11-25T05:19:32Z",
+          "check_id": "c7e14ada83444afc859cea38bbe28824",
+          "evidence": "Checked: iPhone and Mac app builds from an empty cache\nExpected: Both apps build without signing\nObserved: Both apps built in about 40 seconds each; a later repeat was cut off by a connection drop\nVerdict: fixed",
+          "details": "bcl verify of verify_native_builds.sh on install 83e4472",
+          "finished_at": "2026-11-25T05:22:17.212377Z"
         },
         "ENV-02": {
           "state": "pending"
@@ -1306,7 +1333,15 @@
           "state": "pending"
         },
         "CI-01": {
-          "state": "pending"
+          "state": "fixed",
+          "observation": "PR #19 head 83e4472 pushed; GitHub Actions run listed for it.",
+          "observed_at": "2026-11-25T05:19:32Z",
+          "started_at": "2026-11-25T05:19:32Z",
+          "updated_at": "2026-11-25T05:19:32Z",
+          "check_id": "24e16aec5f184dfa86338b438c255b44",
+          "evidence": "Checked: Automatic checks on the pull request\nExpected: The automatic check run succeeds\nObserved: The run succeeded and the local API tests passed\nVerdict: fixed",
+          "details": "GitHub Actions run 45552271382 on 83e4472",
+          "finished_at": "2026-11-25T05:22:17.211936Z"
         },
         "ENV-03": {
           "state": "pending"
@@ -1355,6 +1390,216 @@
       "pr": null,
       "round": 1,
       "started_at": "2026-11-25T05:15:06Z"
+    },
+    "introspect_history": [
+      {
+        "result": "Introspect recorded",
+        "at": "2026-11-25T05:23:05Z",
+        "steps": [
+          "Stage: Plan & fix",
+          "Stage: Review",
+          "Stage: Install",
+          "Stage: Verify",
+          "Parallel group count: 4",
+          "Codex write: obs",
+          "Codex review: obs",
+          "Polling and rework review: obs",
+          "Test command: obs: /Users/gurusharan/code/worktrees/likeminded-bcl-r1/script/verify_observability_events.sh",
+          "Codex write: build",
+          "Codex review: build",
+          "Polling and rework review: build",
+          "Test command: build: /Users/gurusharan/code/worktrees/likeminded-bcl-r1/script/verify_native_builds.sh",
+          "Codex write: ci",
+          "Codex review: ci",
+          "Polling and rework review: ci",
+          "Test command: ci: /tmp/bcl-r1/verify_ci_wrapper.sh",
+          "Codex write: node20",
+          "Codex review: node20",
+          "Polling and rework review: node20",
+          "Test command: node20: /Users/gurusharan/code/worktrees/likeminded-bcl-r1/script/verify_node20.sh",
+          "Job wall time: build 8157e5173faf423fbed9e9671ef273be 738s",
+          "Job wall time: build 00ce33d206144e38a7ae6c8f9601eaf8 451s",
+          "Job wall time: build d92257c935834375bc13a53a896d52e4 276s",
+          "Repeat: review failures on obs",
+          "Orphaned review job after connection drop: build"
+        ],
+        "none": [
+          "Stage: Plan & fix",
+          "Stage: Install",
+          "Parallel group count: 4",
+          "Test command: node20: /Users/gurusharan/code/worktrees/likeminded-bcl-r1/script/verify_node20.sh",
+          "Test command: obs: /Users/gurusharan/code/worktrees/likeminded-bcl-r1/script/verify_observability_events.sh",
+          "Stage: Review",
+          "Stage: Verify",
+          "Codex write: obs",
+          "Codex review: obs",
+          "Polling and rework review: obs",
+          "Codex review: build",
+          "Polling and rework review: build",
+          "Test command: build: /Users/gurusharan/code/worktrees/likeminded-bcl-r1/script/verify_native_builds.sh",
+          "Codex write: ci",
+          "Codex review: ci",
+          "Polling and rework review: ci",
+          "Codex write: node20",
+          "Codex review: node20",
+          "Polling and rework review: node20",
+          "Job wall time: build 00ce33d206144e38a7ae6c8f9601eaf8 451s",
+          "Job wall time: build d92257c935834375bc13a53a896d52e4 276s"
+        ],
+        "sections": {
+          "delete": {
+            "none": "No step could be dropped: every lane needed its fix, review, presuite, install and verify; the extra build jobs were failures, not redundant steps (covered under optimize)."
+          },
+          "simplify": {
+            "items": [
+              {
+                "item": "Repeat: review failures on obs",
+                "evidence": "obs failure_history: one CHANGES (event serialisation could throw) and reviewer tool faults that sent the lane back to fix",
+                "outcome": "issue",
+                "issue_id": "PROC-05"
+              },
+              {
+                "item": "Orphaned review job after connection drop: build",
+                "evidence": "review job fee90d1f had no exit_code after the Mac connection dropped; presuite refused until the finish was recorded by hand",
+                "outcome": "issue",
+                "issue_id": "PROC-06"
+              }
+            ]
+          },
+          "optimize": {
+            "items": [
+              {
+                "item": "Job wall time: build 8157e5173faf423fbed9e9671ef273be 738s",
+                "evidence": "SwiftPM binary artifact download hung until timeouts; cold path now 132s with curl-seeded cache",
+                "outcome": "issue",
+                "issue_id": "BUILD-02"
+              }
+            ]
+          },
+          "automate": {
+            "items": [
+              {
+                "item": "Test command: ci: /tmp/bcl-r1/verify_ci_wrapper.sh",
+                "evidence": "bcl snapshot commits move local HEAD ahead of the pushed head, so the repo's verify_ci.sh could not pass; a /tmp wrapper compares code outside docs/triage",
+                "outcome": "issue",
+                "issue_id": "PROC-03"
+              },
+              {
+                "item": "Codex write: build",
+                "evidence": "All 31 jobs this round have no token source (non-Codex Grok Bot and OpenCode jobs)",
+                "outcome": "issue",
+                "issue_id": "DOBS-01"
+              }
+            ]
+          }
+        },
+        "round": 1,
+        "cycle": 1
+      }
+    ],
+    "introspect": {
+      "result": "Introspect recorded",
+      "at": "2026-11-25T05:23:05Z",
+      "steps": [
+        "Stage: Plan & fix",
+        "Stage: Review",
+        "Stage: Install",
+        "Stage: Verify",
+        "Parallel group count: 4",
+        "Codex write: obs",
+        "Codex review: obs",
+        "Polling and rework review: obs",
+        "Test command: obs: /Users/gurusharan/code/worktrees/likeminded-bcl-r1/script/verify_observability_events.sh",
+        "Codex write: build",
+        "Codex review: build",
+        "Polling and rework review: build",
+        "Test command: build: /Users/gurusharan/code/worktrees/likeminded-bcl-r1/script/verify_native_builds.sh",
+        "Codex write: ci",
+        "Codex review: ci",
+        "Polling and rework review: ci",
+        "Test command: ci: /tmp/bcl-r1/verify_ci_wrapper.sh",
+        "Codex write: node20",
+        "Codex review: node20",
+        "Polling and rework review: node20",
+        "Test command: node20: /Users/gurusharan/code/worktrees/likeminded-bcl-r1/script/verify_node20.sh",
+        "Job wall time: build 8157e5173faf423fbed9e9671ef273be 738s",
+        "Job wall time: build 00ce33d206144e38a7ae6c8f9601eaf8 451s",
+        "Job wall time: build d92257c935834375bc13a53a896d52e4 276s",
+        "Repeat: review failures on obs",
+        "Orphaned review job after connection drop: build"
+      ],
+      "none": [
+        "Stage: Plan & fix",
+        "Stage: Install",
+        "Parallel group count: 4",
+        "Test command: node20: /Users/gurusharan/code/worktrees/likeminded-bcl-r1/script/verify_node20.sh",
+        "Test command: obs: /Users/gurusharan/code/worktrees/likeminded-bcl-r1/script/verify_observability_events.sh",
+        "Stage: Review",
+        "Stage: Verify",
+        "Codex write: obs",
+        "Codex review: obs",
+        "Polling and rework review: obs",
+        "Codex review: build",
+        "Polling and rework review: build",
+        "Test command: build: /Users/gurusharan/code/worktrees/likeminded-bcl-r1/script/verify_native_builds.sh",
+        "Codex write: ci",
+        "Codex review: ci",
+        "Polling and rework review: ci",
+        "Codex write: node20",
+        "Codex review: node20",
+        "Polling and rework review: node20",
+        "Job wall time: build 00ce33d206144e38a7ae6c8f9601eaf8 451s",
+        "Job wall time: build d92257c935834375bc13a53a896d52e4 276s"
+      ],
+      "sections": {
+        "delete": {
+          "none": "No step could be dropped: every lane needed its fix, review, presuite, install and verify; the extra build jobs were failures, not redundant steps (covered under optimize)."
+        },
+        "simplify": {
+          "items": [
+            {
+              "item": "Repeat: review failures on obs",
+              "evidence": "obs failure_history: one CHANGES (event serialisation could throw) and reviewer tool faults that sent the lane back to fix",
+              "outcome": "issue",
+              "issue_id": "PROC-05"
+            },
+            {
+              "item": "Orphaned review job after connection drop: build",
+              "evidence": "review job fee90d1f had no exit_code after the Mac connection dropped; presuite refused until the finish was recorded by hand",
+              "outcome": "issue",
+              "issue_id": "PROC-06"
+            }
+          ]
+        },
+        "optimize": {
+          "items": [
+            {
+              "item": "Job wall time: build 8157e5173faf423fbed9e9671ef273be 738s",
+              "evidence": "SwiftPM binary artifact download hung until timeouts; cold path now 132s with curl-seeded cache",
+              "outcome": "issue",
+              "issue_id": "BUILD-02"
+            }
+          ]
+        },
+        "automate": {
+          "items": [
+            {
+              "item": "Test command: ci: /tmp/bcl-r1/verify_ci_wrapper.sh",
+              "evidence": "bcl snapshot commits move local HEAD ahead of the pushed head, so the repo's verify_ci.sh could not pass; a /tmp wrapper compares code outside docs/triage",
+              "outcome": "issue",
+              "issue_id": "PROC-03"
+            },
+            {
+              "item": "Codex write: build",
+              "evidence": "All 31 jobs this round have no token source (non-Codex Grok Bot and OpenCode jobs)",
+              "outcome": "issue",
+              "issue_id": "DOBS-01"
+            }
+          ]
+        }
+      },
+      "round": 1,
+      "cycle": 1
     }
   },
   "findings": [
@@ -1492,10 +1737,10 @@
       "id": "BUILD-01",
       "title": "Native iOS and macOS builds of merged #18 are not verified yet",
       "source": "Agent reported",
-      "status": "in_progress",
+      "status": "verified_fixed",
       "observed": "#18 merged into main (01b536a) on Guru's call without a native compile. Earlier, xcodebuild -list spent over 3 minutes resolving SPM packages and was stopped; MacAppState.swift, SettingsPrototypeView.swift, both Info.plists and project.yml changed in the merge.",
       "recommendation": "Resolve SPM once, then do an unsigned build of the iOS and macOS schemes on main, then verify:ios-screens and verify:macos-screens.",
-      "verification": "Pending: both schemes compile on 3f6c98a or a later head.",
+      "verification": "Verification command exited 0: /Users/gurusharan/code/worktrees/likeminded-bcl-r1/script/verify_native_builds.sh",
       "first_seen": {
         "at": null,
         "pr": null,
@@ -1514,13 +1759,22 @@
           "from": "blocked",
           "to": "in_progress",
           "source": "tracker_update"
+        },
+        {
+          "at": "2026-11-25T05:17:21Z",
+          "from": "in_progress",
+          "to": "resolved",
+          "source": "tracker_update"
         }
       ],
       "last_seen": {
         "at": "2026-11-25T04:37:04Z",
         "source": "lane_failure"
       },
-      "needs": "Fix job exited 128"
+      "needs": "Fix job exited 128",
+      "verification_refs": [
+        "verify command passed: /Users/gurusharan/code/worktrees/likeminded-bcl-r1/script/verify_native_builds.sh (exit 0)"
+      ]
     },
     {
       "id": "ENV-02",
@@ -1854,6 +2108,44 @@
       "created_at": "2026-11-25T04:34:30Z",
       "first_seen": {
         "at": "2026-11-25T04:34:30Z",
+        "pr": null,
+        "round": 1,
+        "source": "created_at"
+      },
+      "state_changes": []
+    },
+    {
+      "id": "PROC-06",
+      "title": "A job whose runner dies stays running forever and blocks the lane",
+      "source": "Agent reported",
+      "status": "untested",
+      "summary": "When the change-list runner process dies mid-job, the job stays marked running and every later job on that lane is refused.",
+      "impact": "A dropped connection blocks a lane until someone records the finish by hand.",
+      "done_when": "A job whose runner is gone is shown interrupted and can be finished or restarted with one command.",
+      "observed": "2026-11-25 10:33 IST: Mac connection dropped during BUILD-01 review job fee90d1f; review.sh finished with VERDICT PASS but the job had no exit_code, so presuite was refused (lane build already has a running review job). Recorded the finish from the real reply via bcl's own _job_operations/_job_write_retry.",
+      "recommendation": "Plugin owner: add a recover/finish stage that checks the job pid and records the retained output.",
+      "created_at": "2026-11-25T05:22:38Z",
+      "first_seen": {
+        "at": "2026-11-25T05:22:38Z",
+        "pr": null,
+        "round": 1,
+        "source": "created_at"
+      },
+      "state_changes": []
+    },
+    {
+      "id": "PROC-07",
+      "title": "The change-list tool documents an add command it does not have",
+      "source": "Agent reported",
+      "status": "untested",
+      "summary": "The instructions say to add findings with an add command, but the tool has no such step, so findings and verification runs go through the lower-level manager.",
+      "impact": "Agents must step around the documented entrypoint to record findings and checks.",
+      "done_when": "Findings, verification runs and checks can be recorded through the main change-list command.",
+      "observed": "2026-11-25 10:00 IST: bcl add returned unknown stage (bcl 0.1.70 KNOWN_STAGES has no add, start-verification, start-check or finish-check); collect.md says use bcl add. Used manage_findings.py batch instead. Also bcl verify forbids an env wrapper, so the build check had to work with its default cache path.",
+      "recommendation": "Plugin owner: add bcl add/check stages or fix the docs.",
+      "created_at": "2026-11-25T05:22:38Z",
+      "first_seen": {
+        "at": "2026-11-25T05:22:38Z",
         "pr": null,
         "round": 1,
         "source": "created_at"
