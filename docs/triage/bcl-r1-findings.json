@@ -4,9 +4,9 @@
     "list_id": "bcl-r1",
     "worktree": "/Users/gurusharan/code/worktrees/likeminded-bcl-r1",
     "workflow": {
-      "stage": "review",
-      "updated_at": "2026-11-25T05:02:57Z",
-      "now": "2026-11-25T05:02:57Z — Review started"
+      "stage": "verify",
+      "updated_at": "2026-11-25T05:14:49Z",
+      "now": "2026-11-25T05:14:49Z — Verify in progress"
     },
     "cycle": 1,
     "round_started_at": "2026-11-25T03:46:07Z",
@@ -14,7 +14,7 @@
       "merge_previous_pr_threshold": 16,
       "report_threshold": 15
     },
-    "last_written_at": "2026-11-25T05:02:57Z",
+    "last_written_at": "2026-11-25T05:14:49Z",
     "stages_reached": [
       "collect",
       "present",
@@ -391,20 +391,30 @@
           "codex": {
             "fix_status": "passed",
             "job": {
-              "id": "fee90d1f92984e1db82c4619225301f2",
-              "phase": "review",
-              "started_at": "2026-11-25T05:02:57Z",
-              "command": "review.sh",
-              "heartbeat_at": "2026-11-25T05:02:57Z",
+              "id": "0c02b2ec6a864aa5b9a52db3db8fc92b",
+              "phase": "presuite",
+              "started_at": "2026-11-25T05:14:27Z",
+              "command": "presuite.sh",
+              "heartbeat_at": "2026-11-25T05:14:33Z",
               "plan_sha256": "55817f53786659ed1f5896fe5731faec3249570a1f192a9d6b97340bf9e84d05",
               "finding_ids": [
                 "BUILD-01"
               ],
               "worktree": "likeminded-bcl-r1",
-              "model": "opencode/beam-free",
+              "model": "No model (scripted suite)",
               "lane_sha256": "dfaaae8c30d2a0a9be5e30f5a751bec045722cc4737c40d3f02ebd70cf8a3509",
               "cycle": 1,
-              "round": 1
+              "round": 1,
+              "pid": 51506,
+              "exit_code": 0,
+              "finished_at": "2026-11-25T05:14:33Z",
+              "output_path": "/Users/gurusharan/.agents/state/batched-change-list/04f50a708ea690ca394d313155554625fb71e92626c35ea9c0554d5e85c3abed/jobs/0c02b2ec6a864aa5b9a52db3db8fc92b.log",
+              "output_retained": true,
+              "tokens_source": "none",
+              "tokens": null,
+              "wall_time_s": 6,
+              "session": "grok-bot-executor-bcl-r1-20261125 (Grok Bot subagent, no Codex session)",
+              "finished_phase_status": "passed"
             },
             "implementer_session": "grok-bot-executor-bcl-r1-20261125 (Grok Bot subagent, no Codex session)",
             "jobs": [
@@ -621,11 +631,35 @@
                 "wall_time_s": 11,
                 "session": "grok-bot-executor-bcl-r1-20261125 (Grok Bot subagent, no Codex session)",
                 "finished_phase_status": "passed"
+              },
+              {
+                "id": "fee90d1f92984e1db82c4619225301f2",
+                "phase": "review",
+                "started_at": "2026-11-25T05:02:57Z",
+                "command": "review.sh",
+                "heartbeat_at": "2026-11-25T05:07:30Z",
+                "plan_sha256": "55817f53786659ed1f5896fe5731faec3249570a1f192a9d6b97340bf9e84d05",
+                "finding_ids": [
+                  "BUILD-01"
+                ],
+                "worktree": "likeminded-bcl-r1",
+                "model": "opencode/beam-free",
+                "lane_sha256": "dfaaae8c30d2a0a9be5e30f5a751bec045722cc4737c40d3f02ebd70cf8a3509",
+                "cycle": 1,
+                "round": 1,
+                "pid": 42208,
+                "exit_code": 0,
+                "finished_at": "2026-11-25T05:07:30Z",
+                "output_path": "/tmp/bcl-r1/review-job-BUILD-01.r2.log",
+                "output_retained": true,
+                "session": "grok-bot-executor-bcl-r1-20261125",
+                "gap": "bcl parent died when the Mac connection dropped at ~10:33 IST; review.sh finished with VERDICT PASS (output file written ~10:37 IST); completion recorded from that output with bcl's own _job_operations.",
+                "finished_phase_status": "passed"
               }
             ],
             "tool_fault_streak": 0,
             "reviewer_model": "opencode/beam-free",
-            "review_status": "running"
+            "review_status": "passed"
           },
           "unblock_history": [
             {
@@ -641,6 +675,11 @@
           "install": {
             "status": "running",
             "started_at": "2026-11-25T04:46:37Z"
+          },
+          "presuite": {
+            "status": "passed",
+            "exit_code": 0,
+            "finished_at": "2026-11-25T05:14:33Z"
           }
         },
         {
@@ -661,8 +700,8 @@
             "failed": 0,
             "total": 1
           },
-          "status": "installing",
-          "phase": "install",
+          "status": "verifying",
+          "phase": "verify",
           "failure_history": [
             {
               "attempt_id": "87ec494c992d4e01a677db301ce10c64",
@@ -717,8 +756,8 @@
               "at": "2026-11-25T04:14:39Z"
             }
           ],
-          "updated_at": "2026-11-25T04:47:41Z",
-          "stage_entered_at": "2026-11-25T04:46:37Z",
+          "updated_at": "2026-11-25T05:14:49Z",
+          "stage_entered_at": "2026-11-25T05:14:49Z",
           "codex": {
             "fix_status": "passed",
             "job": {
@@ -977,11 +1016,6 @@
           "install": {
             "status": "running",
             "started_at": "2026-11-25T04:46:37Z"
-          },
-          "stage_model": {
-            "stage": "install",
-            "model": "No model (scripted)",
-            "at": "2026-11-25T04:46:37Z"
           }
         },
         {
