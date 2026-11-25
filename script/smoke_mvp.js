@@ -6,6 +6,11 @@ const os = require("node:os");
 const path = require("node:path");
 
 const root = path.resolve(__dirname, "..");
+process.env.LIKEMINDED_RUN_ID = process.env.LIKEMINDED_RUN_ID || `smoke-${Date.now().toString(36)}-${process.pid}`;
+const { createEventLog, errorType } = require("../services/api/src/lib/events");
+const events = createEventLog("likeminded-smoke");
+const smokeStarted = Date.now();
+let stepCount = 0;
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "likeminded-mvp-"));
 const port = String(19000 + Math.floor(Math.random() * 1000));
 const baseURL = `http://127.0.0.1:${port}`;
@@ -71,12 +76,20 @@ async function waitForHealth() {
 
 async function expectStatus(status, pathname, options) {
   const result = await request(pathname, options);
+  stepCount += 1;
+  events.emit("smoke_step", {
+    step: `${(options && options.method) || "GET"} ${pathname}`,
+    expected_status: status,
+    status_code: result.response.status,
+    status: result.response.status === status ? "ok" : "failed"
+  });
   assert.equal(result.response.status, status, `${pathname} expected ${status}, got ${result.response.status}: ${JSON.stringify(result.body)}`);
   return result.body;
 }
 
 (async () => {
   try {
+    events.emit("smoke_start", { status: "ok" });
     const health = await waitForHealth();
     assert.equal(health.db, "local-json");
 
@@ -437,11 +450,13 @@ async function expectStatus(status, pathname, options) {
     await expectStatus(200, "/v1/me/account", { method: "DELETE", token: googleDeleteAuth.sessionToken });
     await expectStatus(401, "/v1/me/profile", { method: "GET", token: googleDeleteAuth.sessionToken });
 
+    events.emit("smoke_finish", { status: "ok", steps: stepCount, duration_ms: Date.now() - smokeStarted });
     console.log("MVP smoke passed");
   } finally {
     stop();
   }
 })().catch((error) => {
+  events.emit("smoke_finish", { status: "failed", steps: stepCount, duration_ms: Date.now() - smokeStarted, error_type: errorType(error) });
   stop();
   console.error(error.stack || error.message);
   process.exit(1);

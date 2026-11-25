@@ -79,10 +79,13 @@ assertIncludes("apps/ios-macos/Info/Likeminded-Info.plist", read("apps/ios-macos
 assertIncludes("apps/ios-macos/Info/LikemindedMac-Info.plist", read("apps/ios-macos/Info/LikemindedMac-Info.plist"), "$(GOOGLE_CLIENT_ID_MAC)");
 assertIncludes("apps/ios-macos/Info/LikemindedMac-Info.plist", read("apps/ios-macos/Info/LikemindedMac-Info.plist"), "LIKEMINDED_API_BASE_URL");
 assertIncludes("apps/ios-macos/Info/LikemindedMac-Info.plist", read("apps/ios-macos/Info/LikemindedMac-Info.plist"), "$(GOOGLE_REVERSED_CLIENT_ID_MAC)");
-const sharedPrivacyManifest = read("apps/ios-macos/Sources/Shared/PrivacyInfo.xcprivacy");
-assertIncludes("PrivacyInfo.xcprivacy", sharedPrivacyManifest, "NSPrivacyTracking");
-assertIncludes("PrivacyInfo.xcprivacy", sharedPrivacyManifest, "NSPrivacyCollectedDataTypes");
-assertIncludes("PrivacyInfo.xcprivacy", sharedPrivacyManifest, "NSPrivacyAccessedAPICategoryUserDefaults");
+// One privacy manifest per app bundle: Sources/Shared is compiled into both targets, so a second
+// PrivacyInfo.xcprivacy there makes "Multiple commands produce .../PrivacyInfo.xcprivacy" (BUILD-01).
+if (fs.existsSync(path.join(root, "apps/ios-macos/Sources/Shared/PrivacyInfo.xcprivacy"))) {
+  throw new Error("apps/ios-macos/Sources/Shared/PrivacyInfo.xcprivacy duplicates Resources/PrivacyInfo.xcprivacy in both app bundles");
+}
+assertIncludes("PrivacyInfo.xcprivacy", privacyManifest, "NSPrivacyCollectedDataTypes");
+assertIncludes("PrivacyInfo.xcprivacy", privacyManifest, "NSPrivacyCollectedDataTypeProductInteraction");
 
 const apiClient = read("apps/ios-macos/Sources/LikemindedApp/Data/LikemindedAPIClient.swift");
 assertIncludes("LikemindedAPIClient.swift", apiClient, "https://likeminded-api.onrender.com");

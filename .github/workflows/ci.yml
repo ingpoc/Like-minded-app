@@ -1,0 +1,63 @@
+# API and repo checks on free GitHub-hosted Linux runners.
+# Native iOS/macOS builds stay local (script/verify_native_builds.sh): macOS runners bill at 10x.
+name: CI
+
+on:
+  pull_request:
+    paths-ignore:
+      - "docs/**"
+      - "mockups/**"
+      - "output/**"
+      - "**/*.md"
+  push:
+    branches: [main]
+    paths-ignore:
+      - "docs/**"
+      - "mockups/**"
+      - "output/**"
+      - "**/*.md"
+  schedule:
+    - cron: "30 21 * * *" # nightly full run on main, 03:00 IST
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  api:
+    name: API checks (Node 20)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      LIKEMINDED_EVENTS_FILE: ${{ github.workspace }}/output/observability/ci-events.jsonl
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          filter: blob:none
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: Ensure ripgrep (testing-ledger stale-prose scan)
+        run: command -v rg || (sudo apt-get update -qq && sudo apt-get install -y -qq ripgrep)
+      - name: Repo checks
+        run: npm run check
+      - name: Auth tests
+        run: npm run test:auth
+      - name: API tests
+        run: npm run test:api
+      - name: MVP smoke
+        run: npm run smoke:mvp
+      - name: Upload observability events
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: observability-events
+          path: output/observability/
+          if-no-files-found: ignore
+          retention-days: 7

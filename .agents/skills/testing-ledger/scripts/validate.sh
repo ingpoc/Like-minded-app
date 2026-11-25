@@ -86,6 +86,10 @@ stale_surfaces=(
   "$REPO_ROOT/script/ledger_stale_screens.js"
   "$REPO_ROOT/script"
 )
+command -v rg >/dev/null 2>&1 || {
+  echo "testing-ledger validate: ripgrep (rg) is required for the stale-prose scan" >&2
+  exit 1
+}
 if rg -n -i 'macos[-_ ]cua|hermes[-_ ]chrome|testing_ledger_prove_flow|CUA-click|cua-click|macos:validation-batch|validation:wave2-reproof|audit:macos|verify:macos-screens|testing:ledger-prove([^[:alnum:]_-]|$)' "${stale_surfaces[@]}"; then
   echo "testing-ledger validate: stale native/browser routing prose found; use bundled @Computer or @Chrome" >&2
   exit 1
@@ -99,12 +103,15 @@ for owner in \
   test -f "$owner" || { echo "testing-ledger validate: missing owner $owner" >&2; exit 1; }
 done
 
-test -f "$FRAMEWORK_DIR/SKILL.md" || {
+if test -f "$FRAMEWORK_DIR/SKILL.md"; then
+  "$FRAMEWORK_DIR/scripts/validate.sh" >/dev/null
+elif [ -n "${CI:-}" ]; then
+  # Clean CI runners do not carry the global testing-framework skill; repo-local checks above and below still run.
+  echo "testing-ledger validate: global testing-framework not installed on CI; skipping framework self-check" >&2
+else
   echo "testing-ledger validate: global testing-framework unavailable at $FRAMEWORK_DIR" >&2
   exit 1
-}
-
-"$FRAMEWORK_DIR/scripts/validate.sh" >/dev/null
+fi
 (cd "$REPO_ROOT" && npm run test:testing-ledger)
 
 QUICK="$HOME/.codex/skills/.system/skill-creator/scripts/quick_validate.py"

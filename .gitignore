@@ -24,3 +24,4 @@ release/testflight-evidence.json
 apps/product-site/
 pnpm-lock.yaml
 pnpm-workspace.yaml
+output/observability/
