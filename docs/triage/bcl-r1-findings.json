@@ -4,9 +4,9 @@
     "list_id": "bcl-r1",
     "worktree": "/Users/gurusharan/code/worktrees/likeminded-bcl-r1",
     "workflow": {
-      "stage": "install",
-      "updated_at": "2026-11-25T05:15:02Z",
-      "now": "2026-11-25T05:15:02Z — Install in progress"
+      "stage": "verify",
+      "updated_at": "2026-11-25T05:15:09Z",
+      "now": "2026-11-25T05:15:09Z — Verify in progress"
     },
     "cycle": 1,
     "round_started_at": "2026-11-25T03:46:07Z",
@@ -14,7 +14,7 @@
       "merge_previous_pr_threshold": 16,
       "report_threshold": 15
     },
-    "last_written_at": "2026-11-25T05:15:02Z",
+    "last_written_at": "2026-11-25T05:15:09Z",
     "stages_reached": [
       "collect",
       "present",
@@ -337,8 +337,8 @@
             "total": 1,
             "failure": "Checked: verification command\nExpected: command exits 0\nObserved: Verification command exited 1"
           },
-          "status": "installing",
-          "phase": "install",
+          "status": "verifying",
+          "phase": "verify",
           "failure_history": [
             {
               "attempt_id": "8157e5173faf423fbed9e9671ef273be",
@@ -386,8 +386,8 @@
             }
           ],
           "plan_review_history": [],
-          "updated_at": "2026-11-25T04:58:05Z",
-          "stage_entered_at": "2026-11-25T05:15:02Z",
+          "updated_at": "2026-11-25T05:15:09Z",
+          "stage_entered_at": "2026-11-25T05:15:09Z",
           "codex": {
             "fix_status": "passed",
             "job": {
@@ -680,11 +680,6 @@
             "status": "passed",
             "exit_code": 0,
             "finished_at": "2026-11-25T05:14:33Z"
-          },
-          "stage_model": {
-            "stage": "install",
-            "model": "No model (scripted)",
-            "at": "2026-11-25T05:15:02Z"
           }
         },
         {
@@ -1190,13 +1185,99 @@
       "round": 1,
       "cycle": 1
     },
-    "verification_history": [],
+    "verification_history": [
+      {
+        "id": "pr19-fc8d95d",
+        "build": "PR #19 branch cursor/bcl-r1-e678 (worktree likeminded-bcl-r1)",
+        "revision": "fc8d95d189fb225b9f509efe99d4383f0ba42338",
+        "installed_at": "2026-11-25T04:47:32Z",
+        "install_evidence": "git rev-parse HEAD equals origin/cursor/bcl-r1-e678 = fc8d95d at 10:17 IST; worktree is the install (no deploy).",
+        "cycle": 1,
+        "status": "interrupted",
+        "checks": {
+          "OBS-01": {
+            "state": "pending"
+          },
+          "LEDGER-01": {
+            "state": "pending"
+          },
+          "ENV-01": {
+            "state": "pending"
+          },
+          "OBS-02": {
+            "state": "pending"
+          },
+          "PROC-01": {
+            "state": "pending"
+          },
+          "BUILD-01": {
+            "state": "pending"
+          },
+          "ENV-02": {
+            "state": "pending"
+          },
+          "GH-01": {
+            "state": "pending"
+          },
+          "CI-01": {
+            "state": "pending"
+          },
+          "ENV-03": {
+            "state": "pending"
+          },
+          "PROC-02": {
+            "state": "pending"
+          },
+          "BUILD-02": {
+            "state": "pending"
+          },
+          "PROC-03": {
+            "state": "pending"
+          },
+          "PROC-04": {
+            "state": "pending"
+          },
+          "DOBS-01": {
+            "state": "pending"
+          },
+          "OBS-03": {
+            "state": "pending"
+          },
+          "CI-02": {
+            "state": "pending"
+          },
+          "ENV-04": {
+            "state": "pending"
+          },
+          "DOBS-02": {
+            "state": "pending"
+          },
+          "DOBS-03": {
+            "state": "pending"
+          },
+          "PROC-05": {
+            "state": "pending"
+          },
+          "LEDGER-02": {
+            "state": "pending"
+          },
+          "BUILD-03": {
+            "state": "pending"
+          }
+        },
+        "run_id": "pr19-fc8d95d",
+        "pr": null,
+        "round": 1,
+        "started_at": "2026-11-25T04:47:32Z",
+        "ended_at": "2026-11-25T05:15:07Z"
+      }
+    ],
     "verification_run": {
-      "id": "pr19-fc8d95d",
+      "id": "pr19-83e4472",
       "build": "PR #19 branch cursor/bcl-r1-e678 (worktree likeminded-bcl-r1)",
-      "revision": "fc8d95d189fb225b9f509efe99d4383f0ba42338",
-      "installed_at": "2026-11-25T04:47:32Z",
-      "install_evidence": "git rev-parse HEAD equals origin/cursor/bcl-r1-e678 = fc8d95d at 10:17 IST; worktree is the install (no deploy).",
+      "revision": "83e44729d6ce6ce34881abcc06bb32ddce8b6287",
+      "installed_at": "2026-11-25T05:15:06Z",
+      "install_evidence": "git rev-parse HEAD equals origin/cursor/bcl-r1-e678 = 83e4472; worktree is the install (no deploy).",
       "cycle": 1,
       "status": "active",
       "checks": {
@@ -1270,10 +1351,10 @@
           "state": "pending"
         }
       },
-      "run_id": "pr19-fc8d95d",
+      "run_id": "pr19-83e4472",
       "pr": null,
       "round": 1,
-      "started_at": "2026-11-25T04:47:32Z"
+      "started_at": "2026-11-25T05:15:06Z"
     }
   },
   "findings": [
