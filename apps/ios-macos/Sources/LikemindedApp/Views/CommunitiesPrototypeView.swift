@@ -1521,7 +1521,7 @@ struct CommunityDetailView: View {
             if let communityError = appState.communityError {
                 Label(communityError, systemImage: "exclamationmark.circle")
                     .font(LikemindedTypography.caption)
-                    .foregroundStyle(.red)
+                    .foregroundStyle(LikemindedPalette.clay)
             }
         }
         .padding(.horizontal, 20)

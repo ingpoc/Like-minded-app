@@ -14,6 +14,9 @@ final class PrototypeAppState: ObservableObject {
             || UserDefaults.standard.string(forKey: "LIKEMINDED_VALIDATION_SCREEN") == "communityMembers" {
             validationDirectCommunityMembers = true
         }
+        if args.contains("--likeminded-dev-community-error") {
+            communityError = "Community could not be joined."
+        }
         #endif
     }
 
@@ -185,7 +188,16 @@ final class PrototypeAppState: ObservableObject {
     /// Reset only by process relaunch (validation always uses `--likeminded-reset-auth-session`).
     private var suppressDevAuthBypass = false
 
+    private func applyDevCommunityErrorIfNeeded() {
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("--likeminded-dev-community-error") {
+            communityError = "Community could not be joined."
+        }
+        #endif
+    }
+
     func signInForLocalValidationIfNeeded() async {
+
         #if DEBUG
         let environment = ProcessInfo.processInfo.environment
         let arguments = ProcessInfo.processInfo.arguments
@@ -866,6 +878,7 @@ final class PrototypeAppState: ObservableObject {
             joinedCommunities = []
         }
         communityError = nil
+        applyDevCommunityErrorIfNeeded()
     }
 
     func joinCommunity(id: String) async {
@@ -891,6 +904,7 @@ final class PrototypeAppState: ObservableObject {
             let community = try await client.createCommunity(name: name, summary: summary, themes: themes)
             await fetchCommunities()
             communityError = nil
+            applyDevCommunityErrorIfNeeded()
             return community
         } catch {
             communityError = "Community could not be created."
@@ -905,6 +919,7 @@ final class PrototypeAppState: ObservableObject {
             communityMembers = try await client.fetchCommunityMembers(id: id)
             communityMembersCommunityId = id
             communityError = nil
+            applyDevCommunityErrorIfNeeded()
         } catch {
             communityMembers = []
             communityMembersCommunityId = nil

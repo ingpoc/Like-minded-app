@@ -34,7 +34,7 @@ struct MeetView: View {
     // Notifications deep-link is owned by RootView (--likeminded-start-notifications).
     // Do not auto-open the Meet sheet from that flag or Done cannot reach the Meet tab.
     @State private var showingNotifications = false
-    @State private var showVideoCall = MeetValidationFlags.opensVideoCallDirectly
+    @State private var showVideoCall = false
     @State private var navigationPath = NavigationPath()
 
     var body: some View {
@@ -103,7 +103,24 @@ struct MeetView: View {
                 await appState.fetchMeetings()
                 await appState.fetchSoulmateStatus()
                 openPendingPastMeetDetailIfNeeded()
-                if MeetValidationFlags.opensVideoCallDirectly, appState.upcomingMeetings.first != nil {
+                if MeetValidationFlags.opensVideoCallDirectly {
+                    if appState.upcomingMeetings.isEmpty {
+                        appState.upcomingMeetings = [
+                            Meeting(
+                                id: "validation-video-call",
+                                kind: "community",
+                                targetId: "validation",
+                                title: "Designing for Belonging",
+                                scheduledAt: "2026-05-22T18:30:00Z",
+                                hostUserId: "host",
+                                hostName: "Priya",
+                                groupSize: 6,
+                                status: "scheduled",
+                                compositionSummary: "A small group meetup",
+                                recapNote: nil
+                            )
+                        ]
+                    }
                     showVideoCall = true
                 }
             }
@@ -935,7 +952,7 @@ private struct CallControl: View {
                 .font(.system(size: 18, weight: .bold))
                 .foregroundStyle(LikemindedPalette.inverseText)
                 .frame(width: 50, height: 50)
-                .background(isDestructive ? Color.red : LikemindedPalette.whiteOverlay(alpha: 0.16))
+                .background(isDestructive ? LikemindedPalette.clay : LikemindedPalette.whiteOverlay(alpha: 0.16))
                 .clipShape(Circle())
 
             Text(title)

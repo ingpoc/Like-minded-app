@@ -49,7 +49,7 @@ struct MacMeetOverviewConceptView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 28) {
+        VStack(alignment: .leading, spacing: 14) {
             conceptHeader
             if appState.isSignedIn {
                 nextMeetupCard
@@ -79,7 +79,7 @@ struct MacMeetOverviewConceptView: View {
     private var conceptHeader: some View {
         // Concept plate (`mockup-meet-overview-convergence.png`) has no in-content
         // Notifications chrome — shell overlay in MacRootView owns the single bell.
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 4) {
             Text("Likeminded")
                 .font(MacType.cardTitle)
                 .foregroundStyle(MacPalette.accent)
@@ -108,7 +108,7 @@ struct MacMeetOverviewConceptView: View {
         ZStack(alignment: .topLeading) {
             MacMeetVenueConvergenceField()
 
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 12) {
                 Text("Next meetup")
                     .font(MacType.small.weight(.semibold))
                     .foregroundStyle(MacPalette.muted)
@@ -155,7 +155,7 @@ struct MacMeetOverviewConceptView: View {
                 .accessibilityIdentifier("join-meetup")
                 .accessibilityAddTraits(.isButton)
             }
-            .padding(28)
+            .padding(18)
             .frame(minWidth: 520, alignment: .topLeading)
 
             // Pin sits on the generated field's convergence sink.
@@ -179,7 +179,7 @@ struct MacMeetOverviewConceptView: View {
                 .accessibilityLabel("\(venueLines.title), \(venueLines.subtitle)")
             }
         }
-        .frame(minHeight: 300)
+        .frame(minHeight: 220)
         .frame(maxWidth: .infinity)
         .background(MacPalette.surface)
         .overlay(
@@ -301,12 +301,12 @@ struct MacMeetOverviewConceptView: View {
     // MARK: - Weekly availability
 
     private var weeklyAvailabilityPanel: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 10) {
             Text("Available this weekend?")
                 .font(MacType.section)
                 .foregroundStyle(MacPalette.ink)
 
-            VStack(spacing: 12) {
+            VStack(spacing: 8) {
                 weekendAvailabilityRow(
                     day: "Saturday",
                     detail: "Community meetup",
@@ -355,7 +355,7 @@ struct MacMeetOverviewConceptView: View {
                 .foregroundStyle(MacPalette.muted)
                 .padding(.top, 4)
         }
-        .padding(22)
+        .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(MacPalette.line, lineWidth: 1))

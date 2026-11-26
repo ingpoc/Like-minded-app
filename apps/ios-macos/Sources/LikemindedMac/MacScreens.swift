@@ -4570,14 +4570,14 @@ struct MacScreenView: View {
                     if isDuplicateCustomInterest {
                         Text("That interest is already selected.")
                             .font(MacType.small)
-                            .foregroundStyle(.red)
+                            .foregroundStyle(MacPalette.clay)
                     }
                 }
             }
             if let validationMessage = profileBasicsValidationMessage {
                 Text(validationMessage)
                     .font(MacType.small)
-                    .foregroundStyle(.red)
+                    .foregroundStyle(MacPalette.clay)
                     .accessibilityLabel("Profile details issue: \(validationMessage)")
             }
             if let profileBasicsStatus {
@@ -5106,7 +5106,6 @@ struct MacScreenView: View {
                         showSignOutConfirm = true
                     } label: {
                         settingsItem("Log out", icon: "rectangle.portrait.and.arrow.right")
-                            .foregroundStyle(.red)
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel("Log out")
@@ -5115,7 +5114,6 @@ struct MacScreenView: View {
                         showDeleteAccountConfirm = true
                     } label: {
                         settingsItem(isDeletingAccount ? "Deleting account" : "Delete account", icon: "trash")
-                            .foregroundStyle(.red)
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel("Delete account")
@@ -5154,36 +5152,36 @@ struct MacScreenView: View {
         } message: {
             Text("You will need to sign in again to restore your profile and placement.")
         }
-        .confirmationDialog(
-            "Delete your account?",
-            isPresented: $showDeleteAccountConfirm,
-            titleVisibility: .visible
-        ) {
-            Button("Cancel", role: .cancel) {}
-            Button("Delete account", role: .destructive) {
-                Task {
-                    isDeletingAccount = true
-                    let deleted = await appState.deleteAccount()
-                    isDeletingAccount = false
-                    if !deleted {
-                        deleteAccountError = appState.authError ?? "Your account wasn't deleted. Check your connection and try again."
-                        appState.authError = nil
-                    }
-                }
+        .overlay {
+            if showDeleteAccountConfirm {
+                MacBrandDialog(
+                    title: "Delete your account?",
+                    message: "This permanently deletes your Likeminded profile, circles and messages, and signs you out. This can't be undone.",
+                    confirmTitle: "Delete account",
+                    confirmDestructive: true,
+                    cancelTitle: "Cancel",
+                    onConfirm: {
+                        showDeleteAccountConfirm = false
+                        Task {
+                            isDeletingAccount = true
+                            let deleted = await appState.deleteAccount()
+                            isDeletingAccount = false
+                            if !deleted {
+                                deleteAccountError = appState.authError ?? "Your account wasn't deleted. Check your connection and try again."
+                                appState.authError = nil
+                            }
+                        }
+                    },
+                    onCancel: { showDeleteAccountConfirm = false }
+                )
+            } else if let deleteAccountError {
+                MacBrandDialog(
+                    title: "Account not deleted",
+                    message: deleteAccountError,
+                    cancelTitle: "OK",
+                    onCancel: { self.deleteAccountError = nil }
+                )
             }
-        } message: {
-            Text("This permanently deletes your Likeminded profile, circles and messages, and signs you out. This can't be undone.")
-        }
-        .alert(
-            "Account not deleted",
-            isPresented: Binding(
-                get: { deleteAccountError != nil },
-                set: { if !$0 { deleteAccountError = nil } }
-            )
-        ) {
-            Button("OK", role: .cancel) { deleteAccountError = nil }
-        } message: {
-            Text(deleteAccountError ?? "")
         }
     }
 

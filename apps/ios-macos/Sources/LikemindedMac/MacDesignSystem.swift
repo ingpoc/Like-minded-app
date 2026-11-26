@@ -85,6 +85,81 @@ struct MacSecondaryButtonStyle: ButtonStyle {
     }
 }
 
+
+/// In-window confirm/alert so destructive actions use brand clay and ink
+/// instead of the system pink and blue confirmation dialog (UI-13).
+struct MacBrandDialog: View {
+    let title: String
+    let message: String
+    var confirmTitle: String? = nil
+    var confirmDestructive = false
+    var cancelTitle: String = "Cancel"
+    var onConfirm: (() -> Void)? = nil
+    var onCancel: () -> Void
+
+    var body: some View {
+        ZStack {
+            MacPalette.ink.opacity(0.35)
+                .ignoresSafeArea()
+                .onTapGesture(perform: onCancel)
+
+            VStack(alignment: .leading, spacing: 14) {
+                Text(title)
+                    .font(MacType.cardTitle)
+                    .foregroundStyle(MacPalette.ink)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityAddTraits(.isHeader)
+                Text(message)
+                    .font(MacType.small)
+                    .foregroundStyle(MacPalette.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                if let confirmTitle, confirmDestructive {
+                    Button(confirmTitle) { onConfirm?() }
+                        .buttonStyle(MacDestructiveButtonStyle())
+                        .accessibilityLabel(confirmTitle)
+                } else if let confirmTitle {
+                    Button(confirmTitle) { onConfirm?() }
+                        .buttonStyle(MacPrimaryButtonStyle())
+                        .accessibilityLabel(confirmTitle)
+                }
+
+                Button(cancelTitle, action: onCancel)
+                    .buttonStyle(MacSecondaryButtonStyle())
+                    .frame(maxWidth: .infinity)
+                    .accessibilityLabel(cancelTitle)
+            }
+            .padding(24)
+            .frame(width: 420, alignment: .leading)
+            .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(MacPalette.line, lineWidth: 1))
+            .accessibilityElement(children: .contain)
+            .accessibilityIdentifier("brand-dialog")
+            .accessibilityLabel(title)
+        }
+        .accessibilityAddTraits(.isModal)
+    }
+}
+
+struct MacDestructiveButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) private var isEnabled
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(MacType.button)
+            .foregroundStyle(isEnabled ? MacPalette.onAccent : MacPalette.muted)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .frame(maxWidth: .infinity)
+            .background(
+                isEnabled ? MacPalette.clay : MacPalette.accentSoft,
+                in: RoundedRectangle(cornerRadius: 11, style: .continuous)
+            )
+            .scaleEffect(configuration.isPressed ? 0.98 : 1)
+            .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
+    }
+}
+
 struct MacPanel<Content: View>: View {
     var title: String? = nil
     var dark: Bool = false
