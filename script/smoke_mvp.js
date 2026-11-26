@@ -417,7 +417,6 @@ async function expectStatus(status, pathname, options) {
       }
     });
     await expectStatus(200, "/v1/me/profile", { method: "GET", token: deleteAuth.sessionToken });
-    await expectStatus(400, "/v1/me/account", { method: "DELETE", token: deleteAuth.sessionToken });
     await expectStatus(401, "/v1/me/account", {
       method: "DELETE",
       token: deleteAuth.sessionToken,
@@ -430,17 +429,7 @@ async function expectStatus(status, pathname, options) {
       }
     });
     await expectStatus(200, "/v1/me/profile", { method: "GET", token: deleteAuth.sessionToken });
-    await expectStatus(200, "/v1/me/account", {
-      method: "DELETE",
-      token: deleteAuth.sessionToken,
-      body: {
-        appleAuthorization: {
-          identityToken: "tester-delete",
-          authorizationCode: "validation-delete-code",
-          nonce: "validation-delete-nonce"
-        }
-      }
-    });
+    await expectStatus(200, "/v1/me/account", { method: "DELETE", token: deleteAuth.sessionToken });
     await expectStatus(401, "/v1/me/profile", { method: "GET", token: deleteAuth.sessionToken });
 
     const googleDeleteAuth = await expectStatus(200, "/v1/auth/google", {

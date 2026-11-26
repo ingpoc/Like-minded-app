@@ -219,6 +219,7 @@ struct MacScreenView: View {
     @State private var isCreatingEvent = false
     @State private var showDeleteAccountConfirm = false
     @State private var isDeletingAccount = false
+    @State private var deleteAccountError: String?
     @State private var isCallMuted = false
     @State private var callSidePanel = "Participants"
     @State private var selectedSettingsPane: MacSettingsPane = MacScreenView.initialSettingsPane()
@@ -458,8 +459,8 @@ struct MacScreenView: View {
                         titleColor: MacPalette.ink,
                         borderColor: MacPalette.line,
                         onGoogleSignIn: { Task { await appState.signInWithGoogle() } },
-                        onMetaMaskSignIn: { Task { await appState.signInWithWallet(.metamask, controller: WalletSignInController()) } },
-                        onSolflareSignIn: { Task { await appState.signInWithWallet(.solflare, controller: WalletSignInController()) } }
+                        onMetaMaskSignIn: { Task { await appState.signInWithWallet(.metamask) } },
+                        onSolflareSignIn: { Task { await appState.signInWithWallet(.solflare) } }
                     )
                     if appState.isAuthenticating {
                         ProgressView("Signing in")
@@ -5177,16 +5178,31 @@ struct MacScreenView: View {
             isPresented: $showDeleteAccountConfirm,
             titleVisibility: .visible
         ) {
+            Button("Cancel", role: .cancel) {}
             Button("Delete account", role: .destructive) {
                 Task {
                     isDeletingAccount = true
-                    _ = await appState.deleteAccount(using: appleSignInController)
+                    let deleted = await appState.deleteAccount()
                     isDeletingAccount = false
+                    if !deleted {
+                        deleteAccountError = appState.authError ?? "Your account wasn't deleted. Check your connection and try again."
+                        appState.authError = nil
+                    }
                 }
             }
-            Button("Cancel", role: .cancel) {}
         } message: {
-            Text("This removes your backend tester data and clears the local macOS session.")
+            Text("This permanently deletes your Likeminded profile, circles and messages, and signs you out. This can't be undone.")
+        }
+        .alert(
+            "Account not deleted",
+            isPresented: Binding(
+                get: { deleteAccountError != nil },
+                set: { if !$0 { deleteAccountError = nil } }
+            )
+        ) {
+            Button("OK", role: .cancel) { deleteAccountError = nil }
+        } message: {
+            Text(deleteAccountError ?? "")
         }
     }
 

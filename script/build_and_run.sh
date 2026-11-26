@@ -59,7 +59,7 @@ build_app() {
 install_and_launch() {
   xcrun simctl uninstall "$SIMULATOR_ID" "$BUNDLE_ID" >/dev/null 2>&1 || true
   xcrun simctl install "$SIMULATOR_ID" "$APP_PATH"
-  xcrun simctl launch "$SIMULATOR_ID" "$BUNDLE_ID"
+  SIMCTL_CHILD_LIKEMINDED_API_BASE_URL="http://127.0.0.1:${PORT:-8787}" xcrun simctl launch "$SIMULATOR_ID" "$BUNDLE_ID"
 }
 
 install_only() {
@@ -75,7 +75,7 @@ verify_launch() {
   local launch_output
   xcrun simctl uninstall "$SIMULATOR_ID" "$BUNDLE_ID" >/dev/null 2>&1 || true
   xcrun simctl install "$SIMULATOR_ID" "$APP_PATH"
-  launch_output="$(xcrun simctl launch "$SIMULATOR_ID" "$BUNDLE_ID" --likeminded-reset-auth-session)"
+  launch_output="$(SIMCTL_CHILD_LIKEMINDED_API_BASE_URL="http://127.0.0.1:${PORT:-8787}" xcrun simctl launch "$SIMULATOR_ID" "$BUNDLE_ID" --likeminded-reset-auth-session)"
   echo "$launch_output"
 }
 

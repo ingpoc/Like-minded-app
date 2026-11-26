@@ -176,7 +176,7 @@ struct SettingsPrototypeView: View {
             Button("Delete account", role: .destructive) {
                 Task {
                     isDeletingAccount = true
-                    _ = await appState.deleteAccount(using: appleSignInController)
+                    _ = await appState.deleteAccount()
                     isDeletingAccount = false
                 }
             }

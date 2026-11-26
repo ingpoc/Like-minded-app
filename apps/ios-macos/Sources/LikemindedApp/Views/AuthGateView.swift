@@ -63,8 +63,8 @@ struct AuthGateView: View {
                     titleColor: PrototypePalette.ink,
                     borderColor: Color.black.opacity(0.08),
                     onGoogleSignIn: { Task { await appState.signInWithGoogle() } },
-                    onMetaMaskSignIn: { Task { await appState.signInWithWallet(.metamask, controller: WalletSignInController()) } },
-                    onSolflareSignIn: { Task { await appState.signInWithWallet(.solflare, controller: WalletSignInController()) } }
+                    onMetaMaskSignIn: { Task { await appState.signInWithWallet(.metamask) } },
+                    onSolflareSignIn: { Task { await appState.signInWithWallet(.solflare) } }
                 )
 
                 AuthTermsFooter(
@@ -92,13 +92,7 @@ struct AuthGateView: View {
 
     @MainActor
     private func signInWithApple() async {
-        let result = await appleSignInController.signIn()
-        switch result {
-        case .success(let payload):
-            await appState.signIn(with: payload)
-        case .failure(let error):
-            appState.authError = AppleSignInSupport.userFacingMessage(for: error)
-        }
+        await appState.signInWithApple(using: appleSignInController)
     }
 }
 

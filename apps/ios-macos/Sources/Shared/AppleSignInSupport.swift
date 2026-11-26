@@ -23,6 +23,37 @@ enum AppleCredentialStateResult: Equatable {
     case unavailable
 }
 
+struct AuthHTTPError: Error {
+    let statusCode: Int
+}
+
+enum AuthErrorMessage {
+    static func userFacing(_ error: Error) -> String {
+        if let authError = error as? ASAuthorizationError, authError.code == .canceled {
+            return "Sign in was canceled."
+        }
+        if let urlError = error as? URLError {
+            if urlError.code == .cancelled { return "Sign in was canceled." }
+            if urlError.code == .timedOut { return "Sign-in is taking too long. Check your connection and try again." }
+            if urlError.code == .notConnectedToInternet || urlError.code == .networkConnectionLost {
+                return "You're offline. Connect to the internet and try again."
+            }
+        }
+        if let httpError = error as? AuthHTTPError,
+           httpError.statusCode == 401 || httpError.statusCode == 403 || httpError.statusCode >= 500 {
+            return "We couldn't sign you in right now. Please try again."
+        }
+        let text = error.localizedDescription.lowercased()
+        if text.contains("client_secret") || text.contains("invalid_request") || text.contains("invalid_client") {
+            return "Google sign-in isn't available on this Mac yet. Use Sign in with Apple for now."
+        }
+        if error is DecodingError || error is AuthHTTPError {
+            return "We couldn't sign you in right now. Please try again."
+        }
+        return "We couldn't sign you in right now. Please try again."
+    }
+}
+
 enum AppleSignInSupport {
     static func randomNonce(length: Int = 32) -> String {
         precondition(length > 0)
@@ -75,18 +106,7 @@ enum AppleSignInSupport {
     }
 
     static func userFacingMessage(for error: Error) -> String {
-        if let signInError = error as? AppleSignInError {
-            return signInError.localizedDescription
-        }
-
-        if let authError = error as? ASAuthorizationError {
-            if authError.code == .canceled {
-                return "Sign in was canceled."
-            }
-            return authError.localizedDescription
-        }
-
-        return error.localizedDescription
+        AuthErrorMessage.userFacing(error)
     }
 
     static func credentialState(for userIdentifier: String) async -> AppleCredentialStateResult {
@@ -131,6 +151,10 @@ final class AppleSignInController: NSObject, ASAuthorizationControllerDelegate, 
     private var continuation: CheckedContinuation<Result<AppleSignInCredentialPayload, Error>, Never>?
 
     func signIn(requestedScopes: [ASAuthorization.Scope] = [.fullName, .email]) async -> Result<AppleSignInCredentialPayload, Error> {
+        if let replaced = continuation {
+            continuation = nil
+            replaced.resume(returning: .failure(URLError(.cancelled)))
+        }
         rawNonce = AppleSignInSupport.randomNonce()
         let request = ASAuthorizationAppleIDProvider().createRequest()
         request.requestedScopes = requestedScopes
@@ -175,7 +199,8 @@ final class AppleSignInController: NSObject, ASAuthorizationControllerDelegate, 
     }
 
     private func finish(with result: Result<AppleSignInCredentialPayload, Error>) {
-        continuation?.resume(returning: result)
-        continuation = nil
+        guard let continuation else { return }
+        self.continuation = nil
+        continuation.resume(returning: result)
     }
 }

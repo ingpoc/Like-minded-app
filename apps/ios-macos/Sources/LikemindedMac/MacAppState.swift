@@ -49,6 +49,7 @@ final class MacAppState: ObservableObject {
     @Published var didPersistVoiceProfile = false
 
     private let voiceClient = RealtimeVoiceClient()
+    private let walletSignInController = WalletSignInController()
 
     static let defaultPlacementConcernCopy = "This doesn't feel like my circle. Placement refresh requested."
 
@@ -118,7 +119,9 @@ final class MacAppState: ObservableObject {
         // Default to validation-gurusharan (primary seeded user with prod-like data).
         let identityToken = Self.argumentValue(after: "--likeminded-dev-auth-token", in: arguments) ?? environment["LIKEMINDED_DEV_AUTH_TOKEN"] ?? "validation-gurusharan"
         let fullName = Self.argumentValue(after: "--likeminded-dev-auth-name", in: arguments) ?? environment["LIKEMINDED_DEV_AUTH_NAME"] ?? "Gurusharan Gupta"
+        guard !isAuthenticating else { return }
         isAuthenticating = true
+        defer { isAuthenticating = false }
         authError = nil
         do {
             let response = try await client.authenticateWithApple(
@@ -129,14 +132,15 @@ final class MacAppState: ObservableObject {
             await saveSessionAndLoadPlacement(response, authProvider: "apple")
             applyDevProfileConcernLaunchArg(from: arguments)
         } catch {
-            authError = error.localizedDescription
+            authError = AuthErrorMessage.userFacing(error)
         }
-        isAuthenticating = false
         #endif
     }
 
     func signInWithApple(using controller: AppleSignInController) async {
+        guard !isAuthenticating else { return }
         isAuthenticating = true
+        defer { isAuthenticating = false }
         authError = nil
         let result = await controller.signIn()
         switch result {
@@ -155,27 +159,29 @@ final class MacAppState: ObservableObject {
         case .failure(let error):
             authError = AppleSignInSupport.userFacingMessage(for: error)
         }
-        isAuthenticating = false
     }
 
     func signInWithGoogle() async {
+        guard !isAuthenticating else { return }
         isAuthenticating = true
+        defer { isAuthenticating = false }
         authError = nil
         do {
             let idToken = try await GoogleSignInSupport.signIn()
             let response = try await client.authenticateWithGoogle(idToken: idToken)
             await saveSessionAndLoadPlacement(response, authProvider: "google")
         } catch {
-            authError = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+            authError = AuthErrorMessage.userFacing(error)
         }
-        isAuthenticating = false
     }
 
-    func signInWithWallet(_ wallet: WalletProvider, controller: WalletSignInController) async {
+    func signInWithWallet(_ wallet: WalletProvider) async {
+        guard !isAuthenticating else { return }
         isAuthenticating = true
+        defer { isAuthenticating = false }
         authError = nil
         do {
-            let callback = try await controller.signIn(baseURL: LikemindedAPIClient.defaultBaseURL(), wallet: wallet)
+            let callback = try await walletSignInController.signIn(baseURL: LikemindedAPIClient.defaultBaseURL(), wallet: wallet)
             let response = AppleAuthResponse(
                 user: APIUser(id: callback.userId, email: nil, fullName: callback.fullName),
                 sessionToken: callback.sessionToken,
@@ -183,9 +189,8 @@ final class MacAppState: ObservableObject {
             )
             await saveSessionAndLoadPlacement(response, authProvider: "wallet")
         } catch {
-            authError = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+            authError = "Wallet sign-in isn't available yet. Use Sign in with Apple for now."
         }
-        isAuthenticating = false
     }
 
     func completeWalletSignIn(_ response: AppleAuthResponse) async {
@@ -264,35 +269,22 @@ final class MacAppState: ObservableObject {
         placementConcern = ""
     }
 
-    func deleteAccount(using controller: AppleSignInController) async -> Bool {
+    func deleteAccount() async -> Bool {
+        guard isSignedIn else { return false }
         let userId = authSession?.userId
-        var appleAuthorization: AppleAccountDeletionProof?
-        if authSession?.authProvider == "apple" {
-            switch await controller.signIn(requestedScopes: []) {
-            case .success(let payload):
-                guard let authorizationCode = payload.authorizationCode else {
-                    authError = "Apple did not provide the authorization needed to delete this account."
-                    return false
-                }
-                appleAuthorization = AppleAccountDeletionProof(
-                    identityToken: payload.identityToken,
-                    authorizationCode: authorizationCode,
-                    nonce: payload.rawNonce
-                )
-            case .failure(let error):
-                authError = AppleSignInSupport.userFacingMessage(for: error)
-                return false
-            }
-        }
         do {
-            try await client.deleteAccount(appleAuthorization: appleAuthorization)
+            try await client.deleteAccount()
             if let userId {
                 UserDefaults.standard.removeObject(forKey: "likeminded.profile-interview.\(userId)")
             }
             signOut()
             return true
         } catch {
-            authError = "Account could not be deleted or Apple access could not be revoked. Please try again."
+            if (error as? AuthHTTPError)?.statusCode == 409 || (error as? LikemindedAPIError)?.statusCode == 409 {
+                authError = "We couldn't finish deleting your account. Log out, sign in with Apple again, then delete it."
+            } else {
+                authError = "Your account wasn't deleted. Check your connection and try again."
+            }
             return false
         }
     }

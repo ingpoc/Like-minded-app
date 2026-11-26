@@ -1,6 +1,7 @@
 const assert = require("node:assert/strict");
 const test = require("node:test");
 const crypto = require("node:crypto");
+const { startApi } = require("./helpers/api-server");
 
 const {
   AppleIdentityServiceError,
@@ -76,6 +77,38 @@ test("verifyAppleIdentityToken requires audience config outside bypass", async (
     () => verifyAppleIdentityToken("not-a-real-token"),
     /APPLE_CLIENT_ID, APPLE_BUNDLE_ID, or APPLE_CLIENT_IDS must be set/
   );
+});
+
+test("account deletion without Apple proof deletes bypass account and revokes session", async () => {
+  const api = await startApi({ APPLE_AUTH_BYPASS: "1", WALLETCONNECT_PROJECT_ID: "" });
+  try {
+    const signedIn = await api.request("/v1/auth/apple", {
+      method: "POST",
+      body: { identityToken: "lane1-delete-user", fullName: "Lane One" }
+    });
+    assert.equal(signedIn.status, 200);
+    const token = signedIn.body.sessionToken;
+    const deleted = await api.request("/v1/me/account", { method: "DELETE", token });
+    assert.equal(deleted.status, 200);
+    const staleSession = await api.request("/v1/me/profile", { token });
+    assert.equal(staleSession.status, 401);
+  } finally {
+    await api.stop();
+  }
+});
+
+test("wallet challenge returns unavailable when wallet auth is not configured", async () => {
+  const api = await startApi({ WALLETCONNECT_PROJECT_ID: "", WALLET_AUTH_BYPASS: "0" });
+  try {
+    const result = await api.request("/v1/auth/wallet/challenge", {
+      method: "POST",
+      body: { wallet: "metamask", chain: "ethereum" }
+    });
+    assert.equal(result.status, 503);
+    assert.equal(result.body.error, "wallet_auth_unavailable");
+  } finally {
+    await api.stop();
+  }
 });
 
 test("session tokens round-trip with SESSION_SECRET", () => {

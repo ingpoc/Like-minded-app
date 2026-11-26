@@ -938,7 +938,7 @@ ios_launch_app() {
   shift
   "$CROSS_LOCK" with_lock ios-sim env IDB_UDID="$sim_id" BUNDLE_ID="$BUNDLE_ID" bash -c '
     set -euo pipefail
-    xcrun simctl launch --terminate-running-process "$IDB_UDID" "$BUNDLE_ID" "$@" >/dev/null
+    SIMCTL_CHILD_LIKEMINDED_API_BASE_URL="http://127.0.0.1:${PORT:-8787}" xcrun simctl launch --terminate-running-process "$IDB_UDID" "$BUNDLE_ID" "$@" >/dev/null
   ' _ "$@"
 }
 

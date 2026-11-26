@@ -311,7 +311,7 @@ ios_sim_launch_and_capture() {
   local wait="$3"
   local idb_ctl="$4"
   shift 4
-  xcrun simctl launch --terminate-running-process "$sim_id" "$BUNDLE_ID" "$@" >/dev/null
+  SIMCTL_CHILD_LIKEMINDED_API_BASE_URL="http://127.0.0.1:${PORT:-8787}" xcrun simctl launch --terminate-running-process "$sim_id" "$BUNDLE_ID" "$@" >/dev/null
   sleep "$wait"
 
   account_verification_present() {

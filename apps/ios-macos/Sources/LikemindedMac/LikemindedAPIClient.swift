@@ -114,14 +114,13 @@ struct LikemindedAPIClient {
         let url = baseURL.appendingPathComponent("/v1/auth/google")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.timeoutInterval = 45
+        request.timeoutInterval = 20
         applyCommonHeaders(&request)
         request.httpBody = try JSONEncoder().encode(GoogleAuthRequest(idToken: idToken))
 
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
-            let errorText = String(data: data, encoding: .utf8) ?? "Authentication failed"
-            throw URLError(.userAuthenticationRequired, userInfo: [NSLocalizedDescriptionKey: errorText])
+            throw AuthHTTPError(statusCode: (response as? HTTPURLResponse)?.statusCode ?? 0)
         }
         return try JSONDecoder().decode(AppleAuthResponse.self, from: data)
     }
@@ -135,6 +134,7 @@ struct LikemindedAPIClient {
         let url = baseURL.appendingPathComponent("/v1/auth/apple")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
+        request.timeoutInterval = 20
         applyCommonHeaders(&request)
         request.httpBody = try JSONEncoder().encode(
             AppleAuthRequest(
@@ -147,8 +147,7 @@ struct LikemindedAPIClient {
 
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
-            let errorText = String(data: data, encoding: .utf8) ?? "Authentication failed"
-            throw URLError(.userAuthenticationRequired, userInfo: [NSLocalizedDescriptionKey: errorText])
+            throw AuthHTTPError(statusCode: (response as? HTTPURLResponse)?.statusCode ?? 0)
         }
         return try JSONDecoder().decode(AppleAuthResponse.self, from: data)
     }
@@ -607,8 +606,7 @@ struct LikemindedAPIClient {
         }
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
-            let errorText = String(data: data, encoding: .utf8) ?? "Account deletion failed"
-            throw URLError(.badServerResponse, userInfo: [NSLocalizedDescriptionKey: errorText])
+            throw AuthHTTPError(statusCode: (response as? HTTPURLResponse)?.statusCode ?? 0)
         }
     }
 

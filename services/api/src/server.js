@@ -545,6 +545,10 @@ async function handleRequest(req, res) {
   }
 
   if (req.method === "POST" && url.pathname === "/v1/auth/wallet/challenge") {
+    if (!process.env.WALLETCONNECT_PROJECT_ID && process.env.WALLET_AUTH_BYPASS !== "1") {
+      json(res, 503, { error: "wallet_auth_unavailable" });
+      return;
+    }
     try {
       const body = await readJsonBody(req);
       const wallet = normalizeWallet(body.wallet);
@@ -1406,11 +1410,7 @@ async function handleRequest(req, res) {
               clientSecret: exchanged.clientSecret
             });
           }
-        } else {
-          if (process.env.APPLE_AUTH_BYPASS === "1") {
-            json(res, 400, { error: "apple_reauthentication_required" });
-            return;
-          }
+        } else if (process.env.APPLE_AUTH_BYPASS !== "1") {
           const ciphertext = await getAppleRefreshTokenCiphertext(user.id);
           if (!ciphertext) {
             json(res, 409, {
