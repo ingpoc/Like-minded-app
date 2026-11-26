@@ -43,7 +43,7 @@ final class AuthorizationRequestCoordinator<Value> {
             active?.timeout = Task { [weak self] in
                 try? await Task.sleep(nanoseconds: timeoutNanoseconds)
                 guard !Task.isCancelled else { return }
-                self?.finish(id: id, controller: controller, with: .failure(URLError(.timedOut)))
+                self?.finishTimedOut(id: id, controller: controller)
             }
             perform()
         }
@@ -65,6 +65,12 @@ final class AuthorizationRequestCoordinator<Value> {
         request.timeout?.cancel()
         request.cancelController()
         request.continuation.resume(returning: .failure(URLError(.cancelled)))
+    }
+
+    private func finishTimedOut(id: UUID, controller: AnyObject) {
+        guard let request = active, request.id == id, request.controller === controller else { return }
+        request.cancelController()
+        finish(id: id, controller: controller, with: .failure(URLError(.timedOut)))
     }
 
     private func finish(id: UUID, controller: AnyObject, with result: Result<(value: Value, nonce: String), Error>) {

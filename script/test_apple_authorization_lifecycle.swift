@@ -14,16 +14,21 @@ struct AuthorizationLifecycleChecks {
     private static func missingCallbackTimesOut() async {
         let coordinator = AuthorizationRequestCoordinator<String>()
         let controller = NSObject()
+        final class Flag { var value = false }
+        let cancelled = Flag()
         let result = await coordinator.begin(
             controller: controller,
             nonce: "timeout-nonce",
             timeoutNanoseconds: 10_000_000,
-            cancelController: {},
+            cancelController: { cancelled.value = true },
             perform: {}
         )
         guard case .failure(let error) = result,
               (error as? URLError)?.code == .timedOut else {
             preconditionFailure("missing callback did not time out")
+        }
+        guard cancelled.value else {
+            preconditionFailure("timeout did not cancel the authorization controller")
         }
     }
 
