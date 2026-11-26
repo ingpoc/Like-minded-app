@@ -287,10 +287,6 @@ struct MacBackendConfig {
         if let configured = Bundle.main.object(forInfoDictionaryKey: "LIKEMINDED_API_BASE_URL") as? String, !configured.isEmpty {
             return configured
         }
-        #if DEBUG
-        return "http://127.0.0.1:8787"
-        #else
         return "https://likeminded-api.onrender.com"
-        #endif
     }
 }

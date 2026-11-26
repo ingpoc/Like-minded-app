@@ -76,14 +76,14 @@ struct MacRootView: View {
                 } else {
                     VStack(spacing: 0) {
                         GeometryReader { proxy in
-                            ScrollView(.vertical, showsIndicators: true) {
+                            MacScrollCanvas {
                                 VStack(spacing: 18) {
                                     screenContent
                                 }
                                 .frame(maxWidth: .infinity, minHeight: max(0, proxy.size.height - 72), alignment: .top)
                                 .padding(.horizontal, 28)
                                 .padding(.top, 18)
-                                .padding(.bottom, 18)
+                                .padding(.bottom, 28)
                             }
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                         }
@@ -195,9 +195,6 @@ struct MacRootView: View {
                 return
             }
             if selectedScreen == .welcome {
-                if ProcessInfo.processInfo.arguments.contains("--likeminded-validation-welcome") {
-                    return
-                }
                 selectedScreen = .meetOverview
             }
         }
@@ -305,7 +302,7 @@ struct MacTopNavigation: View {
         .padding(8)
         .background(MacPalette.surface, in: Capsule())
         .overlay(Capsule().stroke(MacPalette.line, lineWidth: 1))
-        .shadow(color: Color.black.opacity(0.08), radius: 18, y: 10)
+        .shadow(color: LikemindedPalette.blackOverlay(alpha: 0.08), radius: 18, y: 10)
     }
 }
 

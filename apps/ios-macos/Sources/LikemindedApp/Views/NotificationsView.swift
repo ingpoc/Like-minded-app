@@ -184,7 +184,7 @@ struct NotificationsView: View {
                         .padding(.vertical, 6)
                 }
                 .background(PrototypePalette.accent)
-                .foregroundStyle(.white)
+                .foregroundStyle(LikemindedPalette.inverseText)
                 .clipShape(Capsule(style: .continuous))
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("refresh")
@@ -202,10 +202,10 @@ struct NotificationsView: View {
                 } label: {
                     Text(option)
                         .font(PrototypeTypography.metadata)
-                        .foregroundStyle(selection.wrappedValue == option ? .white : PrototypePalette.ink)
+                        .foregroundStyle(selection.wrappedValue == option ? LikemindedPalette.onAccent : PrototypePalette.ink)
                         .padding(.horizontal, 14)
                         .padding(.vertical, 9)
-                        .background(selection.wrappedValue == option ? PrototypePalette.actionGradient : LinearGradient(colors: [Color.black.opacity(0.05)], startPoint: .top, endPoint: .bottom))
+                        .background(selection.wrappedValue == option ? PrototypePalette.actionGradient : LinearGradient(colors: [LikemindedPalette.blackOverlay(alpha: 0.05)], startPoint: .top, endPoint: .bottom))
                         .clipShape(Capsule(style: .continuous))
                 }
                 .buttonStyle(.plain)

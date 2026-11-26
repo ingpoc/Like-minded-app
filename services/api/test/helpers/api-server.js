@@ -8,6 +8,8 @@ const path = require("node:path");
 const root = path.resolve(__dirname, "../../../..");
 
 function freePort() {
+  // Black-box tests run in parallel, so bind an ephemeral port. Launch
+  // scripts that need 8794-8799 set PORT themselves and do not use this helper.
   return new Promise((resolve, reject) => {
     const probe = net.createServer();
     probe.unref();

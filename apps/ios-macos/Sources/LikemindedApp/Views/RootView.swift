@@ -260,7 +260,7 @@ struct RootView: View {
         if args.contains("--likeminded-start-settings-info") { return .profile }
         if args.contains("--likeminded-start-settings") { return .profile }
         if args.contains("--likeminded-start-settings-support") { return .profile }
-        if args.contains("--likeminded-start-past-meet-detail") { return .meet }
+        if args.contains("--likeminded-start-past-meet-detail") || args.contains("--likeminded-start-video-call") { return .meet }
         #endif
         return .meet
     }

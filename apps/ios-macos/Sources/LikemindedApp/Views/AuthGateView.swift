@@ -50,21 +50,18 @@ struct AuthGateView: View {
 
                 Spacer(minLength: 48)
 
-                AuthAppleSignInButton(
-                    style: .accentGreen,
-                    isAuthenticating: appState.isAuthenticating,
-                    accent: PrototypePalette.accent
-                ) {
+                AuthAppleSignInButton(isAuthenticating: appState.isAuthenticating, isActiveProvider: appState.activeAuthProvider == "apple") {
                     Task { await signInWithApple() }
                 }
 
                 SocialAuthButtonsView(
                     isAuthenticating: appState.isAuthenticating,
+                    activeAuthProvider: appState.activeAuthProvider,
                     titleColor: PrototypePalette.ink,
-                    borderColor: Color.black.opacity(0.08),
+                    borderColor: PrototypePalette.line,
                     onGoogleSignIn: { Task { await appState.signInWithGoogle() } },
-                    onMetaMaskSignIn: { Task { await appState.signInWithWallet(.metamask, controller: WalletSignInController()) } },
-                    onSolflareSignIn: { Task { await appState.signInWithWallet(.solflare, controller: WalletSignInController()) } }
+                    onMetaMaskSignIn: { Task { await appState.signInWithWallet(.metamask) } },
+                    onSolflareSignIn: { Task { await appState.signInWithWallet(.solflare) } }
                 )
 
                 AuthTermsFooter(
@@ -72,7 +69,7 @@ struct AuthGateView: View {
                     muted: PrototypePalette.subink
                 )
 
-                if appState.isAuthenticating {
+                if appState.isAuthenticating, appState.activeAuthProvider == "apple" {
                     ProgressView("Signing in")
                         .font(PrototypeTypography.caption)
                         .foregroundStyle(PrototypePalette.subink)
@@ -92,13 +89,7 @@ struct AuthGateView: View {
 
     @MainActor
     private func signInWithApple() async {
-        let result = await appleSignInController.signIn()
-        switch result {
-        case .success(let payload):
-            await appState.signIn(with: payload)
-        case .failure(let error):
-            appState.authError = AppleSignInSupport.userFacingMessage(for: error)
-        }
+        await appState.signInWithApple(using: appleSignInController)
     }
 }
 
@@ -114,7 +105,7 @@ private struct AuthPromiseRow: View {
                 .font(.system(size: 22, weight: .regular))
                 .foregroundStyle(PrototypePalette.ink)
                 .frame(width: 52, height: 52)
-                .background(Color(red: 0.938, green: 0.890, blue: 0.780))
+                .background(LikemindedPalette.welcomeBackdrop)
                 .clipShape(Circle())
 
             VStack(alignment: .leading, spacing: 4) {

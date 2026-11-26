@@ -12,7 +12,7 @@ const events = createEventLog("likeminded-smoke");
 const smokeStarted = Date.now();
 let stepCount = 0;
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "likeminded-mvp-"));
-const port = String(19000 + Math.floor(Math.random() * 1000));
+const port = String(process.env.PORT || 8794);
 const baseURL = `http://127.0.0.1:${port}`;
 
 const child = spawn(process.execPath, ["services/api/src/server.js"], {
@@ -417,7 +417,6 @@ async function expectStatus(status, pathname, options) {
       }
     });
     await expectStatus(200, "/v1/me/profile", { method: "GET", token: deleteAuth.sessionToken });
-    await expectStatus(400, "/v1/me/account", { method: "DELETE", token: deleteAuth.sessionToken });
     await expectStatus(401, "/v1/me/account", {
       method: "DELETE",
       token: deleteAuth.sessionToken,
@@ -430,17 +429,7 @@ async function expectStatus(status, pathname, options) {
       }
     });
     await expectStatus(200, "/v1/me/profile", { method: "GET", token: deleteAuth.sessionToken });
-    await expectStatus(200, "/v1/me/account", {
-      method: "DELETE",
-      token: deleteAuth.sessionToken,
-      body: {
-        appleAuthorization: {
-          identityToken: "tester-delete",
-          authorizationCode: "validation-delete-code",
-          nonce: "validation-delete-nonce"
-        }
-      }
-    });
+    await expectStatus(200, "/v1/me/account", { method: "DELETE", token: deleteAuth.sessionToken });
     await expectStatus(401, "/v1/me/profile", { method: "GET", token: deleteAuth.sessionToken });
 
     const googleDeleteAuth = await expectStatus(200, "/v1/auth/google", {

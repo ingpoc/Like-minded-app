@@ -444,7 +444,7 @@ private struct SoulmateMatchRow: View {
             }
 
             Image(systemName: "chevron.right")
-                .font(.caption.weight(.semibold))
+                .font(LikemindedTypography.caption.weight(.semibold))
                 .foregroundStyle(PrototypePalette.subink)
                 .accessibilityHidden(true)
         }
@@ -633,7 +633,7 @@ private struct SoulmateInterestChip: View {
 
     private var foreground: Color {
         switch interest.depth {
-        case .deep: .white
+        case .deep: LikemindedPalette.inverseText
         case .active: PrototypePalette.accent
         case .casual: PrototypePalette.ink
         }
@@ -988,7 +988,7 @@ private struct MessageBubble: View {
             if isOutgoing { Spacer(minLength: 48) }
             Text(message.text)
                 .font(PrototypeTypography.body)
-                .foregroundStyle(isOutgoing ? .white : PrototypePalette.ink)
+                .foregroundStyle(isOutgoing ? LikemindedPalette.inverseText : PrototypePalette.ink)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 10)
                 .background(isOutgoing ? PrototypePalette.accent : PrototypePalette.surface)

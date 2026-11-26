@@ -10,9 +10,11 @@ Complete before disabling `APPLE_AUTH_BYPASS` for real auth testing.
 
 1. Create a project at [Google Cloud Console](https://console.cloud.google.com/).
 2. Enable **Google Sign-In API** / configure OAuth consent screen (External, test users).
-3. Create OAuth client IDs:
-   - **iOS** — bundle id `com.gurusharan.likeminded`
-   - **macOS** — bundle id `com.gurusharan.likeminded` (shared universal app record)
+3. Create one OAuth client ID of type **iOS** with bundle id `com.gurusharan.likeminded`.
+   - The macOS app uses this same iOS-type client (GoogleSignIn on macOS needs an iOS-type client;
+     a Web or Desktop client fails at Google's token step with `invalid_request: client_secret is missing`).
+   - So `GOOGLE_CLIENT_ID_MAC` / `GOOGLE_REVERSED_CLIENT_ID_MAC` hold the iOS client values, and
+     `GOOGLE_CLIENT_IDS` on the API must include that iOS client ID.
 
 ## 2. Repo configuration
 

@@ -25,6 +25,21 @@ enum WalletProvider: String, CaseIterable {
     }
 }
 
+enum WalletAvailability {
+    private struct Health: Decodable { let walletAuth: Bool }
+
+    static func check(baseURL: URL) async throws {
+        var request = URLRequest(url: baseURL.appendingPathComponent("/health"))
+        request.timeoutInterval = 5
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let response = response as? HTTPURLResponse,
+              200..<300 ~= response.statusCode,
+              (try? JSONDecoder().decode(Health.self, from: data).walletAuth) == true else {
+            throw URLError(.badServerResponse)
+        }
+    }
+}
+
 struct WalletChallengeResponse: Decodable {
     let challengeId: String
     let wallet: String
@@ -69,13 +84,13 @@ final class WalletSignInController: NSObject, ASWebAuthenticationPresentationCon
         let challengeURL = baseURL.appendingPathComponent("/v1/auth/wallet/challenge")
         var challengeRequest = URLRequest(url: challengeURL)
         challengeRequest.httpMethod = "POST"
+        challengeRequest.timeoutInterval = 15
         challengeRequest.setValue("application/json", forHTTPHeaderField: "content-type")
         challengeRequest.httpBody = try JSONEncoder().encode(["wallet": wallet.rawValue, "chain": wallet.chain])
 
         let (challengeData, challengeResponse) = try await URLSession.shared.data(for: challengeRequest)
         guard let httpChallenge = challengeResponse as? HTTPURLResponse, 200..<300 ~= httpChallenge.statusCode else {
-            let message = String(data: challengeData, encoding: .utf8) ?? "Wallet challenge failed"
-            throw URLError(.userAuthenticationRequired, userInfo: [NSLocalizedDescriptionKey: message])
+            throw URLError(.userAuthenticationRequired)
         }
         let challenge = try JSONDecoder().decode(WalletChallengeResponse.self, from: challengeData)
 

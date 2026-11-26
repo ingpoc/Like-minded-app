@@ -113,9 +113,9 @@ struct DoodleCover: View {
                 LinearGradient(
                     stops: [
                         .init(color: .clear, location: 0),
-                        .init(color: .black.opacity(0.08), location: 0.35),
-                        .init(color: .black.opacity(0.55), location: 0.72),
-                        .init(color: .black.opacity(0.82), location: 1),
+                        .init(color: LikemindedPalette.blackOverlay(alpha: 0.08), location: 0.35),
+                        .init(color: LikemindedPalette.blackOverlay(alpha: 0.55), location: 0.72),
+                        .init(color: LikemindedPalette.blackOverlay(alpha: 0.82), location: 1),
                     ],
                     startPoint: .top,
                     endPoint: .bottom
@@ -125,15 +125,15 @@ struct DoodleCover: View {
                     LinearGradient(
                         stops: [
                             .init(color: .clear, location: 0),
-                            .init(color: .black.opacity(0.12), location: 0.32),
-                            .init(color: .black.opacity(0.58), location: 0.68),
-                            .init(color: .black.opacity(0.86), location: 1),
+                            .init(color: LikemindedPalette.blackOverlay(alpha: 0.12), location: 0.32),
+                            .init(color: LikemindedPalette.blackOverlay(alpha: 0.58), location: 0.68),
+                            .init(color: LikemindedPalette.blackOverlay(alpha: 0.86), location: 1),
                         ],
                         startPoint: .top,
                         endPoint: .bottom
                     )
                     LinearGradient(
-                        colors: [.black.opacity(0.45), .clear],
+                        colors: [LikemindedPalette.blackOverlay(alpha: 0.45), .clear],
                         startPoint: .leading,
                         endPoint: UnitPoint(x: 0.7, y: 0.55)
                     )
@@ -150,8 +150,8 @@ struct DoodleCover: View {
 struct DoodleOverlayTextStyle: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .shadow(color: .black.opacity(0.35), radius: 1, x: 0, y: 1)
-            .shadow(color: .black.opacity(0.28), radius: 8, x: 0, y: 3)
+            .shadow(color: LikemindedPalette.blackOverlay(alpha: 0.35), radius: 1, x: 0, y: 1)
+            .shadow(color: LikemindedPalette.blackOverlay(alpha: 0.28), radius: 8, x: 0, y: 3)
     }
 }
 
@@ -171,7 +171,7 @@ struct DoodlePortrait: View {
             .scaledToFill()
             .frame(width: size, height: size)
             .clipShape(Circle())
-            .overlay(Circle().stroke(Color.white.opacity(0.85), lineWidth: 1))
+            .overlay(Circle().stroke(LikemindedPalette.whiteOverlay(alpha: 0.85), lineWidth: 1))
     }
 }
 
@@ -186,7 +186,7 @@ struct DoodleCircleMark: View {
             .scaledToFill()
             .frame(width: size, height: size)
             .clipShape(Circle())
-            .overlay(Circle().stroke(Color.black.opacity(0.08), lineWidth: 1))
+            .overlay(Circle().stroke(LikemindedPalette.blackOverlay(alpha: 0.08), lineWidth: 1))
             .accessibilityHidden(true)
     }
 }

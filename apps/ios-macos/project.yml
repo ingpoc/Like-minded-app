@@ -136,8 +136,11 @@ targets:
         CODE_SIGN_ENTITLEMENTS: Entitlements/LikemindedMac.entitlements
         ENABLE_HARDENED_RUNTIME: YES
         LIKEMINDED_API_BASE_URL: ""
-        GOOGLE_CLIENT_ID_MAC: "783810031677-acl8e4radj0ud4pqflbo5c3f23e5cqid.apps.googleusercontent.com"
-        GOOGLE_REVERSED_CLIENT_ID_MAC: "com.googleusercontent.apps.783810031677-acl8e4radj0ud4pqflbo5c3f23e5cqid"
+        # AUTH-02: GoogleSignIn on macOS needs an iOS-type OAuth client (no client secret). The old
+        # Mac client (783810031677-acl8e4...) fails at Google's token step with "client_secret is
+        # missing", so the Mac app shares the iOS client registered for com.gurusharan.likeminded.
+        GOOGLE_CLIENT_ID_MAC: "783810031677-afiec2d9r2og5hg3hru9n59fjregn7nk.apps.googleusercontent.com"
+        GOOGLE_REVERSED_CLIENT_ID_MAC: "com.googleusercontent.apps.783810031677-afiec2d9r2og5hg3hru9n59fjregn7nk"
       configs:
         Debug:
           CODE_SIGN_ENTITLEMENTS: Entitlements/LikemindedMac.Debug.entitlements

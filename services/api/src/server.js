@@ -171,10 +171,19 @@ async function currentUser(req) {
   return getUserById(session.sub);
 }
 
+function recordTestSessionToken(method, pathname, token) {
+  if (process.env.NODE_ENV === "production" || !process.env.LIKEMINDED_TEST_REQUEST_LOG || !token) return;
+  const fingerprint = crypto.createHash("sha256").update(token).digest("hex");
+  fs.appendFileSync(process.env.LIKEMINDED_TEST_REQUEST_LOG, `TOKEN ${method} ${pathname} ${fingerprint}\n`);
+}
+
 async function requireUser(req, res) {
   try {
     const user = await currentUser(req);
-    if (user) return user;
+    if (user) {
+      recordTestSessionToken(req.method, requestRoute(req), bearerToken(req));
+      return user;
+    }
   } catch {
     // Fall through to the standard auth response.
   }
@@ -521,7 +530,9 @@ async function handleRequest(req, res) {
         fullName: typeof body.fullName === "string" ? body.fullName.trim() : null,
         appleRefreshTokenCiphertext
       });
-      json(res, 200, authResponse(user));
+      const response = authResponse(user);
+      recordTestSessionToken(req.method, url.pathname, response.sessionToken);
+      json(res, 200, response);
     } catch (error) {
       json(res, 401, { error: "apple_auth_failed", message: error.message });
     }
@@ -545,6 +556,10 @@ async function handleRequest(req, res) {
   }
 
   if (req.method === "POST" && url.pathname === "/v1/auth/wallet/challenge") {
+    if (!process.env.WALLETCONNECT_PROJECT_ID && process.env.WALLET_AUTH_BYPASS !== "1") {
+      json(res, 503, { error: "wallet_auth_unavailable" });
+      return;
+    }
     try {
       const body = await readJsonBody(req);
       const wallet = normalizeWallet(body.wallet);
@@ -1374,9 +1389,18 @@ async function handleRequest(req, res) {
   if (req.method === "DELETE" && url.pathname === "/v1/me/account") {
     const user = await requireUser(req, res);
     if (!user) return;
+    let testDeleteBody;
+    if (process.env.NODE_ENV !== "production" && process.env.LIKEMINDED_TEST_REQUEST_LOG) {
+      testDeleteBody = await readJsonBody(req);
+      fs.appendFileSync(process.env.LIKEMINDED_TEST_REQUEST_LOG, `DELETE /v1/me/account proof=${Boolean(testDeleteBody.appleAuthorization)}\n`);
+    }
+    if (process.env.NODE_ENV !== "production" && process.env.LIKEMINDED_TEST_FAIL_DELETE === "500") {
+      json(res, 500, { error: "test_delete_failure" });
+      return;
+    }
     try {
       if (user.authProvider === "apple") {
-        const body = await readJsonBody(req);
+        const body = testDeleteBody ?? await readJsonBody(req);
         const proof = body.appleAuthorization;
         if (proof) {
           if (!proof.identityToken || !proof.authorizationCode || !proof.nonce) {
@@ -1406,11 +1430,7 @@ async function handleRequest(req, res) {
               clientSecret: exchanged.clientSecret
             });
           }
-        } else {
-          if (process.env.APPLE_AUTH_BYPASS === "1") {
-            json(res, 400, { error: "apple_reauthentication_required" });
-            return;
-          }
+        } else if (process.env.APPLE_AUTH_BYPASS !== "1") {
           const ciphertext = await getAppleRefreshTokenCiphertext(user.id);
           if (!ciphertext) {
             json(res, 409, {

@@ -9,6 +9,7 @@ import GoogleSignIn
 struct LikemindedMacApp: App {
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var appState = MacAppState()
+    @AppStorage("likeminded.appearance") private var appearancePreference = "system"
 
     init() {
         Task { @MainActor in
@@ -24,8 +25,18 @@ struct LikemindedMacApp: App {
                     minWidth: MacWindowMetrics.minWidth,
                     minHeight: MacWindowMetrics.minHeight
                 )
-                .preferredColorScheme(.light)
+                .preferredColorScheme(appColorScheme)
+                .tint(MacPalette.accent)
                 .background(MacWindowChromeHider())
+                .likemindedTypography()
+                .onAppear {
+                    LikemindedTypeRuntime.applyLaunchOverride()
+                    applyLaunchAppearanceOverride()
+                    applyAppearancePreference()
+                }
+                .onChange(of: appearancePreference) { _, _ in
+                    applyAppearancePreference()
+                }
                 .onChange(of: scenePhase) { _, phase in
                     guard phase == .active else { return }
                     Task { await appState.validateStoredAppleCredentialIfNeeded() }
@@ -80,6 +91,31 @@ struct LikemindedMacApp: App {
                 }
                 .keyboardShortcut("5", modifiers: .command)
             }
+        }
+    }
+
+    private var appColorScheme: ColorScheme? {
+        switch appearancePreference {
+        case "light": .light
+        case "dark": .dark
+        default: nil
+        }
+    }
+
+    private func applyLaunchAppearanceOverride() {
+        let arguments = ProcessInfo.processInfo.arguments
+        guard let index = arguments.firstIndex(of: "--likeminded-appearance"),
+              arguments.indices.contains(index + 1) else { return }
+        let value = arguments[index + 1]
+        guard ["light", "dark", "system"].contains(value) else { return }
+        appearancePreference = value
+    }
+
+    private func applyAppearancePreference() {
+        switch appearancePreference {
+        case "light": NSApp.appearance = NSAppearance(named: .aqua)
+        case "dark": NSApp.appearance = NSAppearance(named: .darkAqua)
+        default: NSApp.appearance = nil
         }
     }
 }

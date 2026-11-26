@@ -49,7 +49,7 @@ struct MacMeetOverviewConceptView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 28) {
+        VStack(alignment: .leading, spacing: 10) {
             conceptHeader
             if appState.isSignedIn {
                 nextMeetupCard
@@ -57,7 +57,7 @@ struct MacMeetOverviewConceptView: View {
                     pastMeetupsPanel
                         .frame(maxWidth: .infinity)
                     weeklyAvailabilityPanel
-                        .frame(width: 340)
+                        .frame(minWidth: 420)
                 }
             } else {
                 MacPanel {
@@ -79,9 +79,9 @@ struct MacMeetOverviewConceptView: View {
     private var conceptHeader: some View {
         // Concept plate (`mockup-meet-overview-convergence.png`) has no in-content
         // Notifications chrome — shell overlay in MacRootView owns the single bell.
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 4) {
             Text("Likeminded")
-                .font(.system(size: 22, weight: .semibold, design: .serif))
+                .font(MacType.cardTitle)
                 .foregroundStyle(MacPalette.accent)
             Text("When you meet.")
                 .font(MacType.title)
@@ -108,13 +108,13 @@ struct MacMeetOverviewConceptView: View {
         ZStack(alignment: .topLeading) {
             MacMeetVenueConvergenceField()
 
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 12) {
                 Text("Next meetup")
                     .font(MacType.small.weight(.semibold))
                     .foregroundStyle(MacPalette.muted)
 
                 Text(meeting?.title ?? "Designing for Belonging")
-                    .font(.system(size: 22, weight: .semibold, design: .serif))
+                    .font(MacType.cardTitle)
                     .foregroundStyle(MacPalette.ink)
                     .fixedSize(horizontal: false, vertical: true)
 
@@ -139,6 +139,7 @@ struct MacMeetOverviewConceptView: View {
                         heroRSVPButton(option)
                     }
                 }
+                .fixedSize(horizontal: false, vertical: true)
 
                 // Ledger control join-meetup → meetVideoCall. Venue copy is physical;
                 // CTA must name video modality (UI/UX review) so camera ≠ “show up in room”.
@@ -148,24 +149,21 @@ struct MacMeetOverviewConceptView: View {
                     Label("Join video call", systemImage: "video.fill")
                         .font(MacType.button)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 11)
-                        .background(MacPalette.accent, in: Capsule())
-                        .foregroundStyle(.white)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(MacPrimaryButtonStyle())
                 .accessibilityLabel("Join video call")
                 .accessibilityIdentifier("join-meetup")
                 .accessibilityAddTraits(.isButton)
             }
-            .padding(28)
-            .frame(width: 400, alignment: .topLeading)
+            .padding(18)
+            .frame(minWidth: 520, alignment: .topLeading)
 
             // Pin sits on the generated field's convergence sink.
             GeometryReader { geo in
                 let focus = MacMeetVenueConvergenceField.pinPosition(in: geo.size)
                 VStack(spacing: 6) {
                     Image(systemName: "mappin")
-                        .font(.system(size: 26, weight: .semibold))
+                        .font(MacType.iconProminent)
                         .foregroundStyle(MacPalette.ink)
                     VStack(spacing: 2) {
                         Text(venueLines.title)
@@ -181,7 +179,7 @@ struct MacMeetOverviewConceptView: View {
                 .accessibilityLabel("\(venueLines.title), \(venueLines.subtitle)")
             }
         }
-        .frame(minHeight: 300)
+        .frame(minHeight: 200)
         .frame(maxWidth: .infinity)
         .background(MacPalette.surface)
         .overlay(
@@ -191,25 +189,30 @@ struct MacMeetOverviewConceptView: View {
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
     }
 
+    @ViewBuilder
     private func heroRSVPButton(_ option: HeroMeetRSVP) -> some View {
         let selected = heroRSVP == option
-        return Button {
+        let button = Button {
             heroRSVP = option
         } label: {
             Label(option.label, systemImage: option.icon)
                 .font(MacType.small.weight(.semibold))
-                .foregroundStyle(selected && option == .yes ? .white : MacPalette.ink)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 10)
-                .background(
-                    selected && option == .yes ? Color.black : MacPalette.surface.opacity(0.92),
-                    in: Capsule()
-                )
-                .overlay(Capsule().stroke(MacPalette.line, lineWidth: selected && option == .yes ? 0 : 1))
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: true)
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel(option.label)
-        .accessibilityValue(selected ? "Selected" : "Not selected")
+        if selected && option == .yes {
+            button
+                .buttonStyle(MacPrimaryButtonStyle())
+                .fixedSize(horizontal: true, vertical: true)
+                .accessibilityLabel(option.label)
+                .accessibilityValue("Selected")
+        } else {
+            button
+                .buttonStyle(MacSecondaryButtonStyle())
+                .fixedSize(horizontal: true, vertical: true)
+                .accessibilityLabel(option.label)
+                .accessibilityValue(selected ? "Selected" : "Not selected")
+        }
     }
 
     private func attendeeStack(count: Int) -> some View {
@@ -298,12 +301,12 @@ struct MacMeetOverviewConceptView: View {
     // MARK: - Weekly availability
 
     private var weeklyAvailabilityPanel: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 10) {
             Text("Available this weekend?")
                 .font(MacType.section)
                 .foregroundStyle(MacPalette.ink)
 
-            VStack(spacing: 12) {
+            VStack(spacing: 8) {
                 weekendAvailabilityRow(
                     day: "Saturday",
                     detail: "Community meetup",
@@ -352,7 +355,7 @@ struct MacMeetOverviewConceptView: View {
                 .foregroundStyle(MacPalette.muted)
                 .padding(.top, 4)
         }
-        .padding(22)
+        .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(MacPalette.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(MacPalette.line, lineWidth: 1))
@@ -368,7 +371,7 @@ struct MacMeetOverviewConceptView: View {
                     .font(MacType.small)
                     .foregroundStyle(MacPalette.muted)
             }
-            Spacer()
+            Spacer(minLength: 8)
             HStack(spacing: 8) {
                 Button {
                     Task { await appState.updateMeetingRSVP(kind: kind, available: true) }
@@ -388,6 +391,7 @@ struct MacMeetOverviewConceptView: View {
                 .accessibilityLabel("\(day) \(detail) not available")
                 .accessibilityValue(!available ? "Selected" : "Not selected")
             }
+            .fixedSize(horizontal: true, vertical: true)
         }
     }
 

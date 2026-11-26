@@ -63,6 +63,7 @@ enum GoogleSignInSupport {
         #endif
 
         guard let idToken = result.user.idToken?.tokenString else {
+            AuthDiagnostics.log("Google SDK result missing ID token")
             throw GoogleSignInError.missingIDToken
         }
         return idToken

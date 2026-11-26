@@ -1,38 +1,25 @@
 import SwiftUI
 
 struct AuthAppleSignInButton: View {
-    enum Style {
-        case accentGreen
-        case black
-    }
-
-    let style: Style
     let isAuthenticating: Bool
-    var accent: Color = Color(red: 0.059, green: 0.290, blue: 0.239)
+    var isActiveProvider: Bool = false
     let action: () -> Void
-
-    private var background: Color {
-        switch style {
-        case .accentGreen: accent
-        case .black: .black
-        }
-    }
 
     var body: some View {
         Button(action: action) {
             HStack(spacing: 10) {
                 Image(systemName: "applelogo")
                     .font(.title3)
-                Text(isAuthenticating ? "Signing in" : "Sign in with Apple")
-                    .font(.system(size: 17, weight: .semibold))
+                Text(isActiveProvider ? "Signing in" : "Sign in with Apple")
+                    .font(LikemindedTypography.button)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
-            .background(background, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-            .foregroundStyle(.white)
+            .background(LikemindedPalette.appleSignInBackground, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .foregroundStyle(LikemindedPalette.appleSignInForeground)
         }
         .buttonStyle(.plain)
         .disabled(isAuthenticating)
-        .accessibilityLabel("Sign in with Apple")
+        .accessibilityLabel(isActiveProvider ? "Signing in with Apple" : "Sign in with Apple")
     }
 }

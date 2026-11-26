@@ -199,7 +199,7 @@ struct VoiceProfileView: View {
                     } label: {
                         Label("Edit profile", systemImage: "square.and.pencil")
                             .font(PrototypeTypography.button)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(LikemindedPalette.onAccent)
                             .frame(maxWidth: .infinity, minHeight: 44)
                             .background(PrototypePalette.accent, in: Capsule())
                     }
@@ -327,7 +327,7 @@ struct VoiceProfileView: View {
                         profilePath.append(ProfileRoute.signals)
                     }
                     .font(PrototypeTypography.metadata)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(LikemindedPalette.onAccent)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 7)
                     .background(PrototypePalette.accent, in: Capsule())
@@ -403,16 +403,16 @@ private struct ProfileVoiceEmptyCard: View {
             VStack(spacing: 12) {
                 Text("Voice profile".uppercased())
                     .font(PrototypeTypography.eyebrow)
-                    .foregroundStyle(.white.opacity(0.78))
+                    .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.78))
 
                 Text("Tell me how\nyou connect.")
                     .font(PrototypeTypography.hero)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(LikemindedPalette.inverseText)
                     .multilineTextAlignment(.center)
 
                 Text("Speak naturally. The profile updates as you talk.")
                     .font(PrototypeTypography.body)
-                    .foregroundStyle(.white.opacity(0.88))
+                    .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.88))
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: 260)
             }
@@ -423,10 +423,10 @@ private struct ProfileVoiceEmptyCard: View {
                     systemImage: "waveform"
                 )
                 .font(PrototypeTypography.button)
-                .foregroundStyle(PrototypePalette.accent)
+                .foregroundStyle(PrototypePalette.ink)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
-                .background(Color.white.opacity(0.88))
+                .background(PrototypePalette.surface)
                 .clipShape(Capsule(style: .continuous))
                 .contentTransition(.opacity)
             }
@@ -587,15 +587,15 @@ private struct VoiceProfileSessionSheet: View {
                     VStack(spacing: 8) {
                         Text("PROFILE")
                             .font(PrototypeTypography.eyebrow)
-                            .foregroundStyle(.white.opacity(0.72))
+                            .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.72))
                         Text("Voice profile")
                             .font(PrototypeTypography.display)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(LikemindedPalette.inverseText)
                             .dynamicTypeSize(.xSmall ... .accessibility1)
                         if !voiceFailed {
                             Text(statusLine)
                                 .font(PrototypeTypography.body)
-                                .foregroundStyle(.white.opacity(0.82))
+                                .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.82))
                                 .multilineTextAlignment(.center)
                                 .frame(maxWidth: 280)
                         }
@@ -628,19 +628,19 @@ private struct VoiceProfileSessionSheet: View {
                         VStack(alignment: .leading, spacing: 12) {
                             Text("Captured signals")
                                 .font(PrototypeTypography.metadata)
-                                .foregroundStyle(.white.opacity(0.7))
+                                .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.7))
 
                             ForEach(Array(appState.capturedVoiceSignals.enumerated()), id: \.offset) { index, signal in
                                 HStack(alignment: .top, spacing: 12) {
                                     Text("\(index + 1)")
                                         .font(PrototypeTypography.metadata.weight(.bold))
-                                        .foregroundStyle(.white)
+                                        .foregroundStyle(LikemindedPalette.inverseText)
                                         .frame(width: 28, height: 28)
                                         .background(PrototypePalette.success.opacity(0.85), in: Circle())
 
                                     Text(signal)
                                         .font(PrototypeTypography.body)
-                                        .foregroundStyle(.white.opacity(0.92))
+                                        .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.92))
                                         .frame(maxWidth: .infinity, alignment: .leading)
 
                                     Button {
@@ -657,7 +657,7 @@ private struct VoiceProfileSessionSheet: View {
                         }
                         .padding(18)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .background(LikemindedPalette.whiteOverlay(alpha: 0.08), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                     }
 
                     if voiceFailed {
@@ -667,7 +667,7 @@ private struct VoiceProfileSessionSheet: View {
                         } label: {
                             Label("Try voice again", systemImage: "arrow.clockwise")
                                 .font(PrototypeTypography.button)
-                                .foregroundStyle(.white)
+                                .foregroundStyle(LikemindedPalette.onAccent)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 16)
                                 .background(PrototypePalette.actionGradient, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
@@ -681,10 +681,10 @@ private struct VoiceProfileSessionSheet: View {
                         } label: {
                             Label("Type an update", systemImage: "keyboard")
                                 .font(PrototypeTypography.button)
-                                .foregroundStyle(.white)
+                                .foregroundStyle(LikemindedPalette.inverseText)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 14)
-                                .background(Color.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                                .background(LikemindedPalette.whiteOverlay(alpha: 0.12), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                         }
                         .buttonStyle(.plain)
                         .accessibilityIdentifier("voice-profile-type-update")
@@ -694,7 +694,7 @@ private struct VoiceProfileSessionSheet: View {
                         } label: {
                             Label("Stop listening", systemImage: "stop.fill")
                                 .font(PrototypeTypography.button)
-                                .foregroundStyle(.white)
+                                .foregroundStyle(LikemindedPalette.onAccent)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 16)
                                 .background(PrototypePalette.actionGradient, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
@@ -720,17 +720,17 @@ private struct VoiceProfileSessionSheet: View {
                             systemImage: appState.didPersistVoiceProfile ? "checkmark" : "arrow.left"
                         )
                             .font(PrototypeTypography.button)
-                            .foregroundStyle(.white.opacity(0.92))
+                            .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.92))
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 14)
-                            .background(Color.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                            .background(LikemindedPalette.whiteOverlay(alpha: 0.12), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel(appState.didPersistVoiceProfile ? "Save voice profile" : "Back to profile")
 
                     HStack(alignment: .top, spacing: 10) {
                         Image(systemName: "lock.fill")
-                            .font(.system(size: 13, weight: .semibold))
+                            .font(LikemindedTypography.compact.weight(.semibold))
                             .foregroundStyle(PrototypePalette.success)
                         Text(
                             voiceFailed
@@ -738,7 +738,7 @@ private struct VoiceProfileSessionSheet: View {
                                 : "Your words and captured signals stay private. Review what appears here before choosing Save voice profile."
                         )
                             .font(PrototypeTypography.caption)
-                            .foregroundStyle(.white.opacity(0.78))
+                            .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.78))
                             .fixedSize(horizontal: false, vertical: true)
                     }
                     .padding(16)
@@ -750,7 +750,7 @@ private struct VoiceProfileSessionSheet: View {
             }
             .background {
                 LinearGradient(
-                    colors: [Color(red: 0.05, green: 0.14, blue: 0.11), Color(red: 0.02, green: 0.05, blue: 0.04)],
+                    colors: [LikemindedPalette.voiceSessionBackground, LikemindedPalette.voiceSessionBackgroundDeep],
                     startPoint: .top,
                     endPoint: .bottom
                 )
@@ -762,7 +762,7 @@ private struct VoiceProfileSessionSheet: View {
                         appState.resetVoiceSession()
                         dismiss()
                     }
-                    .foregroundStyle(.white)
+                    .foregroundStyle(LikemindedPalette.inverseText)
                     .accessibilityLabel("Cancel voice update")
                 }
             }
@@ -804,7 +804,7 @@ private struct VoiceListeningCard: View {
                 .fill(
                     RadialGradient(
                         colors: isFailed
-                            ? [Color.white.opacity(0.12), Color.white.opacity(0.035), .clear]
+                            ? [LikemindedPalette.whiteOverlay(alpha: 0.12), LikemindedPalette.whiteOverlay(alpha: 0.035), .clear]
                             : [PrototypePalette.success.opacity(isActive ? 0.78 : 0.64), PrototypePalette.accent.opacity(0.24), .clear],
                         center: .center,
                         startRadius: 6,
@@ -816,7 +816,7 @@ private struct VoiceListeningCard: View {
 
             Image(systemName: isFailed ? "mic.slash.fill" : "sparkle")
                 .font(.system(size: 18, weight: .semibold))
-                .foregroundStyle(.white.opacity(isFailed ? 0.72 : 0.92))
+                .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: isFailed ? 0.72 : 0.92))
                 .shadow(color: isFailed ? .clear : PrototypePalette.success, radius: isActive ? 18 : 10)
 
             if !isFailed {
