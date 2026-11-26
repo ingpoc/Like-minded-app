@@ -19,6 +19,7 @@ final class PrototypeAppState: ObservableObject {
 
     @Published var authSession = AuthSessionStore.load()
     @Published var isAuthenticating = false
+    @Published private(set) var activeAuthProvider: String?
     @Published var authError: String?
     @Published var slice: ReflectPlaceConnectSlice?
     @Published var placementId: String?
@@ -206,7 +207,8 @@ final class PrototypeAppState: ObservableObject {
         guard !isAuthenticating else { return }
         let shouldSeedVoicePlacement = arguments.contains("--likeminded-dev-voice-placement")
         isAuthenticating = true
-        defer { isAuthenticating = false }
+        activeAuthProvider = "apple"
+        defer { isAuthenticating = false; activeAuthProvider = nil }
         authError = nil
         let devToken = Self.argumentValue(after: "--likeminded-dev-auth-token", in: arguments)
             ?? environment["LIKEMINDED_DEV_AUTH_TOKEN"]
@@ -237,7 +239,8 @@ final class PrototypeAppState: ObservableObject {
     func signInWithApple(using controller: AppleSignInController) async {
         guard !isAuthenticating else { return }
         isAuthenticating = true
-        defer { isAuthenticating = false }
+        activeAuthProvider = "apple"
+        defer { isAuthenticating = false; activeAuthProvider = nil }
         authError = nil
         let result = await controller.signIn()
         guard case .success(let payload) = result else {
@@ -260,13 +263,19 @@ final class PrototypeAppState: ObservableObject {
     func signInWithGoogle() async {
         guard !isAuthenticating else { return }
         isAuthenticating = true
-        defer { isAuthenticating = false }
+        activeAuthProvider = "google"
+        defer { isAuthenticating = false; activeAuthProvider = nil }
         authError = nil
         do {
+            AuthDiagnostics.log("Google sign-in started")
             let idToken = try await GoogleSignInSupport.signIn()
+            AuthDiagnostics.log("Google SDK sign-in result received")
             let response = try await client.authenticateWithGoogle(idToken: idToken)
+            AuthDiagnostics.log("Google API authentication succeeded")
             await saveSessionAndLoadPlacement(response, authProvider: "google")
         } catch {
+            let nsError = error as NSError
+            AuthDiagnostics.log("Google sign-in failed domain=\(nsError.domain) code=\(nsError.code)")
             authError = AuthErrorMessage.userFacing(error)
         }
     }
@@ -274,9 +283,11 @@ final class PrototypeAppState: ObservableObject {
     func signInWithWallet(_ wallet: WalletProvider) async {
         guard !isAuthenticating else { return }
         isAuthenticating = true
-        defer { isAuthenticating = false }
+        activeAuthProvider = wallet == .metamask ? "metamask" : "solflare"
+        defer { isAuthenticating = false; activeAuthProvider = nil }
         authError = nil
         do {
+            try await WalletAvailability.check(baseURL: LikemindedAPIClient.defaultBaseURL())
             let callback = try await walletSignInController.signIn(baseURL: LikemindedAPIClient.defaultBaseURL(), wallet: wallet)
             let response = AppleAuthResponse(
                 user: APIUser(id: callback.userId, email: nil, fullName: callback.fullName),
@@ -325,6 +336,7 @@ final class PrototypeAppState: ObservableObject {
         )
         AuthSessionStore.save(session)
         authSession = session
+        if authProvider == "google" { AuthDiagnostics.log("Google session saved") }
         await loadCurrentPlacement()
         applyDevProfileEmptyPreviewIfNeeded()
     }
@@ -362,6 +374,8 @@ final class PrototypeAppState: ObservableObject {
             return false
         }
     }
+
+    func deleteAccountErrorMessage() -> String? { authError }
 
     @discardableResult
     func loadCurrentPlacement() async -> Bool {

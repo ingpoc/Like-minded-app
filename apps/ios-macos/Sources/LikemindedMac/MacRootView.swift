@@ -195,9 +195,6 @@ struct MacRootView: View {
                 return
             }
             if selectedScreen == .welcome {
-                if ProcessInfo.processInfo.arguments.contains("--likeminded-validation-welcome") {
-                    return
-                }
                 selectedScreen = .meetOverview
             }
         }

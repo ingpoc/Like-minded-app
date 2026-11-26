@@ -53,6 +53,7 @@ struct AuthGateView: View {
                 AuthAppleSignInButton(
                     style: .accentGreen,
                     isAuthenticating: appState.isAuthenticating,
+                    isActiveProvider: appState.activeAuthProvider == "apple",
                     accent: PrototypePalette.accent
                 ) {
                     Task { await signInWithApple() }
@@ -60,6 +61,7 @@ struct AuthGateView: View {
 
                 SocialAuthButtonsView(
                     isAuthenticating: appState.isAuthenticating,
+                    activeAuthProvider: appState.activeAuthProvider,
                     titleColor: PrototypePalette.ink,
                     borderColor: Color.black.opacity(0.08),
                     onGoogleSignIn: { Task { await appState.signInWithGoogle() } },
@@ -72,7 +74,7 @@ struct AuthGateView: View {
                     muted: PrototypePalette.subink
                 )
 
-                if appState.isAuthenticating {
+                if appState.isAuthenticating, appState.activeAuthProvider == "apple" {
                     ProgressView("Signing in")
                         .font(PrototypeTypography.caption)
                         .foregroundStyle(PrototypePalette.subink)

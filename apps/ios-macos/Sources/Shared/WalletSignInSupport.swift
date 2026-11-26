@@ -25,6 +25,21 @@ enum WalletProvider: String, CaseIterable {
     }
 }
 
+enum WalletAvailability {
+    private struct Health: Decodable { let walletAuth: Bool }
+
+    static func check(baseURL: URL) async throws {
+        var request = URLRequest(url: baseURL.appendingPathComponent("/health"))
+        request.timeoutInterval = 5
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let response = response as? HTTPURLResponse,
+              200..<300 ~= response.statusCode,
+              (try? JSONDecoder().decode(Health.self, from: data).walletAuth) == true else {
+            throw URLError(.badServerResponse)
+        }
+    }
+}
+
 struct WalletChallengeResponse: Decodable {
     let challengeId: String
     let wallet: String

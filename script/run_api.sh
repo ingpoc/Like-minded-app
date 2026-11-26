@@ -4,7 +4,12 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-PORT="${PORT:-8787}"
+# Preserve the caller's port across .env.local, whose contents are trusted only
+# for application settings and must never redirect this process.
+REQUESTED_PORT="${1:-${PORT:-8794}}"
+PORT="$REQUESTED_PORT"
+REQUESTED_APPLE_AUTH_BYPASS="${APPLE_AUTH_BYPASS:-}"
+REQUESTED_DB_DIR="${LIKEMINDED_DB_DIR:-}"
 API_SCRIPT="$ROOT_DIR/services/api/src/server.js"
 
 if [[ ! -f "$ROOT_DIR/.env.local" ]]; then
@@ -22,7 +27,10 @@ fi
 
 cd "$ROOT_DIR"
 set -a && source .env.local && set +a
+export PORT="$REQUESTED_PORT"
+if [[ -n "$REQUESTED_APPLE_AUTH_BYPASS" ]]; then export APPLE_AUTH_BYPASS="$REQUESTED_APPLE_AUTH_BYPASS"; fi
+if [[ -n "$REQUESTED_DB_DIR" ]]; then export LIKEMINDED_DB_DIR="$REQUESTED_DB_DIR"; fi
 
 echo "Starting likeminded-api on port $PORT..."
 echo "Health: http://127.0.0.1:$PORT/health"
-exec node "$API_SCRIPT"
+exec env PORT="$PORT" node "$API_SCRIPT"

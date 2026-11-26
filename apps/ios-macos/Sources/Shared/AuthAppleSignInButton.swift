@@ -8,6 +8,7 @@ struct AuthAppleSignInButton: View {
 
     let style: Style
     let isAuthenticating: Bool
+    var isActiveProvider: Bool = false
     var accent: Color = Color(red: 0.059, green: 0.290, blue: 0.239)
     let action: () -> Void
 
@@ -23,7 +24,7 @@ struct AuthAppleSignInButton: View {
             HStack(spacing: 10) {
                 Image(systemName: "applelogo")
                     .font(.title3)
-                Text(isAuthenticating ? "Signing in" : "Sign in with Apple")
+                Text(isActiveProvider ? "Signing in" : "Sign in with Apple")
                     .font(.system(size: 17, weight: .semibold))
             }
             .frame(maxWidth: .infinity)
@@ -33,6 +34,6 @@ struct AuthAppleSignInButton: View {
         }
         .buttonStyle(.plain)
         .disabled(isAuthenticating)
-        .accessibilityLabel("Sign in with Apple")
+        .accessibilityLabel(isActiveProvider ? "Signing in with Apple" : "Sign in with Apple")
     }
 }

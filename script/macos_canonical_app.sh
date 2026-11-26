@@ -195,5 +195,5 @@ macos_launch() {
 
 macos_open_with_args() {
   macos_kill_all
-  open --env "LIKEMINDED_API_BASE_URL=http://127.0.0.1:${PORT:-8787}" -F -n "$MACOS_CANONICAL_APP" --args "$@"
+  open --env "LIKEMINDED_API_BASE_URL=http://127.0.0.1:${PORT:-8794}" -F -n "$MACOS_CANONICAL_APP" --args "$@"
 }

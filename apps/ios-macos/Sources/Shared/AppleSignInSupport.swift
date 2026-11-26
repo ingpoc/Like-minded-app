@@ -1,6 +1,7 @@
 import AuthenticationServices
 import CryptoKit
 import Foundation
+import OSLog
 #if os(macOS)
 import AppKit
 #else
@@ -13,6 +14,65 @@ struct AppleSignInCredentialPayload {
     let fullName: String?
     let userIdentifier: String
     let rawNonce: String
+}
+
+@MainActor
+final class AuthorizationRequestCoordinator<Value> {
+    private struct Request {
+        let id: UUID
+        let nonce: String
+        let controller: AnyObject
+        let continuation: CheckedContinuation<Result<(value: Value, nonce: String), Error>, Never>
+        let cancelController: () -> Void
+        var timeout: Task<Void, Never>?
+    }
+
+    private var active: Request?
+
+    func begin(
+        controller: AnyObject,
+        nonce: String,
+        timeoutNanoseconds: UInt64 = 20_000_000_000,
+        cancelController: @escaping () -> Void,
+        perform: () -> Void
+    ) async -> Result<(value: Value, nonce: String), Error> {
+        invalidateActive()
+        let id = UUID()
+        return await withCheckedContinuation { continuation in
+            active = Request(id: id, nonce: nonce, controller: controller, continuation: continuation, cancelController: cancelController)
+            active?.timeout = Task { [weak self] in
+                try? await Task.sleep(nanoseconds: timeoutNanoseconds)
+                guard !Task.isCancelled else { return }
+                self?.finish(id: id, controller: controller, with: .failure(URLError(.timedOut)))
+            }
+            perform()
+        }
+    }
+
+    func nonce(for controller: AnyObject) -> String? {
+        guard let active, active.controller === controller else { return nil }
+        return active.nonce
+    }
+
+    func complete(controller: AnyObject, with result: Result<Value, Error>) {
+        guard let active, active.controller === controller else { return }
+        finish(id: active.id, controller: controller, with: result.map { (value: $0, nonce: active.nonce) })
+    }
+
+    private func invalidateActive() {
+        guard let request = active else { return }
+        active = nil
+        request.timeout?.cancel()
+        request.cancelController()
+        request.continuation.resume(returning: .failure(URLError(.cancelled)))
+    }
+
+    private func finish(id: UUID, controller: AnyObject, with result: Result<(value: Value, nonce: String), Error>) {
+        guard let request = active, request.id == id, request.controller === controller else { return }
+        active = nil
+        request.timeout?.cancel()
+        request.continuation.resume(returning: result)
+    }
 }
 
 enum AppleCredentialStateResult: Equatable {
@@ -29,6 +89,10 @@ struct AuthHTTPError: Error {
 
 enum AuthErrorMessage {
     static func userFacing(_ error: Error) -> String {
+        let nsError = error as NSError
+        if nsError.domain == "com.google.GIDSignIn", nsError.code == -5 {
+            return "Sign in was canceled."
+        }
         if let authError = error as? ASAuthorizationError, authError.code == .canceled {
             return "Sign in was canceled."
         }
@@ -52,6 +116,11 @@ enum AuthErrorMessage {
         }
         return "We couldn't sign you in right now. Please try again."
     }
+}
+
+enum AuthDiagnostics {
+    private static let logger = Logger(subsystem: "com.gurusharan.likeminded", category: "auth")
+    static func log(_ message: String) { logger.info("\(message, privacy: .public)") }
 }
 
 enum AppleSignInSupport {
@@ -147,15 +216,10 @@ enum AppleSignInError: LocalizedError {
 
 @MainActor
 final class AppleSignInController: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
-    private var rawNonce = ""
-    private var continuation: CheckedContinuation<Result<AppleSignInCredentialPayload, Error>, Never>?
+    private let requests = AuthorizationRequestCoordinator<AppleSignInCredentialPayload>()
 
     func signIn(requestedScopes: [ASAuthorization.Scope] = [.fullName, .email]) async -> Result<AppleSignInCredentialPayload, Error> {
-        if let replaced = continuation {
-            continuation = nil
-            replaced.resume(returning: .failure(URLError(.cancelled)))
-        }
-        rawNonce = AppleSignInSupport.randomNonce()
+        let rawNonce = AppleSignInSupport.randomNonce()
         let request = ASAuthorizationAppleIDProvider().createRequest()
         request.requestedScopes = requestedScopes
         request.nonce = AppleSignInSupport.sha256(rawNonce)
@@ -164,10 +228,13 @@ final class AppleSignInController: NSObject, ASAuthorizationControllerDelegate, 
         controller.delegate = self
         controller.presentationContextProvider = self
 
-        return await withCheckedContinuation { continuation in
-            self.continuation = continuation
-            controller.performRequests()
-        }
+        let result = await requests.begin(
+            controller: controller,
+            nonce: rawNonce,
+            cancelController: { controller.cancel() },
+            perform: { controller.performRequests() }
+        )
+        return result.map(\.value)
     }
 
     func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
@@ -181,26 +248,21 @@ final class AppleSignInController: NSObject, ASAuthorizationControllerDelegate, 
     }
 
     func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        guard let nonce = requests.nonce(for: controller) else { return }
         guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential else {
-            finish(with: .failure(AppleSignInError.unsupportedCredential))
+            requests.complete(controller: controller, with: .failure(AppleSignInError.unsupportedCredential))
             return
         }
 
         do {
-            let payload = try AppleSignInSupport.payload(from: credential, rawNonce: rawNonce)
-            finish(with: .success(payload))
+            let payload = try AppleSignInSupport.payload(from: credential, rawNonce: nonce)
+            requests.complete(controller: controller, with: .success(payload))
         } catch {
-            finish(with: .failure(error))
+            requests.complete(controller: controller, with: .failure(error))
         }
     }
 
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
-        finish(with: .failure(error))
-    }
-
-    private func finish(with result: Result<AppleSignInCredentialPayload, Error>) {
-        guard let continuation else { return }
-        self.continuation = nil
-        continuation.resume(returning: result)
+        requests.complete(controller: controller, with: .failure(error))
     }
 }

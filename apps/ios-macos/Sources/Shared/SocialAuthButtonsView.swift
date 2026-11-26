@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SocialAuthButtonsView: View {
     let isAuthenticating: Bool
+    var activeAuthProvider: String? = nil
     var titleColor: Color = Color(red: 0.063, green: 0.165, blue: 0.145)
     var borderColor: Color = Color.black.opacity(0.08)
     /// When false, wallet providers stay behind disclosure (invite/MVP primary path).
@@ -20,6 +21,7 @@ struct SocialAuthButtonsView: View {
                 titleColor: titleColor,
                 borderColor: borderColor,
                 isAuthenticating: isAuthenticating,
+                isActiveProvider: activeAuthProvider == "google",
                 action: onGoogleSignIn
             )
 
@@ -30,6 +32,7 @@ struct SocialAuthButtonsView: View {
                     titleColor: titleColor,
                     borderColor: borderColor,
                     isAuthenticating: isAuthenticating,
+                    isActiveProvider: activeAuthProvider == "metamask",
                     action: onMetaMaskSignIn
                 )
 
@@ -39,6 +42,7 @@ struct SocialAuthButtonsView: View {
                     titleColor: titleColor,
                     borderColor: borderColor,
                     isAuthenticating: isAuthenticating,
+                    isActiveProvider: activeAuthProvider == "solflare",
                     action: onSolflareSignIn
                 )
             } else {
@@ -71,6 +75,7 @@ private struct AuthProviderButton: View {
     let titleColor: Color
     let borderColor: Color
     let isAuthenticating: Bool
+    var isActiveProvider: Bool = false
     let action: () -> Void
 
     var body: some View {
@@ -78,7 +83,7 @@ private struct AuthProviderButton: View {
             HStack(spacing: 10) {
                 brand.view
                     .frame(width: 22, height: 22)
-                Text(title)
+                Text(isActiveProvider ? "Signing in" : title)
                     .font(.system(size: 17, weight: .semibold))
             }
             .frame(maxWidth: .infinity)
@@ -92,6 +97,6 @@ private struct AuthProviderButton: View {
         }
         .buttonStyle(.plain)
         .disabled(isAuthenticating)
-        .accessibilityLabel(title)
+        .accessibilityLabel(isActiveProvider ? "Signing in with \(title.replacingOccurrences(of: "Continue with ", with: ""))" : title)
     }
 }

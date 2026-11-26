@@ -1,14 +1,75 @@
 const assert = require("node:assert/strict");
 const test = require("node:test");
-const crypto = require("node:crypto");
 const { startApi } = require("./helpers/api-server");
+const fs = require("node:fs");
+const os = require("node:os");
+const path = require("node:path");
+const crypto = require("node:crypto");
+const { createSessionToken } = require("../src/lib/auth");
+const { encryptRefreshToken } = require("../src/lib/apple-token");
+
+async function startProductionAppleDelete({ mode = "success", withToken = true } = {}) {
+  const dbDir = fs.mkdtempSync(path.join(os.tmpdir(), "likeminded-prod-delete-"));
+  const capture = path.join(dbDir, "revoke-requests.jsonl");
+  const release = path.join(dbDir, "release");
+  const secret = "local-test-secret-minimum-24-chars";
+  const previousSecret = process.env.SESSION_SECRET;
+  process.env.SESSION_SECRET = secret;
+  const userId = `usr_${crypto.createHash("sha256").update("apple:production-delete-user").digest("hex").slice(0, 24)}`;
+  const refreshToken = "seeded-refresh-token-for-revoke-test";
+  const { privateKey } = crypto.generateKeyPairSync("ec", { namedCurve: "prime256v1" });
+  const user = {
+    id: userId,
+    apple_sub: "production-delete-user",
+    google_sub: null,
+    wallet_address: null,
+    wallet_chain: null,
+    auth_provider: "apple",
+    email: "delete-test@example.invalid",
+    full_name: "Delete Test",
+    apple_refresh_token_ciphertext: withToken ? encryptRefreshToken(refreshToken, secret) : null,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  };
+  fs.writeFileSync(path.join(dbDir, "mvp-store.json"), JSON.stringify({
+    users: { [userId]: user },
+    profiles: [{ id: "production-delete-profile", user_id: userId, data: { profileId: "production-delete-profile", userId }, created_at: new Date().toISOString() }]
+  }));
+  const token = createSessionToken({ id: userId, authProvider: "apple", appleSub: user.apple_sub });
+  if (previousSecret === undefined) delete process.env.SESSION_SECRET;
+  else process.env.SESSION_SECRET = previousSecret;
+  const preload = path.join(__dirname, "helpers", "apple-revoke-fetch-stub.cjs");
+  const api = await startApi({
+    APPLE_AUTH_BYPASS: "0",
+    APPLE_CLIENT_ID: "com.gurusharan.likeminded",
+    APPLE_TEAM_ID: "TESTTEAM123",
+    APPLE_KEY_ID: "TESTKEY1234",
+    APPLE_PRIVATE_KEY: privateKey.export({ type: "pkcs8", format: "pem" }).toString(),
+    SESSION_SECRET: secret,
+    LIKEMINDED_DB_DIR: dbDir,
+    NODE_OPTIONS: `--require=${preload}`,
+    APPLE_REVOKE_TEST_MODE: mode,
+    APPLE_REVOKE_TEST_CAPTURE: capture,
+    APPLE_REVOKE_TEST_RELEASE: release
+  });
+  return { api, dbDir, capture, release, refreshToken, token, userId };
+}
+
+async function waitForFile(pathname) {
+  const until = Date.now() + 3000;
+  while (!fs.existsSync(pathname) && Date.now() < until) await new Promise(resolve => setTimeout(resolve, 10));
+  assert.ok(fs.existsSync(pathname), `expected file ${pathname}`);
+}
+
+function revokeRequests(capture) {
+  return fs.existsSync(capture) ? fs.readFileSync(capture, "utf8").trim().split("\n").filter(Boolean).map(JSON.parse) : [];
+}
 
 const {
   AppleIdentityServiceError,
   appleAudiences,
   verifyNonce,
   verifyAppleIdentityToken,
-  createSessionToken,
   verifySessionToken,
   parseJwt
 } = require("../src/lib/auth");
@@ -108,6 +169,56 @@ test("wallet challenge returns unavailable when wallet auth is not configured", 
     assert.equal(result.body.error, "wallet_auth_unavailable");
   } finally {
     await api.stop();
+  }
+});
+
+test("production Apple deletion holds the account until one revoke request succeeds", async () => {
+  const seeded = await startProductionAppleDelete({ mode: "hold" });
+  try {
+    const deleting = seeded.api.request("/v1/me/account", { method: "DELETE", token: seeded.token });
+    await waitForFile(seeded.capture);
+    const requests = revokeRequests(seeded.capture);
+    assert.equal(requests.length, 1);
+    assert.equal(requests[0].url, "https://appleid.apple.com/auth/revoke");
+    assert.equal(new URLSearchParams(requests[0].body).get("token"), seeded.refreshToken);
+    const stillSignedIn = await seeded.api.request("/v1/me/profile", { token: seeded.token });
+    assert.equal(stillSignedIn.status, 200);
+    fs.writeFileSync(seeded.release, "release");
+    const deleted = await deleting;
+    assert.equal(deleted.status, 200);
+    assert.equal((await seeded.api.request("/v1/me/profile", { token: seeded.token })).status, 401);
+    assert.equal(revokeRequests(seeded.capture).length, 1);
+  } finally {
+    await seeded.api.stop();
+    fs.rmSync(seeded.dbDir, { recursive: true, force: true });
+  }
+});
+
+test("production Apple deletion preserves account and session when revoke fails", async () => {
+  const seeded = await startProductionAppleDelete({ mode: "failure" });
+  try {
+    const deleted = await seeded.api.request("/v1/me/account", { method: "DELETE", token: seeded.token });
+    assert.equal(deleted.status, 502);
+    const requests = revokeRequests(seeded.capture);
+    assert.equal(requests.length, 1);
+    assert.equal(new URLSearchParams(requests[0].body).get("token"), seeded.refreshToken);
+    assert.equal((await seeded.api.request("/v1/me/profile", { token: seeded.token })).status, 200);
+  } finally {
+    await seeded.api.stop();
+    fs.rmSync(seeded.dbDir, { recursive: true, force: true });
+  }
+});
+
+test("production Apple deletion without stored token returns 409 without revoke", async () => {
+  const seeded = await startProductionAppleDelete({ mode: "success", withToken: false });
+  try {
+    const deleted = await seeded.api.request("/v1/me/account", { method: "DELETE", token: seeded.token });
+    assert.equal(deleted.status, 409);
+    assert.equal(revokeRequests(seeded.capture).length, 0);
+    assert.equal((await seeded.api.request("/v1/me/profile", { token: seeded.token })).status, 200);
+  } finally {
+    await seeded.api.stop();
+    fs.rmSync(seeded.dbDir, { recursive: true, force: true });
   }
 });
 

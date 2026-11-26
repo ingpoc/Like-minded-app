@@ -450,19 +450,20 @@ struct MacScreenView: View {
                         featureRow(icon: "person.3", title: "Circle placement", detail: "We place you where you'll belong.", accessibilityLabel: "Circle placement")
                     }
                     .padding(.vertical, 4)
-                    AuthAppleSignInButton(style: .black, isAuthenticating: appState.isAuthenticating) {
+                    AuthAppleSignInButton(style: .black, isAuthenticating: appState.isAuthenticating, isActiveProvider: appState.activeAuthProvider == "apple") {
                         Task { await appState.signInWithApple(using: appleSignInController) }
                     }
 
                     SocialAuthButtonsView(
                         isAuthenticating: appState.isAuthenticating,
+                        activeAuthProvider: appState.activeAuthProvider,
                         titleColor: MacPalette.ink,
                         borderColor: MacPalette.line,
                         onGoogleSignIn: { Task { await appState.signInWithGoogle() } },
                         onMetaMaskSignIn: { Task { await appState.signInWithWallet(.metamask) } },
                         onSolflareSignIn: { Task { await appState.signInWithWallet(.solflare) } }
                     )
-                    if appState.isAuthenticating {
+                    if appState.isAuthenticating, appState.activeAuthProvider == "apple" {
                         ProgressView("Signing in")
                             .font(MacType.small)
                             .foregroundStyle(MacPalette.muted)

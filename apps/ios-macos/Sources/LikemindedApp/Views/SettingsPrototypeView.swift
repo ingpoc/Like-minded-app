@@ -3,7 +3,7 @@ import SwiftUI
 struct SettingsPrototypeView: View {
     @EnvironmentObject private var appState: PrototypeAppState
     @State private var showingSignOutConfirm = false
-    @State private var showingDeleteConfirm = false
+    @State private var activeDeleteAlert: DeleteAccountAlert?
     @State private var isDeletingAccount = false
     @State private var activeSheet: SettingsSheet?
     @State private var appleSignInController = AppleSignInController()
@@ -87,7 +87,7 @@ struct SettingsPrototypeView: View {
                 settingsSection("Danger zone") {
                     VStack(spacing: 0) {
                         SettingsRow(title: isDeletingAccount ? "Deleting account" : "Delete account", role: .destructive) {
-                            showingDeleteConfirm = true
+                            activeDeleteAlert = .confirmation
                         }
                         .disabled(isDeletingAccount)
                     }
@@ -168,21 +168,31 @@ struct SettingsPrototypeView: View {
         } message: {
             Text("You will need to sign in again to restore your profile and placement.")
         }
-        .confirmationDialog(
-            "Delete your account?",
-            isPresented: $showingDeleteConfirm,
-            titleVisibility: .visible
-        ) {
-            Button("Delete account", role: .destructive) {
-                Task {
-                    isDeletingAccount = true
-                    _ = await appState.deleteAccount()
-                    isDeletingAccount = false
-                }
+        .alert(item: $activeDeleteAlert) { alert in
+            switch alert {
+            case .confirmation:
+                Alert(
+                    title: Text("Delete your account?"),
+                    message: Text("This removes your profile, placement, transcript, feedback, Soulmate, chat, community, and meetup data from this backend."),
+                    primaryButton: .cancel(Text("Cancel")),
+                    secondaryButton: .destructive(Text("Delete account")) {
+                        Task {
+                            isDeletingAccount = true
+                            let deleted = await appState.deleteAccount()
+                            isDeletingAccount = false
+                            if !deleted, let message = appState.authError {
+                                activeDeleteAlert = .failure(message)
+                            }
+                        }
+                    }
+                )
+            case .failure(let message):
+                Alert(
+                    title: Text("Account not deleted"),
+                    message: Text(message),
+                    dismissButton: .default(Text("OK"))
+                )
             }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("This removes your profile, placement, transcript, feedback, Soulmate, chat, community, and meetup data from this backend.")
         }
         .sheet(item: $activeSheet) { sheet in
             switch sheet {
@@ -231,6 +241,18 @@ struct SettingsPrototypeView: View {
             .background(PrototypePalette.surface)
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(PrototypePalette.rule, lineWidth: 1))
+        }
+    }
+}
+
+private enum DeleteAccountAlert: Identifiable {
+    case confirmation
+    case failure(String)
+
+    var id: String {
+        switch self {
+        case .confirmation: "confirmation"
+        case .failure: "failure"
         }
     }
 }
