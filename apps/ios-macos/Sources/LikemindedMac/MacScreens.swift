@@ -421,6 +421,39 @@ struct MacScreenView: View {
         }
     }
 
+    private var appearanceThemePicker: some View {
+        // Size each segment to its full caption so “Match system” is not clipped (UI-15).
+        HStack(spacing: 0) {
+            ForEach(
+                [("system", "Match system"), ("light", "Light"), ("dark", "Dark")],
+                id: \.0
+            ) { value, title in
+                let selected = appearancePreference == value
+                Button {
+                    appearancePreference = value
+                } label: {
+                    Text(title)
+                        .font(MacType.small.weight(.semibold))
+                        .lineLimit(1)
+                        .fixedSize(horizontal: true, vertical: true)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 8)
+                        .foregroundStyle(selected ? MacPalette.onAccent : MacPalette.ink)
+                        .background(selected ? MacPalette.accent : Color.clear, in: Capsule())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(title)
+                .accessibilityAddTraits(selected ? [.isButton, .isSelected] : .isButton)
+                .accessibilityIdentifier("appearance-\(value)")
+            }
+        }
+        .padding(3)
+        .background(MacPalette.surface, in: Capsule())
+        .overlay(Capsule().stroke(MacPalette.line, lineWidth: 1))
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Theme")
+    }
+
     // MARK: - 1. welcome
 
     private var welcome: some View {
@@ -429,6 +462,7 @@ struct MacScreenView: View {
                 .ignoresSafeArea()
                 .allowsHitTesting(false)
 
+            VStack(alignment: .leading, spacing: 0) {
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 22) {
                     Text("Likeminded")
@@ -475,16 +509,24 @@ struct MacScreenView: View {
                             .font(MacType.small)
                             .foregroundStyle(MacPalette.clay)
                     }
-
-                    AuthTermsFooter(
-                        accent: MacPalette.accent,
-                        muted: MacPalette.muted
-                    )
                 }
                 .frame(width: 430, alignment: .topLeading)
                 .padding(.leading, 56)
                 .padding(.top, 28)
-                .padding(.bottom, 28)
+                .padding(.bottom, 16)
+                }
+
+                // Pin the legal line under the scroll so “More sign-in options”
+                // cannot push Terms off the window (UI-02 / UI-12).
+                AuthTermsFooter(
+                    accent: MacPalette.accent,
+                    muted: MacPalette.muted
+                )
+                .frame(width: 430, alignment: .leading)
+                .padding(.leading, 56)
+                .padding(.top, 4)
+                .padding(.bottom, 24)
+                .accessibilityIdentifier("auth-terms-footer")
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -5216,12 +5258,7 @@ struct MacScreenView: View {
             }
         case .appearance:
             MacPanel(title: "Appearance") {
-                Picker("Theme", selection: $appearancePreference) {
-                    Text("Match system").tag("system")
-                    Text("Light").tag("light")
-                    Text("Dark").tag("dark")
-                }
-                .pickerStyle(.segmented)
+                appearanceThemePicker
                 Text("Choose light, dark, or match your Mac.")
                     .font(MacType.small)
                     .foregroundStyle(MacPalette.muted)

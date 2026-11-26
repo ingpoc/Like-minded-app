@@ -157,6 +157,8 @@ struct MacPill: View {
         Text(text)
             .font(MacType.small.weight(.medium))
             .foregroundStyle(isSelected ? MacPalette.onAccent : MacPalette.ink)
+            .lineLimit(1)
+            .fixedSize(horizontal: true, vertical: true)
             .padding(.horizontal, 13)
             .padding(.vertical, 8)
             .background(isSelected ? MacPalette.accent : MacPalette.surface, in: Capsule())

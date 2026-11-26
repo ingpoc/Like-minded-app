@@ -57,7 +57,7 @@ struct MacMeetOverviewConceptView: View {
                     pastMeetupsPanel
                         .frame(maxWidth: .infinity)
                     weeklyAvailabilityPanel
-                        .frame(width: 340)
+                        .frame(minWidth: 420)
                 }
             } else {
                 MacPanel {
@@ -139,6 +139,7 @@ struct MacMeetOverviewConceptView: View {
                         heroRSVPButton(option)
                     }
                 }
+                .fixedSize(horizontal: false, vertical: true)
 
                 // Ledger control join-meetup → meetVideoCall. Venue copy is physical;
                 // CTA must name video modality (UI/UX review) so camera ≠ “show up in room”.
@@ -155,7 +156,7 @@ struct MacMeetOverviewConceptView: View {
                 .accessibilityAddTraits(.isButton)
             }
             .padding(28)
-            .frame(width: 400, alignment: .topLeading)
+            .frame(minWidth: 520, alignment: .topLeading)
 
             // Pin sits on the generated field's convergence sink.
             GeometryReader { geo in
@@ -196,15 +197,19 @@ struct MacMeetOverviewConceptView: View {
         } label: {
             Label(option.label, systemImage: option.icon)
                 .font(MacType.small.weight(.semibold))
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: true)
         }
         if selected && option == .yes {
             button
                 .buttonStyle(MacPrimaryButtonStyle())
+                .fixedSize(horizontal: true, vertical: true)
                 .accessibilityLabel(option.label)
                 .accessibilityValue("Selected")
         } else {
             button
                 .buttonStyle(MacSecondaryButtonStyle())
+                .fixedSize(horizontal: true, vertical: true)
                 .accessibilityLabel(option.label)
                 .accessibilityValue(selected ? "Selected" : "Not selected")
         }
@@ -366,7 +371,7 @@ struct MacMeetOverviewConceptView: View {
                     .font(MacType.small)
                     .foregroundStyle(MacPalette.muted)
             }
-            Spacer()
+            Spacer(minLength: 8)
             HStack(spacing: 8) {
                 Button {
                     Task { await appState.updateMeetingRSVP(kind: kind, available: true) }
@@ -386,6 +391,7 @@ struct MacMeetOverviewConceptView: View {
                 .accessibilityLabel("\(day) \(detail) not available")
                 .accessibilityValue(!available ? "Selected" : "Not selected")
             }
+            .fixedSize(horizontal: true, vertical: true)
         }
     }
 

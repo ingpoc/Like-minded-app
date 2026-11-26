@@ -28,7 +28,10 @@ struct LikemindedMacApp: App {
                 .preferredColorScheme(appColorScheme)
                 .tint(MacPalette.accent)
                 .background(MacWindowChromeHider())
-                .onAppear(perform: applyAppearancePreference)
+                .onAppear {
+                    applyLaunchAppearanceOverride()
+                    applyAppearancePreference()
+                }
                 .onChange(of: appearancePreference) { _, _ in
                     applyAppearancePreference()
                 }
@@ -95,6 +98,15 @@ struct LikemindedMacApp: App {
         case "dark": .dark
         default: nil
         }
+    }
+
+    private func applyLaunchAppearanceOverride() {
+        let arguments = ProcessInfo.processInfo.arguments
+        guard let index = arguments.firstIndex(of: "--likeminded-appearance"),
+              arguments.indices.contains(index + 1) else { return }
+        let value = arguments[index + 1]
+        guard ["light", "dark", "system"].contains(value) else { return }
+        appearancePreference = value
     }
 
     private func applyAppearancePreference() {
