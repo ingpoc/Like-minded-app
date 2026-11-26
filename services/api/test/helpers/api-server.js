@@ -7,19 +7,18 @@ const path = require("node:path");
 
 const root = path.resolve(__dirname, "../../../..");
 
-async function freePort() {
-  const requested = Number(process.env.PORT || 8794);
-  const candidates = [requested, ...[8794, 8795, 8796, 8797, 8798, 8799].filter(port => port !== requested)];
-  for (const port of candidates) {
-    if (port < 8794 || port > 8799) continue;
-    const available = await new Promise(resolve => {
-      const probe = net.createServer();
-      probe.once("error", () => resolve(false));
-      probe.listen(port, "127.0.0.1", () => probe.close(() => resolve(true)));
+function freePort() {
+  // Black-box tests run in parallel, so bind an ephemeral port. Launch
+  // scripts that need 8794-8799 set PORT themselves and do not use this helper.
+  return new Promise((resolve, reject) => {
+    const probe = net.createServer();
+    probe.unref();
+    probe.on("error", reject);
+    probe.listen(0, "127.0.0.1", () => {
+      const { port } = probe.address();
+      probe.close(() => resolve(port));
     });
-    if (available) return port;
-  }
-  throw new Error("No local test API port available in 8794-8799");
+  });
 }
 
 async function startApi(extraEnv = {}) {
