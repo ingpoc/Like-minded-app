@@ -50,12 +50,7 @@ struct AuthGateView: View {
 
                 Spacer(minLength: 48)
 
-                AuthAppleSignInButton(
-                    style: .accentGreen,
-                    isAuthenticating: appState.isAuthenticating,
-                    isActiveProvider: appState.activeAuthProvider == "apple",
-                    accent: PrototypePalette.accent
-                ) {
+                AuthAppleSignInButton(isAuthenticating: appState.isAuthenticating, isActiveProvider: appState.activeAuthProvider == "apple") {
                     Task { await signInWithApple() }
                 }
 
@@ -63,7 +58,7 @@ struct AuthGateView: View {
                     isAuthenticating: appState.isAuthenticating,
                     activeAuthProvider: appState.activeAuthProvider,
                     titleColor: PrototypePalette.ink,
-                    borderColor: Color.black.opacity(0.08),
+                    borderColor: PrototypePalette.line,
                     onGoogleSignIn: { Task { await appState.signInWithGoogle() } },
                     onMetaMaskSignIn: { Task { await appState.signInWithWallet(.metamask) } },
                     onSolflareSignIn: { Task { await appState.signInWithWallet(.solflare) } }

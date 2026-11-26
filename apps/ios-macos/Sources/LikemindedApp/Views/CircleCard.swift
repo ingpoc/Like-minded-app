@@ -19,7 +19,7 @@ struct CircleCard: View {
                     .foregroundStyle(.white)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
-                    .background(Color.white.opacity(0.12))
+                    .background(PrototypePalette.coverPill)
                     .clipShape(Capsule(style: .continuous))
                 Spacer()
             }
@@ -31,18 +31,18 @@ struct CircleCard: View {
                 .foregroundStyle(.white)
                 .fixedSize(horizontal: false, vertical: true)
             Text(show.subtitle)
-                .font(.system(size: 11, weight: .medium))
+                .font(PrototypeTypography.metadata)
                 .foregroundStyle(.white.opacity(0.86))
                 .lineLimit(2)
 
             HStack(spacing: 6) {
                 ForEach(show.tags.prefix(2), id: \.self) { theme in
                     Text(theme)
-                        .font(.system(size: 10, weight: .medium))
+                        .font(PrototypeTypography.metadata)
                         .foregroundStyle(.white)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 5)
-                        .background(Color.white.opacity(0.12))
+                        .background(PrototypePalette.coverPill)
                         .clipShape(Capsule(style: .continuous))
                 }
             }

@@ -3,8 +3,8 @@ import SwiftUI
 struct SocialAuthButtonsView: View {
     let isAuthenticating: Bool
     var activeAuthProvider: String? = nil
-    var titleColor: Color = Color(red: 0.063, green: 0.165, blue: 0.145)
-    var borderColor: Color = Color.black.opacity(0.08)
+    var titleColor: Color = LikemindedPalette.ink
+    var borderColor: Color = LikemindedPalette.line
     /// When false, wallet providers stay behind disclosure (invite/MVP primary path).
     var showWalletProvidersByDefault: Bool = false
     let onGoogleSignIn: () -> Void
@@ -50,7 +50,7 @@ struct SocialAuthButtonsView: View {
                     showWalletProviders = true
                 } label: {
                     Text("More sign-in options")
-                        .font(.system(size: 15, weight: .medium))
+                        .font(LikemindedTypography.caption.weight(.medium))
                         .foregroundStyle(titleColor.opacity(0.72))
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.top, 2)
@@ -84,12 +84,12 @@ private struct AuthProviderButton: View {
                 brand.view
                     .frame(width: 22, height: 22)
                 Text(isActiveProvider ? "Signing in" : title)
-                    .font(.system(size: 17, weight: .semibold))
+                    .font(LikemindedTypography.caption.weight(.semibold))
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
             .foregroundStyle(titleColor)
-            .background(Color.white, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .background(LikemindedPalette.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 18, style: .continuous)
                     .stroke(borderColor, lineWidth: 1)

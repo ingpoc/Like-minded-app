@@ -1,23 +1,9 @@
 import SwiftUI
 
 struct AuthAppleSignInButton: View {
-    enum Style {
-        case accentGreen
-        case black
-    }
-
-    let style: Style
     let isAuthenticating: Bool
     var isActiveProvider: Bool = false
-    var accent: Color = Color(red: 0.059, green: 0.290, blue: 0.239)
     let action: () -> Void
-
-    private var background: Color {
-        switch style {
-        case .accentGreen: accent
-        case .black: .black
-        }
-    }
 
     var body: some View {
         Button(action: action) {
@@ -25,12 +11,12 @@ struct AuthAppleSignInButton: View {
                 Image(systemName: "applelogo")
                     .font(.title3)
                 Text(isActiveProvider ? "Signing in" : "Sign in with Apple")
-                    .font(.system(size: 17, weight: .semibold))
+                    .font(LikemindedTypography.button)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
-            .background(background, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-            .foregroundStyle(.white)
+            .background(LikemindedPalette.appleSignInBackground, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .foregroundStyle(LikemindedPalette.appleSignInForeground)
         }
         .buttonStyle(.plain)
         .disabled(isAuthenticating)

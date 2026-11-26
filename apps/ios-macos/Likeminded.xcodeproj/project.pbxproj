@@ -31,6 +31,7 @@
 		3D96591126672068AD6125E9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E4A27335D18C85FF61CE549E /* Assets.xcassets */; };
 		3FC6508C115AA08A823B19CB /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71F1782CC0FAAD3C06C76E5C /* RootView.swift */; };
 		4319E06107624A793DB13545 /* AuthSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDF2490A9727FEEB417EED9F /* AuthSessionStore.swift */; };
+		4342213A875947EF9B60ADE4 /* LikemindedPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56463ED6F545F2B4520D83D /* LikemindedPalette.swift */; };
 		44A886C6EBCAB7C51DC6BB24 /* AuthTermsFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3263A357DE2335A1968309C8 /* AuthTermsFooter.swift */; };
 		4662D50BD9BFCB596D1B3824 /* DoodleArt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 296DEAB93269CB0949442024 /* DoodleArt.swift */; };
 		526F3648A81F8B47AA9EFC97 /* LiveKit in Frameworks */ = {isa = PBXBuildFile; productRef = EF71AD29363DA78174557635 /* LiveKit */; };
@@ -49,6 +50,7 @@
 		73DDAF3BEE6DBF7B8E4626AB /* AuthAppleSignInButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE27F2E2DF0BD86E2ED6C93 /* AuthAppleSignInButton.swift */; };
 		7682F25AC64F1A426B411750 /* MeetVenueStreamlineFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1E2884F9FFF95F47CA4932 /* MeetVenueStreamlineFieldView.swift */; };
 		7CB71404A390802C745BF8F1 /* MacScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = F693CC73A97F4BA64FD34B2D /* MacScreens.swift */; };
+		7F7B71740885079BE3E64889 /* LikemindedPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56463ED6F545F2B4520D83D /* LikemindedPalette.swift */; };
 		8298F29B28F7DBDF337EDD96 /* MacRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40664BF795D4C75998E0D941 /* MacRootView.swift */; };
 		840C9EB45DCEBC5391A5C561 /* AppleSignInSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FCE7C689C2FF701CCB18EB /* AppleSignInSupport.swift */; };
 		84146F27670847A18F01957F /* PrototypeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C716780C8187703C6E293080 /* PrototypeData.swift */; };
@@ -57,6 +59,7 @@
 		94B8BB90A08111BEB7490EEE /* RealtimeVoiceClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70685EA3FAE20FBC4827812B /* RealtimeVoiceClient.swift */; };
 		9917E4D207930B06A316F53D /* MacDesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E35A6097677BF379E314306E /* MacDesignSystem.swift */; };
 		9991EE71916006E89457B6E5 /* LikemindedAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DCB9E92C74E864B793C207 /* LikemindedAPIClient.swift */; };
+		A9F9A505915F176ADA1F3122 /* LikemindedTypography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470860CA8CF77E0066ADA271 /* LikemindedTypography.swift */; };
 		AF441928B59342BA1A398EBD /* MeetVenueStreamlineFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1E2884F9FFF95F47CA4932 /* MeetVenueStreamlineFieldView.swift */; };
 		B6865DD6F294D8C495E0F118 /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4CC542091C9D3F04D1DE21 /* CustomTabBar.swift */; };
 		B9E7E4DC406E0482E4C8D26C /* SocialAuthButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F92FDA4C0807BAC3C64DDC /* SocialAuthButtonsView.swift */; };
@@ -74,6 +77,7 @@
 		EA9F7CA6176BED311E8CE740 /* LiveKitWebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 5C23684ECD3C73D525192988 /* LiveKitWebRTC */; };
 		EC2377C78BA3D60350D3ABAF /* AuthBrandMark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 740CEE630B4E824C07E91448 /* AuthBrandMark.swift */; };
 		F5B8DF9B8360B797123A8F3F /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99419D847C29F69421A296E7 /* Models.swift */; };
+		F6EEC99F91A90AFC9A479BC1 /* LikemindedTypography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470860CA8CF77E0066ADA271 /* LikemindedTypography.swift */; };
 		FEEF47DE3C0EB72A13CE2AD5 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 74692D8F905BD45EC09335FA /* GoogleSignIn */; };
 /* End PBXBuildFile section */
 
@@ -91,6 +95,7 @@
 		40664BF795D4C75998E0D941 /* MacRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacRootView.swift; sourceTree = "<group>"; };
 		41EA66FBF90E7C869C23B14C /* MacMeetOverviewConceptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacMeetOverviewConceptView.swift; sourceTree = "<group>"; };
 		43D8F9C153E1CAAA2E1D4B53 /* DeviceIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceIdentity.swift; sourceTree = "<group>"; };
+		470860CA8CF77E0066ADA271 /* LikemindedTypography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikemindedTypography.swift; sourceTree = "<group>"; };
 		4895BAF5408C8A7CEDEB5EC3 /* CircleCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleCard.swift; sourceTree = "<group>"; };
 		583CD7AF0A74916366CBF8AF /* Likeminded.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Likeminded.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F51BCAB677E4C2BEAE840EE /* NotificationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsView.swift; sourceTree = "<group>"; };
@@ -125,6 +130,7 @@
 		E35A6097677BF379E314306E /* MacDesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacDesignSystem.swift; sourceTree = "<group>"; };
 		E4A27335D18C85FF61CE549E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EBE27F2E2DF0BD86E2ED6C93 /* AuthAppleSignInButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAppleSignInButton.swift; sourceTree = "<group>"; };
+		F56463ED6F545F2B4520D83D /* LikemindedPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikemindedPalette.swift; sourceTree = "<group>"; };
 		F693CC73A97F4BA64FD34B2D /* MacScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacScreens.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -170,7 +176,9 @@
 				814F0CD652DC8A2F1DB1E0CB /* ConvergenceField.metal */,
 				11A85D2585524F7C7F3B95F6 /* ConvergenceFieldView.swift */,
 				7B055E6A70526D0FD3D6B7C5 /* GoogleSignInSupport.swift */,
+				F56463ED6F545F2B4520D83D /* LikemindedPalette.swift */,
 				63D2CC8991B9726CA6E09FED /* LikemindedPrivacyPolicy.swift */,
+				470860CA8CF77E0066ADA271 /* LikemindedTypography.swift */,
 				000AE075D1E28F6F008AC04D /* LiveKitMeetSession.swift */,
 				0A1E2884F9FFF95F47CA4932 /* MeetVenueStreamlineFieldView.swift */,
 				85F92FDA4C0807BAC3C64DDC /* SocialAuthButtonsView.swift */,
@@ -427,7 +435,9 @@
 				16F14684399DFC422A77AF87 /* GoogleSignInSupport.swift in Sources */,
 				9991EE71916006E89457B6E5 /* LikemindedAPIClient.swift in Sources */,
 				638037123B69B011D78BF5A7 /* LikemindedApp.swift in Sources */,
+				4342213A875947EF9B60ADE4 /* LikemindedPalette.swift in Sources */,
 				C0779A3AF07F111E9FD05005 /* LikemindedPrivacyPolicy.swift in Sources */,
+				F6EEC99F91A90AFC9A479BC1 /* LikemindedTypography.swift in Sources */,
 				24B98ECCC3DD2FF590BCB942 /* LiveKitMeetSession.swift in Sources */,
 				0F0F08547C69AA374756B919 /* LiveKitTokenProvider.swift in Sources */,
 				7682F25AC64F1A426B411750 /* MeetVenueStreamlineFieldView.swift in Sources */,
@@ -462,7 +472,9 @@
 				6817D124A01EACB3443E418A /* GoogleSignInSupport.swift in Sources */,
 				132444A82981B36C69EF5C56 /* LikemindedAPIClient.swift in Sources */,
 				00C5C47C4D3A69486DC493D3 /* LikemindedMacApp.swift in Sources */,
+				7F7B71740885079BE3E64889 /* LikemindedPalette.swift in Sources */,
 				CFE0601D6BF86208DE3761F3 /* LikemindedPrivacyPolicy.swift in Sources */,
+				A9F9A505915F176ADA1F3122 /* LikemindedTypography.swift in Sources */,
 				8AF3DD76F0780D1EC6B688E6 /* LiveKitMeetSession.swift in Sources */,
 				EA5E724579022F5894D30BCE /* MacAppState.swift in Sources */,
 				3CD3E682BA4AF263823BF3D3 /* MacCirclesRoomView.swift in Sources */,

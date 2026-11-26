@@ -81,7 +81,7 @@ struct MacMeetOverviewConceptView: View {
         // Notifications chrome — shell overlay in MacRootView owns the single bell.
         VStack(alignment: .leading, spacing: 8) {
             Text("Likeminded")
-                .font(.system(size: 22, weight: .semibold, design: .serif))
+                .font(MacType.cardTitle)
                 .foregroundStyle(MacPalette.accent)
             Text("When you meet.")
                 .font(MacType.title)
@@ -114,7 +114,7 @@ struct MacMeetOverviewConceptView: View {
                     .foregroundStyle(MacPalette.muted)
 
                 Text(meeting?.title ?? "Designing for Belonging")
-                    .font(.system(size: 22, weight: .semibold, design: .serif))
+                    .font(MacType.cardTitle)
                     .foregroundStyle(MacPalette.ink)
                     .fixedSize(horizontal: false, vertical: true)
 
@@ -148,11 +148,8 @@ struct MacMeetOverviewConceptView: View {
                     Label("Join video call", systemImage: "video.fill")
                         .font(MacType.button)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 11)
-                        .background(MacPalette.accent, in: Capsule())
-                        .foregroundStyle(.white)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(MacPrimaryButtonStyle())
                 .accessibilityLabel("Join video call")
                 .accessibilityIdentifier("join-meetup")
                 .accessibilityAddTraits(.isButton)
@@ -165,7 +162,7 @@ struct MacMeetOverviewConceptView: View {
                 let focus = MacMeetVenueConvergenceField.pinPosition(in: geo.size)
                 VStack(spacing: 6) {
                     Image(systemName: "mappin")
-                        .font(.system(size: 26, weight: .semibold))
+                        .font(MacType.iconProminent)
                         .foregroundStyle(MacPalette.ink)
                     VStack(spacing: 2) {
                         Text(venueLines.title)
@@ -191,25 +188,26 @@ struct MacMeetOverviewConceptView: View {
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
     }
 
+    @ViewBuilder
     private func heroRSVPButton(_ option: HeroMeetRSVP) -> some View {
         let selected = heroRSVP == option
-        return Button {
+        let button = Button {
             heroRSVP = option
         } label: {
             Label(option.label, systemImage: option.icon)
                 .font(MacType.small.weight(.semibold))
-                .foregroundStyle(selected && option == .yes ? .white : MacPalette.ink)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 10)
-                .background(
-                    selected && option == .yes ? Color.black : MacPalette.surface.opacity(0.92),
-                    in: Capsule()
-                )
-                .overlay(Capsule().stroke(MacPalette.line, lineWidth: selected && option == .yes ? 0 : 1))
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel(option.label)
-        .accessibilityValue(selected ? "Selected" : "Not selected")
+        if selected && option == .yes {
+            button
+                .buttonStyle(MacPrimaryButtonStyle())
+                .accessibilityLabel(option.label)
+                .accessibilityValue("Selected")
+        } else {
+            button
+                .buttonStyle(MacSecondaryButtonStyle())
+                .accessibilityLabel(option.label)
+                .accessibilityValue(selected ? "Selected" : "Not selected")
+        }
     }
 
     private func attendeeStack(count: Int) -> some View {

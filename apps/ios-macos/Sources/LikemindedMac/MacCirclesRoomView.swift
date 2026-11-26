@@ -68,7 +68,7 @@ struct MacCirclesRoomView: View {
     private var editorialColumn: some View {
         VStack(alignment: .leading, spacing: 22) {
             Text("Likeminded")
-                .font(.system(size: 22, weight: .semibold, design: .serif))
+                .font(MacType.cardTitle)
                 .foregroundStyle(MacPalette.ink)
 
             Text("Your circle.")
@@ -96,7 +96,7 @@ struct MacCirclesRoomView: View {
             MacPanel {
                 VStack(alignment: .leading, spacing: 16) {
                     Image(systemName: "waveform")
-                        .font(.system(size: 28, weight: .medium))
+                        .font(MacType.iconHero)
                         .foregroundStyle(MacPalette.accent)
                     Text("Complete your AI profile")
                         .font(MacType.section)
@@ -108,12 +108,7 @@ struct MacCirclesRoomView: View {
                     Button("Start interview") {
                         navigate?(.profileOnboarding)
                     }
-                    .font(MacType.button)
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 18)
-                    .padding(.vertical, 10)
-                    .background(Color.black, in: Capsule())
-                    .buttonStyle(.plain)
+                    .buttonStyle(MacPrimaryButtonStyle())
                     .accessibilityLabel("Start AI profile interview")
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -158,7 +153,7 @@ struct MacCirclesRoomView: View {
 
                 VStack(alignment: .leading, spacing: 10) {
                     Text(circle.name)
-                        .font(.system(size: 22, weight: .semibold, design: .serif))
+                        .font(MacType.cardTitle)
                         .foregroundStyle(MacPalette.ink)
                     Label("\(memberCount(circle)) members", systemImage: "person.2")
                         .font(MacType.small)
@@ -174,12 +169,7 @@ struct MacCirclesRoomView: View {
                     Button("Enter \(circle.name)") {
                         openCircleDetail(circle)
                     }
-                    .font(MacType.button)
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 18)
-                    .padding(.vertical, 10)
-                    .background(Color.black, in: Capsule())
-                    .buttonStyle(.plain)
+                    .buttonStyle(MacPrimaryButtonStyle())
                     .accessibilityLabel("Enter \(circle.name)")
                     .accessibilityIdentifier("hero-circle-macos")
                 }
@@ -198,7 +188,7 @@ struct MacCirclesRoomView: View {
     private var concernStrip: some View {
         HStack(alignment: .center, spacing: 14) {
             Image(systemName: "hand.raised.slash")
-                .font(.system(size: 18, weight: .medium))
+                .font(MacType.icon)
                 .foregroundStyle(MacPalette.ink)
             VStack(alignment: .leading, spacing: 2) {
                 Text("This doesn't feel like my circle")
@@ -219,12 +209,7 @@ struct MacCirclesRoomView: View {
                     circleConcernStatus = appState.loadError ?? "Placement refresh requested."
                 }
             }
-            .font(MacType.button)
-            .buttonStyle(.plain)
-            .padding(.horizontal, 14)
-            .padding(.vertical, 8)
-            .background(MacPalette.accent, in: Capsule())
-            .foregroundStyle(.white)
+            .buttonStyle(MacSecondaryButtonStyle())
             .accessibilityLabel("Request circle placement refresh")
             .accessibilityIdentifier("concern-btn")
         }
@@ -273,7 +258,7 @@ struct MacCirclesRoomView: View {
             VStack(alignment: .leading, spacing: 12) {
                 DoodleCircleMark(circleId: circle.id, size: 64)
                 Text(circle.name)
-                    .font(.system(size: 16, weight: .semibold, design: .serif))
+                    .font(MacType.smallSerif)
                     .foregroundStyle(MacPalette.ink)
                     .lineLimit(2)
                 Label("\(memberCount(circle)) members", systemImage: "person.2")
@@ -401,7 +386,7 @@ struct MacCirclesRoomView: View {
     private func promiseRow(_ row: (icon: String, title: String, detail: String)) -> some View {
         HStack(alignment: .top, spacing: 14) {
             Image(systemName: row.icon)
-                .font(.system(size: 14, weight: .medium))
+                .font(MacType.iconSmall)
                 .foregroundStyle(MacPalette.ink)
                 .frame(width: 36, height: 36)
                 .background(MacPalette.surface.opacity(0.9), in: Circle())

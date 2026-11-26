@@ -223,6 +223,7 @@ struct MacScreenView: View {
     @State private var isCallMuted = false
     @State private var callSidePanel = "Participants"
     @State private var selectedSettingsPane: MacSettingsPane = MacScreenView.initialSettingsPane()
+    @AppStorage("likeminded.appearance") private var appearancePreference = "system"
     @State private var profileOnboardingStep = Self.initialProfileOnboardingStep()
     @State private var shouldHoldProfileInterviewStep = Self.initialProfileOnboardingStep() == 2
 
@@ -431,11 +432,11 @@ struct MacScreenView: View {
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 22) {
                     Text("Likeminded")
-                        .font(.system(size: 25, weight: .semibold, design: .serif))
+                        .font(MacType.section)
                         .foregroundStyle(MacPalette.accent)
                     VStack(alignment: .leading, spacing: 8) {
                         Text("When you meet,\nit matters.")
-                            .font(.system(size: 44, weight: .semibold, design: .serif))
+                            .font(MacType.display)
                             .lineSpacing(1)
                             .foregroundStyle(MacPalette.ink)
                             .fixedSize(horizontal: false, vertical: true)
@@ -450,7 +451,7 @@ struct MacScreenView: View {
                         featureRow(icon: "person.3", title: "Circle placement", detail: "We place you where you'll belong.", accessibilityLabel: "Circle placement")
                     }
                     .padding(.vertical, 4)
-                    AuthAppleSignInButton(style: .black, isAuthenticating: appState.isAuthenticating, isActiveProvider: appState.activeAuthProvider == "apple") {
+                    AuthAppleSignInButton(isAuthenticating: appState.isAuthenticating, isActiveProvider: appState.activeAuthProvider == "apple") {
                         Task { await appState.signInWithApple(using: appleSignInController) }
                     }
 
@@ -535,7 +536,7 @@ struct MacScreenView: View {
                 Spacer()
             }
             Text("No upcoming meetups")
-                .font(.system(size: 24, weight: .semibold, design: .serif))
+                .font(MacType.section)
                 .foregroundStyle(.white)
             Text("RSVP for this weekend to get scheduled.")
                 .font(MacType.body)
@@ -543,8 +544,8 @@ struct MacScreenView: View {
         }
         .padding(24)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(MacPalette.accent, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(.white.opacity(0.15), lineWidth: 1))
+        .background(MacPalette.accentDeep, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(MacPalette.coverBorder, lineWidth: 1))
         .frame(height: 250)
     }
 
@@ -561,15 +562,15 @@ struct MacScreenView: View {
                 }
                 Spacer(minLength: 12)
                 Text(LikemindedDate.countdownUntil(meeting.scheduledAt))
-                    .font(.system(size: 12, weight: .semibold, design: .rounded).monospacedDigit())
+                    .font(MacType.caption.weight(.semibold).monospacedDigit())
                     .foregroundStyle(MacPalette.accent)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
-                    .background(.white.opacity(0.95), in: Capsule())
+                    .background(MacPalette.surfaceTranslucent, in: Capsule())
                     .contentTransition(.numericText())
             }
             Text(meeting.title)
-                .font(.system(size: 26, weight: .semibold, design: .serif))
+                .font(MacType.coverTitle)
                 .foregroundStyle(.white)
                 .fixedSize(horizontal: false, vertical: true)
             VStack(alignment: .leading, spacing: 8) {
@@ -585,12 +586,8 @@ struct MacScreenView: View {
             Button("Join video call") {
                 navigate?(.meetVideoCall)
             }
-            .font(MacType.button)
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 12)
-            .background(.white.opacity(0.92), in: Capsule())
-            .foregroundStyle(MacPalette.accent)
-            .buttonStyle(.plain)
+            .buttonStyle(MacPrimaryButtonStyle())
             .accessibilityLabel("Join video call")
             .accessibilityIdentifier("join-meetup")
             .accessibilityAddTraits(.isButton)
@@ -599,13 +596,13 @@ struct MacScreenView: View {
         .frame(maxWidth: .infinity, minHeight: 280, alignment: .leading)
         .background(
             LinearGradient(
-                colors: [MacPalette.accent, Color(red: 0.04, green: 0.20, blue: 0.17)],
+                colors: [MacPalette.coverForestLight, MacPalette.coverForest],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             ),
             in: RoundedRectangle(cornerRadius: 18, style: .continuous)
         )
-        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(.white.opacity(0.12), lineWidth: 1))
+        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(MacPalette.coverPill, lineWidth: 1))
     }
 
     // MARK: - 21. meetVideoCall
@@ -747,16 +744,16 @@ struct MacScreenView: View {
 
     private func callTile(_ name: String) -> some View {
         ZStack(alignment: .bottomLeading) {
-            LinearGradient(colors: [MacPalette.sage.opacity(0.9), MacPalette.accent.opacity(0.65)], startPoint: .topLeading, endPoint: .bottomTrailing)
+            LinearGradient(colors: [MacPalette.coverSage, MacPalette.coverForestLight], startPoint: .topLeading, endPoint: .bottomTrailing)
             Text(String(name.prefix(1)))
-                .font(.system(size: 72, weight: .semibold, design: .serif))
+                .font(MacType.metric)
                 .foregroundStyle(.white.opacity(0.75))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             Label(name, systemImage: "cellularbars")
                 .font(MacType.button)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
-                .background(.black.opacity(0.55), in: Capsule())
+                .background(MacPalette.photoScrim, in: Capsule())
                 .foregroundStyle(.white)
                 .padding(12)
         }
@@ -786,7 +783,7 @@ struct MacScreenView: View {
                     .labelStyle(.iconOnly)
                     .frame(width: 56, height: 56)
                     .background(MacPalette.accent, in: Circle())
-                    .foregroundStyle(.white)
+                    .foregroundStyle(MacPalette.onAccent)
             }
             .buttonStyle(.plain)
             .accessibilityLabel(liveKitSession.isMuted ? "Unmute microphone" : "Mute microphone")
@@ -902,11 +899,11 @@ struct MacScreenView: View {
                         }
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
-                        .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                        .background(MacPalette.coverPill, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                     }
                 }
                 Label(signals?.communicationStyle?.primary.map { "\($0.capitalized) communicator" } ?? "Voice profile signals", systemImage: "message")
-                    .font(.system(size: 18, weight: .semibold, design: .serif))
+                    .font(MacType.coverTitleSmall)
                     .foregroundStyle(.white)
                 VStack(spacing: 12) {
                     ForEach(traits, id: \.label) { trait in
@@ -922,9 +919,9 @@ struct MacScreenView: View {
                             }
                             GeometryReader { geo in
                                 ZStack(alignment: .leading) {
-                                    Capsule().fill(.white.opacity(0.2))
+                                    Capsule().fill(MacPalette.coverProgressTrack)
                                     Capsule()
-                                        .fill(.white.opacity(0.85))
+                                        .fill(MacPalette.coverProgressFill)
                                         .frame(width: max(8, geo.size.width * trait.value))
                                 }
                             }
@@ -937,7 +934,7 @@ struct MacScreenView: View {
             }
             .padding(22)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(MacPalette.accent, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .background(MacPalette.accentDeep, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
             .frame(width: 480)
             MacPanel(title: "Interests") {
                 let interests = profile?.interests.map(\.label) ?? []
@@ -946,7 +943,7 @@ struct MacScreenView: View {
                 Text("Reflection")
                     .font(MacType.section)
                 Text("Your read")
-                    .font(.system(size: 13, weight: .semibold, design: .rounded))
+                    .font(MacType.caption.weight(.semibold))
                     .foregroundStyle(MacPalette.muted)
                 Text(profile?.profileSummary ?? "Complete your voice profile to see your private read.")
                     .font(MacType.body)
@@ -957,12 +954,7 @@ struct MacScreenView: View {
                 Button("Back to profile") {
                     navigate?(.myProfile)
                 }
-                    .font(MacType.button)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 10)
-                    .background(MacPalette.accent, in: Capsule())
-                    .foregroundStyle(.white)
-                    .buttonStyle(.plain)
+                    .buttonStyle(MacPrimaryButtonStyle())
                     .accessibilityLabel("Back to profile")
             }
         }
@@ -1064,7 +1056,7 @@ struct MacScreenView: View {
                         navigate?(.soulmateDiscover)
                     } label: {
                         Image(systemName: "square.and.pencil")
-                            .font(.system(size: 15, weight: .semibold))
+                            .font(MacType.iconSmall)
                             .foregroundStyle(MacPalette.accent)
                             .frame(width: 32, height: 32)
                             .background(MacPalette.accentSoft.opacity(0.55), in: Circle())
@@ -1094,7 +1086,7 @@ struct MacScreenView: View {
                             .padding(.horizontal, 12)
                             .padding(.vertical, 7)
                             .background(chatFilter == filter ? MacPalette.accent : MacPalette.background, in: Capsule())
-                            .foregroundStyle(chatFilter == filter ? .white : MacPalette.ink)
+                            .foregroundStyle(chatFilter == filter ? MacPalette.onAccent : MacPalette.ink)
                             .overlay(Capsule().stroke(chatFilter == filter ? Color.clear : MacPalette.line, lineWidth: 1))
                             .buttonStyle(.plain)
                             .accessibilityLabel("\(filter) messages filter")
@@ -1228,7 +1220,7 @@ struct MacScreenView: View {
                     VStack(spacing: 10) {
                         Spacer()
                         Image(systemName: "bubble.left.and.bubble.right")
-                            .font(.system(size: 36))
+                            .font(MacType.iconLarge)
                             .foregroundStyle(MacPalette.accentSoft)
                         Text("Select a conversation")
                             .font(MacType.section)
@@ -1300,7 +1292,7 @@ struct MacScreenView: View {
                     .foregroundStyle(MacPalette.muted)
             }
             Button("Done") { showChatConversationInfo = false }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(MacPrimaryButtonStyle())
                 .tint(MacPalette.accent)
         }
         .padding(24)
@@ -1342,7 +1334,7 @@ struct MacScreenView: View {
                         }
                     }
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(MacPrimaryButtonStyle())
                 .tint(MacPalette.accent)
             }
             if let chatActionStatus {
@@ -1366,7 +1358,7 @@ struct MacScreenView: View {
     ) -> some View {
         let button = Button(action: action) {
             Image(systemName: systemName)
-                .font(.system(size: 15, weight: .medium))
+                .font(MacType.iconSmall)
                 .foregroundStyle(MacPalette.accent)
                 .frame(width: 34, height: 34)
                 .background(MacPalette.background, in: Circle())
@@ -1387,7 +1379,7 @@ struct MacScreenView: View {
 
     private func chatHeaderIcon(_ systemName: String, label: String) -> some View {
         Image(systemName: systemName)
-            .font(.system(size: 15, weight: .medium))
+            .font(MacType.iconSmall)
             .foregroundStyle(MacPalette.muted.opacity(0.55))
             .frame(width: 34, height: 34)
             .background(MacPalette.background, in: Circle())
@@ -1510,7 +1502,7 @@ struct MacScreenView: View {
                             .padding(.horizontal, 14)
                             .padding(.vertical, 8)
                             .background(communityFilter == filter ? MacPalette.accent : MacPalette.surface, in: Capsule())
-                            .foregroundStyle(communityFilter == filter ? .white : MacPalette.ink)
+                            .foregroundStyle(communityFilter == filter ? MacPalette.onAccent : MacPalette.ink)
                             .overlay(Capsule().stroke(communityFilter == filter ? Color.clear : MacPalette.line, lineWidth: 1))
                     }
                     .buttonStyle(.plain)
@@ -1641,7 +1633,7 @@ struct MacScreenView: View {
             .foregroundStyle(MacPalette.accent)
             .padding(.horizontal, 10)
             .padding(.vertical, 5)
-            .background(.white.opacity(0.85), in: Capsule())
+            .background(MacPalette.surfaceTranslucent, in: Capsule())
     }
 
     private func communityCard(
@@ -1726,7 +1718,7 @@ struct MacScreenView: View {
                     .padding(.horizontal, 14)
                     .padding(.vertical, 7)
                     .background(MacPalette.accent, in: Capsule())
-                    .foregroundStyle(.white)
+                    .foregroundStyle(MacPalette.onAccent)
                 Spacer(minLength: 0)
             }
             .padding(16)
@@ -1785,7 +1777,7 @@ struct MacScreenView: View {
                                         .foregroundStyle(MacPalette.accent)
                                         .padding(.horizontal, 10)
                                         .padding(.vertical, 5)
-                                        .background(.white.opacity(0.92), in: Capsule())
+                                        .background(MacPalette.surfaceTranslucent, in: Capsule())
                                 }
                             }
                             if !traitLine.isEmpty {
@@ -1812,7 +1804,7 @@ struct MacScreenView: View {
                     Image(systemName: "chevron.left")
                         .font(MacType.button)
                         .frame(width: 34, height: 34)
-                        .background(.white.opacity(0.9), in: Circle())
+                        .background(MacPalette.surfaceTranslucent, in: Circle())
                 }
                 .buttonStyle(.plain)
                 .foregroundStyle(MacPalette.accent)
@@ -1825,7 +1817,7 @@ struct MacScreenView: View {
                             .font(MacType.small.weight(.semibold))
                             .padding(.horizontal, 14)
                             .padding(.vertical, 8)
-                            .background(.white.opacity(0.88), in: Capsule())
+                            .background(MacPalette.surfaceTranslucent, in: Capsule())
                             .foregroundStyle(MacPalette.accent)
                             .accessibilityLabel("In circle")
                     }
@@ -1834,7 +1826,7 @@ struct MacScreenView: View {
                         .font(MacType.small.weight(.semibold))
                         .padding(.horizontal, 14)
                         .padding(.vertical, 8)
-                        .background(.white.opacity(0.88), in: Capsule())
+                        .background(MacPalette.surfaceTranslucent, in: Capsule())
                         .foregroundStyle(MacPalette.accent)
                         .accessibilityLabel("Circle chat isn’t available in this MVP yet.")
                         .accessibilityIdentifier("message-circle")
@@ -1845,7 +1837,7 @@ struct MacScreenView: View {
                         Image(systemName: "ellipsis")
                             .font(MacType.button)
                             .padding(8)
-                            .background(.white.opacity(0.88), in: Circle())
+                            .background(MacPalette.surfaceTranslucent, in: Circle())
                     }
                     .buttonStyle(.plain)
                     .foregroundStyle(MacPalette.accent)
@@ -1901,7 +1893,7 @@ struct MacScreenView: View {
                                 circleConcernStatus = "Circle summary could not be copied."
                             }
                         }
-                        .buttonStyle(.borderedProminent)
+                        .buttonStyle(MacSecondaryButtonStyle())
                         .disabled(circle == nil)
                         .accessibilityIdentifier("share-circle")
 
@@ -2110,12 +2102,8 @@ struct MacScreenView: View {
                             : placement?.actions.secondaryAction ?? "Make this my second circle"
                     )
                         .font(MacType.button)
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 18)
-                        .padding(.vertical, 10)
-                        .background(Color.black, in: Capsule())
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(MacPrimaryButtonStyle())
                 .disabled(isSelectingSecondaryCircle)
                 .accessibilityLabel("Make this my second circle")
                 .accessibilityValue(isSelectingSecondaryCircle ? "Saving second circle" : "Ready")
@@ -2153,7 +2141,7 @@ struct MacScreenView: View {
                                         .foregroundStyle(.white)
                                         .padding(.horizontal, 10)
                                         .padding(.vertical, 5)
-                                        .background(.white.opacity(0.2), in: Capsule())
+                                        .background(MacPalette.coverTag, in: Capsule())
                                 }
                             }
                         }
@@ -2195,7 +2183,7 @@ struct MacScreenView: View {
                         .font(MacType.small.weight(.semibold))
                         .padding(.horizontal, 14)
                         .padding(.vertical, 8)
-                        .background(.white.opacity(0.88), in: Capsule())
+                        .background(MacPalette.surfaceTranslucent, in: Capsule())
                         .foregroundStyle(MacPalette.accent)
                         .accessibilityLabel(isJoined ? "Leave community" : "Join community")
                         .accessibilityValue(isJoined ? "Joined" : "Not joined")
@@ -2206,7 +2194,7 @@ struct MacScreenView: View {
                             Image(systemName: "ellipsis")
                                 .font(MacType.button)
                                 .padding(8)
-                                .background(.white.opacity(0.88), in: Circle())
+                                .background(MacPalette.surfaceTranslucent, in: Circle())
                         }
                         .buttonStyle(.plain)
                         .foregroundStyle(MacPalette.accent)
@@ -2296,7 +2284,7 @@ struct MacScreenView: View {
                 }
                 navigate?(.communityMembers)
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(MacPrimaryButtonStyle())
         case "Resources":
             resourceRow("Community guidelines", date: "Pinned") {
                 communityResourceDetail = .guidelines
@@ -2385,12 +2373,7 @@ struct MacScreenView: View {
                             Button(isSavingRecapNote ? "Saving" : "Save note") {
                                 Task { await saveRecapNote(meeting) }
                             }
-                            .font(MacType.small.weight(.semibold))
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 7)
-                            .background(MacPalette.accent, in: Capsule())
-                            .foregroundStyle(.white)
-                            .buttonStyle(.plain)
+                            .buttonStyle(MacPrimaryButtonStyle())
                             .accessibilityLabel("Save note")
                             .accessibilityAddTraits(.isButton)
                             .disabled(meeting == nil || isSavingRecapNote)
@@ -2427,12 +2410,7 @@ struct MacScreenView: View {
                             selectedChatMatchId = match.matchId
                             navigate?(.chat)
                         }
-                            .font(MacType.small.weight(.semibold))
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(MacPalette.accent, in: Capsule())
-                            .foregroundStyle(.white)
-                            .buttonStyle(.plain)
+                            .buttonStyle(MacSecondaryButtonStyle())
                             .accessibilityLabel("Message \(match.name)")
                     }
                     .padding(8)
@@ -2488,12 +2466,7 @@ struct MacScreenView: View {
                                     Button("Review signals") {
                                         navigate?(.profileSignals)
                                     }
-                                    .font(MacType.button)
-                                    .foregroundStyle(.white)
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 8)
-                                    .background(MacPalette.accent, in: Capsule())
-                                    .buttonStyle(.plain)
+                                    .buttonStyle(MacPrimaryButtonStyle())
                                     .accessibilityIdentifier("review-signals")
                                 }
                             }
@@ -2525,7 +2498,7 @@ struct MacScreenView: View {
                                         ForEach(Array(placement.fitReasons.prefix(3).enumerated()), id: \.offset) { index, reason in
                                             HStack(alignment: .top, spacing: 10) {
                                                 Image(systemName: ["person.2", "target", "mountain.2"][index])
-                                                    .font(.system(size: 13, weight: .semibold))
+                                                    .font(MacType.iconSmall)
                                                     .foregroundStyle(MacPalette.accent)
                                                     .frame(width: 30, height: 30)
                                                     .background(MacPalette.accentSoft, in: Circle())
@@ -2602,12 +2575,7 @@ struct MacScreenView: View {
                     Button("Start profile setup") {
                         navigate?(.profileOnboarding)
                     }
-                    .font(MacType.button)
-                    .padding(.horizontal, 18)
-                    .padding(.vertical, 10)
-                    .background(MacPalette.accent, in: Capsule())
-                    .foregroundStyle(.white)
-                    .buttonStyle(.plain)
+                    .buttonStyle(MacPrimaryButtonStyle())
                     .accessibilityLabel("Start profile setup")
                 }
             } else {
@@ -2658,12 +2626,8 @@ struct MacScreenView: View {
                     Button("Done") {
                         navigate?(.myProfile)
                     }
-                    .font(MacType.button)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 11)
-                    .background(MacPalette.accent, in: Capsule())
-                    .foregroundStyle(.white)
-                    .buttonStyle(.plain)
+                    .buttonStyle(MacPrimaryButtonStyle())
                     .accessibilityLabel("Done")
                 } else {
                     Button {
@@ -2672,11 +2636,8 @@ struct MacScreenView: View {
                         Label("Edit profile", systemImage: "square.and.pencil")
                             .font(MacType.button)
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 11)
-                            .background(MacPalette.accent, in: Capsule())
-                            .foregroundStyle(.white)
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(MacPrimaryButtonStyle())
                     .accessibilityLabel("Edit profile")
 
                     Button {
@@ -2687,12 +2648,8 @@ struct MacScreenView: View {
                         Label("Re-interview", systemImage: "arrow.clockwise")
                             .font(MacType.button)
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 10)
-                            .foregroundStyle(MacPalette.ink)
-                            .background(MacPalette.surface, in: Capsule())
-                            .overlay(Capsule().stroke(MacPalette.line, lineWidth: 1))
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(MacSecondaryButtonStyle())
                     .accessibilityLabel("Re-interview to update profile")
                 }
             }
@@ -2704,7 +2661,7 @@ struct MacScreenView: View {
     private func profileSignalPill(_ item: ProfileSignalLabel) -> some View {
         HStack(spacing: 10) {
             Image(systemName: profileSignalIcon(for: item.title))
-                .font(.system(size: 16, weight: .semibold))
+                .font(MacType.iconSmall)
                 .foregroundStyle(MacPalette.accent)
                 .frame(width: 34, height: 34)
                 .background(MacPalette.accentSoft, in: Circle())
@@ -2733,7 +2690,7 @@ struct MacScreenView: View {
         MacPanel {
             HStack(alignment: .top, spacing: 16) {
                 Image(systemName: "arrow.triangle.2.circlepath")
-                    .font(.system(size: 22, weight: .semibold))
+                    .font(MacType.iconMedium)
                     .foregroundStyle(MacPalette.accent)
                     .frame(width: 36, height: 36)
                     .background(MacPalette.accentSoft.opacity(0.7), in: Circle())
@@ -2760,12 +2717,8 @@ struct MacScreenView: View {
                         } label: {
                             Label("Re-interview for placement", systemImage: "waveform")
                                 .font(MacType.button)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 10)
-                                .background(MacPalette.accent, in: Capsule())
-                                .foregroundStyle(.white)
                         }
-                        .buttonStyle(.plain)
+                        .buttonStyle(MacPrimaryButtonStyle())
                         .accessibilityLabel("Start re-interview")
 
                         Button {
@@ -2822,7 +2775,7 @@ struct MacScreenView: View {
                     Button("Retry") {
                         Task { await appState.fetchSoulmateStatus() }
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(MacPrimaryButtonStyle())
                     .tint(MacPalette.accent)
                 }
             } else if !appState.soulmateEnabled {
@@ -2835,7 +2788,7 @@ struct MacScreenView: View {
                         appState.requestedSettingsPane = MacSettingsPane.soulmate.rawValue
                         navigate?(.settingsSoulmate)
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(MacPrimaryButtonStyle())
                     .tint(MacPalette.accent)
                     .accessibilityLabel("Open Soulmate settings")
                 }
@@ -2848,7 +2801,7 @@ struct MacScreenView: View {
                         Button("Retry") {
                             Task { await appState.fetchSoulmateStatus() }
                         }
-                        .buttonStyle(.borderedProminent)
+                        .buttonStyle(MacPrimaryButtonStyle())
                         .tint(MacPalette.accent)
                     }
                 } else if appState.soulmateMatches.isEmpty {
@@ -2918,7 +2871,7 @@ struct MacScreenView: View {
 
             VStack(alignment: .leading, spacing: 14) {
                 Text(match.name)
-                    .font(.system(size: 32, weight: .semibold, design: .serif))
+                    .font(MacType.title)
                     .foregroundStyle(MacPalette.ink)
                 Text(soulmateMeetingLine(meetingId: match.meetingId, meetingDate: match.meetingDate))
                     .font(MacType.body)
@@ -2954,11 +2907,8 @@ struct MacScreenView: View {
                     Label("View full introduction", systemImage: "person.text.rectangle")
                         .font(MacType.button)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 13)
-                        .background(MacPalette.accent, in: Capsule())
-                        .foregroundStyle(.white)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(MacPrimaryButtonStyle())
                 .accessibilityLabel("Open introduction with \(match.name)")
 
                 Button {
@@ -3009,7 +2959,7 @@ struct MacScreenView: View {
     private func soulmateDeferredMatchPlate(_ match: SoulmateMatch) -> some View {
         HStack(spacing: 14) {
             Image(systemName: "heart")
-                .font(.system(size: 17, weight: .semibold))
+                .font(MacType.icon)
                 .foregroundStyle(MacPalette.accent)
                 .frame(width: 44, height: 44)
                 .background(MacPalette.accentSoft, in: Circle())
@@ -3069,7 +3019,7 @@ struct MacScreenView: View {
         } label: {
             HStack(spacing: 14) {
                 Text(matchInitials(match.name))
-                    .font(.system(size: 18, weight: .semibold, design: .rounded))
+                    .font(MacType.roundedInitials)
                     .foregroundStyle(MacPalette.accent)
                     .frame(width: 48, height: 48)
                     .background(MacPalette.accentSoft, in: Circle())
@@ -3087,7 +3037,7 @@ struct MacScreenView: View {
                     .font(MacType.small)
                     .foregroundStyle(MacPalette.muted)
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(MacType.iconSmall)
                     .foregroundStyle(MacPalette.muted)
                     .accessibilityHidden(true)
             }
@@ -3141,7 +3091,7 @@ struct MacScreenView: View {
                             await loadSelectedSoulmateMatchDetail()
                         }
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(MacPrimaryButtonStyle())
                     .tint(MacPalette.accent)
                 }
             } else if !appState.hasLoadedSoulmateStatus {
@@ -3158,21 +3108,21 @@ struct MacScreenView: View {
                     Button("Retry") {
                         Task { await loadSelectedSoulmateMatchDetail() }
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(MacPrimaryButtonStyle())
                     .tint(MacPalette.accent)
                 }
             } else if let match = selectedMatch {
                 VStack(alignment: .leading, spacing: 20) {
                     HStack(alignment: .center, spacing: 18) {
                         Text(matchInitials(match.name))
-                            .font(.system(size: 30, weight: .semibold, design: .rounded))
+                            .font(MacType.roundedInitialsLarge)
                             .foregroundStyle(MacPalette.accent)
                             .frame(width: 76, height: 76)
                             .background(MacPalette.accentSoft, in: Circle())
                             .accessibilityHidden(true)
                         VStack(alignment: .leading, spacing: 6) {
                             Text(match.name)
-                                .font(.system(size: 34, weight: .semibold, design: .serif))
+                                .font(MacType.title)
                                 .foregroundStyle(MacPalette.ink)
                             Text(soulmateMeetingLine(meetingId: match.meetingId, meetingDate: match.meetingDate))
                                 .font(MacType.body)
@@ -3185,12 +3135,8 @@ struct MacScreenView: View {
                         } label: {
                             Label("Message", systemImage: "message.fill")
                                 .font(MacType.button)
-                                .padding(.horizontal, 24)
-                                .padding(.vertical, 10)
-                                .background(MacPalette.accent, in: Capsule())
-                                .foregroundStyle(.white)
                         }
-                        .buttonStyle(.plain)
+                        .buttonStyle(MacSecondaryButtonStyle())
                         .accessibilityLabel("Message \(match.name)")
                     }
 
@@ -3692,7 +3638,7 @@ struct MacScreenView: View {
                     Button(isCreatingEvent ? "Creating…" : "Create event") {
                         submitEvent()
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(MacPrimaryButtonStyle())
                     .tint(MacPalette.accent)
                     .controlSize(.large)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -3783,7 +3729,7 @@ struct MacScreenView: View {
             Text(title)
         }
         .font(MacType.small.weight(.semibold))
-        .foregroundStyle(filled ? .white : MacPalette.accent)
+        .foregroundStyle(filled ? MacPalette.onAccent : MacPalette.accent)
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
         .background(filled ? MacPalette.accent : MacPalette.accentSoft.opacity(0.55), in: Capsule())
@@ -3795,7 +3741,7 @@ struct MacScreenView: View {
                 .font(MacType.button)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 10)
-                .foregroundStyle(eventType == title ? .white : MacPalette.ink)
+                .foregroundStyle(eventType == title ? MacPalette.onAccent : MacPalette.ink)
                 .background(eventType == title ? MacPalette.accent : MacPalette.surface, in: Capsule())
                 .overlay(Capsule().stroke(eventType == title ? MacPalette.accent : MacPalette.line, lineWidth: 1))
         }
@@ -3927,7 +3873,7 @@ struct MacScreenView: View {
                     Button(isCreatingCommunity ? "Creating" : "Create community") {
                         submitCommunity()
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(MacPrimaryButtonStyle())
                     .tint(MacPalette.accent)
                     .controlSize(.large)
                     .disabled(isCreatingCommunity || newCommunityName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || newCommunitySummary.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
@@ -4029,7 +3975,7 @@ struct MacScreenView: View {
                     navigate?(.settingsSoulmate)
                 } label: {
                     Image(systemName: "gearshape")
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(MacType.iconSmall)
                         .foregroundStyle(MacPalette.accent)
                         .frame(width: 32, height: 32)
                         .background(MacPalette.accentSoft.opacity(0.55), in: Circle())
@@ -4156,12 +4102,7 @@ struct MacScreenView: View {
                             notificationStatus = "Notifications refreshed from backend."
                         }
                     }
-                    .font(MacType.small.weight(.semibold))
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(MacPalette.accent, in: Capsule())
-                    .foregroundStyle(.white)
-                    .buttonStyle(.plain)
+                    .buttonStyle(MacSecondaryButtonStyle())
                     .accessibilityLabel("Refresh notifications")
                 }
                 if let notificationStatus {
@@ -4375,7 +4316,7 @@ struct MacScreenView: View {
             VStack(alignment: .leading, spacing: 22) {
                 VStack(alignment: .leading, spacing: 12) {
                     Text(profileOnboardingStep == 2 ? "AI profile\ninterview" : "Let's get to\nknow you better")
-                        .font(.system(size: 38, weight: .semibold, design: .serif))
+                        .font(MacType.pageTitle)
                         .foregroundStyle(MacPalette.ink)
                         .fixedSize(horizontal: false, vertical: true)
                     Text(profileOnboardingStep == 2
@@ -4580,7 +4521,7 @@ struct MacScreenView: View {
                             }
                             .accessibilityLabel("Custom interest")
                         Button("Add") { addCustomInterest() }
-                            .buttonStyle(.borderedProminent)
+                            .buttonStyle(MacPrimaryButtonStyle())
                             .tint(MacPalette.accent)
                             .disabled(normalizedCustomInterest.isEmpty || isDuplicateCustomInterest || draftOnboardingInterests.count >= 20)
                     }
@@ -4613,11 +4554,8 @@ struct MacScreenView: View {
                 }
                 .font(MacType.button)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-                .background(MacPalette.accent, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                .foregroundStyle(.white)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(MacPrimaryButtonStyle())
             .disabled(isSavingProfileBasics || !isProfileBasicsValid)
             .accessibilityLabel("Continue")
         }
@@ -4691,12 +4629,12 @@ struct MacScreenView: View {
             HStack(spacing: 6) {
                 if selected {
                     Image(systemName: "checkmark")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(MacType.iconSmall)
                 }
                 Text(interest)
                     .font(MacType.small.weight(.semibold))
             }
-            .foregroundStyle(selected ? .white : MacPalette.ink)
+            .foregroundStyle(selected ? MacPalette.onAccent : MacPalette.ink)
             .padding(.horizontal, 13)
             .padding(.vertical, 8)
             .background(selected ? MacPalette.accent : MacPalette.surface, in: Capsule())
@@ -4734,7 +4672,7 @@ struct MacScreenView: View {
                                     .foregroundStyle(MacPalette.accent)
                                     .padding(.horizontal, 18)
                                     .padding(.vertical, 11)
-                                    .background(.white.opacity(0.92), in: Capsule())
+                                    .background(MacPalette.surfaceTranslucent, in: Capsule())
                             }
                             .buttonStyle(.plain)
                             .accessibilityLabel("Start voice profile")
@@ -4793,7 +4731,7 @@ struct MacScreenView: View {
                                 }
                                 Text(message.content)
                                     .font(MacType.body)
-                                    .foregroundStyle(message.role == "user" ? Color.white : MacPalette.ink)
+                                    .foregroundStyle(message.role == "user" ? MacPalette.onAccent : MacPalette.ink)
                                     .padding(.horizontal, 12)
                                     .padding(.vertical, 9)
                                     .background(
@@ -4803,7 +4741,7 @@ struct MacScreenView: View {
                                 if message.role == "user" {
                                     Image(systemName: "person.fill")
                                         .font(MacType.small)
-                                        .foregroundStyle(.white)
+                                        .foregroundStyle(MacPalette.onAccent)
                                         .frame(width: 28, height: 28)
                                         .background(MacPalette.accent, in: Circle())
                                         .accessibilityHidden(true)
@@ -4848,7 +4786,7 @@ struct MacScreenView: View {
                         Button(isSavingVoiceReflection ? "Thinking…" : "Send reply") {
                             Task { await sendProfileInterviewReply() }
                         }
-                        .buttonStyle(.borderedProminent)
+                        .buttonStyle(MacPrimaryButtonStyle())
                         .tint(MacPalette.accent)
                         .accessibilityLabel("Send reply")
                         .disabled(isSavingVoiceReflection || profileInterviewReady || voiceReflectionDraft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
@@ -4911,7 +4849,7 @@ struct MacScreenView: View {
             Button("Open your circle") {
                 navigate?(.circlesRoom)
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(MacPrimaryButtonStyle())
             .tint(MacPalette.accent)
             .accessibilityLabel("Open your assigned circle")
             .disabled(appState.placement?.placement == nil)
@@ -5092,7 +5030,7 @@ struct MacScreenView: View {
                     .frame(width: 28, height: 28)
                 Text(number)
                     .font(MacType.small.weight(.bold))
-                    .foregroundStyle(selected ? .white : MacPalette.muted)
+                    .foregroundStyle(selected ? MacPalette.onAccent : MacPalette.muted)
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
@@ -5278,13 +5216,13 @@ struct MacScreenView: View {
             }
         case .appearance:
             MacPanel(title: "Appearance") {
-                Picker("Theme", selection: .constant("system")) {
+                Picker("Theme", selection: $appearancePreference) {
                     Text("Match system").tag("system")
                     Text("Light").tag("light")
                     Text("Dark").tag("dark")
                 }
                 .pickerStyle(.segmented)
-                Text("macOS uses the warm cream canvas from DESIGN.md. Full theme switching ships later.")
+                Text("Choose light, dark, or match your Mac.")
                     .font(MacType.small)
                     .foregroundStyle(MacPalette.muted)
             }
@@ -5326,7 +5264,7 @@ struct MacScreenView: View {
                         if sent { supportNote = "" }
                     }
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(MacPrimaryButtonStyle())
                 .tint(MacPalette.accent)
                 .accessibilityLabel("Send support note")
                 .disabled(isSendingSupport || supportNote.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
@@ -5354,7 +5292,7 @@ struct MacScreenView: View {
         ScrollView(.vertical, showsIndicators: true) {
             VStack(alignment: .leading, spacing: 18) {
                 Text(LikemindedPrivacyPolicy.title)
-                    .font(.system(size: 24, weight: .medium, design: .serif))
+                    .font(MacType.section)
                     .foregroundStyle(MacPalette.ink)
                     .accessibilityIdentifier("privacy-policy-title")
 
@@ -5397,7 +5335,7 @@ struct MacScreenView: View {
             VStack(alignment: .leading, spacing: 22) {
                 VStack(alignment: .leading, spacing: 10) {
                     Text("Soulmate")
-                        .font(.system(size: 28, weight: .semibold, design: .serif))
+                        .font(MacType.subheading)
                         .foregroundStyle(MacPalette.ink)
                     Toggle("Enable Soulmate", isOn: Binding(
                         get: { appState.soulmateEnabled },
@@ -5483,7 +5421,7 @@ struct MacScreenView: View {
                         soulmatePrefsStatus = saved ? "Preferences saved." : appState.soulmateError
                     }
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(MacPrimaryButtonStyle())
                 .tint(MacPalette.accent)
                 .accessibilityLabel("Save preferences")
                 .accessibilityAddTraits(.isButton)
@@ -5594,7 +5532,7 @@ struct MacScreenView: View {
                             .fill(MacPalette.accentSoft)
                             .frame(width: 44, height: 44)
                         Image(systemName: section.icon)
-                            .font(.system(size: 18, weight: .semibold))
+                            .font(MacType.icon)
                             .foregroundStyle(MacPalette.accent)
                     }
                     VStack(alignment: .leading, spacing: 8) {
@@ -5602,7 +5540,7 @@ struct MacScreenView: View {
                             .font(MacType.eyebrow)
                             .foregroundStyle(MacPalette.accent)
                         Text(section.title)
-                            .font(.system(size: 20, weight: .medium, design: .serif))
+                            .font(MacType.serifCallout)
                             .foregroundStyle(MacPalette.ink)
                         ForEach(section.bullets, id: \.self) { bullet in
                             HStack(alignment: .top, spacing: 8) {
@@ -5809,7 +5747,7 @@ struct MacScreenView: View {
             VStack(alignment: mine ? .trailing : .leading, spacing: 4) {
                 Text(message.text)
                     .font(MacType.body)
-                    .foregroundStyle(mine ? .white : MacPalette.ink)
+                    .foregroundStyle(mine ? MacPalette.onAccent : MacPalette.ink)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 12)
                     .background(
@@ -5824,11 +5762,11 @@ struct MacScreenView: View {
                     )
                 HStack(spacing: 4) {
                     Text(chatTimeLabel(message.createdAt))
-                        .font(.system(size: 11, weight: .medium))
+                        .font(MacType.caption.weight(.medium))
                         .foregroundStyle(MacPalette.muted)
                     if mine {
                         Image(systemName: "checkmark.circle.fill")
-                            .font(.system(size: 11))
+                            .font(MacType.iconSmall)
                             .foregroundStyle(MacPalette.accent.opacity(0.7))
                     }
                 }
@@ -5983,7 +5921,7 @@ struct MacScreenView: View {
                 Text("A member shared a Saturday listening session playlist and cafe meetup notes.")
             }
             Button("Done") { communityResourceDetail = nil }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(MacPrimaryButtonStyle())
                 .tint(MacPalette.accent)
         }
         .font(MacType.body)
@@ -6023,7 +5961,7 @@ struct MacScreenView: View {
             ForEach(items, id: \.0) { value, label in
                 VStack(alignment: .leading, spacing: 2) {
                     Text(value)
-                        .font(.system(size: 28, weight: .semibold, design: .rounded))
+                        .font(MacType.metricValue)
                         .foregroundStyle(MacPalette.accent)
                     Text(label)
                         .font(MacType.small)
@@ -6128,10 +6066,10 @@ private struct MacChatComposer: View {
                 .onSubmit(send)
             Button(action: send) {
                 Image(systemName: "arrow.up")
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundStyle(.white)
+                    .font(MacType.iconSmall.weight(.bold))
+                    .foregroundStyle(canSend ? MacPalette.onAccent : MacPalette.muted)
                     .frame(width: 40, height: 40)
-                    .background(canSend ? MacPalette.accent : MacPalette.muted.opacity(0.45), in: Circle())
+                    .background(canSend ? MacPalette.accent : MacPalette.accentSoft, in: Circle())
             }
             .buttonStyle(.plain)
             .disabled(!canSend)

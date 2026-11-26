@@ -215,7 +215,7 @@ struct MiniMetricCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Image(systemName: icon)
-                .font(.system(size: 15, weight: .semibold))
+                .font(PrototypeTypography.iconSmall)
                 .foregroundStyle(PrototypePalette.accent)
 
             Text(value)
@@ -254,7 +254,7 @@ struct IconPill: View {
     var body: some View {
         HStack(spacing: 8) {
             Image(systemName: icon)
-                .font(.system(size: 12, weight: .semibold))
+                .font(PrototypeTypography.iconSmall)
                 .foregroundStyle(PrototypePalette.accent)
 
             Text(title)
@@ -280,7 +280,7 @@ struct LikemindedGlyph: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 34, style: .continuous)
-                .fill(Color.white.opacity(0.38))
+                .fill(PrototypePalette.surfaceTranslucent)
                 .frame(width: 154, height: 154)
                 .overlay(
                     RoundedRectangle(cornerRadius: 34, style: .continuous)
@@ -308,11 +308,11 @@ struct LikemindedGlyph: View {
                 .offset(x: isAnimating ? 32 : 38, y: isAnimating ? -18 : -14)
 
             Circle()
-                .fill(Color.white)
+                .fill(PrototypePalette.surface)
                 .frame(width: 62, height: 62)
                 .overlay(
                     Image(systemName: "sparkles")
-                        .font(.system(size: 22, weight: .semibold))
+                        .font(PrototypeTypography.iconLarge)
                         .foregroundStyle(PrototypePalette.ink)
                         .rotationEffect(.degrees(isAnimating ? 4 : -4))
                 )
@@ -347,7 +347,7 @@ enum JourneyTone {
         case .accent:
             return PrototypePalette.accentSoft.opacity(0.55)
         case .secondary:
-            return Color.white.opacity(0.80)
+            return PrototypePalette.surfaceTranslucent
         }
     }
 }
@@ -536,7 +536,7 @@ struct PrototypeBackButton: View {
             }
         } label: {
             Image(systemName: "chevron.left")
-                .font(.system(size: 16, weight: .semibold))
+                .font(PrototypeTypography.icon)
                 .foregroundStyle(foregroundColor)
                 .frame(width: 44, height: 44)
                 .background(backgroundColor)
@@ -560,7 +560,7 @@ struct PrototypeBackButton: View {
         case .surface:
             return PrototypePalette.surface
         case .overlay:
-            return Color.black.opacity(0.28)
+            return PrototypePalette.photoScrim.opacity(0.5)
         }
     }
 }
@@ -655,7 +655,7 @@ struct PrototypeAgeRangeSlider: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             Button(action: onDecrease) {
                 Image(systemName: "minus.circle.fill")
-                    .font(.system(size: 22))
+                    .font(PrototypeTypography.iconLarge)
                     .foregroundStyle(canDecrease ? PrototypePalette.accent : PrototypePalette.rule)
             }
             .buttonStyle(.plain)
@@ -669,7 +669,7 @@ struct PrototypeAgeRangeSlider: View {
                 .accessibilityValue("\(value)")
             Button(action: onIncrease) {
                 Image(systemName: "plus.circle.fill")
-                    .font(.system(size: 22))
+                    .font(PrototypeTypography.iconLarge)
                     .foregroundStyle(canIncrease ? PrototypePalette.accent : PrototypePalette.rule)
             }
             .buttonStyle(.plain)
@@ -728,9 +728,15 @@ struct PrototypeRadioCard: View {
 }
 
 enum PrototypeTypography {
-    static let eyebrow = Font.caption.weight(.semibold).smallCaps()
+    static let eyebrow: Font = {
+        #if os(macOS)
+        Font.system(size: 14, weight: .semibold, design: .default).smallCaps()
+        #else
+        Font.callout.weight(.semibold).smallCaps()
+        #endif
+    }()
     static let display = Font.system(.largeTitle, design: .serif, weight: .semibold)
-    static let pageTitle = Font.system(.title, design: .serif, weight: .semibold)
+    static let pageTitle = LikemindedTypography.pageTitle
     static let hero = Font.system(.largeTitle, design: .serif, weight: .semibold)
     static let cardTitle = Font.system(.title, design: .serif, weight: .semibold)
     static let heroBody = Font.body
@@ -739,44 +745,13 @@ enum PrototypeTypography {
     static let metric = Font.headline
     static let body = Font.body
     static let bodyStrong = Font.body.weight(.semibold)
-    static let button = Font.body.weight(.semibold)
+    static let button = LikemindedTypography.button
+    static let iconSmall = LikemindedTypography.iconSmall
+    static let icon = LikemindedTypography.icon
+    static let iconLarge = LikemindedTypography.iconLarge
     static let metadata = Font.subheadline.weight(.medium)
     // Existing call sites use `caption` for supporting copy, not tertiary timestamps.
-    static let caption = Font.callout
+    static let caption = LikemindedTypography.caption
 }
 
-enum PrototypePalette {
-    static let background = Color(red: 0.984, green: 0.970, blue: 0.938)
-    static let surface = Color(red: 1.000, green: 0.991, blue: 0.973)
-    static let accent = Color(red: 0.059, green: 0.290, blue: 0.239)
-    static let accentDeep = Color(red: 0.031, green: 0.220, blue: 0.184)
-    static let accentSoft = Color(red: 0.898, green: 0.941, blue: 0.918)
-    static let success = Color(red: 0.235, green: 0.608, blue: 0.373)
-    static let amber = Color(red: 0.780, green: 0.514, blue: 0.063)
-    static let coral = Color(red: 0.914, green: 0.510, blue: 0.400)
-    static let teal = Color(red: 0.184, green: 0.478, blue: 0.471)
-    static let ink = Color(red: 0.063, green: 0.165, blue: 0.145)
-    static let subink = Color(red: 0.373, green: 0.384, blue: 0.365)
-    static let muted = Color(red: 0.541, green: 0.541, blue: 0.510)
-    static let rule = Color(red: 0.902, green: 0.875, blue: 0.835)
-    static let gold = Color(red: 0.918, green: 0.732, blue: 0.433)
-    static let dusk = Color(red: 0.118, green: 0.075, blue: 0.157)
-    static let rose = Color(red: 0.890, green: 0.398, blue: 0.584)
-
-    static let actionGradient = LinearGradient(
-        colors: [accent, Color(red: 0.021, green: 0.392, blue: 0.257)],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
-
-    static func roomGradient(_ index: Int = 0) -> LinearGradient {
-        let palettes: [[Color]] = [
-            [accentDeep, accent, gold.opacity(0.62)],
-            [Color(red: 0.078, green: 0.270, blue: 0.255), teal, Color(red: 0.682, green: 0.758, blue: 0.545)],
-            [Color(red: 0.250, green: 0.126, blue: 0.153), Color(red: 0.650, green: 0.247, blue: 0.177), Color(red: 0.965, green: 0.604, blue: 0.353)],
-            [dusk, Color(red: 0.247, green: 0.160, blue: 0.335), rose.opacity(0.58)]
-        ]
-        let colors = palettes[index % palettes.count]
-        return LinearGradient(colors: colors, startPoint: .topLeading, endPoint: .bottomTrailing)
-    }
-}
+typealias PrototypePalette = LikemindedPalette

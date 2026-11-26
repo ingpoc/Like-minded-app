@@ -12,7 +12,7 @@ struct AuthTermsFooter: View {
         // window edge (legal must stay fully readable under Private by design).
         HStack(alignment: .firstTextBaseline, spacing: 4) {
             Image(systemName: "lock")
-                .font(.system(size: 11, weight: .semibold))
+                .font(LikemindedTypography.caption.weight(.semibold))
             Text("By continuing, you agree to our")
                 .fixedSize(horizontal: false, vertical: true)
             Button("Terms & Privacy Policy") {
@@ -26,7 +26,7 @@ struct AuthTermsFooter: View {
             .accessibilityIdentifier("auth-privacy-link")
             .fixedSize(horizontal: true, vertical: true)
         }
-        .font(.system(size: 12, weight: .medium))
+        .font(LikemindedTypography.caption.weight(.medium))
         .foregroundStyle(muted)
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.bottom, 8)
@@ -46,7 +46,7 @@ struct AuthPrivacyPolicySheet: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
                 Text(LikemindedPrivacyPolicy.title)
-                    .font(.system(size: 24, weight: .medium, design: .serif))
+                    .font(LikemindedTypography.pageTitle)
                     .accessibilityAddTraits(.isHeader)
 
                 Text(LikemindedPrivacyPolicy.intro)
@@ -56,7 +56,7 @@ struct AuthPrivacyPolicySheet: View {
                 ForEach(LikemindedPrivacyPolicy.sections, id: \.title) { section in
                     VStack(alignment: .leading, spacing: 8) {
                         Text(section.title.uppercased())
-                            .font(.caption.weight(.semibold))
+                            .font(LikemindedTypography.caption.weight(.semibold))
                         Divider()
                         ForEach(section.items, id: \.self) { item in
                             Text("•  \(item)")
@@ -87,7 +87,7 @@ struct AuthPrivacyFooter: View {
 
     var body: some View {
         Label("Your data is private and never shared.", systemImage: "lock")
-            .font(.system(size: 13, weight: .medium))
+            .font(LikemindedTypography.caption.weight(.medium))
             .foregroundStyle(muted)
             .frame(maxWidth: .infinity, alignment: .center)
     }

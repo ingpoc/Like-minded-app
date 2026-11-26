@@ -12,8 +12,7 @@ import SwiftUI
 ///
 /// Plate: `mockups/macos/concepts/mockup-meet-overview-convergence.png`
 struct MeetVenueStreamlineFieldView: View {
-    /// thewayofcode cream `#F0EEE6`
-    var background: Color = Color(red: 240.0 / 255.0, green: 238.0 / 255.0, blue: 230.0 / 255.0)
+    var background: Color = LikemindedPalette.background
     /// Pin focus — must match SwiftUI pin (`MacMeetOverviewConceptView`).
     var focus: UnitPoint = UnitPoint(x: 0.78, y: 0.48)
 
@@ -51,7 +50,7 @@ struct MeetVenueStreamlineFieldView: View {
         let contourStep = 3.0 // ch.16 original
 
         // Project colors: rgba(50, 50, 50, 0.4), lineWidth 0.8
-        let ink = Color(red: 50.0 / 255.0, green: 50.0 / 255.0, blue: 50.0 / 255.0)
+        let ink = LikemindedPalette.subink
         let stroke = StrokeStyle(lineWidth: 0.8, lineCap: .round, lineJoin: .round)
 
         let centerX = focus.x * width

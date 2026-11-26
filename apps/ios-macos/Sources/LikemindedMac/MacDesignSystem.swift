@@ -9,36 +9,80 @@ extension View {
     }
 }
 
-enum MacPalette {
-    static let background = Color(red: 0.980, green: 0.969, blue: 0.945) // #FAF7F1 warm cream
-    static let surface = Color(red: 1.0, green: 0.988, blue: 0.973)     // #FFFBF7 warm white
-    static let surfaceTranslucent = Color.white.opacity(0.72)
-    static let ink = Color(red: 0.059, green: 0.165, blue: 0.145)      // #0F2A25 near-black green
-    static let muted = Color(red: 0.28, green: 0.30, blue: 0.27)
-    static let accent = Color(red: 0.059, green: 0.290, blue: 0.239)   // #0F4A3D forest green
-    static let accentSoft = Color(red: 0.78, green: 0.84, blue: 0.78)  // ~#C8D8C7 sage
-    static let clay = Color(red: 0.77, green: 0.44, blue: 0.29)        // #C46F4A
-    static let sage = Color(red: 0.78, green: 0.85, blue: 0.78)        // #C8D8C7
-    static let ochre = Color(red: 0.84, green: 0.71, blue: 0.43)       // #D7B56D
-    static let line = Color.black.opacity(0.07)
-}
+typealias MacPalette = LikemindedPalette
 
 enum MacType {
     /// Uppercase section labels — SF Pro, not serif.
-    static let eyebrow = Font.system(size: 12, weight: .semibold, design: .default)
+    static let eyebrow = Font.system(size: 14, weight: .semibold, design: .default)
     /// Hero phrases ("Your room.") — editorial serif.
     static let title = Font.system(size: 34, weight: .semibold, design: .serif)
+    static let display = Font.system(size: 44, weight: .semibold, design: .serif)
+    static let pageTitle = Font.system(size: 38, weight: .semibold, design: .serif)
     /// Panel / card titles on cream surfaces — editorial serif.
     static let section = Font.system(size: 24, weight: .semibold, design: .serif)
+    static let cardTitle = Font.system(size: 22, weight: .semibold, design: .serif)
+    static let smallSerif = Font.system(size: 16, weight: .semibold, design: .serif)
+    static let subheading = Font.system(size: 28, weight: .semibold, design: .serif)
+    static let serifCallout = Font.system(size: 20, weight: .medium, design: .serif)
     /// Body copy and cover meta — SF Pro for readability (mockups use sans for body).
     static let body = Font.system(size: 18, weight: .regular, design: .default)
     static let small = Font.system(size: 16, weight: .medium, design: .default)
-    static let button = Font.system(size: 16, weight: .semibold, design: .default)
+    static let button = LikemindedTypography.button
+    static let caption = LikemindedTypography.caption
+    static let metric = Font.system(size: 72, weight: .semibold, design: .serif)
+    static let metricValue = Font.system(size: 28, weight: .semibold, design: .rounded)
+    static let iconSmall = Font.system(size: 16, weight: .semibold, design: .default)
+    static let iconMedium = Font.system(size: 22, weight: .semibold, design: .default)
+    static let iconHero = Font.system(size: 28, weight: .medium, design: .default)
+    static let iconProminent = Font.system(size: 26, weight: .semibold, design: .default)
+    static let icon = Font.system(size: 18, weight: .semibold, design: .default)
+    static let iconLarge = Font.system(size: 36, weight: .regular, design: .default)
+    static let decorativeIcon = Font.system(size: 30, weight: .semibold, design: .default)
+    static let roundedInitials = Font.system(size: 18, weight: .semibold, design: .rounded)
+    static let roundedInitialsLarge = Font.system(size: 30, weight: .semibold, design: .rounded)
+    static func avatarInitials(diameter: CGFloat) -> Font {
+        Font.system(size: max(14, diameter * 0.38), weight: .medium, design: .serif)
+    }
     /// White titles on thematic covers.
     static let coverTitle = Font.system(size: 26, weight: .semibold, design: .serif)
     static let coverTitleSmall = Font.system(size: 18, weight: .semibold, design: .serif)
     /// White meta on thematic covers (member counts, room energy).
     static let coverMeta = Font.system(size: 14, weight: .regular, design: .default)
+}
+
+struct MacPrimaryButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) private var isEnabled
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(MacType.button)
+            .foregroundStyle(isEnabled ? MacPalette.onAccent : MacPalette.muted)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .background(
+                isEnabled ? MacPalette.accent : MacPalette.accentSoft,
+                in: RoundedRectangle(cornerRadius: 11, style: .continuous)
+            )
+            .scaleEffect(configuration.isPressed ? 0.98 : 1)
+            .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
+    }
+}
+
+struct MacSecondaryButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) private var isEnabled
+
+    func makeBody(configuration: Configuration) -> some View {
+        let shape = RoundedRectangle(cornerRadius: 11, style: .continuous)
+        return configuration.label
+            .font(MacType.button)
+            .foregroundStyle(isEnabled ? MacPalette.accent : MacPalette.muted)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .background(configuration.isPressed ? MacPalette.accentSoft : MacPalette.surface, in: shape)
+            .overlay(shape.stroke(isEnabled ? MacPalette.accent : MacPalette.line, lineWidth: 1))
+            .scaleEffect(configuration.isPressed ? 0.98 : 1)
+            .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
+    }
 }
 
 struct MacPanel<Content: View>: View {
@@ -71,7 +115,7 @@ struct MacPanel<Content: View>: View {
     private var bgView: some View {
         let shape = RoundedRectangle(cornerRadius: 18, style: .continuous)
         if dark {
-            shape.fill(MacPalette.accent)
+            shape.fill(MacPalette.coverForest)
         } else if glass {
             shape.fill(.ultraThinMaterial)
         } else {
@@ -112,7 +156,7 @@ struct MacPill: View {
     var body: some View {
         Text(text)
             .font(MacType.small.weight(.medium))
-            .foregroundStyle(isSelected ? .white : MacPalette.ink)
+            .foregroundStyle(isSelected ? MacPalette.onAccent : MacPalette.ink)
             .padding(.horizontal, 13)
             .padding(.vertical, 8)
             .background(isSelected ? MacPalette.accent : MacPalette.surface, in: Capsule())
@@ -296,11 +340,11 @@ struct MacOrb: View {
                     .rotationEffect(.degrees(Double(index) * 17))
             }
             Circle()
-                .fill(RadialGradient(colors: [Color.white, MacPalette.accentSoft, MacPalette.accent.opacity(0.18)], center: .center, startRadius: 4, endRadius: 92))
+                .fill(RadialGradient(colors: [MacPalette.orbHighlight, MacPalette.accentSoft, MacPalette.accent.opacity(0.18)], center: .center, startRadius: 4, endRadius: 92))
                 .frame(width: 160, height: 160)
             Image(systemName: heart ? "heart.fill" : "sparkle")
-                .font(.system(size: 30, weight: .semibold))
-                .foregroundStyle(.white)
+                .font(MacType.decorativeIcon)
+                .foregroundStyle(MacPalette.accentDeep)
                 .shadow(color: MacPalette.accent.opacity(0.45), radius: 16)
         }
     }
@@ -475,10 +519,10 @@ struct MacHeroArt: View {
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
-            LinearGradient(colors: [tone.opacity(0.95), MacPalette.accent.opacity(0.88), Color.black.opacity(0.7)], startPoint: .topTrailing, endPoint: .bottomLeading)
+            LinearGradient(colors: [tone.opacity(0.95), MacPalette.coverForest.opacity(0.88), MacPalette.coverScrim], startPoint: .topTrailing, endPoint: .bottomLeading)
             ForEach(0..<5, id: \.self) { index in
                 Circle()
-                    .stroke(Color.white.opacity(0.05), lineWidth: 1)
+                    .stroke(MacPalette.coverHairline, lineWidth: 1)
                     .frame(width: CGFloat(220 + index * 90))
                     .offset(x: CGFloat(index * 24), y: CGFloat(index * -12))
             }
@@ -505,7 +549,7 @@ struct MacAvatar: View {
         Circle()
             .fill(color)
             .frame(width: size, height: size)
-            .overlay(Text(initials).font(.system(size: size * 0.38, weight: .medium, design: .serif)).foregroundStyle(MacPalette.accent))
+            .overlay(Text(initials).font(MacType.avatarInitials(diameter: size)).foregroundStyle(MacPalette.accent))
     }
 }
 
@@ -536,7 +580,7 @@ struct MacProfilePortrait: View {
                 .scaledToFill()
                 .frame(width: size, height: size)
                 .clipShape(Circle())
-                .overlay(Circle().stroke(Color.white.opacity(0.92), lineWidth: 2))
+                .overlay(Circle().stroke(MacPalette.coverAvatarRing, lineWidth: 2))
                 .shadow(color: MacPalette.accent.opacity(0.28), radius: 14, y: 5)
         }
         .frame(width: size + 56, height: size + 56)
@@ -549,10 +593,10 @@ enum MacTone: CaseIterable {
     case sage, clay, accent, night
     var color: Color {
         switch self {
-        case .sage: MacPalette.sage
-        case .clay: MacPalette.clay
-        case .accent: MacPalette.accent
-        case .night: Color(red: 0.12, green: 0.14, blue: 0.18)
+        case .sage: MacPalette.coverSage
+        case .clay: MacPalette.coverClay
+        case .accent: MacPalette.coverForestLight
+        case .night: MacPalette.dusk
         }
     }
 }
@@ -566,7 +610,7 @@ struct MacGradientCard: View {
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
-            LinearGradient(colors: [tone.color, tone.color.opacity(0.75), .black.opacity(0.55)], startPoint: .topLeading, endPoint: .bottomTrailing)
+            LinearGradient(colors: [tone.color, tone.color.opacity(0.75), MacPalette.photoScrim], startPoint: .topLeading, endPoint: .bottomTrailing)
             ForEach(0..<3, id: \.self) { i in
                 Circle().stroke(.white.opacity(0.05), lineWidth: 1)
                     .frame(width: 120 + CGFloat(i * 60))
@@ -580,7 +624,7 @@ struct MacGradientCard: View {
                         ForEach(tags.prefix(3), id: \.self) { tag in
                             Text(tag).font(MacType.small).foregroundStyle(.white)
                                 .padding(.horizontal, 10).padding(.vertical, 5)
-                                .background(.white.opacity(0.2), in: Capsule())
+                                .background(MacPalette.coverTag, in: Capsule())
                         }
                     }
                 }
@@ -613,7 +657,7 @@ struct MacFilterTab: View {
     var body: some View {
         Text(label)
             .font(MacType.button)
-            .foregroundStyle(isSelected ? .white : MacPalette.muted)
+            .foregroundStyle(isSelected ? MacPalette.onAccent : MacPalette.muted)
             .padding(.horizontal, 16).padding(.vertical, 8)
             .background(isSelected ? MacPalette.accent : .clear, in: Capsule())
     }
@@ -627,7 +671,7 @@ enum MacWindowMetrics {
 }
 
 enum MacWindowChrome {
-    static let creamNSColor = NSColor(red: 0.980, green: 0.969, blue: 0.945, alpha: 1.0)
+    static let backgroundNSColor = MacPalette.backgroundNSColor
 }
 
 struct MacWindowChromeHider: NSViewRepresentable {
@@ -652,7 +696,7 @@ struct MacWindowChromeHider: NSViewRepresentable {
         window.titleVisibility = .hidden
         window.titlebarSeparatorStyle = .none
         window.isMovableByWindowBackground = true
-        window.backgroundColor = MacWindowChrome.creamNSColor
+        window.backgroundColor = MacWindowChrome.backgroundNSColor
         window.isOpaque = true
 
         let minSize = NSSize(width: MacWindowMetrics.minWidth, height: MacWindowMetrics.minHeight)
