@@ -498,7 +498,7 @@ test("native navigation and Soulmate heading hierarchy stay cross-platform consi
   assert.match(iosProof, /ios_tap_button "Soulmate" "This week’s introduction\."/);
   assert.doesNotMatch(iosProof, /ios_tap_button "Soulmate" "Matches are mutual\."/);
   assert.match(iosTabBar, /\.font\(\.system\(size: 12,/);
-  assert.match(macDesign, /static let small = Font\.system\(size: 16,/);
+  assert.match(macDesign, /static var small: Font \{ LikemindedTypography\.scaled\(size: 16,/);
   assert.match(macRoot, /case \.soulmateOverview, \.soulmateDiscover:\s+return false/);
   assert.match(macRoot, /let tabWidth: CGFloat = 144/);
 });
