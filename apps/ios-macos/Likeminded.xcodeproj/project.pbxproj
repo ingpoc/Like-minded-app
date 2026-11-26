@@ -550,8 +550,8 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				GOOGLE_CLIENT_ID_MAC = "783810031677-acl8e4radj0ud4pqflbo5c3f23e5cqid.apps.googleusercontent.com";
-				GOOGLE_REVERSED_CLIENT_ID_MAC = "com.googleusercontent.apps.783810031677-acl8e4radj0ud4pqflbo5c3f23e5cqid";
+				GOOGLE_CLIENT_ID_MAC = "783810031677-afiec2d9r2og5hg3hru9n59fjregn7nk.apps.googleusercontent.com";
+				GOOGLE_REVERSED_CLIENT_ID_MAC = "com.googleusercontent.apps.783810031677-afiec2d9r2og5hg3hru9n59fjregn7nk";
 				INFOPLIST_FILE = "Info/LikemindedMac-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Likeminded;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
@@ -613,8 +613,8 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				GOOGLE_CLIENT_ID_MAC = "783810031677-acl8e4radj0ud4pqflbo5c3f23e5cqid.apps.googleusercontent.com";
-				GOOGLE_REVERSED_CLIENT_ID_MAC = "com.googleusercontent.apps.783810031677-acl8e4radj0ud4pqflbo5c3f23e5cqid";
+				GOOGLE_CLIENT_ID_MAC = "783810031677-afiec2d9r2og5hg3hru9n59fjregn7nk.apps.googleusercontent.com";
+				GOOGLE_REVERSED_CLIENT_ID_MAC = "com.googleusercontent.apps.783810031677-afiec2d9r2og5hg3hru9n59fjregn7nk";
 				INFOPLIST_FILE = "Info/LikemindedMac-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Likeminded;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
