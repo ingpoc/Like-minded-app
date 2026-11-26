@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+if [ "$(uname -s)" != "Darwin" ]; then
+  echo "SKIP Apple authorization lifecycle harness: requires macOS"
+  exit 0
+fi
 if ! command -v swiftc >/dev/null 2>&1; then
   echo "SKIP Apple authorization lifecycle harness: swiftc is unavailable"
   exit 0
