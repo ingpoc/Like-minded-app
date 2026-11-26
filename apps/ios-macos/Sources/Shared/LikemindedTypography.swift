@@ -2,6 +2,22 @@ import SwiftUI
 
 /// Cross-target type tokens for views shared by the iOS and macOS apps.
 enum LikemindedTypography {
+    static let body: Font = {
+        #if os(macOS)
+        Font.system(size: 14, weight: .regular, design: .default)
+        #else
+        Font.body
+        #endif
+    }()
+
+    static let compact: Font = {
+        #if os(macOS)
+        Font.system(size: 14, weight: .regular, design: .default)
+        #else
+        Font.system(size: 13, weight: .regular, design: .default)
+        #endif
+    }()
+
     static let pageTitle: Font = {
         #if os(macOS)
         Font.system(size: 24, weight: .semibold, design: .serif)

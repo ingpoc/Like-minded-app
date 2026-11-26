@@ -116,7 +116,7 @@ struct CirclesPrototypeView: View {
                 VStack(alignment: .leading, spacing: 14) {
                     Text("Your circle".uppercased())
                         .font(PrototypeTypography.eyebrow)
-                        .foregroundStyle(.white.opacity(0.86))
+                        .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.86))
 
                     Button {
                         selectedCircle = placement.primaryCircle
@@ -284,22 +284,22 @@ private struct CircleHeroCard: View {
                 Spacer()
                 Label("High fit", systemImage: "sparkle")
                     .font(PrototypeTypography.metadata)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(LikemindedPalette.inverseText)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
-                    .background(Color.white.opacity(0.12))
+                    .background(LikemindedPalette.whiteOverlay(alpha: 0.12))
                     .clipShape(Capsule(style: .continuous))
-                    .overlay(Capsule(style: .continuous).stroke(Color.white.opacity(0.38), lineWidth: 1))
+                    .overlay(Capsule(style: .continuous).stroke(LikemindedPalette.whiteOverlay(alpha: 0.38), lineWidth: 1))
             }
 
             Text(display.name)
                 .font(PrototypeTypography.hero)
-                .foregroundStyle(.white)
+                .foregroundStyle(LikemindedPalette.inverseText)
                 .fixedSize(horizontal: false, vertical: true)
 
             Text(display.subtitle)
                 .font(PrototypeTypography.caption)
-                .foregroundStyle(.white.opacity(0.84))
+                .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.84))
                 .fixedSize(horizontal: false, vertical: true)
 
             FlexibleTagLayout(items: display.tags)
@@ -312,18 +312,18 @@ private struct CircleHeroCard: View {
                 Image(systemName: "chevron.right")
                     .font(.system(size: 14, weight: .semibold))
                     .frame(width: 42, height: 42)
-                    .background(Color.white.opacity(0.88))
+                    .background(LikemindedPalette.whiteOverlay(alpha: 0.88))
                     .foregroundStyle(PrototypePalette.ink)
                     .clipShape(Circle())
             }
             .font(PrototypeTypography.metadata)
-            .foregroundStyle(.white)
+            .foregroundStyle(LikemindedPalette.inverseText)
         }
         .padding(22)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(PrototypePalette.roomGradient(0))
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .overlay(WaveLines().stroke(Color.white.opacity(0.16), lineWidth: 1).padding(8))
+        .overlay(WaveLines().stroke(LikemindedPalette.whiteOverlay(alpha: 0.16), lineWidth: 1).padding(8))
     }
 }
 
@@ -419,18 +419,18 @@ struct CircleDetailView: View {
                 VStack(alignment: .leading, spacing: 10) {
                     Text(circle.name)
                         .font(PrototypeTypography.hero)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(LikemindedPalette.inverseText)
                         .fixedSize(horizontal: false, vertical: true)
 
                     if !traitLine.isEmpty {
                         Text(traitLine)
                             .font(PrototypeTypography.caption)
-                            .foregroundStyle(.white.opacity(0.9))
+                            .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.9))
                     }
 
                     Text(circle.shortPromise.isEmpty ? circle.placementReason : circle.shortPromise)
                         .font(PrototypeTypography.body)
-                        .foregroundStyle(.white.opacity(0.88))
+                        .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.88))
                         .fixedSize(horizontal: false, vertical: true)
 
                     FlexibleTagLayout(items: circle.themes)
@@ -456,9 +456,9 @@ struct CircleDetailView: View {
             } label: {
                 Image(systemName: "ellipsis")
                     .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(LikemindedPalette.inverseText)
                     .frame(width: 44, height: 44)
-                    .background(Color.black.opacity(0.28))
+                    .background(LikemindedPalette.blackOverlay(alpha: 0.28))
                     .clipShape(Circle())
             }
             .buttonStyle(.plain)
@@ -776,7 +776,7 @@ struct CommunitiesPrototypeView: View {
                     }
                     .padding(.horizontal, 14)
                     .frame(height: 46)
-                    .background(Color.black.opacity(0.045))
+                    .background(LikemindedPalette.blackOverlay(alpha: 0.045))
                     .clipShape(RoundedRectangle(cornerRadius: 13, style: .continuous))
                 }
 
@@ -788,13 +788,13 @@ struct CommunitiesPrototypeView: View {
                             } label: {
                                 Text(filter.rawValue)
                                     .font(PrototypeTypography.metadata)
-                                    .foregroundStyle(browseFilter == filter ? .white : PrototypePalette.ink)
+                                    .foregroundStyle(browseFilter == filter ? LikemindedPalette.onAccent : PrototypePalette.ink)
                                     .padding(.horizontal, 14)
                                     .padding(.vertical, 9)
                                     .background(
                                         browseFilter == filter
                                             ? PrototypePalette.actionGradient
-                                            : LinearGradient(colors: [Color.black.opacity(0.05)], startPoint: .top, endPoint: .bottom)
+                                            : LinearGradient(colors: [LikemindedPalette.blackOverlay(alpha: 0.05)], startPoint: .top, endPoint: .bottom)
                                     )
                                     .clipShape(Capsule(style: .continuous))
                             }
@@ -893,7 +893,7 @@ struct CommunitiesPrototypeView: View {
                             }
                             Spacer()
                             Image(systemName: "chevron.right")
-                                .font(.caption.weight(.semibold))
+                                .font(LikemindedTypography.caption.weight(.semibold))
                                 .foregroundStyle(PrototypePalette.subink)
                         }
                         .padding(16)
@@ -1245,7 +1245,7 @@ struct CommunityDetailView: View {
                     Label("Back", systemImage: "chevron.left")
                         .labelStyle(.iconOnly)
                         .frame(width: 44, height: 44)
-                        .background(Color.white.opacity(0.12))
+                        .background(LikemindedPalette.whiteOverlay(alpha: 0.12))
                         .clipShape(Circle())
                 }
                 .buttonStyle(.plain)
@@ -1260,16 +1260,16 @@ struct CommunityDetailView: View {
                 .accessibilityLabel("Community options")
             }
             .font(PrototypeTypography.bodyStrong)
-            .foregroundStyle(.white)
+            .foregroundStyle(LikemindedPalette.inverseText)
 
             Text(display.name)
                 .font(.system(.title, design: .serif).weight(.semibold))
-                .foregroundStyle(.white)
+                .foregroundStyle(LikemindedPalette.inverseText)
                 .fixedSize(horizontal: false, vertical: true)
 
             Text(display.summary)
-                .font(.callout)
-                .foregroundStyle(.white.opacity(0.88))
+                .font(LikemindedTypography.caption)
+                .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.88))
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
@@ -1279,20 +1279,20 @@ struct CommunityDetailView: View {
                     )
                     .padding(.horizontal, 10)
                     .padding(.vertical, 7)
-                    .background(Color.white.opacity(0.10))
+                    .background(LikemindedPalette.whiteOverlay(alpha: 0.10))
                     .clipShape(Capsule(style: .continuous))
-                    .overlay(Capsule(style: .continuous).stroke(Color.white.opacity(0.35), lineWidth: 1))
+                    .overlay(Capsule(style: .continuous).stroke(LikemindedPalette.whiteOverlay(alpha: 0.35), lineWidth: 1))
                     ForEach(community.themes.prefix(4), id: \.self) { tag in
                         Text(tag)
                             .padding(.horizontal, 10)
                             .padding(.vertical, 7)
-                            .background(Color.white.opacity(0.10))
+                            .background(LikemindedPalette.whiteOverlay(alpha: 0.10))
                             .clipShape(Capsule(style: .continuous))
-                            .overlay(Capsule(style: .continuous).stroke(Color.white.opacity(0.35), lineWidth: 1))
+                            .overlay(Capsule(style: .continuous).stroke(LikemindedPalette.whiteOverlay(alpha: 0.35), lineWidth: 1))
                     }
                 }
-                .font(.subheadline.weight(.medium))
-                .foregroundStyle(.white)
+                .font(LikemindedTypography.caption.weight(.medium))
+                .foregroundStyle(LikemindedPalette.inverseText)
             }
         }
         .padding(.horizontal, 20)
@@ -1300,7 +1300,7 @@ struct CommunityDetailView: View {
         .padding(.bottom, 42)
         .background(PrototypePalette.roomGradient(0))
         .clipShape(RoundedRectangle(cornerRadius: 0, style: .continuous))
-        .overlay(WaveLines().stroke(Color.white.opacity(0.16), lineWidth: 1).padding(8))
+        .overlay(WaveLines().stroke(LikemindedPalette.whiteOverlay(alpha: 0.16), lineWidth: 1).padding(8))
     }
 
     private var statsRow: some View {
@@ -1317,7 +1317,7 @@ struct CommunityDetailView: View {
                 Label(nextMeetupStatsLabel, systemImage: "calendar")
             }
         }
-        .font(.subheadline.weight(.medium))
+        .font(LikemindedTypography.caption.weight(.medium))
         .foregroundStyle(PrototypePalette.ink)
         .padding(18)
         .background(PrototypePalette.surface)
@@ -1354,7 +1354,7 @@ struct CommunityDetailView: View {
             }
         } label: {
             Text(tab.compactTitle)
-                .font(.subheadline.weight(.medium))
+                .font(LikemindedTypography.caption.weight(.medium))
                 .foregroundStyle(detailTab == tab ? PrototypePalette.accent : PrototypePalette.subink)
                 .lineLimit(1)
                 .fixedSize(horizontal: true, vertical: false)
@@ -1443,7 +1443,7 @@ struct CommunityDetailView: View {
                 .accessibilityIdentifier("view-members")
             } else {
                 Label("Join this community to view its members.", systemImage: "lock.fill")
-                    .font(.callout)
+                    .font(LikemindedTypography.caption)
                     .foregroundStyle(PrototypePalette.subink)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -1520,7 +1520,7 @@ struct CommunityDetailView: View {
 
             if let communityError = appState.communityError {
                 Label(communityError, systemImage: "exclamationmark.circle")
-                    .font(.callout)
+                    .font(LikemindedTypography.caption)
                     .foregroundStyle(.red)
             }
         }
@@ -1626,7 +1626,7 @@ struct CommunityDetailView: View {
                     .clipShape(Capsule(style: .continuous))
             }
             Image(systemName: "chevron.right")
-                .font(.caption.weight(.semibold))
+                .font(LikemindedTypography.caption.weight(.semibold))
                 .foregroundStyle(PrototypePalette.subink)
         }
         .padding(16)
@@ -1684,7 +1684,7 @@ struct CommunityMembersView: View {
                     }
                     .padding(.horizontal, 12)
                     .frame(height: 44)
-                    .background(Color.black.opacity(0.045))
+                    .background(LikemindedPalette.blackOverlay(alpha: 0.045))
                     .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
 
                     Text("\(memberCount) members")
@@ -1933,7 +1933,7 @@ struct CreateEventView: View {
         Button { eventType = title } label: {
             Label(title, systemImage: icon)
                 .font(PrototypeTypography.metadata)
-                .foregroundStyle(eventType == title ? .white : PrototypePalette.ink)
+                .foregroundStyle(eventType == title ? LikemindedPalette.onAccent : PrototypePalette.ink)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 10)
                 .background(eventType == title ? PrototypePalette.accent : PrototypePalette.surface)
@@ -1969,7 +1969,7 @@ struct CreateEventView: View {
             Text(title)
         }
         .font(PrototypeTypography.metadata.weight(.semibold))
-        .foregroundStyle(filled ? .white : PrototypePalette.accent)
+        .foregroundStyle(filled ? LikemindedPalette.onAccent : PrototypePalette.accent)
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
         .background(filled ? PrototypePalette.accent : PrototypePalette.accentSoft.opacity(0.55), in: Capsule(style: .continuous))
@@ -2050,7 +2050,7 @@ private struct CreateCommunityPreview: View {
                 .overlay(alignment: .bottomLeading) {
                     Text(name.isEmpty ? "Community name" : name)
                         .font(PrototypeTypography.sectionTitle)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(LikemindedPalette.inverseText)
                         .doodleOverlayText()
                         .padding(16)
                 }
@@ -2062,7 +2062,7 @@ private struct CreateCommunityPreview: View {
                 HStack(spacing: 6) {
                     ForEach(themes.prefix(3), id: \.self) { tag in
                         Text(tag)
-                            .font(.system(size: 11, weight: .medium))
+                            .font(LikemindedTypography.compact.weight(.medium))
                             .foregroundStyle(PrototypePalette.ink)
                             .padding(.horizontal, 9)
                             .padding(.vertical, 5)
@@ -2110,10 +2110,10 @@ private struct CommunityCard: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(resolvedName)
                         .font(PrototypeTypography.sectionTitle)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(LikemindedPalette.inverseText)
                     Text(compact ? "\(resolvedMembers) members" : resolvedSummary)
                         .font(PrototypeTypography.caption)
-                        .foregroundStyle(.white.opacity(0.86))
+                        .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.86))
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer()
@@ -2122,7 +2122,7 @@ private struct CommunityCard: View {
                     .foregroundStyle(action == "Joined" ? PrototypePalette.accent : PrototypePalette.ink)
                     .padding(.horizontal, 13)
                     .padding(.vertical, 9)
-                    .background(action == "Joined" ? PrototypePalette.accentSoft : Color.white.opacity(0.92))
+                    .background(action == "Joined" ? PrototypePalette.accentSoft : PrototypePalette.surface)
                     .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                     .accessibilityLabel("\(action) \(resolvedName) community")
             }
@@ -2131,7 +2131,7 @@ private struct CommunityCard: View {
                 HStack {
                     Text("\(resolvedMembers) members")
                         .font(PrototypeTypography.metadata)
-                        .foregroundStyle(.white.opacity(0.86))
+                        .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.86))
                     Spacer()
                 }
             }
@@ -2140,13 +2140,13 @@ private struct CommunityCard: View {
                 HStack(spacing: 6) {
                     ForEach(community.themes.prefix(3), id: \.self) { tag in
                         Text(tag)
-                            .font(.system(size: 11, weight: .medium))
-                            .foregroundStyle(.white)
+                            .font(LikemindedTypography.compact.weight(.medium))
+                            .foregroundStyle(LikemindedPalette.inverseText)
                             .padding(.horizontal, 9)
                             .padding(.vertical, 5)
-                            .background(Color.white.opacity(0.12))
+                            .background(LikemindedPalette.whiteOverlay(alpha: 0.12))
                             .clipShape(Capsule(style: .continuous))
-                            .overlay(Capsule(style: .continuous).stroke(Color.white.opacity(0.26), lineWidth: 1))
+                            .overlay(Capsule(style: .continuous).stroke(LikemindedPalette.whiteOverlay(alpha: 0.26), lineWidth: 1))
                     }
                 }
             }
@@ -2174,7 +2174,7 @@ private struct StaticDetailRow: View {
             Spacer()
             if showsChevron {
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(LikemindedTypography.compact.weight(.semibold))
                     .foregroundStyle(PrototypePalette.muted)
             }
         }

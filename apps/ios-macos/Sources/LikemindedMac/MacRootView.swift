@@ -302,7 +302,7 @@ struct MacTopNavigation: View {
         .padding(8)
         .background(MacPalette.surface, in: Capsule())
         .overlay(Capsule().stroke(MacPalette.line, lineWidth: 1))
-        .shadow(color: Color.black.opacity(0.08), radius: 18, y: 10)
+        .shadow(color: LikemindedPalette.blackOverlay(alpha: 0.08), radius: 18, y: 10)
     }
 }
 

@@ -110,7 +110,7 @@ struct OnboardingView: View {
                             gender = option
                         }
                         .font(PrototypeTypography.metadata)
-                        .foregroundStyle(gender == option ? .white : PrototypePalette.ink)
+                        .foregroundStyle(gender == option ? LikemindedPalette.inverseText : PrototypePalette.ink)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
                         .background(gender == option ? PrototypePalette.accent : PrototypePalette.background)
@@ -222,12 +222,12 @@ struct OnboardingView: View {
             HStack(spacing: 6) {
                 if selected {
                     Image(systemName: "checkmark")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(LikemindedTypography.compact.weight(.bold))
                 }
                 Text(interest)
                     .font(PrototypeTypography.metadata.weight(.semibold))
             }
-            .foregroundStyle(selected ? .white : PrototypePalette.ink)
+            .foregroundStyle(selected ? LikemindedPalette.inverseText : PrototypePalette.ink)
             .padding(.horizontal, 13)
             .padding(.vertical, 8)
             .background(selected ? PrototypePalette.accent : PrototypePalette.background, in: Capsule())
@@ -324,7 +324,7 @@ struct OnboardingView: View {
                         .frame(width: 28, height: 28)
                     Text(number)
                         .font(PrototypeTypography.metadata.weight(.bold))
-                        .foregroundStyle(selected ? .white : PrototypePalette.subink)
+                        .foregroundStyle(selected ? LikemindedPalette.inverseText : PrototypePalette.subink)
                 }
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)

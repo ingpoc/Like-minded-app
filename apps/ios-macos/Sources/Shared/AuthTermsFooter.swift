@@ -50,7 +50,7 @@ struct AuthPrivacyPolicySheet: View {
                     .accessibilityAddTraits(.isHeader)
 
                 Text(LikemindedPrivacyPolicy.intro)
-                    .font(.body)
+                    .font(LikemindedTypography.body)
                     .fixedSize(horizontal: false, vertical: true)
 
                 ForEach(LikemindedPrivacyPolicy.sections, id: \.title) { section in
@@ -60,19 +60,19 @@ struct AuthPrivacyPolicySheet: View {
                         Divider()
                         ForEach(section.items, id: \.self) { item in
                             Text("•  \(item)")
-                                .font(.body)
+                                .font(LikemindedTypography.body)
                                 .fixedSize(horizontal: false, vertical: true)
                         }
                     }
                 }
 
                 Text(LikemindedPrivacyPolicy.footer)
-                    .font(.body)
+                    .font(LikemindedTypography.body)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.top, 4)
 
                 Link("Open public privacy policy", destination: LikemindedPrivacyPolicy.publicURL)
-                    .font(.body.weight(.semibold))
+                    .font(LikemindedTypography.body.weight(.semibold))
             }
             .padding(24)
         }

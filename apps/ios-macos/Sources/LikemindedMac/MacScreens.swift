@@ -532,15 +532,15 @@ struct MacScreenView: View {
             HStack {
                 Image(systemName: "calendar.badge.clock")
                     .font(.title2)
-                    .foregroundStyle(.white.opacity(0.75))
+                    .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.75))
                 Spacer()
             }
             Text("No upcoming meetups")
                 .font(MacType.section)
-                .foregroundStyle(.white)
+                .foregroundStyle(LikemindedPalette.inverseText)
             Text("RSVP for this weekend to get scheduled.")
                 .font(MacType.body)
-                .foregroundStyle(.white.opacity(0.8))
+                .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.8))
         }
         .padding(24)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -555,10 +555,10 @@ struct MacScreenView: View {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Upcoming meetup")
                         .font(MacType.small.weight(.semibold))
-                        .foregroundStyle(.white.opacity(0.85))
+                        .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.85))
                     Text(LikemindedDate.meetHeader(meeting.scheduledAt))
                         .font(MacType.eyebrow)
-                        .foregroundStyle(.white.opacity(0.9))
+                        .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.9))
                 }
                 Spacer(minLength: 12)
                 Text(LikemindedDate.countdownUntil(meeting.scheduledAt))
@@ -571,7 +571,7 @@ struct MacScreenView: View {
             }
             Text(meeting.title)
                 .font(MacType.coverTitle)
-                .foregroundStyle(.white)
+                .foregroundStyle(LikemindedPalette.inverseText)
                 .fixedSize(horizontal: false, vertical: true)
             VStack(alignment: .leading, spacing: 8) {
                 Label("Host: \(meeting.hostName)", systemImage: "person.circle")
@@ -581,7 +581,7 @@ struct MacScreenView: View {
                 }
             }
             .font(MacType.body)
-            .foregroundStyle(.white.opacity(0.88))
+            .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.88))
             Spacer(minLength: 4)
             Button("Join video call") {
                 navigate?(.meetVideoCall)
@@ -747,14 +747,14 @@ struct MacScreenView: View {
             LinearGradient(colors: [MacPalette.coverSage, MacPalette.coverForestLight], startPoint: .topLeading, endPoint: .bottomTrailing)
             Text(String(name.prefix(1)))
                 .font(MacType.metric)
-                .foregroundStyle(.white.opacity(0.75))
+                .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.75))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             Label(name, systemImage: "cellularbars")
                 .font(MacType.button)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
                 .background(MacPalette.photoScrim, in: Capsule())
-                .foregroundStyle(.white)
+                .foregroundStyle(LikemindedPalette.inverseText)
                 .padding(12)
         }
         .frame(height: 210)
@@ -883,19 +883,19 @@ struct MacScreenView: View {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Living profile")
                     .font(MacType.section)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(LikemindedPalette.inverseText)
                 Text("Read-only signals from your voice profile")
                     .font(MacType.small)
-                    .foregroundStyle(.white.opacity(0.75))
+                    .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.75))
                 HStack(spacing: 10) {
                     ForEach(profileSignalLabels(from: signals), id: \.title) { item in
                         VStack(alignment: .leading, spacing: 4) {
                             Text(item.title)
                                 .font(MacType.small)
-                                .foregroundStyle(.white.opacity(0.7))
+                                .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.7))
                             Text(item.value)
                                 .font(MacType.button)
-                                .foregroundStyle(.white)
+                                .foregroundStyle(LikemindedPalette.inverseText)
                         }
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
@@ -904,18 +904,18 @@ struct MacScreenView: View {
                 }
                 Label(signals?.communicationStyle?.primary.map { "\($0.capitalized) communicator" } ?? "Voice profile signals", systemImage: "message")
                     .font(MacType.coverTitleSmall)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(LikemindedPalette.inverseText)
                 VStack(spacing: 12) {
                     ForEach(traits, id: \.label) { trait in
                         VStack(alignment: .leading, spacing: 4) {
                             HStack {
                                 Text(trait.left)
                                     .font(MacType.small)
-                                    .foregroundStyle(.white.opacity(0.75))
+                                    .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.75))
                                 Spacer()
                                 Text(trait.right)
                                     .font(MacType.small)
-                                    .foregroundStyle(.white.opacity(0.75))
+                                    .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.75))
                             }
                             GeometryReader { geo in
                                 ZStack(alignment: .leading) {
@@ -1650,7 +1650,7 @@ struct MacScreenView: View {
                 )
                 Text(display.name)
                     .font(MacType.coverTitleSmall)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(LikemindedPalette.inverseText)
                     .doodleOverlayText()
                     .padding(16)
             }
@@ -1762,15 +1762,15 @@ struct MacScreenView: View {
                             .scaledToFill()
                             .frame(width: 88, height: 88)
                             .clipShape(Circle())
-                            .overlay(Circle().stroke(.white.opacity(0.9), lineWidth: 3))
-                            .shadow(color: .black.opacity(0.18), radius: 8, y: 3)
+                            .overlay(Circle().stroke(LikemindedPalette.whiteOverlay(alpha: 0.9), lineWidth: 3))
+                            .shadow(color: LikemindedPalette.blackOverlay(alpha: 0.18), radius: 8, y: 3)
                             .accessibilityHidden(true)
 
                         VStack(alignment: .leading, spacing: 10) {
                             HStack(alignment: .firstTextBaseline, spacing: 10) {
                                 Text(circle?.name ?? "Your circle")
                                     .font(MacType.coverTitle)
-                                    .foregroundStyle(.white)
+                                    .foregroundStyle(LikemindedPalette.inverseText)
                                 if let fitBadge, !fitBadge.isEmpty {
                                     Text(fitBadge)
                                         .font(MacType.small.weight(.semibold))
@@ -1783,12 +1783,12 @@ struct MacScreenView: View {
                             if !traitLine.isEmpty {
                                 Text(traitLine)
                                     .font(MacType.coverMeta)
-                                    .foregroundStyle(.white.opacity(0.9))
+                                    .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.9))
                             }
                             if let placementCopy, !placementCopy.isEmpty {
                                 Text(placementCopy)
                                     .font(MacType.body)
-                                    .foregroundStyle(.white.opacity(0.88))
+                                    .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.88))
                                     .lineLimit(3)
                             }
                         }
@@ -2130,15 +2130,15 @@ struct MacScreenView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             Text(community?.name ?? "Community")
                                 .font(MacType.coverTitle)
-                                .foregroundStyle(.white)
+                                .foregroundStyle(LikemindedPalette.inverseText)
                             Text(community?.summary ?? "Listen, share, explore.")
                                 .font(MacType.coverMeta)
-                                .foregroundStyle(.white.opacity(0.9))
+                                .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.9))
                             FlowLayout(spacing: 6) {
                                 ForEach(themes.prefix(4), id: \.self) { tag in
                                     Text(tag)
                                         .font(MacType.small.weight(.medium))
-                                        .foregroundStyle(.white)
+                                        .foregroundStyle(LikemindedPalette.inverseText)
                                         .padding(.horizontal, 10)
                                         .padding(.vertical, 5)
                                         .background(MacPalette.coverTag, in: Capsule())
@@ -3369,7 +3369,7 @@ struct MacScreenView: View {
                 )
                 Text("Good music. Great people.\nMeaningful connections.")
                     .font(MacType.small.weight(.semibold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(LikemindedPalette.inverseText)
                     .doodleOverlayText()
                     .padding(14)
                     .fixedSize(horizontal: false, vertical: true)
@@ -3896,7 +3896,7 @@ struct MacScreenView: View {
                             // ("Community name") so CUA focus/type hits the TextField.
                             Text(newCommunityName.isEmpty ? "Untitled community" : newCommunityName)
                                 .font(MacType.coverTitleSmall)
-                                .foregroundStyle(.white)
+                                .foregroundStyle(LikemindedPalette.inverseText)
                                 .doodleOverlayText()
                                 .padding(16)
                                 .accessibilityHidden(true)
@@ -4652,16 +4652,16 @@ struct MacScreenView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Speak or type—your choice")
                             .font(MacType.section)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(LikemindedPalette.inverseText)
                         Label(
                             profileVoiceStatusLabel,
                             systemImage: "waveform"
                         )
                         .font(MacType.small.weight(.semibold))
-                        .foregroundStyle(.white.opacity(0.82))
+                        .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.82))
                         Text("Use your voice for a natural flow, or type whenever you prefer.")
                             .font(MacType.body)
-                            .foregroundStyle(.white.opacity(0.82))
+                            .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.82))
                             .fixedSize(horizontal: false, vertical: true)
                         HStack(spacing: 10) {
                             Button {
@@ -4682,13 +4682,13 @@ struct MacScreenView: View {
                                     Task { await appState.stopVoiceProfile() }
                                 }
                                 .buttonStyle(.bordered)
-                                .tint(.white)
+                                .tint(LikemindedPalette.inverseText)
                             }
                         }
                         if let message = appState.realtimeMessage {
                             Text(message)
                                 .font(MacType.small)
-                                .foregroundStyle(.white.opacity(0.78))
+                                .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.78))
                                 .fixedSize(horizontal: false, vertical: true)
                             if message.localizedCaseInsensitiveContains("System Settings") {
                                 Button("Open Microphone Settings") {
@@ -4697,7 +4697,7 @@ struct MacScreenView: View {
                                     }
                                 }
                                 .buttonStyle(.bordered)
-                                .tint(.white)
+                                .tint(LikemindedPalette.inverseText)
                             }
                         }
                     }

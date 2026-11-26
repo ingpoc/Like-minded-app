@@ -105,7 +105,7 @@ private struct AuthPromiseRow: View {
                 .font(.system(size: 22, weight: .regular))
                 .foregroundStyle(PrototypePalette.ink)
                 .frame(width: 52, height: 52)
-                .background(Color(red: 0.938, green: 0.890, blue: 0.780))
+                .background(LikemindedPalette.welcomeBackdrop)
                 .clipShape(Circle())
 
             VStack(alignment: .leading, spacing: 4) {

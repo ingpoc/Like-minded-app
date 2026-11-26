@@ -133,7 +133,7 @@ struct MeetView: View {
                     .frame(width: 42, height: 42)
                     .background(PrototypePalette.surface)
                     .clipShape(Circle())
-                    .shadow(color: Color.black.opacity(0.06), radius: 14, y: 8)
+                    .shadow(color: LikemindedPalette.blackOverlay(alpha: 0.06), radius: 14, y: 8)
             }
             .buttonStyle(.plain)
             .accessibilityElement(children: .ignore)
@@ -151,7 +151,7 @@ struct MeetView: View {
                         .frame(width: 42, height: 42)
                         .background(PrototypePalette.surface)
                         .clipShape(Circle())
-                        .shadow(color: Color.black.opacity(0.06), radius: 14, y: 8)
+                        .shadow(color: LikemindedPalette.blackOverlay(alpha: 0.06), radius: 14, y: 8)
 
                     if !appState.notifications.isEmpty {
                         Circle()
@@ -183,18 +183,18 @@ private struct MeetEmptyHeroCard: View {
         VStack(alignment: .leading, spacing: 16) {
             Image(systemName: "calendar.badge.clock")
                 .font(.title2)
-                .foregroundStyle(.white.opacity(0.75))
+                .foregroundStyle(LikemindedPalette.onAccent)
             Text("No upcoming meetups")
                 .font(PrototypeTypography.cardTitle)
-                .foregroundStyle(.white)
+                .foregroundStyle(LikemindedPalette.onAccent)
             Text("RSVP for this weekend to get scheduled.")
                 .font(PrototypeTypography.body)
-                .foregroundStyle(.white.opacity(0.8))
+                .foregroundStyle(LikemindedPalette.onAccent)
         }
         .padding(22)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(PrototypePalette.accent, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Color.white.opacity(0.15), lineWidth: 1))
+        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(LikemindedPalette.whiteOverlay(alpha: 0.15), lineWidth: 1))
     }
 }
 
@@ -212,25 +212,25 @@ private struct MeetHeroJoinCard: View {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Upcoming meetup")
                         .font(PrototypeTypography.metadata)
-                        .foregroundStyle(.white.opacity(0.85))
+                        .foregroundStyle(LikemindedPalette.inverseText)
                     Text(LikemindedDate.meetHeader(meeting.scheduledAt))
                         .font(PrototypeTypography.caption)
-                        .foregroundStyle(.white.opacity(0.9))
+                        .foregroundStyle(LikemindedPalette.inverseText)
                 }
                 Spacer(minLength: 12)
                 Text(LikemindedDate.countdownUntil(meeting.scheduledAt))
                     .font(PrototypeTypography.metadata.monospacedDigit())
-                    .foregroundStyle(PrototypePalette.accent)
+                    .foregroundStyle(PrototypePalette.ink)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
-                    .background(Color.white.opacity(0.95))
+                    .background(PrototypePalette.surface)
                     .clipShape(Capsule(style: .continuous))
                     .contentTransition(.numericText())
             }
 
             Text(meeting.title)
                 .font(PrototypeTypography.cardTitle)
-                .foregroundStyle(.white)
+                .foregroundStyle(LikemindedPalette.inverseText)
                 .fixedSize(horizontal: false, vertical: true)
 
             VStack(alignment: .leading, spacing: 8) {
@@ -241,7 +241,7 @@ private struct MeetHeroJoinCard: View {
                 }
             }
             .font(PrototypeTypography.caption)
-            .foregroundStyle(.white.opacity(0.88))
+            .foregroundStyle(LikemindedPalette.inverseText)
 
             NavigationLink {
                 GroupVideoCallView(meeting: meeting)
@@ -250,8 +250,8 @@ private struct MeetHeroJoinCard: View {
                     .font(PrototypeTypography.button)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
-                    .background(Color.white.opacity(canJoin ? 0.92 : 0.55))
-                    .foregroundStyle(PrototypePalette.accent)
+                    .background(PrototypePalette.surface)
+                    .foregroundStyle(PrototypePalette.ink)
                     .clipShape(Capsule(style: .continuous))
             }
             .disabled(!canJoin)
@@ -260,14 +260,10 @@ private struct MeetHeroJoinCard: View {
         .padding(22)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            LinearGradient(
-                colors: [PrototypePalette.accent, PrototypePalette.accentDeep],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+            PrototypePalette.meetCardGradient
         )
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Color.white.opacity(0.12), lineWidth: 1))
+        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(LikemindedPalette.whiteOverlay(alpha: 0.12), lineWidth: 1))
     }
 }
 
@@ -423,7 +419,7 @@ private struct RSVPChoice: View {
         Button(action: action) {
             Text(title)
                 .font(PrototypeTypography.caption)
-                .foregroundStyle(isSelected ? .white : PrototypePalette.subink)
+                .foregroundStyle(isSelected ? LikemindedPalette.onAccent : PrototypePalette.subink)
                 .frame(maxWidth: .infinity, minHeight: 44)
                 .background(isSelected ? PrototypePalette.accent : .clear)
                 .clipShape(Capsule(style: .continuous))
@@ -486,7 +482,7 @@ struct PastMeetDetailView: View {
             VStack(alignment: .leading, spacing: 16) {
                 Text("You attended \(meeting.title) on \(formattedDate).")
                     .font(PrototypeTypography.body)
-                    .foregroundStyle(.white.opacity(0.92))
+                    .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.92))
                     .fixedSize(horizontal: false, vertical: true)
             }
             .padding(22)
@@ -660,7 +656,7 @@ private struct RecapConnectionRow: View {
             Button(action: onMessage) {
                 Text("Message")
                     .font(PrototypeTypography.metadata.weight(.semibold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(LikemindedPalette.inverseText)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 7)
                     .background(PrototypePalette.accent, in: Capsule(style: .continuous))
@@ -708,7 +704,7 @@ struct GroupVideoCallView: View {
         // Pin mute/leave/participants to the bottom overlay so a tall tile grid
         // (large groupSize) cannot push call controls below the viewport.
         ZStack(alignment: .bottom) {
-            Color.black.ignoresSafeArea()
+            LikemindedPalette.blackOverlay(alpha: 1).ignoresSafeArea()
 
             VStack(spacing: 12) {
                 HStack {
@@ -718,12 +714,12 @@ struct GroupVideoCallView: View {
                         .contentTransition(.opacity)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 5)
-                        .background(Color.white.opacity(0.08))
+                        .background(LikemindedPalette.whiteOverlay(alpha: 0.08))
                         .clipShape(Capsule(style: .continuous))
 
                     Text("\(participantCount) participants")
                         .font(PrototypeTypography.metadata)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(LikemindedPalette.inverseText)
                         .contentTransition(.numericText())
 
                     Spacer()
@@ -731,7 +727,7 @@ struct GroupVideoCallView: View {
                     Image(systemName: "shield.lefthalf.filled")
                     Image(systemName: "ellipsis")
                 }
-                .foregroundStyle(.white)
+                .foregroundStyle(LikemindedPalette.inverseText)
                 .padding(.horizontal, 14)
                 .padding(.top, 12)
 
@@ -807,7 +803,7 @@ struct GroupVideoCallView: View {
             VideoTile(name: "You", index: 0, isSelfPreview: true)
                 .frame(width: 88, height: 118)
                 .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(Color.white.opacity(0.35), lineWidth: 2))
+                .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(LikemindedPalette.whiteOverlay(alpha: 0.35), lineWidth: 2))
                 .padding(.trailing, 16)
                 .padding(.bottom, 108)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
@@ -824,7 +820,7 @@ struct GroupVideoCallView: View {
                                 .overlay(
                                     Text(String(participant.prefix(1)))
                                         .font(.system(size: 16, weight: .bold, design: .rounded))
-                                        .foregroundStyle(.white)
+                                        .foregroundStyle(LikemindedPalette.inverseText)
                                 )
                             Text(participant)
                             if participant == meeting.hostName {
@@ -879,7 +875,7 @@ private struct VideoTile: View {
                     LinearGradient(
                         colors: [
                             PrototypePalette.accent.opacity(index.isMultiple(of: 2) ? 0.72 : 0.55),
-                            Color.white.opacity(index.isMultiple(of: 3) ? 0.18 : 0.10)
+                            LikemindedPalette.whiteOverlay(alpha: index.isMultiple(of: 3) ? 0.18 : 0.10)
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
@@ -890,14 +886,14 @@ private struct VideoTile: View {
                     if !isSelfPreview {
                         Text(String(name.prefix(1)))
                             .font(.system(size: 52, weight: .semibold, design: .serif))
-                            .foregroundStyle(.white.opacity(0.75))
+                            .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.75))
                     }
                 }
 
             if isHost {
                 Text("Host")
                     .font(PrototypeTypography.caption)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(LikemindedPalette.inverseText)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
                     .background(PrototypePalette.accent)
@@ -910,16 +906,16 @@ private struct VideoTile: View {
                 HStack(spacing: 6) {
                     Text(name)
                         .font(PrototypeTypography.caption)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(LikemindedPalette.inverseText)
                     if !isSelfPreview {
                         Image(systemName: "cellularbars")
-                            .font(.system(size: 10, weight: .bold))
+                            .font(LikemindedTypography.compact.weight(.bold))
                             .foregroundStyle(PrototypePalette.success)
                     }
                 }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
-                .background(Color.black.opacity(0.30))
+                .background(LikemindedPalette.blackOverlay(alpha: 0.30))
                 .clipShape(Capsule(style: .continuous))
                 .padding(8)
             }
@@ -937,14 +933,14 @@ private struct CallControl: View {
         VStack(spacing: 7) {
             Image(systemName: icon)
                 .font(.system(size: 18, weight: .bold))
-                .foregroundStyle(.white)
+                .foregroundStyle(LikemindedPalette.inverseText)
                 .frame(width: 50, height: 50)
-                .background(isDestructive ? Color.red : Color.white.opacity(0.16))
+                .background(isDestructive ? Color.red : LikemindedPalette.whiteOverlay(alpha: 0.16))
                 .clipShape(Circle())
 
             Text(title)
                 .font(PrototypeTypography.caption)
-                .foregroundStyle(.white.opacity(0.86))
+                .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.86))
         }
     }
 }

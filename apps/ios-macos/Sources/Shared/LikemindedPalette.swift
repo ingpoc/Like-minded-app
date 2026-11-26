@@ -72,6 +72,7 @@ enum LikemindedPalette {
     #endif
 
     static let background = adaptiveColor("background", light: 0xFAF7F1, dark: 0x151816)
+    static let welcomeBackdrop = adaptiveColor("welcome-backdrop", light: 0xEFE3C7, dark: 0x25231E)
     static let surface = adaptiveColor("surface", light: 0xFFFBF7, dark: 0x1E2320)
     static let surfaceTranslucent = adaptiveColor(
         "surface-translucent",
@@ -89,6 +90,9 @@ enum LikemindedPalette {
     static let accentDeep = adaptiveColor("accent-deep", light: 0x0A382E, dark: 0x173429)
     static let accentSoft = adaptiveColor("accent-soft", light: 0xC8D8C7, dark: 0x2A4136)
     static let onAccent = adaptiveColor("on-accent", light: 0xFFFFFF, dark: 0x14231B)
+    static let inverseText = fixedColor(0xFFFFFF)
+    static func whiteOverlay(alpha: CGFloat) -> Color { fixedColor(0xFFFFFF, alpha: alpha) }
+    static func blackOverlay(alpha: CGFloat) -> Color { fixedColor(0x000000, alpha: alpha) }
     static let clay = adaptiveColor("clay", light: 0xC46F4A, dark: 0xEF9B78)
     static let coral = adaptiveColor("coral", light: 0xC46F4A, dark: 0xEF9B78)
     static let sage = adaptiveColor("sage", light: 0xC8D8C7, dark: 0x49634D)
@@ -115,6 +119,8 @@ enum LikemindedPalette {
     static let coverRosewood = fixedColor(0x3B2026)
     static let coverClay = fixedColor(0x6F342D)
     static let coverAmber = fixedColor(0x8A552E)
+    static let voiceSessionBackground = fixedColor(0x0D241C)
+    static let voiceSessionBackgroundDeep = fixedColor(0x050D0A)
     static let dusk = fixedColor(0x1E1328)
     static let rose = fixedColor(0x633047)
     static let orbHighlight = fixedColor(0xFFFFFF)
@@ -139,6 +145,13 @@ enum LikemindedPalette {
     private static let actionAccentEnd = adaptiveColor("action-accent-end", light: 0x12614B, dark: 0x61BB99)
     static let actionGradient = LinearGradient(
         colors: [actionAccent, actionAccentEnd],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+    private static let meetCardStart = adaptiveColor("meet-card-start", light: 0x0F4A3D, dark: 0x173429)
+    private static let meetCardEnd = adaptiveColor("meet-card-end", light: 0x0A382E, dark: 0x224B3C)
+    static let meetCardGradient = LinearGradient(
+        colors: [meetCardStart, meetCardEnd],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )

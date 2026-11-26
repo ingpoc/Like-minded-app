@@ -730,7 +730,7 @@ private struct SettingsRowLabel: View {
             Spacer()
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .semibold))
+                .font(LikemindedTypography.compact.weight(.semibold))
                 .foregroundStyle(PrototypePalette.subink)
         }
         .padding(.vertical, 14)
@@ -777,7 +777,7 @@ private struct SettingsRow: View {
                 Spacer()
 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(LikemindedTypography.compact.weight(.semibold))
                     .foregroundStyle(PrototypePalette.subink)
             }
             .padding(.vertical, 14)

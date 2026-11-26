@@ -16,7 +16,7 @@ struct CircleCard: View {
             HStack {
                 Text(circle.fitLabel)
                     .font(PrototypeTypography.metadata)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(LikemindedPalette.inverseText)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
                     .background(PrototypePalette.coverPill)
@@ -28,18 +28,18 @@ struct CircleCard: View {
 
             Text(show.name)
                 .font(PrototypeTypography.sectionTitle)
-                .foregroundStyle(.white)
+                .foregroundStyle(LikemindedPalette.inverseText)
                 .fixedSize(horizontal: false, vertical: true)
             Text(show.subtitle)
                 .font(PrototypeTypography.metadata)
-                .foregroundStyle(.white.opacity(0.86))
+                .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.86))
                 .lineLimit(2)
 
             HStack(spacing: 6) {
                 ForEach(show.tags.prefix(2), id: \.self) { theme in
                     Text(theme)
                         .font(PrototypeTypography.metadata)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(LikemindedPalette.inverseText)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 5)
                         .background(PrototypePalette.coverPill)
@@ -49,7 +49,7 @@ struct CircleCard: View {
 
             Text("\(show.members) members")
                 .font(PrototypeTypography.metadata)
-                .foregroundStyle(.white.opacity(0.90))
+                .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.90))
         }
         .padding(14)
         .containerRelativeFrame(.horizontal, count: 1, spacing: 10)

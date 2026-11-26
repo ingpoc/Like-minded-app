@@ -181,7 +181,7 @@ struct MacCirclesRoomView: View {
                 RoundedRectangle(cornerRadius: 22, style: .continuous)
                     .stroke(MacPalette.line, lineWidth: 1)
             )
-            .shadow(color: Color.black.opacity(0.04), radius: 18, y: 8)
+            .shadow(color: LikemindedPalette.blackOverlay(alpha: 0.04), radius: 18, y: 8)
         }
     }
 
@@ -293,7 +293,7 @@ struct MacCirclesRoomView: View {
                 RoundedRectangle(cornerRadius: 18, style: .continuous)
                     .stroke(isSelected ? MacPalette.accent.opacity(0.55) : MacPalette.line, lineWidth: isSelected ? 1.5 : 1)
             )
-            .shadow(color: Color.black.opacity(0.03), radius: 12, y: 6)
+            .shadow(color: LikemindedPalette.blackOverlay(alpha: 0.03), radius: 12, y: 6)
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Open \(circle.name) circle")

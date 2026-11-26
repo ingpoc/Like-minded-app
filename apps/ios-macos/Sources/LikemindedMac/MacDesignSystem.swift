@@ -96,7 +96,7 @@ struct MacPanel<Content: View>: View {
             if let title {
                 Text(title)
                     .font(MacType.section)
-                    .foregroundStyle(dark ? .white : MacPalette.ink)
+                    .foregroundStyle(dark ? LikemindedPalette.inverseText : MacPalette.ink)
             }
             content
         }
@@ -108,7 +108,7 @@ struct MacPanel<Content: View>: View {
                 .stroke(dark ? MacPalette.accent : MacPalette.line, lineWidth: 1)
         )
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .foregroundStyle(dark ? .white : .primary)
+        .foregroundStyle(dark ? LikemindedPalette.inverseText : .primary)
     }
 
     @ViewBuilder
@@ -529,10 +529,10 @@ struct MacHeroArt: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text(label)
                     .font(MacType.section)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(LikemindedPalette.inverseText)
                 Text("Thoughtful - Calm - Curious")
                     .font(MacType.small)
-                    .foregroundStyle(.white.opacity(0.82))
+                    .foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.82))
             }
             .padding(20)
         }
@@ -612,17 +612,17 @@ struct MacGradientCard: View {
         ZStack(alignment: .bottomLeading) {
             LinearGradient(colors: [tone.color, tone.color.opacity(0.75), MacPalette.photoScrim], startPoint: .topLeading, endPoint: .bottomTrailing)
             ForEach(0..<3, id: \.self) { i in
-                Circle().stroke(.white.opacity(0.05), lineWidth: 1)
+                Circle().stroke(LikemindedPalette.whiteOverlay(alpha: 0.05), lineWidth: 1)
                     .frame(width: 120 + CGFloat(i * 60))
                     .offset(x: CGFloat(i * 20), y: CGFloat(i * 10))
             }
             VStack(alignment: .leading, spacing: 6) {
-                Text(title).font(MacType.coverTitleSmall).foregroundStyle(.white)
-                if let subtitle { Text(subtitle).font(MacType.coverMeta).foregroundStyle(.white.opacity(0.9)) }
+                Text(title).font(MacType.coverTitleSmall).foregroundStyle(LikemindedPalette.inverseText)
+                if let subtitle { Text(subtitle).font(MacType.coverMeta).foregroundStyle(LikemindedPalette.whiteOverlay(alpha: 0.9)) }
                 if !tags.isEmpty {
                     HStack(spacing: 6) {
                         ForEach(tags.prefix(3), id: \.self) { tag in
-                            Text(tag).font(MacType.small).foregroundStyle(.white)
+                            Text(tag).font(MacType.small).foregroundStyle(LikemindedPalette.inverseText)
                                 .padding(.horizontal, 10).padding(.vertical, 5)
                                 .background(MacPalette.coverTag, in: Capsule())
                         }

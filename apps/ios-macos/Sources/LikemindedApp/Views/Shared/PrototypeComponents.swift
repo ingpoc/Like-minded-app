@@ -148,7 +148,7 @@ struct PrimaryActionButton: View {
     var body: some View {
         Label(title, systemImage: systemImage)
             .font(PrototypeTypography.button)
-            .foregroundStyle(.white)
+            .foregroundStyle(LikemindedPalette.onAccent)
             .padding(.horizontal, 20)
             .padding(.vertical, 16)
             .frame(maxWidth: .infinity)
@@ -318,7 +318,7 @@ struct LikemindedGlyph: View {
                 )
                 .offset(x: 0, y: isAnimating ? 31 : 36)
         }
-        .shadow(color: Color.black.opacity(0.04), radius: 18, y: 12)
+        .shadow(color: LikemindedPalette.blackOverlay(alpha: 0.04), radius: 18, y: 12)
         .accessibilityHidden(true)
         .task {
             guard !isAnimating else { return }
@@ -551,7 +551,7 @@ struct PrototypeBackButton: View {
         case .surface:
             return PrototypePalette.ink
         case .overlay:
-            return .white
+            return LikemindedPalette.inverseText
         }
     }
 
