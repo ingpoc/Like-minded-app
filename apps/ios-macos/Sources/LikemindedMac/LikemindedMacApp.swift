@@ -28,7 +28,9 @@ struct LikemindedMacApp: App {
                 .preferredColorScheme(appColorScheme)
                 .tint(MacPalette.accent)
                 .background(MacWindowChromeHider())
+                .likemindedTypography()
                 .onAppear {
+                    LikemindedTypeRuntime.applyLaunchOverride()
                     applyLaunchAppearanceOverride()
                     applyAppearancePreference()
                 }

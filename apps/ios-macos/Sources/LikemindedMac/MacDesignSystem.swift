@@ -12,42 +12,107 @@ extension View {
 typealias MacPalette = LikemindedPalette
 
 enum MacType {
-    /// Uppercase section labels — SF Pro, not serif.
-    static let eyebrow = Font.system(size: 14, weight: .semibold, design: .default)
+    /// Uppercase section labels — SF Pro, not serif. Shared 14-point floor.
+    static var eyebrow: Font { LikemindedTypography.scaled(size: 14, weight: .semibold, design: .default, textStyle: .caption) }
     /// Hero phrases ("Your room.") — editorial serif.
-    static let title = Font.system(size: 34, weight: .semibold, design: .serif)
-    static let display = Font.system(size: 44, weight: .semibold, design: .serif)
-    static let pageTitle = Font.system(size: 38, weight: .semibold, design: .serif)
+    static var title: Font { LikemindedTypography.scaled(size: 34, weight: .semibold, design: .serif, textStyle: .largeTitle) }
+    static var display: Font { LikemindedTypography.scaled(size: 44, weight: .semibold, design: .serif, textStyle: .largeTitle) }
+    static var pageTitle: Font { LikemindedTypography.scaled(size: 38, weight: .semibold, design: .serif, textStyle: .largeTitle) }
     /// Panel / card titles on cream surfaces — editorial serif.
-    static let section = Font.system(size: 24, weight: .semibold, design: .serif)
-    static let cardTitle = Font.system(size: 22, weight: .semibold, design: .serif)
-    static let smallSerif = Font.system(size: 16, weight: .semibold, design: .serif)
-    static let subheading = Font.system(size: 28, weight: .semibold, design: .serif)
-    static let serifCallout = Font.system(size: 20, weight: .medium, design: .serif)
+    static var section: Font { LikemindedTypography.scaled(size: 24, weight: .semibold, design: .serif, textStyle: .title2) }
+    static var cardTitle: Font { LikemindedTypography.scaled(size: 22, weight: .semibold, design: .serif, textStyle: .title3) }
+    static var smallSerif: Font { LikemindedTypography.scaled(size: 16, weight: .semibold, design: .serif, textStyle: .headline) }
+    static var subheading: Font { LikemindedTypography.scaled(size: 28, weight: .semibold, design: .serif, textStyle: .title) }
+    static var serifCallout: Font { LikemindedTypography.scaled(size: 20, weight: .medium, design: .serif, textStyle: .title3) }
     /// Body copy and cover meta — SF Pro for readability (mockups use sans for body).
-    static let body = Font.system(size: 18, weight: .regular, design: .default)
-    static let small = Font.system(size: 16, weight: .medium, design: .default)
-    static let button = LikemindedTypography.button
-    static let caption = LikemindedTypography.caption
-    static let metric = Font.system(size: 72, weight: .semibold, design: .serif)
-    static let metricValue = Font.system(size: 28, weight: .semibold, design: .rounded)
-    static let iconSmall = Font.system(size: 16, weight: .semibold, design: .default)
-    static let iconMedium = Font.system(size: 22, weight: .semibold, design: .default)
-    static let iconHero = Font.system(size: 28, weight: .medium, design: .default)
-    static let iconProminent = Font.system(size: 26, weight: .semibold, design: .default)
-    static let icon = Font.system(size: 18, weight: .semibold, design: .default)
-    static let iconLarge = Font.system(size: 36, weight: .regular, design: .default)
-    static let decorativeIcon = Font.system(size: 30, weight: .semibold, design: .default)
-    static let roundedInitials = Font.system(size: 18, weight: .semibold, design: .rounded)
-    static let roundedInitialsLarge = Font.system(size: 30, weight: .semibold, design: .rounded)
+    static var body: Font { LikemindedTypography.scaled(size: 18, weight: .regular, design: .default, textStyle: .body) }
+    static var small: Font { LikemindedTypography.scaled(size: 16, weight: .medium, design: .default, textStyle: .callout) }
+    static var button: Font { LikemindedTypography.button }
+    static var caption: Font { LikemindedTypography.caption }
+    static var metric: Font { LikemindedTypography.scaled(size: 72, weight: .semibold, design: .serif, textStyle: .largeTitle) }
+    static var metricValue: Font { LikemindedTypography.scaled(size: 28, weight: .semibold, design: .rounded, textStyle: .title) }
+    static var iconSmall: Font { LikemindedTypography.scaled(size: 16, weight: .semibold, design: .default, textStyle: .callout) }
+    static var iconMedium: Font { LikemindedTypography.scaled(size: 22, weight: .semibold, design: .default, textStyle: .title3) }
+    static var iconHero: Font { LikemindedTypography.scaled(size: 28, weight: .medium, design: .default, textStyle: .title) }
+    static var iconProminent: Font { LikemindedTypography.scaled(size: 26, weight: .semibold, design: .default, textStyle: .title) }
+    static var icon: Font { LikemindedTypography.scaled(size: 18, weight: .semibold, design: .default, textStyle: .body) }
+    static var iconLarge: Font { LikemindedTypography.scaled(size: 36, weight: .regular, design: .default, textStyle: .largeTitle) }
+    static var decorativeIcon: Font { LikemindedTypography.scaled(size: 30, weight: .semibold, design: .default, textStyle: .title) }
+    static var roundedInitials: Font { LikemindedTypography.scaled(size: 18, weight: .semibold, design: .rounded, textStyle: .body) }
+    static var roundedInitialsLarge: Font { LikemindedTypography.scaled(size: 30, weight: .semibold, design: .rounded, textStyle: .title) }
     static func avatarInitials(diameter: CGFloat) -> Font {
-        Font.system(size: max(14, diameter * 0.38), weight: .medium, design: .serif)
+        LikemindedTypography.scaled(size: max(LikemindedTypography.minimumPointSize, diameter * 0.38), weight: .medium, design: .serif, textStyle: .body)
     }
     /// White titles on thematic covers.
-    static let coverTitle = Font.system(size: 26, weight: .semibold, design: .serif)
-    static let coverTitleSmall = Font.system(size: 18, weight: .semibold, design: .serif)
+    static var coverTitle: Font { LikemindedTypography.scaled(size: 26, weight: .semibold, design: .serif, textStyle: .title) }
+    static var coverTitleSmall: Font { LikemindedTypography.scaled(size: 18, weight: .semibold, design: .serif, textStyle: .body) }
     /// White meta on thematic covers (member counts, room energy).
-    static let coverMeta = Font.system(size: 14, weight: .regular, design: .default)
+    static var coverMeta: Font { LikemindedTypography.scaled(size: 14, weight: .regular, design: .default, textStyle: .caption) }
+}
+
+private struct MacScrollContentHeightKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = max(value, nextValue())
+    }
+}
+
+/// Vertical scroller with a always-visible indicator and a "Scroll for more" cue
+/// when content overflows the default window (UI-08).
+struct MacScrollCanvas<Content: View>: View {
+    @ViewBuilder var content: Content
+    @State private var contentHeight: CGFloat = 0
+    @State private var viewportHeight: CGFloat = 0
+    @State private var atBottom = false
+
+    private var showsCue: Bool {
+        contentHeight > viewportHeight + 8 && !atBottom
+    }
+
+    var body: some View {
+        GeometryReader { proxy in
+            ScrollView(.vertical, showsIndicators: true) {
+                content
+                    .background {
+                        GeometryReader { geometry in
+                            Color.clear.preference(key: MacScrollContentHeightKey.self, value: geometry.size.height)
+                        }
+                    }
+            }
+            .scrollIndicators(.visible)
+            .onAppear { viewportHeight = proxy.size.height }
+            .onChange(of: proxy.size.height) { _, height in viewportHeight = height }
+            .onPreferenceChange(MacScrollContentHeightKey.self) { contentHeight = $0 }
+            .onScrollGeometryChange(for: Bool.self) { geometry in
+                geometry.contentOffset.y + geometry.containerSize.height >= geometry.contentSize.height - 12
+            } action: { _, nowAtBottom in
+                atBottom = nowAtBottom
+            }
+            .overlay(alignment: .bottom) {
+                if showsCue {
+                    VStack(spacing: 0) {
+                        LinearGradient(
+                            colors: [MacPalette.background.opacity(0), MacPalette.background.opacity(0.94)],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                        .frame(height: 20)
+                        HStack(spacing: 6) {
+                            Image(systemName: "chevron.down")
+                            Text("Scroll for more")
+                        }
+                        .font(MacType.caption)
+                        .foregroundStyle(MacPalette.muted)
+                        .padding(.bottom, 8)
+                    }
+                    .allowsHitTesting(false)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel("Scroll for more")
+                    .accessibilityIdentifier("scroll-for-more")
+                }
+            }
+        }
+    }
 }
 
 struct MacPrimaryButtonStyle: ButtonStyle {

@@ -49,7 +49,7 @@ struct MacMeetOverviewConceptView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 10) {
             conceptHeader
             if appState.isSignedIn {
                 nextMeetupCard
@@ -179,7 +179,7 @@ struct MacMeetOverviewConceptView: View {
                 .accessibilityLabel("\(venueLines.title), \(venueLines.subtitle)")
             }
         }
-        .frame(minHeight: 220)
+        .frame(minHeight: 200)
         .frame(maxWidth: .infinity)
         .background(MacPalette.surface)
         .overlay(

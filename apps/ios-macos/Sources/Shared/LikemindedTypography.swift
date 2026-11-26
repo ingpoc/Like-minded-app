@@ -3,10 +3,64 @@ import SwiftUI
 import UIKit
 #endif
 
+/// Process-wide Dynamic Type size so token fonts can scale on Mac and iOS.
+enum LikemindedTypeRuntime {
+    static var current: DynamicTypeSize = launchOverride ?? .large
+
+    static var launchOverride: DynamicTypeSize? = {
+        let arguments = ProcessInfo.processInfo.arguments
+        guard let index = arguments.firstIndex(of: "--likeminded-dynamic-type-size"),
+              arguments.indices.contains(index + 1) else { return nil }
+        return parse(arguments[index + 1])
+    }()
+
+    static func parse(_ raw: String) -> DynamicTypeSize? {
+        switch raw {
+        case "xSmall": return .xSmall
+        case "small": return .small
+        case "medium": return .medium
+        case "large": return .large
+        case "xLarge": return .xLarge
+        case "xxLarge": return .xxLarge
+        case "xxxLarge": return .xxxLarge
+        case "accessibility1": return .accessibility1
+        case "accessibility2": return .accessibility2
+        case "accessibility3": return .accessibility3
+        case "accessibility4": return .accessibility4
+        case "accessibility5": return .accessibility5
+        default: return nil
+        }
+    }
+
+    static func scaleFactor(for size: DynamicTypeSize = current) -> CGFloat {
+        switch size {
+        case .xSmall: return 0.82
+        case .small: return 0.88
+        case .medium: return 0.94
+        case .large: return 1.0
+        case .xLarge: return 1.12
+        case .xxLarge: return 1.23
+        case .xxxLarge: return 1.35
+        case .accessibility1: return 1.55
+        case .accessibility2: return 1.75
+        case .accessibility3: return 1.95
+        case .accessibility4: return 2.15
+        case .accessibility5: return 2.35
+        default: return 1.0
+        }
+    }
+
+    static func applyLaunchOverride() {
+        if let launchOverride {
+            current = launchOverride
+        }
+    }
+}
+
 /// Cross-target type tokens shared by the iOS and macOS apps.
 ///
 /// One scale on both platforms: the same design sizes, a 14-point floor,
-/// and Dynamic Type on iOS that may scale up but never shrink below the token.
+/// and Dynamic Type that may scale up but never shrink below the token.
 enum LikemindedTypography {
     static var compact: Font { scaled(size: 14, weight: .regular, design: .default, textStyle: .body) }
     static var body: Font { scaled(size: 14, weight: .regular, design: .default, textStyle: .body) }
@@ -28,12 +82,17 @@ enum LikemindedTypography {
     ) -> Font {
         let floored = max(size, minimumPointSize)
         #if canImport(UIKit) && !os(macOS)
+        if LikemindedTypeRuntime.launchOverride != nil {
+            let point = max(minimumPointSize, floored * LikemindedTypeRuntime.scaleFactor())
+            return Font(uiFont(size: point, weight: weight, design: design))
+        }
         let base = uiFont(size: floored, weight: weight, design: design)
         let scaledFont = UIFontMetrics(forTextStyle: uiTextStyle(textStyle)).scaledFont(for: base)
         let point = max(floored, scaledFont.pointSize)
         return Font(base.withSize(point))
         #else
-        return Font.system(size: floored, weight: weight, design: design)
+        let point = max(minimumPointSize, floored * LikemindedTypeRuntime.scaleFactor())
+        return Font.system(size: point, weight: weight, design: design)
         #endif
     }
 
@@ -85,6 +144,30 @@ enum LikemindedTypography {
         }
     }
     #endif
+}
+
+struct LikemindedTypeSizeBinder: ViewModifier {
+    @Environment(\.dynamicTypeSize) private var size
+
+    func body(content: Content) -> some View {
+        content
+            .onAppear { sync() }
+            .onChange(of: size) { _, _ in sync() }
+    }
+
+    private func sync() {
+        LikemindedTypeRuntime.current = LikemindedTypeRuntime.launchOverride ?? size
+    }
+}
+
+extension View {
+    func likemindedTypography() -> some View {
+        let bound = modifier(LikemindedTypeSizeBinder())
+        if let override = LikemindedTypeRuntime.launchOverride {
+            return AnyView(bound.environment(\.dynamicTypeSize, override))
+        }
+        return AnyView(bound)
+    }
 }
 
 /// Debug-only specimen that proves the 14-point floor and shared token names.

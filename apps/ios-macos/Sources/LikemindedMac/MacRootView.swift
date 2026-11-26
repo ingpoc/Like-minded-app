@@ -76,14 +76,14 @@ struct MacRootView: View {
                 } else {
                     VStack(spacing: 0) {
                         GeometryReader { proxy in
-                            ScrollView(.vertical, showsIndicators: true) {
+                            MacScrollCanvas {
                                 VStack(spacing: 18) {
                                     screenContent
                                 }
                                 .frame(maxWidth: .infinity, minHeight: max(0, proxy.size.height - 72), alignment: .top)
                                 .padding(.horizontal, 28)
                                 .padding(.top, 18)
-                                .padding(.bottom, 18)
+                                .padding(.bottom, 28)
                             }
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                         }

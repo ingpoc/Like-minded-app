@@ -10,6 +10,7 @@ struct LikemindedApp: App {
     @StateObject private var appState = PrototypeAppState()
 
     init() {
+        LikemindedTypeRuntime.applyLaunchOverride()
         Task { @MainActor in
             GoogleSignInSupport.configureIfNeeded()
         }
@@ -19,9 +20,11 @@ struct LikemindedApp: App {
         WindowGroup {
             if ProcessInfo.processInfo.arguments.contains("--likeminded-typography-specimen") {
                 LikemindedTypographySpecimenView()
+                    .likemindedTypography()
             } else {
                 RootView()
                     .environmentObject(appState)
+                    .likemindedTypography()
                     .onChange(of: scenePhase) { _, phase in
                         guard phase == .active else { return }
                         Task { await appState.validateStoredAppleCredentialIfNeeded() }
